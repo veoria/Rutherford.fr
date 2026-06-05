@@ -172,10 +172,10 @@ export function AcademyCoursePage({ course, access }: Props) {
                   Go to your account <span aria-hidden="true">→</span>
                 </a>
               </>
-            ) : (
+            ) : access.hasAccess ? (
               <>
                 <h3>Watch the full course</h3>
-                <p>Free, no signup required. Built to give every press team a shared vocabulary.</p>
+                <p>Free for every press team. Track your progress and earn your certificate.</p>
                 <p className="academy-course-cta-price">Free</p>
                 <a className="button button-dark academy-course-cta-button" href="#course-content">
                   Start the course <span aria-hidden="true">→</span>
@@ -183,6 +183,22 @@ export function AcademyCoursePage({ course, access }: Props) {
                 <p className="academy-course-cta-sub">
                   Ready for the next step? See the{' '}
                   <a href="/academy#premium">premium masterclasses</a>.
+                </p>
+              </>
+            ) : (
+              <>
+                <h3>Create your free account</h3>
+                <p>This course is free. Create an account to unlock the full lesson and track your progress.</p>
+                <p className="academy-course-cta-price">Free</p>
+                <a
+                  className="button button-accent academy-course-cta-button"
+                  href={`/account/sign-in?next=${encodeURIComponent(`/academy/${course.id}`)}`}
+                >
+                  Create free account <span aria-hidden="true">→</span>
+                </a>
+                <p className="academy-course-cta-sub">
+                  Already have an account?{' '}
+                  <a href={`/account/sign-in?next=${encodeURIComponent(`/academy/${course.id}`)}`}>Sign in</a>
                 </p>
               </>
             )}
@@ -248,7 +264,7 @@ export function AcademyCoursePage({ course, access }: Props) {
               </ol>
             </div>
           </section>
-        ) : (
+        ) : tone === 'premium' ? (
           <section className="academy-course-paywall section" id="course-content">
             <div className="container academy-course-paywall-shell">
               <header className="academy-section-head">
@@ -299,6 +315,46 @@ export function AcademyCoursePage({ course, access }: Props) {
                   to access your courses.
                 </p>
               ) : null}
+            </div>
+          </section>
+        ) : (
+          <section className="academy-course-paywall section" id="course-content">
+            <div className="container academy-course-paywall-shell">
+              <header className="academy-section-head">
+                <p className="section-kicker">Course content</p>
+                <h2>Create your free account to unlock</h2>
+                <p>
+                  The video above is the introduction. The complete {lessons.length}-module course is free — create
+                  your account to read it and track your progress.
+                </p>
+              </header>
+
+              <ol className="academy-course-paywall-list">
+                {lessons.map((lesson, index) => (
+                  <li key={index} className="academy-course-paywall-item">
+                    <span className="academy-course-paywall-lock" aria-hidden="true">
+                      🔒
+                    </span>
+                    <span className="academy-course-paywall-index">
+                      Module {String(index + 1).padStart(2, '0')}
+                    </span>
+                    <span className="academy-course-paywall-title">{lesson.title}</span>
+                  </li>
+                ))}
+              </ol>
+
+              <div className="academy-course-paywall-actions">
+                <a
+                  className="button button-accent"
+                  href={`/account/sign-in?next=${encodeURIComponent(`/academy/${course.id}`)}`}
+                >
+                  Create free account →
+                </a>
+              </div>
+              <p className="academy-course-paywall-signin">
+                Already have an account?{' '}
+                <a href={`/account/sign-in?next=${encodeURIComponent(`/academy/${course.id}`)}`}>Sign in</a>
+              </p>
             </div>
           </section>
         )

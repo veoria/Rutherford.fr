@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { notFound, redirect } from 'next/navigation';
 import { AccountPage } from '@/components/account-page';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { isOnboarded } from '@/lib/profile';
 import { ALL_COURSES } from '@/data/academy-courses';
 
 export const metadata: Metadata = {
@@ -34,10 +35,15 @@ export default async function AccountRoute() {
       .maybeSingle(),
     supabase
       .from('profiles')
-      .select('full_name, avatar_url')
+      .select('full_name, avatar_url, country, company, job_title, onboarded_at')
       .eq('id', user.id)
       .maybeSingle(),
   ]);
+
+  // Lead-capture gate: finish onboarding before the account dashboard.
+  if (!isOnboarded(profile)) {
+    redirect('/account/onboarding?next=/account');
+  }
 
   const enrolledCourses = (enrollments ?? [])
     .map((row) => {
