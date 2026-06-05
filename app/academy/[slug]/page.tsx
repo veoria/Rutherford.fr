@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import { AcademyCoursePage } from '@/components/academy-course-page';
 import { ALL_COURSES, getCourseBySlug } from '@/data/academy-courses';
 import { getCourseAccess } from '@/lib/entitlements';
@@ -28,5 +28,10 @@ export default async function AcademyCourseRoute({ params }: { params: RoutePara
     notFound();
   }
   const access = await getCourseAccess(course);
+  // Signed in but onboarding not finished: force the lead-capture step before any
+  // course content. The marketing page itself stays public for signed-out visitors.
+  if (access.signedIn && !access.onboarded) {
+    redirect(`/account/onboarding?next=${encodeURIComponent(`/academy/${course.id}`)}`);
+  }
   return <AcademyCoursePage course={course} access={access} />;
 }
