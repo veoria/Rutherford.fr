@@ -25,9 +25,10 @@ const PREMIUM_COURSE_LIST: { id: string; title: string }[] = [
 type Props = {
   course: AcademyCourse;
   access: CourseAccess;
+  videoUrl: string | null;
 };
 
-export function AcademyCoursePage({ course, access }: Props) {
+export function AcademyCoursePage({ course, access, videoUrl }: Props) {
   const tone = course.tone;
   const siblings = tone === 'premium' ? PREMIUM_COURSE_LIST : FREE_COURSE_LIST;
   const lessons = getLessonsForCourse(course.id);
@@ -104,12 +105,37 @@ export function AcademyCoursePage({ course, access }: Props) {
               ) : null}
             </div>
             <figure className="academy-course-video">
-              <video
-                src={`${course.videoSrc}#t=0.1`}
-                controls
-                playsInline
-                preload="metadata"
-              />
+              {videoUrl ? (
+                <video src={`${videoUrl}#t=0.1`} controls playsInline preload="metadata" />
+              ) : (
+                <div className="academy-course-video-locked">
+                  <span className="academy-course-video-locked-icon" aria-hidden="true">
+                    🔒
+                  </span>
+                  {access.signedIn ? (
+                    <>
+                      <p className="academy-course-video-locked-text">
+                        Unlock this masterclass to watch the full video.
+                      </p>
+                      <a className="button button-accent" href="#course-content">
+                        Unlock the course
+                      </a>
+                    </>
+                  ) : (
+                    <>
+                      <p className="academy-course-video-locked-text">
+                        Create your free account to watch the video.
+                      </p>
+                      <a
+                        className="button button-accent"
+                        href={`/account/sign-in?next=${encodeURIComponent(`/academy/${course.id}`)}`}
+                      >
+                        Create free account
+                      </a>
+                    </>
+                  )}
+                </div>
+              )}
             </figure>
           </div>
         </div>
