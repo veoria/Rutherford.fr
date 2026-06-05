@@ -3,6 +3,7 @@ import { notFound, redirect } from 'next/navigation';
 import { AcademyCoursePage } from '@/components/academy-course-page';
 import { ALL_COURSES, getCourseBySlug } from '@/data/academy-courses';
 import { getCourseAccess } from '@/lib/entitlements';
+import { getSignedCourseVideoUrl } from '@/lib/academy-video';
 
 type RouteParams = { slug: string };
 
@@ -33,5 +34,7 @@ export default async function AcademyCourseRoute({ params }: { params: RoutePara
   if (access.signedIn && !access.onboarded) {
     redirect(`/account/onboarding?next=${encodeURIComponent(`/academy/${course.id}`)}`);
   }
-  return <AcademyCoursePage course={course} access={access} />;
+  // The video lives in a private bucket; only mint a signed URL when access is granted.
+  const videoUrl = access.hasAccess ? await getSignedCourseVideoUrl(course) : null;
+  return <AcademyCoursePage course={course} access={access} videoUrl={videoUrl} />;
 }
