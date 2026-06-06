@@ -38,6 +38,11 @@ type Props = {
   enrolledCourses: EnrolledCourse[];
   passSubscription: PassSubscription | null;
   streak: number;
+  streakBest: number;
+  daily: { goalXp: number; todayXp: number };
+  weekly: { iso: string; xp: number }[];
+  activeDays: string[];
+  resume: { slug: string; title: string; moduleIndex: number; moduleTitle: string } | null;
   catalog: { total: number; freeSlugs: string[] };
 };
 
@@ -90,6 +95,13 @@ type AccountCopy = {
   statCourses: string;
   statCertificates: string;
   statStreak: string;
+  resumeKicker: string;
+  moduleWord: string;
+  dailyGoalLabel: string;
+  goalReached: string;
+  calendarLabel: string;
+  weeklyLabel: string;
+  bestLabel: string;
   // Rewards
   rewardsKicker: string;
   rewardsTitle: string;
@@ -154,6 +166,13 @@ const COPY: Record<Locale, AccountCopy> = {
     statCourses: 'Courses completed',
     statCertificates: 'Certificates',
     statStreak: 'Day streak',
+    resumeKicker: 'Continue where you left off',
+    moduleWord: 'Module',
+    dailyGoalLabel: 'Daily goal',
+    goalReached: 'Goal reached!',
+    calendarLabel: 'Last 14 days',
+    weeklyLabel: 'This week',
+    bestLabel: 'Best',
     rewardsKicker: 'Rewards',
     rewardsTitle: 'Badges you’ve earned',
     rewardsLocked: 'Locked',
@@ -222,6 +241,13 @@ const COPY: Record<Locale, AccountCopy> = {
     statCourses: 'Cours terminés',
     statCertificates: 'Certificats',
     statStreak: 'Série de jours',
+    resumeKicker: 'Reprenez où vous en étiez',
+    moduleWord: 'Module',
+    dailyGoalLabel: 'Objectif du jour',
+    goalReached: 'Objectif atteint !',
+    calendarLabel: '14 derniers jours',
+    weeklyLabel: 'Cette semaine',
+    bestLabel: 'Record',
     rewardsKicker: 'Récompenses',
     rewardsTitle: 'Vos badges',
     rewardsLocked: 'À débloquer',
@@ -289,6 +315,13 @@ const COPY: Record<Locale, AccountCopy> = {
     statCourses: 'Abgeschlossene Kurse',
     statCertificates: 'Zertifikate',
     statStreak: 'Tage-Serie',
+    resumeKicker: 'Weiter, wo Sie aufgehört haben',
+    moduleWord: 'Modul',
+    dailyGoalLabel: 'Tagesziel',
+    goalReached: 'Ziel erreicht!',
+    calendarLabel: 'Letzte 14 Tage',
+    weeklyLabel: 'Diese Woche',
+    bestLabel: 'Bestwert',
     rewardsKicker: 'Auszeichnungen',
     rewardsTitle: 'Ihre Abzeichen',
     rewardsLocked: 'Gesperrt',
@@ -357,6 +390,13 @@ const COPY: Record<Locale, AccountCopy> = {
     statCourses: 'Corsi completati',
     statCertificates: 'Certificati',
     statStreak: 'Serie di giorni',
+    resumeKicker: 'Riprenda da dove era rimasto',
+    moduleWord: 'Modulo',
+    dailyGoalLabel: 'Obiettivo del giorno',
+    goalReached: 'Obiettivo raggiunto!',
+    calendarLabel: 'Ultimi 14 giorni',
+    weeklyLabel: 'Questa settimana',
+    bestLabel: 'Record',
     rewardsKicker: 'Riconoscimenti',
     rewardsTitle: 'I suoi badge',
     rewardsLocked: 'Da sbloccare',
@@ -425,6 +465,13 @@ const COPY: Record<Locale, AccountCopy> = {
     statCourses: 'Cursos completados',
     statCertificates: 'Certificados',
     statStreak: 'Racha de días',
+    resumeKicker: 'Continúe donde lo dejó',
+    moduleWord: 'Módulo',
+    dailyGoalLabel: 'Objetivo del día',
+    goalReached: '¡Objetivo alcanzado!',
+    calendarLabel: 'Últimos 14 días',
+    weeklyLabel: 'Esta semana',
+    bestLabel: 'Mejor',
     rewardsKicker: 'Recompensas',
     rewardsTitle: 'Sus insignias',
     rewardsLocked: 'Por desbloquear',
@@ -526,7 +573,18 @@ function formatDate(value: string | null, locale: Locale) {
   }
 }
 
-export function AccountPage({ user, enrolledCourses, passSubscription, streak, catalog }: Props) {
+export function AccountPage({
+  user,
+  enrolledCourses,
+  passSubscription,
+  streak,
+  streakBest,
+  daily,
+  weekly,
+  activeDays,
+  resume,
+  catalog,
+}: Props) {
   const { locale } = useLanguage();
   const t = COPY[locale];
   const hasActivePass = passSubscription?.status === 'active';
@@ -618,8 +676,32 @@ export function AccountPage({ user, enrolledCourses, passSubscription, streak, c
 
   const hasCourses = enrolledCourses.length > 0;
 
+  // Daily goal ring.
+  const dailyPct = daily.goalXp > 0 ? Math.min(100, Math.round((daily.todayXp / daily.goalXp) * 100)) : 0;
+  const dailyMet = daily.todayXp >= daily.goalXp && daily.goalXp > 0;
+
+  // Streak calendar: the last 14 UTC days, flagged active from the server set.
+  const DAY_MS = 24 * 60 * 60 * 1000;
+  const activeSet = new Set(activeDays);
+  const todayIso = new Date().toISOString().slice(0, 10);
+  const calendar = Array.from({ length: 14 }, (_, i) => {
+    const d = new Date(Date.now() - (13 - i) * DAY_MS);
+    const iso = d.toISOString().slice(0, 10);
+    return { iso, dayNum: d.getUTCDate(), active: activeSet.has(iso), isToday: iso === todayIso };
+  });
+
+  // Weekly XP chart scale.
+  const weeklyMax = Math.max(1, ...weekly.map((w) => w.xp));
+  const weekdayLabel = (iso: string) => {
+    try {
+      return new Date(`${iso}T00:00:00Z`).toLocaleDateString(locale, { weekday: 'narrow' });
+    } catch {
+      return '';
+    }
+  };
+
   return (
-    <main className="page-shell" id="top">
+    <main className="page-shell account-shell" id="top">
       <SiteNav />
 
       <section className="account-hero section">
@@ -647,6 +729,28 @@ export function AccountPage({ user, enrolledCourses, passSubscription, streak, c
         </div>
       </section>
 
+      {resume ? (
+        <section className="account-resume section">
+          <div className="container">
+            <a
+              className="account-resume-card"
+              href={`/academy/${resume.slug}?m=${resume.moduleIndex}#course-content`}
+            >
+              <div className="account-resume-text">
+                <p className="section-kicker">{t.resumeKicker}</p>
+                <h2 className="account-resume-title">{resume.title}</h2>
+                <p className="account-resume-module">
+                  {t.moduleWord} {String(resume.moduleIndex + 1).padStart(2, '0')} · {resume.moduleTitle}
+                </p>
+              </div>
+              <span className="button button-accent account-resume-cta">
+                {t.continueCta} <span aria-hidden="true">→</span>
+              </span>
+            </a>
+          </div>
+        </section>
+      ) : null}
+
       {hasCourses ? (
         <section className="account-progress section">
           <div className="container">
@@ -654,6 +758,73 @@ export function AccountPage({ user, enrolledCourses, passSubscription, streak, c
               <p className="section-kicker">{t.progressKicker}</p>
               <h2>{t.progressTitle}</h2>
             </header>
+
+            <div className="account-rhythm-grid">
+              <div className="account-daily">
+                <div
+                  className="account-daily-ring"
+                  style={{ background: `conic-gradient(var(--accent) ${dailyPct}%, #e7e7e0 ${dailyPct}%)` }}
+                  aria-hidden="true"
+                >
+                  <div className="account-daily-ring-inner">
+                    <span className="account-daily-pct">{dailyPct}%</span>
+                  </div>
+                </div>
+                <div className="account-daily-info">
+                  <p className="account-daily-label">{t.dailyGoalLabel}</p>
+                  <p className="account-daily-value">
+                    {daily.todayXp} / {daily.goalXp} {t.xpUnit}
+                  </p>
+                  {dailyMet ? <p className="account-daily-met">✓ {t.goalReached}</p> : null}
+                </div>
+              </div>
+
+              <div className="account-streakblock">
+                <div className="account-streak-head">
+                  <span className={`account-streak-flame ${streak > 0 ? 'is-active' : ''}`} aria-hidden="true">
+                    <IconFlame />
+                  </span>
+                  <span className="account-streak-num">{streak}</span>
+                  <span className="account-streak-meta">
+                    <span className="account-streak-label">{t.statStreak}</span>
+                    <span className="account-streak-best">
+                      {t.bestLabel} · {streakBest}
+                    </span>
+                  </span>
+                </div>
+                <p className="account-cal-label">{t.calendarLabel}</p>
+                <div className="account-cal">
+                  {calendar.map((d) => (
+                    <span
+                      key={d.iso}
+                      className={`account-cal-day ${d.active ? 'is-active' : ''} ${d.isToday ? 'is-today' : ''}`}
+                      title={d.iso}
+                    >
+                      {d.dayNum}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              <div className="account-weekly">
+                <p className="account-weekly-label">{t.weeklyLabel}</p>
+                <div className="account-weekly-bars">
+                  {weekly.map((w) => (
+                    <div key={w.iso} className="account-weekly-col">
+                      <span className="account-weekly-track" aria-hidden="true">
+                        <span
+                          className={`account-weekly-bar ${w.xp > 0 ? 'is-on' : ''}`}
+                          style={{ height: `${Math.round((w.xp / weeklyMax) * 100)}%` }}
+                        />
+                      </span>
+                      <span className={`account-weekly-day ${w.iso === todayIso ? 'is-today' : ''}`}>
+                        {weekdayLabel(w.iso)}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
 
             <div className="account-level-card">
               <div
@@ -937,6 +1108,31 @@ export function AccountPage({ user, enrolledCourses, passSubscription, streak, c
       ) : null}
 
       <Celebration content={celebration} onDismiss={() => setCelebration(null)} />
+
+      {hasCourses ? (
+        <div className="account-mobilebar">
+          <span className="account-mobilebar-goal">
+            <span
+              className="account-mobilebar-ring"
+              style={{ background: `conic-gradient(var(--accent) ${dailyPct}%, rgba(0,0,0,0.12) ${dailyPct}%)` }}
+              aria-hidden="true"
+            />
+            <span className="account-mobilebar-text">
+              {daily.todayXp}/{daily.goalXp} {t.xpUnit}
+            </span>
+          </span>
+          <a
+            className="button button-accent account-mobilebar-cta"
+            href={
+              resume
+                ? `/academy/${resume.slug}?m=${resume.moduleIndex}#course-content`
+                : '/academy#free'
+            }
+          >
+            {t.continueCta}
+          </a>
+        </div>
+      ) : null}
 
       <SiteFooter />
     </main>

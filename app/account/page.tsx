@@ -4,7 +4,15 @@ import { AccountPage } from '@/components/account-page';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { isOnboarded } from '@/lib/profile';
 import { ALL_COURSES, FREE_COURSES } from '@/data/academy-courses';
-import { completedByCourse, currentStreak, lastCompletionByCourse, type ProgressRow } from '@/lib/progress';
+import { getLessonsForCourse } from '@/data/academy-lessons';
+import {
+  bestStreakFromDays,
+  completedByCourse,
+  currentStreakFromDays,
+  isoDayUTC,
+  lastCompletionByCourse,
+  type ProgressRow,
+} from '@/lib/progress';
 import { courseHasQuiz } from '@/data/academy-quizzes';
 
 export const metadata: Metadata = {
@@ -64,7 +72,6 @@ export default async function AccountRoute() {
   const rows = (progressRows ?? []) as ProgressRow[];
   const doneByCourse = completedByCourse(rows);
   const lastByCourse = lastCompletionByCourse(rows);
-  const streak = currentStreak(rows);
 
   // Aggregate assessment attempts per course: best score + whether/when passed.
   type QuizRow = { course_slug: string; score: number; total: number; passed: boolean; created_at: string };
@@ -80,6 +87,29 @@ export default async function AccountRoute() {
     }
     quizByCourse[r.course_slug] = cur;
   }
+
+  // Daily-habit signals from "activity" events: a completed module = 10 XP, a
+  // passed assessment = 50 XP. Drives the streak, daily goal and weekly chart.
+  const XP_MODULE = 10;
+  const XP_QUIZ = 50;
+  const xpByDay = new Map<string, number>();
+  const addXp = (iso: string, xp: number) => xpByDay.set(iso, (xpByDay.get(iso) ?? 0) + xp);
+  for (const r of rows) addXp(r.completed_at.slice(0, 10), XP_MODULE);
+  for (const r of (quizAttempts ?? []) as QuizRow[]) if (r.passed) addXp(r.created_at.slice(0, 10), XP_QUIZ);
+
+  const activeDaySet = new Set(xpByDay.keys());
+  const now = new Date();
+  const DAY_MS = 24 * 60 * 60 * 1000;
+  const streak = currentStreakFromDays(activeDaySet, now);
+  const streakBest = bestStreakFromDays(activeDaySet);
+  const todayXp = xpByDay.get(isoDayUTC(now)) ?? 0;
+  const dailyGoalXp = 20;
+  const weekly = Array.from({ length: 7 }, (_, i) => {
+    const iso = isoDayUTC(new Date(now.getTime() - (6 - i) * DAY_MS));
+    return { iso, xp: xpByDay.get(iso) ?? 0 };
+  });
+  const cutoff = isoDayUTC(new Date(now.getTime() - 59 * DAY_MS));
+  const activeDays = [...activeDaySet].filter((d) => d >= cutoff).sort();
 
   // The learner's library = the always-free intro courses (any onboarded user
   // can watch them, even without an enrollment row) plus the premium courses
@@ -128,6 +158,23 @@ export default async function AccountRoute() {
     };
   });
 
+  // "Continue where you left off": first library course with an unfinished module.
+  let resume: { slug: string; title: string; moduleIndex: number; moduleTitle: string } | null = null;
+  for (const course of enrolledCourses) {
+    if (course.completedCount >= course.modules) continue;
+    const done = new Set(doneByCourse[course.slug] ?? []);
+    let nextIndex = 0;
+    while (nextIndex < course.modules && done.has(nextIndex)) nextIndex += 1;
+    const lessons = getLessonsForCourse(course.slug);
+    resume = {
+      slug: course.slug,
+      title: course.title,
+      moduleIndex: nextIndex,
+      moduleTitle: lessons?.[nextIndex]?.title ?? `Module ${nextIndex + 1}`,
+    };
+    break;
+  }
+
   return (
     <AccountPage
       user={{
@@ -146,6 +193,11 @@ export default async function AccountRoute() {
           : null
       }
       streak={streak}
+      streakBest={streakBest}
+      daily={{ goalXp: dailyGoalXp, todayXp }}
+      weekly={weekly}
+      activeDays={activeDays}
+      resume={resume}
       catalog={{ total: ALL_COURSES.length, freeSlugs: FREE_COURSES.map((c) => c.id) }}
     />
   );

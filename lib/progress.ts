@@ -63,3 +63,46 @@ export function currentStreak(rows: ProgressRow[], now: Date = new Date()): numb
   }
   return streak;
 }
+
+export function isoDayUTC(d: Date): string {
+  return isoDay(d);
+}
+
+/**
+ * Current streak from a set of active UTC day strings (YYYY-MM-DD): consecutive
+ * days counted back from today, or yesterday so a streak survives the next day.
+ */
+export function currentStreakFromDays(days: Set<string>, now: Date = new Date()): number {
+  if (days.size === 0) return 0;
+  const today = isoDay(now);
+  const yesterday = isoDay(new Date(now.getTime() - DAY_MS));
+  let cursor: Date;
+  if (days.has(today)) cursor = new Date(`${today}T00:00:00.000Z`);
+  else if (days.has(yesterday)) cursor = new Date(`${yesterday}T00:00:00.000Z`);
+  else return 0;
+  let streak = 0;
+  while (days.has(isoDay(cursor))) {
+    streak += 1;
+    cursor = new Date(cursor.getTime() - DAY_MS);
+  }
+  return streak;
+}
+
+/** Longest run of consecutive active days ever, from a set of UTC day strings. */
+export function bestStreakFromDays(days: Set<string>): number {
+  if (days.size === 0) return 0;
+  const sorted = [...days].sort();
+  let best = 1;
+  let run = 1;
+  for (let i = 1; i < sorted.length; i += 1) {
+    const prev = new Date(`${sorted[i - 1]}T00:00:00.000Z`).getTime();
+    const cur = new Date(`${sorted[i]}T00:00:00.000Z`).getTime();
+    if (cur - prev === DAY_MS) {
+      run += 1;
+      best = Math.max(best, run);
+    } else {
+      run = 1;
+    }
+  }
+  return best;
+}
