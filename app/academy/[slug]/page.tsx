@@ -4,6 +4,7 @@ import { AcademyCoursePage } from '@/components/academy-course-page';
 import { ALL_COURSES, getCourseBySlug } from '@/data/academy-courses';
 import { getCourseAccess } from '@/lib/entitlements';
 import { getSignedCourseVideoUrl } from '@/lib/academy-video';
+import { createSupabaseServerClient } from '@/lib/supabase/server';
 
 type RouteParams = { slug: string };
 
@@ -36,5 +37,30 @@ export default async function AcademyCourseRoute({ params }: { params: RoutePara
   }
   // The video lives in a private bucket; only mint a signed URL when access is granted.
   const videoUrl = access.hasAccess ? await getSignedCourseVideoUrl(course) : null;
-  return <AcademyCoursePage course={course} access={access} videoUrl={videoUrl} />;
+
+  // Load the user's per-module completion so the lessons render with progress.
+  let completedLessons: number[] = [];
+  if (access.hasAccess) {
+    const supabase = createSupabaseServerClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (user) {
+      const { data } = await supabase
+        .from('course_progress')
+        .select('lesson_index')
+        .eq('user_id', user.id)
+        .eq('course_slug', course.id);
+      completedLessons = (data ?? []).map((row) => row.lesson_index as number);
+    }
+  }
+
+  return (
+    <AcademyCoursePage
+      course={course}
+      access={access}
+      videoUrl={videoUrl}
+      completedLessons={completedLessons}
+    />
+  );
 }

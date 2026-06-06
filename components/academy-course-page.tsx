@@ -1,11 +1,72 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { SiteFooter } from '@/components/site-footer';
 import { SiteNav } from '@/components/site-nav';
+import { type Locale, useLanguage } from '@/components/language-provider';
+import { Celebration, type CelebrationContent } from '@/components/academy-celebration';
 import type { AcademyCourse } from '@/data/academy-courses';
 import { getLessonsForCourse } from '@/data/academy-lessons';
 import type { CourseAccess } from '@/lib/entitlements';
+import { coursePercent, newlyCrossedPaliers, type Palier } from '@/lib/gamification';
+
+type ProgressCopy = {
+  progressTitle: string;
+  modulesDone: (done: number, total: number) => string;
+  markDone: string;
+  markedDone: string;
+  palierTitle: Record<Palier, string>;
+  xpGain: (n: number) => string;
+  certificateUnlocked: string;
+};
+
+const PROGRESS_COPY: Record<Locale, ProgressCopy> = {
+  en: {
+    progressTitle: 'Your progress',
+    modulesDone: (d, t) => `${d} / ${t} modules`,
+    markDone: 'Mark module complete',
+    markedDone: 'Module completed',
+    palierTitle: { 25: 'Off to a great start!', 50: 'Halfway there!', 75: 'Almost there!', 100: 'Course complete!' },
+    xpGain: (n) => `+${n} XP`,
+    certificateUnlocked: 'Certificate unlocked — see your account',
+  },
+  fr: {
+    progressTitle: 'Votre progression',
+    modulesDone: (d, t) => `${d} / ${t} modules`,
+    markDone: 'Marquer le module comme terminé',
+    markedDone: 'Module terminé',
+    palierTitle: { 25: 'Bien démarré !', 50: 'À mi-parcours !', 75: 'Dernière ligne droite !', 100: 'Cours terminé !' },
+    xpGain: (n) => `+${n} XP`,
+    certificateUnlocked: 'Certificat débloqué — voir votre compte',
+  },
+  de: {
+    progressTitle: 'Ihr Fortschritt',
+    modulesDone: (d, t) => `${d} / ${t} Module`,
+    markDone: 'Modul als abgeschlossen markieren',
+    markedDone: 'Modul abgeschlossen',
+    palierTitle: { 25: 'Guter Start!', 50: 'Halbzeit!', 75: 'Fast geschafft!', 100: 'Kurs abgeschlossen!' },
+    xpGain: (n) => `+${n} XP`,
+    certificateUnlocked: 'Zertifikat freigeschaltet — siehe Ihr Konto',
+  },
+  it: {
+    progressTitle: 'I suoi progressi',
+    modulesDone: (d, t) => `${d} / ${t} moduli`,
+    markDone: 'Segna il modulo come completato',
+    markedDone: 'Modulo completato',
+    palierTitle: { 25: 'Ottimo inizio!', 50: 'A metà strada!', 75: 'Quasi finito!', 100: 'Corso completato!' },
+    xpGain: (n) => `+${n} XP`,
+    certificateUnlocked: 'Certificato sbloccato — vada al suo account',
+  },
+  es: {
+    progressTitle: 'Su progreso',
+    modulesDone: (d, t) => `${d} / ${t} módulos`,
+    markDone: 'Marcar módulo como completado',
+    markedDone: 'Módulo completado',
+    palierTitle: { 25: '¡Buen comienzo!', 50: '¡A mitad de camino!', 75: '¡Ya casi está!', 100: '¡Curso completado!' },
+    xpGain: (n) => `+${n} XP`,
+    certificateUnlocked: 'Certificado desbloqueado — vea su cuenta',
+  },
+};
 
 const FREE_COURSE_LIST: { id: string; title: string }[] = [
   { id: 'fundamentals', title: 'Offset Color Management Fundamentals' },
@@ -26,15 +87,63 @@ type Props = {
   course: AcademyCourse;
   access: CourseAccess;
   videoUrl: string | null;
+  completedLessons?: number[];
 };
 
-export function AcademyCoursePage({ course, access, videoUrl }: Props) {
+export function AcademyCoursePage({ course, access, videoUrl, completedLessons = [] }: Props) {
+  const { locale } = useLanguage();
+  const tp = PROGRESS_COPY[locale];
   const tone = course.tone;
   const siblings = tone === 'premium' ? PREMIUM_COURSE_LIST : FREE_COURSE_LIST;
   const lessons = getLessonsForCourse(course.id);
+  const totalModules = lessons?.length ?? 0;
   const [openLesson, setOpenLesson] = useState<number>(0);
   const [checkoutLoading, setCheckoutLoading] = useState<null | 'course' | 'pass'>(null);
+  const [completed, setCompleted] = useState<Set<number>>(() => new Set(completedLessons));
+  const [celebration, setCelebration] = useState<CelebrationContent | null>(null);
+  const celebrationSeq = useRef(0);
   const toggleLesson = (index: number) => setOpenLesson((current) => (current === index ? -1 : index));
+  const coursePct = coursePercent({ completedCount: completed.size, total: totalModules });
+
+  const toggleComplete = async (index: number) => {
+    const willComplete = !completed.has(index);
+    const before = new Set(completed);
+    const after = new Set(completed);
+    if (willComplete) after.add(index);
+    else after.delete(index);
+    setCompleted(after);
+
+    if (willComplete) {
+      const oldPct = coursePercent({ completedCount: before.size, total: totalModules });
+      const newPct = coursePercent({ completedCount: after.size, total: totalModules });
+      const crossed = newlyCrossedPaliers(oldPct, newPct);
+      if (crossed.length > 0) {
+        const top = crossed[crossed.length - 1];
+        const finished = top === 100;
+        const gained = 10 + (finished ? 50 : 0);
+        celebrationSeq.current += 1;
+        setCelebration({
+          id: celebrationSeq.current,
+          variant: finished ? 'course' : 'palier',
+          title: tp.palierTitle[top],
+          subtitle: finished && course.certificate ? tp.certificateUnlocked : tp.xpGain(gained),
+        });
+      }
+    }
+
+    try {
+      const res = await fetch('/api/account/progress', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ courseSlug: course.id, lessonIndex: index, completed: willComplete }),
+      });
+      if (!res.ok) throw new Error('progress request failed');
+      const json = (await res.json()) as { completedLessons?: number[] };
+      if (Array.isArray(json.completedLessons)) setCompleted(new Set(json.completedLessons));
+    } catch {
+      setCompleted(before); // revert optimistic update on failure
+    }
+  };
 
   const handleCheckout = async (target: 'course' | 'pass') => {
     setCheckoutLoading(target);
@@ -244,13 +353,34 @@ export function AcademyCoursePage({ course, access, videoUrl }: Props) {
                   Read it in one sitting or come back module by module.
                 </p>
               </header>
+              <div className="academy-progress-panel">
+                <div className="academy-progress-head">
+                  <span className="academy-progress-label">{tp.progressTitle}</span>
+                  <span className="academy-progress-count">
+                    {tp.modulesDone(completed.size, totalModules)} · {coursePct}%
+                  </span>
+                </div>
+                <div
+                  className="academy-progress-track"
+                  role="progressbar"
+                  aria-valuenow={coursePct}
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                >
+                  <span className="academy-progress-fill" style={{ width: `${coursePct}%` }} />
+                </div>
+              </div>
               <ol className="academy-course-lessons-list">
                 {lessons.map((lesson, index) => {
                   const isOpen = openLesson === index;
+                  const isDone = completed.has(index);
                   const headId = `lesson-head-${index}`;
                   const bodyId = `lesson-body-${index}`;
                   return (
-                    <li key={index} className={`academy-course-lesson ${isOpen ? 'is-open' : ''}`}>
+                    <li
+                      key={index}
+                      className={`academy-course-lesson ${isOpen ? 'is-open' : ''} ${isDone ? 'is-complete' : ''}`}
+                    >
                       <button
                         type="button"
                         id={headId}
@@ -263,9 +393,15 @@ export function AcademyCoursePage({ course, access, videoUrl }: Props) {
                           <span className="academy-course-lesson-index" aria-hidden="true">
                             Module {String(index + 1).padStart(2, '0')}
                           </span>
-                          <span className="academy-course-lesson-step" aria-hidden="true">
-                            {index + 1} / {lessons.length}
-                          </span>
+                          {isDone ? (
+                            <span className="academy-course-lesson-flag" aria-hidden="true">
+                              ✓ {tp.markedDone}
+                            </span>
+                          ) : (
+                            <span className="academy-course-lesson-step" aria-hidden="true">
+                              {index + 1} / {lessons.length}
+                            </span>
+                          )}
                         </span>
                         <h3 className="academy-course-lesson-title">{lesson.title}</h3>
                         <p className="academy-course-lesson-summary">{lesson.summary}</p>
@@ -283,6 +419,17 @@ export function AcademyCoursePage({ course, access, videoUrl }: Props) {
                         {lesson.body.map((para, paraIndex) => (
                           <p key={paraIndex}>{para}</p>
                         ))}
+                        <button
+                          type="button"
+                          className={`academy-course-lesson-done ${isDone ? 'is-done' : ''}`}
+                          onClick={() => toggleComplete(index)}
+                          aria-pressed={isDone}
+                        >
+                          <span className="academy-course-lesson-done-box" aria-hidden="true">
+                            {isDone ? '✓' : ''}
+                          </span>
+                          {isDone ? tp.markedDone : tp.markDone}
+                        </button>
                       </div>
                     </li>
                   );
@@ -408,6 +555,8 @@ export function AcademyCoursePage({ course, access, videoUrl }: Props) {
           </ul>
         </div>
       </section>
+
+      <Celebration content={celebration} onDismiss={() => setCelebration(null)} />
 
       <SiteFooter />
     </main>
