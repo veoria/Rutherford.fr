@@ -5,6 +5,7 @@ import { ALL_COURSES, getCourseBySlug } from '@/data/academy-courses';
 import { getCourseAccess } from '@/lib/entitlements';
 import { getSignedCourseVideoUrl } from '@/lib/academy-video';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { getQuizForCourse, toPublicQuiz } from '@/data/academy-quizzes';
 
 type RouteParams = { slug: string };
 
@@ -38,20 +39,40 @@ export default async function AcademyCourseRoute({ params }: { params: RoutePara
   // The video lives in a private bucket; only mint a signed URL when access is granted.
   const videoUrl = access.hasAccess ? await getSignedCourseVideoUrl(course) : null;
 
-  // Load the user's per-module completion so the lessons render with progress.
+  // The answer key never leaves the server — the client only gets the prompts.
+  const quizDef = getQuizForCourse(course.id);
+  const quiz = quizDef ? toPublicQuiz(quizDef) : null;
+
+  // Load the user's per-module completion + assessment history.
   let completedLessons: number[] = [];
+  let quizPassed = false;
+  let quizBest: { score: number; total: number } | null = null;
   if (access.hasAccess) {
     const supabase = createSupabaseServerClient();
     const {
       data: { user },
     } = await supabase.auth.getUser();
     if (user) {
-      const { data } = await supabase
-        .from('course_progress')
-        .select('lesson_index')
-        .eq('user_id', user.id)
-        .eq('course_slug', course.id);
-      completedLessons = (data ?? []).map((row) => row.lesson_index as number);
+      const [{ data: progress }, { data: attempts }] = await Promise.all([
+        supabase
+          .from('course_progress')
+          .select('lesson_index')
+          .eq('user_id', user.id)
+          .eq('course_slug', course.id),
+        supabase
+          .from('quiz_attempts')
+          .select('score, total, passed')
+          .eq('user_id', user.id)
+          .eq('course_slug', course.id),
+      ]);
+      completedLessons = (progress ?? []).map((row) => row.lesson_index as number);
+      const rows = (attempts ?? []) as { score: number; total: number; passed: boolean }[];
+      quizPassed = rows.some((r) => r.passed);
+      for (const r of rows) {
+        if (r.total > 0 && (!quizBest || r.score / r.total > quizBest.score / quizBest.total)) {
+          quizBest = { score: r.score, total: r.total };
+        }
+      }
     }
   }
 
@@ -61,6 +82,9 @@ export default async function AcademyCourseRoute({ params }: { params: RoutePara
       access={access}
       videoUrl={videoUrl}
       completedLessons={completedLessons}
+      quiz={quiz}
+      quizPassed={quizPassed}
+      quizBest={quizBest}
     />
   );
 }

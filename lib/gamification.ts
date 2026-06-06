@@ -11,6 +11,7 @@
 
 export const XP_PER_MODULE = 10;
 export const XP_PER_COURSE = 50;
+export const XP_PER_CERTIFICATE = 50;
 
 /** Minimum XP to reach each rank. Index 0 = rank 1 (level is 1-based). */
 export const LEVEL_THRESHOLDS = [0, 100, 250, 450, 700] as const;
@@ -59,7 +60,7 @@ export function levelForXp(xp: number): LevelInfo {
   };
 }
 
-export type CourseStat = { completedCount: number; total: number };
+export type CourseStat = { completedCount: number; total: number; certified?: boolean };
 
 /** Completion of a single course, rounded to a whole percent (0..100). */
 export function coursePercent({ completedCount, total }: CourseStat): number {
@@ -94,6 +95,7 @@ export type OverallStats = {
   totalModules: number;
   coursesCompleted: number;
   coursesStarted: number;
+  certifiedCount: number;
   totalCourses: number;
   xp: number;
   level: LevelInfo;
@@ -103,25 +105,32 @@ export type OverallStats = {
  * Roll up a set of per-course stats into the headline numbers shown on the
  * account dashboard. Denominators are the user's own library (the courses
  * passed in), so progress reads honestly rather than against the full catalog.
+ * Passing a course's final assessment (`certified`) earns a separate XP bonus.
  */
 export function overallStats(courses: CourseStat[]): OverallStats {
   let completedModules = 0;
   let totalModules = 0;
   let coursesCompleted = 0;
   let coursesStarted = 0;
+  let certifiedCount = 0;
   for (const c of courses) {
     const done = Math.min(c.completedCount, c.total);
     completedModules += done;
     totalModules += c.total;
     if (done > 0) coursesStarted += 1;
     if (isCourseComplete(c)) coursesCompleted += 1;
+    if (c.certified) certifiedCount += 1;
   }
-  const xp = completedModules * XP_PER_MODULE + coursesCompleted * XP_PER_COURSE;
+  const xp =
+    completedModules * XP_PER_MODULE +
+    coursesCompleted * XP_PER_COURSE +
+    certifiedCount * XP_PER_CERTIFICATE;
   return {
     completedModules,
     totalModules,
     coursesCompleted,
     coursesStarted,
+    certifiedCount,
     totalCourses: courses.length,
     xp,
     level: levelForXp(xp),

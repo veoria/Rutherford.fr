@@ -19,6 +19,12 @@ type EnrolledCourse = {
   completedCount: number;
   completedAt: string | null;
   certificateLabel: string | null;
+  hasQuiz: boolean;
+  quizPassed: boolean;
+  quizScore: number | null;
+  quizTotal: number | null;
+  certified: boolean;
+  certifiedAt: string | null;
 };
 
 type PassSubscription = {
@@ -35,7 +41,14 @@ type Props = {
   catalog: { total: number; freeSlugs: string[] };
 };
 
-type BadgeId = 'first-module' | 'first-course' | 'streak' | 'foundations' | 'flagship' | 'completionist';
+type BadgeId =
+  | 'first-module'
+  | 'first-course'
+  | 'certified'
+  | 'streak'
+  | 'foundations'
+  | 'flagship'
+  | 'completionist';
 
 type AccountCopy = {
   accountKicker: string;
@@ -88,6 +101,9 @@ type AccountCopy = {
   certificatesTitle: string;
   noCertificates: string;
   viewCertificate: string;
+  takeAssessment: string;
+  assessmentToPass: string;
+  certScoreLine: (pct: number) => string;
   certHeading: string;
   certAwardedTo: string;
   certCompleted: string;
@@ -145,6 +161,7 @@ const COPY: Record<Locale, AccountCopy> = {
     badges: {
       'first-module': { name: 'First step', desc: 'Complete your first module.' },
       'first-course': { name: 'First course', desc: 'Complete an entire course.' },
+      certified: { name: 'Certified', desc: 'Pass a final assessment.' },
       streak: { name: 'Consistency', desc: 'Learn 3 days in a row.' },
       foundations: { name: 'Foundations', desc: 'Complete the three free courses.' },
       flagship: { name: 'Closed-loop', desc: 'Complete the closed-loop masterclass.' },
@@ -154,6 +171,9 @@ const COPY: Record<Locale, AccountCopy> = {
     certificatesTitle: 'Your certificates',
     noCertificates: 'Finish a course to earn your first certificate.',
     viewCertificate: 'View certificate',
+    takeAssessment: 'Take the assessment',
+    assessmentToPass: 'Final assessment to pass',
+    certScoreLine: (pct) => `Passed with ${pct}%`,
     certHeading: 'Certificate of completion',
     certAwardedTo: 'This certifies that',
     certCompleted: 'has completed',
@@ -209,6 +229,7 @@ const COPY: Record<Locale, AccountCopy> = {
     badges: {
       'first-module': { name: 'Premier pas', desc: 'Terminez votre premier module.' },
       'first-course': { name: 'Premier cours', desc: 'Terminez un cours entier.' },
+      certified: { name: 'Certifié', desc: 'Réussissez une évaluation finale.' },
       streak: { name: 'Régularité', desc: 'Apprenez 3 jours d’affilée.' },
       foundations: { name: 'Fondations', desc: 'Terminez les trois cours gratuits.' },
       flagship: { name: 'Closed-loop', desc: 'Terminez la masterclass closed-loop.' },
@@ -218,6 +239,9 @@ const COPY: Record<Locale, AccountCopy> = {
     certificatesTitle: 'Vos certificats',
     noCertificates: 'Terminez un cours pour obtenir votre premier certificat.',
     viewCertificate: 'Voir le certificat',
+    takeAssessment: 'Passer l’évaluation',
+    assessmentToPass: 'Évaluation finale à passer',
+    certScoreLine: (pct) => `Réussi à ${pct}%`,
     certHeading: 'Certificat de réussite',
     certAwardedTo: 'Ce certificat atteste que',
     certCompleted: 'a suivi avec succès',
@@ -272,6 +296,7 @@ const COPY: Record<Locale, AccountCopy> = {
     badges: {
       'first-module': { name: 'Erster Schritt', desc: 'Schließen Sie Ihr erstes Modul ab.' },
       'first-course': { name: 'Erster Kurs', desc: 'Schließen Sie einen ganzen Kurs ab.' },
+      certified: { name: 'Zertifiziert', desc: 'Bestehen Sie eine Abschlussprüfung.' },
       streak: { name: 'Beständigkeit', desc: 'Lernen Sie 3 Tage in Folge.' },
       foundations: { name: 'Grundlagen', desc: 'Schließen Sie die drei kostenlosen Kurse ab.' },
       flagship: { name: 'Closed-Loop', desc: 'Schließen Sie die Closed-Loop-Masterclass ab.' },
@@ -281,6 +306,9 @@ const COPY: Record<Locale, AccountCopy> = {
     certificatesTitle: 'Ihre Zertifikate',
     noCertificates: 'Schließen Sie einen Kurs ab, um Ihr erstes Zertifikat zu erhalten.',
     viewCertificate: 'Zertifikat ansehen',
+    takeAssessment: 'Prüfung ablegen',
+    assessmentToPass: 'Abschlussprüfung offen',
+    certScoreLine: (pct) => `Bestanden mit ${pct}%`,
     certHeading: 'Abschlusszertifikat',
     certAwardedTo: 'Hiermit wird bestätigt, dass',
     certCompleted: 'erfolgreich abgeschlossen hat',
@@ -336,6 +364,7 @@ const COPY: Record<Locale, AccountCopy> = {
     badges: {
       'first-module': { name: 'Primo passo', desc: 'Completi il suo primo modulo.' },
       'first-course': { name: 'Primo corso', desc: 'Completi un corso intero.' },
+      certified: { name: 'Certificato', desc: 'Superi una valutazione finale.' },
       streak: { name: 'Costanza', desc: 'Studi per 3 giorni di fila.' },
       foundations: { name: 'Fondamenta', desc: 'Completi i tre corsi gratuiti.' },
       flagship: { name: 'Closed-loop', desc: 'Completi la masterclass closed-loop.' },
@@ -345,6 +374,9 @@ const COPY: Record<Locale, AccountCopy> = {
     certificatesTitle: 'I suoi certificati',
     noCertificates: 'Completi un corso per ottenere il suo primo certificato.',
     viewCertificate: 'Vedi certificato',
+    takeAssessment: 'Fai la valutazione',
+    assessmentToPass: 'Valutazione finale da superare',
+    certScoreLine: (pct) => `Superata con il ${pct}%`,
     certHeading: 'Certificato di completamento',
     certAwardedTo: 'Si certifica che',
     certCompleted: 'ha completato',
@@ -400,6 +432,7 @@ const COPY: Record<Locale, AccountCopy> = {
     badges: {
       'first-module': { name: 'Primer paso', desc: 'Complete su primer módulo.' },
       'first-course': { name: 'Primer curso', desc: 'Complete un curso entero.' },
+      certified: { name: 'Certificado', desc: 'Apruebe una evaluación final.' },
       streak: { name: 'Constancia', desc: 'Aprenda 3 días seguidos.' },
       foundations: { name: 'Fundamentos', desc: 'Complete los tres cursos gratuitos.' },
       flagship: { name: 'Closed-loop', desc: 'Complete la masterclass closed-loop.' },
@@ -409,6 +442,9 @@ const COPY: Record<Locale, AccountCopy> = {
     certificatesTitle: 'Sus certificados',
     noCertificates: 'Complete un curso para conseguir su primer certificado.',
     viewCertificate: 'Ver certificado',
+    takeAssessment: 'Hacer la evaluación',
+    assessmentToPass: 'Evaluación final pendiente',
+    certScoreLine: (pct) => `Aprobado con ${pct}%`,
     certHeading: 'Certificado de finalización',
     certAwardedTo: 'Por la presente se certifica que',
     certCompleted: 'ha completado',
@@ -474,6 +510,7 @@ function IconSeal() {
 const BADGE_ICONS: Record<BadgeId, () => JSX.Element> = {
   'first-module': IconSpark,
   'first-course': IconTrophy,
+  certified: IconSeal,
   streak: IconFlame,
   foundations: IconLayers,
   flagship: IconStar,
@@ -498,14 +535,16 @@ export function AccountPage({ user, enrolledCourses, passSubscription, streak, c
   const celebrationSeq = useRef(0);
 
   const stats = overallStats(
-    enrolledCourses.map((c) => ({ completedCount: c.completedCount, total: c.modules }))
+    enrolledCourses.map((c) => ({ completedCount: c.completedCount, total: c.modules, certified: c.certified }))
   );
   const completedSlugs = new Set(
     enrolledCourses
       .filter((c) => isCourseComplete({ completedCount: c.completedCount, total: c.modules }))
       .map((c) => c.slug)
   );
-  const certificates = enrolledCourses.filter((c) => c.completedAt);
+  // A certificate is earned when the course is "certified": passing its final
+  // assessment, or — for courses without one yet — completing every module.
+  const certificates = enrolledCourses.filter((c) => c.certified && c.certifiedAt);
   const rankName = t.rankNames[stats.level.level - 1] ?? t.rankNames[t.rankNames.length - 1];
   const nextRankName = stats.level.isMax ? '' : t.rankNames[stats.level.level] ?? '';
   const ringPct = stats.level.percentIntoLevel;
@@ -513,6 +552,7 @@ export function AccountPage({ user, enrolledCourses, passSubscription, streak, c
   const badges: { id: BadgeId; earned: boolean }[] = [
     { id: 'first-module', earned: stats.completedModules >= 1 },
     { id: 'first-course', earned: stats.coursesCompleted >= 1 },
+    { id: 'certified', earned: enrolledCourses.some((c) => c.hasQuiz && c.quizPassed) },
     { id: 'streak', earned: streak >= 3 },
     {
       id: 'foundations',
@@ -750,14 +790,28 @@ export function AccountPage({ user, enrolledCourses, passSubscription, streak, c
                   completedCount: course.completedCount,
                   total: course.modules,
                 });
-                const statusLabel = complete
-                  ? t.completed
-                  : course.completedCount > 0
-                    ? t.inProgress
-                    : t.notStarted;
-                const statusKind = complete ? 'done' : course.completedCount > 0 ? 'progress' : 'new';
+                // Modules done but the assessment is still pending.
+                const assessmentPending = course.hasQuiz && complete && !course.quizPassed;
+                let statusKind: 'done' | 'progress' | 'new';
+                let statusLabel: string;
+                if (course.certified) {
+                  statusKind = 'done';
+                  statusLabel = t.completed;
+                } else if (assessmentPending) {
+                  statusKind = 'progress';
+                  statusLabel = t.assessmentToPass;
+                } else if (course.completedCount > 0) {
+                  statusKind = 'progress';
+                  statusLabel = t.inProgress;
+                } else {
+                  statusKind = 'new';
+                  statusLabel = t.notStarted;
+                }
                 return (
-                  <li key={course.slug} className={`account-course-card ${complete ? 'is-complete' : ''}`}>
+                  <li
+                    key={course.slug}
+                    className={`account-course-card ${course.certified ? 'is-complete' : ''}`}
+                  >
                     <div className="account-course-meta">
                       <span className="account-course-source">{t.sourceLabel[course.source]}</span>
                       <span className={`account-course-status account-course-status-${statusKind}`}>
@@ -781,7 +835,7 @@ export function AccountPage({ user, enrolledCourses, passSubscription, streak, c
                         {course.completedCount} / {course.modules} {t.modules} · {pct}%
                       </span>
                     </div>
-                    {complete && course.completedAt ? (
+                    {course.certified && course.certifiedAt ? (
                       <button
                         type="button"
                         className="account-course-cert"
@@ -792,9 +846,16 @@ export function AccountPage({ user, enrolledCourses, passSubscription, streak, c
                         </span>
                         {t.viewCertificate}
                       </button>
+                    ) : assessmentPending ? (
+                      <a className="account-course-cert" href={`/academy/${course.slug}#assessment`}>
+                        <span className="account-course-cert-icon" aria-hidden="true">
+                          <IconSeal />
+                        </span>
+                        {t.takeAssessment}
+                      </a>
                     ) : null}
                     <a className="account-course-cta" href={`/academy/${course.slug}`}>
-                      {complete ? t.reviewCta : t.continueCta} <span aria-hidden="true">→</span>
+                      {course.certified ? t.reviewCta : t.continueCta} <span aria-hidden="true">→</span>
                     </a>
                   </li>
                 );
@@ -852,7 +913,12 @@ export function AccountPage({ user, enrolledCourses, passSubscription, streak, c
                       {c.certificateLabel ? (
                         <p className="account-cert-distinction">{c.certificateLabel}</p>
                       ) : null}
-                      <p className="account-cert-date">{t.certIssued(formatDate(c.completedAt, locale) ?? '')}</p>
+                      {c.hasQuiz && c.quizScore != null && c.quizTotal ? (
+                        <p className="account-cert-score">
+                          {t.certScoreLine(Math.round((c.quizScore / c.quizTotal) * 100))}
+                        </p>
+                      ) : null}
+                      <p className="account-cert-date">{t.certIssued(formatDate(c.certifiedAt, locale) ?? '')}</p>
                     </div>
                     <button
                       type="button"
@@ -884,10 +950,15 @@ export function AccountPage({ user, enrolledCourses, passSubscription, streak, c
               {certCourse.certificateLabel ? (
                 <p className="certificate-distinction">{certCourse.certificateLabel}</p>
               ) : null}
+              {certCourse.hasQuiz && certCourse.quizScore != null && certCourse.quizTotal ? (
+                <p className="certificate-score">
+                  {t.certScoreLine(Math.round((certCourse.quizScore / certCourse.quizTotal) * 100))}
+                </p>
+              ) : null}
               <div className="certificate-seal" aria-hidden="true">
                 <IconSeal />
               </div>
-              <p className="certificate-date">{t.certIssued(formatDate(certCourse.completedAt, locale) ?? '')}</p>
+              <p className="certificate-date">{t.certIssued(formatDate(certCourse.certifiedAt, locale) ?? '')}</p>
             </div>
             <div className="cert-modal-actions">
               <button type="button" className="button button-accent" onClick={() => window.print()}>
