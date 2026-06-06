@@ -10841,9 +10841,9 @@ svg {
     padding-bottom: 84px;
   }
   .account-mobilebar {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     align-items: center;
-    justify-content: space-between;
     gap: 12px;
     position: fixed;
     left: 0;
@@ -10864,16 +10864,15 @@ svg {
     align-items: center;
     gap: 8px;
     min-width: 0;
-    flex: 0 1 auto;
-    font-size: 0.85rem;
-    font-weight: 600;
+    font-size: 0.9rem;
+    font-weight: 700;
     color: #1d1d1f;
     font-variant-numeric: tabular-nums;
   }
   .account-mobilebar-ring {
     position: relative;
-    width: 22px;
-    height: 22px;
+    width: 24px;
+    height: 24px;
     border-radius: 50%;
     flex: 0 0 auto;
   }
@@ -10885,9 +10884,10 @@ svg {
     background: #ffffff;
   }
   .account-mobilebar-cta {
-    flex: 0 0 auto;
-    min-height: 44px;
-    padding: 10px 18px;
+    width: 100%;
+    min-height: 48px;
+    padding: 12px 18px;
+    justify-self: end;
   }
 }
 
