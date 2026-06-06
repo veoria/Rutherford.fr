@@ -773,7 +773,9 @@ export function AccountPage({
                 <div className="account-daily-info">
                   <p className="account-daily-label">{t.dailyGoalLabel}</p>
                   <p className="account-daily-value">
-                    {daily.todayXp} / {daily.goalXp} {t.xpUnit}
+                    {dailyMet
+                      ? `${daily.todayXp} ${t.xpUnit}`
+                      : `${daily.todayXp} / ${daily.goalXp} ${t.xpUnit}`}
                   </p>
                   {dailyMet ? <p className="account-daily-met">✓ {t.goalReached}</p> : null}
                 </div>
@@ -1118,7 +1120,7 @@ export function AccountPage({
               aria-hidden="true"
             />
             <span className="account-mobilebar-text">
-              {daily.todayXp}/{daily.goalXp} {t.xpUnit}
+              {dailyMet ? `${daily.todayXp} ${t.xpUnit}` : `${daily.todayXp}/${daily.goalXp} ${t.xpUnit}`}
             </span>
           </span>
           <a
