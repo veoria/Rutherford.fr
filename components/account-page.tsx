@@ -530,7 +530,6 @@ export function AccountPage({ user, enrolledCourses, passSubscription, streak, c
   const { locale } = useLanguage();
   const t = COPY[locale];
   const hasActivePass = passSubscription?.status === 'active';
-  const [certCourse, setCertCourse] = useState<EnrolledCourse | null>(null);
   const [celebration, setCelebration] = useState<CelebrationContent | null>(null);
   const celebrationSeq = useRef(0);
 
@@ -836,16 +835,17 @@ export function AccountPage({ user, enrolledCourses, passSubscription, streak, c
                       </span>
                     </div>
                     {course.certified && course.certifiedAt ? (
-                      <button
-                        type="button"
+                      <a
                         className="account-course-cert"
-                        onClick={() => setCertCourse(course)}
+                        href={`/account/certificate/${course.slug}`}
+                        target="_blank"
+                        rel="noopener"
                       >
                         <span className="account-course-cert-icon" aria-hidden="true">
                           <IconSeal />
                         </span>
                         {t.viewCertificate}
-                      </button>
+                      </a>
                     ) : assessmentPending ? (
                       <a className="account-course-cert" href={`/academy/${course.slug}#assessment`}>
                         <span className="account-course-cert-icon" aria-hidden="true">
@@ -920,13 +920,14 @@ export function AccountPage({ user, enrolledCourses, passSubscription, streak, c
                       ) : null}
                       <p className="account-cert-date">{t.certIssued(formatDate(c.certifiedAt, locale) ?? '')}</p>
                     </div>
-                    <button
-                      type="button"
+                    <a
                       className="button button-light account-cert-view"
-                      onClick={() => setCertCourse(c)}
+                      href={`/account/certificate/${c.slug}`}
+                      target="_blank"
+                      rel="noopener"
                     >
                       {t.viewCertificate}
-                    </button>
+                    </a>
                   </li>
                 ))}
               </ul>
@@ -936,41 +937,6 @@ export function AccountPage({ user, enrolledCourses, passSubscription, streak, c
       ) : null}
 
       <Celebration content={celebration} onDismiss={() => setCelebration(null)} />
-
-      {certCourse ? (
-        <div className="cert-modal" role="dialog" aria-modal="true" onClick={() => setCertCourse(null)}>
-          <div className="cert-modal-inner" onClick={(e) => e.stopPropagation()}>
-            <div className="certificate-sheet">
-              <p className="certificate-brand">Rutherford Academy</p>
-              <p className="certificate-heading">{t.certHeading}</p>
-              <p className="certificate-line">{t.certAwardedTo}</p>
-              <p className="certificate-name">{user.fullName || user.email}</p>
-              <p className="certificate-line">{t.certCompleted}</p>
-              <p className="certificate-course">{certCourse.title}</p>
-              {certCourse.certificateLabel ? (
-                <p className="certificate-distinction">{certCourse.certificateLabel}</p>
-              ) : null}
-              {certCourse.hasQuiz && certCourse.quizScore != null && certCourse.quizTotal ? (
-                <p className="certificate-score">
-                  {t.certScoreLine(Math.round((certCourse.quizScore / certCourse.quizTotal) * 100))}
-                </p>
-              ) : null}
-              <div className="certificate-seal" aria-hidden="true">
-                <IconSeal />
-              </div>
-              <p className="certificate-date">{t.certIssued(formatDate(certCourse.certifiedAt, locale) ?? '')}</p>
-            </div>
-            <div className="cert-modal-actions">
-              <button type="button" className="button button-accent" onClick={() => window.print()}>
-                {t.certPrint}
-              </button>
-              <button type="button" className="button button-light" onClick={() => setCertCourse(null)}>
-                {t.certClose}
-              </button>
-            </div>
-          </div>
-        </div>
-      ) : null}
 
       <SiteFooter />
     </main>

@@ -10087,32 +10087,40 @@ svg {
   font-size: 0.85rem;
 }
 
-/* ---- Certificate modal + printable sheet -------------------------- */
-.cert-modal {
-  position: fixed;
-  inset: 0;
-  z-index: 240;
-  background: rgba(17, 17, 17, 0.55);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  overflow: auto;
-}
-
-.cert-modal-inner {
+/* ---- Certificate page (dedicated, printable to one A4 page) ------- */
+.certificate-page {
+  min-height: 100vh;
+  background: var(--bg-soft);
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  width: min(680px, 100%);
+  align-items: center;
+  gap: 16px;
+  padding: clamp(24px, 5vw, 56px) 16px;
+}
+
+.certificate-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.certificate-hint {
+  width: 100%;
+  margin: 2px 0 0;
+  text-align: center;
+  font-size: 0.82rem;
+  color: rgba(0, 0, 0, 0.5);
 }
 
 .certificate-sheet {
   position: relative;
+  width: min(860px, 100%);
   background: #fffdf7;
   border: 2px solid #c9a227;
   border-radius: 10px;
-  padding: clamp(28px, 5vw, 56px);
+  padding: clamp(28px, 5vw, 60px);
   text-align: center;
   box-shadow: 0 30px 80px -30px rgba(0, 0, 0, 0.5);
 }
@@ -10126,9 +10134,15 @@ svg {
   pointer-events: none;
 }
 
-.certificate-brand {
-  margin: 0 0 18px;
-  font-size: 0.78rem;
+.certificate-logo {
+  height: 40px;
+  width: auto;
+  margin: 0 auto 14px;
+}
+
+.certificate-kicker {
+  margin: 0 0 16px;
+  font-size: 0.74rem;
   font-weight: 700;
   letter-spacing: 0.22em;
   text-transform: uppercase;
@@ -10136,7 +10150,7 @@ svg {
 }
 
 .certificate-heading {
-  margin: 0 0 20px;
+  margin: 0 0 18px;
   font-size: clamp(1.4rem, 3vw, 2rem);
   font-weight: 700;
   letter-spacing: -0.01em;
@@ -10150,75 +10164,119 @@ svg {
 }
 
 .certificate-name {
-  margin: 8px 0;
+  margin: 6px 0 0;
   font-size: clamp(1.3rem, 2.6vw, 1.8rem);
   font-weight: 600;
   color: #1d1d1f;
 }
 
+.certificate-company {
+  margin: 2px 0 0;
+  font-size: 0.95rem;
+  color: rgba(0, 0, 0, 0.6);
+}
+
 .certificate-course {
-  margin: 8px auto 0;
-  max-width: 32ch;
+  margin: 6px auto 0;
+  max-width: 40ch;
   font-size: clamp(1.05rem, 2vw, 1.3rem);
   font-weight: 600;
   color: var(--accent);
 }
 
 .certificate-distinction {
-  margin: 8px 0 0;
+  margin: 6px 0 0;
   font-size: 0.92rem;
   font-weight: 600;
   color: #8a6500;
 }
 
+.certificate-meta {
+  margin: 12px 0 0;
+  font-size: 0.82rem;
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.certificate-footer {
+  margin-top: 24px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  text-align: left;
+}
+
+.certificate-footer-block {
+  font-size: 0.8rem;
+  color: rgba(0, 0, 0, 0.55);
+}
+
+.certificate-date {
+  margin: 0;
+}
+
+.certificate-ref {
+  margin: 2px 0 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.certificate-seal-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
 .certificate-seal {
-  width: 56px;
-  height: 56px;
-  margin: 20px auto 0;
+  width: 46px;
+  height: 46px;
   border-radius: 50%;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 34px;
+  font-size: 26px;
   background: rgba(201, 162, 39, 0.16);
   color: #b08400;
 }
 
-.certificate-date {
-  margin: 14px 0 0;
-  font-size: 0.84rem;
-  color: rgba(0, 0, 0, 0.5);
+.certificate-seal-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #8a6500;
 }
 
-.cert-modal-actions {
-  display: flex;
-  gap: 10px;
-  justify-content: center;
-  flex-wrap: wrap;
+.certificate-issuer {
+  margin: 16px 0 0;
+  font-size: 0.72rem;
+  color: rgba(0, 0, 0, 0.4);
 }
 
 @media print {
-  body * {
-    visibility: hidden !important;
+  @page {
+    size: A4 landscape;
+    margin: 12mm;
   }
-  .certificate-sheet,
-  .certificate-sheet * {
-    visibility: visible !important;
+  html,
+  body {
+    background: #ffffff !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .certificate-page {
+    min-height: 0 !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+    display: block !important;
   }
   .certificate-sheet {
-    position: fixed;
-    inset: 0;
-    margin: auto;
-    width: 92%;
-    height: fit-content;
-    box-shadow: none;
-  }
-  .cert-modal {
-    background: none;
-    padding: 0;
-  }
-  .cert-modal-actions {
-    display: none !important;
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    box-shadow: none !important;
   }
 }
 
