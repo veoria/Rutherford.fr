@@ -10889,3 +10889,25 @@ svg {
     grid-template-columns: 1fr;
   }
 }
+
+/* Mobile fixes: certificate card title no longer squeezed by seal + button */
+@media (max-width: 560px) {
+  .account-cert-card {
+    flex-wrap: wrap;
+  }
+  .account-cert-body {
+    flex: 1 1 calc(100% - 62px);
+  }
+  .account-cert-view {
+    flex: 1 0 100%;
+    width: 100%;
+    text-align: center;
+  }
+  .account-badge {
+    padding: 14px;
+  }
+  .account-resume-cta {
+    width: 100%;
+    text-align: center;
+  }
+}
