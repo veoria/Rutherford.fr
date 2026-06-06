@@ -10037,6 +10037,7 @@ svg {
 .account-cert-card {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 14px;
   padding: 18px;
   border-radius: 16px;
@@ -10058,7 +10059,7 @@ svg {
 }
 
 .account-cert-body {
-  flex: 1 1 auto;
+  flex: 1 1 calc(100% - 62px);
   min-width: 0;
 }
 
@@ -10083,7 +10084,9 @@ svg {
 }
 
 .account-cert-view {
-  flex: 0 0 auto;
+  flex: 1 0 100%;
+  width: 100%;
+  text-align: center;
   font-size: 0.85rem;
 }
 
@@ -10897,19 +10900,8 @@ svg {
   }
 }
 
-/* Mobile fixes: certificate card title no longer squeezed by seal + button */
+/* Mobile fixes */
 @media (max-width: 560px) {
-  .account-cert-card {
-    flex-wrap: wrap;
-  }
-  .account-cert-body {
-    flex: 1 1 calc(100% - 62px);
-  }
-  .account-cert-view {
-    flex: 1 0 100%;
-    width: 100%;
-    text-align: center;
-  }
   .account-badge {
     padding: 14px;
   }
