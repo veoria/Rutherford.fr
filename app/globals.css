@@ -9465,3 +9465,777 @@ svg {
     display: none;
   }
 }
+
+/* ================================================================== */
+/* Academy gamification: progress, rewards, certificates             */
+/* ================================================================== */
+
+/* Filled icons — scoped override of the global svg{} (stroke) rule. */
+.gicon {
+  width: 1em;
+  height: 1em;
+  fill: currentColor;
+  stroke: none;
+  display: block;
+}
+
+/* ---- Course page: progress panel + per-module completion ---------- */
+.academy-progress-panel {
+  margin: clamp(28px, 4vw, 44px) 0 8px;
+  padding: 18px 20px;
+  background: linear-gradient(135deg, rgba(0, 113, 227, 0.06), rgba(0, 113, 227, 0.02));
+  border: 1px solid rgba(0, 113, 227, 0.16);
+  border-radius: 16px;
+}
+
+.academy-progress-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.academy-progress-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.academy-progress-count {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #1d1d1f;
+  font-variant-numeric: tabular-nums;
+}
+
+.academy-progress-track {
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+.academy-progress-fill {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-soft));
+  transition: width 420ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.academy-course-lesson.is-complete {
+  border-color: rgba(46, 125, 50, 0.45);
+}
+
+.academy-course-lesson-flag {
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #2e7d32;
+}
+
+.academy-course-lesson-done {
+  appearance: none;
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: 6px;
+  padding: 9px 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 0, 0, 0.16);
+  background: #ffffff;
+  color: #1d1d1f;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 160ms ease, background 160ms ease, color 160ms ease;
+}
+
+.academy-course-lesson-done:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.academy-course-lesson-done-box {
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
+  border: 1.5px solid rgba(0, 0, 0, 0.3);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  line-height: 1;
+  color: #ffffff;
+  transition: background 160ms ease, border-color 160ms ease;
+}
+
+.academy-course-lesson-done.is-done {
+  border-color: rgba(46, 125, 50, 0.5);
+  background: rgba(46, 125, 50, 0.08);
+  color: #2e7d32;
+}
+
+.academy-course-lesson-done.is-done .academy-course-lesson-done-box {
+  background: #2e7d32;
+  border-color: #2e7d32;
+}
+
+/* ---- Celebration overlay (confetti + toast) ----------------------- */
+.celebrate {
+  position: fixed;
+  inset: 0;
+  z-index: 220;
+  pointer-events: none;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.celebrate-confetti {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.celebrate-piece {
+  position: absolute;
+  top: 0;
+  animation-name: celebrate-fall;
+  animation-timing-function: ease-in;
+  animation-fill-mode: both;
+}
+
+@keyframes celebrate-fall {
+  0% {
+    transform: translateY(-12vh) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(110vh) rotate(720deg);
+    opacity: 0.85;
+  }
+}
+
+.celebrate-toast {
+  pointer-events: auto;
+  position: relative;
+  margin-top: clamp(80px, 16vh, 160px);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  max-width: min(420px, calc(100vw - 32px));
+  padding: 16px 44px 16px 18px;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 16px;
+  box-shadow: 0 24px 60px -20px rgba(17, 17, 17, 0.35);
+  animation: celebrate-pop 320ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes celebrate-pop {
+  0% {
+    transform: translateY(-14px) scale(0.96);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+.celebrate-toast-icon {
+  flex: 0 0 auto;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  background: rgba(0, 113, 227, 0.12);
+  color: var(--accent);
+}
+
+.celebrate-course .celebrate-toast-icon {
+  background: rgba(201, 162, 39, 0.16);
+  color: #b08400;
+}
+
+.celebrate-toast-title {
+  margin: 0;
+  font-size: 1.02rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: #1d1d1f;
+}
+
+.celebrate-toast-sub {
+  margin: 2px 0 0;
+  font-size: 0.88rem;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.celebrate-toast-close {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  appearance: none;
+  border: 0;
+  background: transparent;
+  font-size: 1.3rem;
+  line-height: 1;
+  color: rgba(0, 0, 0, 0.4);
+  cursor: pointer;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .celebrate-piece {
+    display: none;
+  }
+  .celebrate-toast {
+    animation: none;
+  }
+}
+
+/* ---- Account: progress overview ----------------------------------- */
+.account-progress {
+  padding: clamp(28px, 4vw, 56px) 0;
+}
+
+.account-level-card {
+  display: flex;
+  align-items: center;
+  gap: clamp(18px, 3vw, 32px);
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 18px;
+  padding: clamp(20px, 2.6vw, 30px);
+  box-shadow: 0 18px 50px -34px rgba(0, 113, 227, 0.4);
+}
+
+.account-level-ring {
+  flex: 0 0 auto;
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+}
+
+.account-level-ring-inner {
+  width: 78px;
+  height: 78px;
+  border-radius: 50%;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.account-level-num {
+  font-size: 1.9rem;
+  font-weight: 700;
+  color: #1d1d1f;
+}
+
+.account-level-word {
+  margin-top: 3px;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(0, 0, 0, 0.45);
+}
+
+.account-level-info {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.account-level-rank {
+  margin: 0;
+  font-size: clamp(1.1rem, 1.8vw, 1.4rem);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: #1d1d1f;
+}
+
+.account-xp-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 8px 0 8px;
+}
+
+.account-xp-value {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+
+.account-xp-next {
+  font-size: 0.84rem;
+  color: rgba(0, 0, 0, 0.55);
+}
+
+.account-xp-track {
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+.account-xp-fill {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-soft));
+  transition: width 420ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.account-stat-grid {
+  list-style: none;
+  margin: 14px 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.account-stat {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 16px;
+  padding: 18px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.account-stat-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  background: rgba(0, 113, 227, 0.1);
+  color: var(--accent);
+}
+
+.account-stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: #1d1d1f;
+  font-variant-numeric: tabular-nums;
+}
+
+.account-stat-label {
+  font-size: 0.82rem;
+  color: rgba(0, 0, 0, 0.55);
+}
+
+.account-stat-streak.is-active .account-stat-icon {
+  background: rgba(232, 89, 12, 0.12);
+  color: #e8590c;
+}
+
+/* ---- Account: per-course progress --------------------------------- */
+.account-course-status {
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+}
+
+.account-course-status-new {
+  color: rgba(0, 0, 0, 0.4);
+}
+
+.account-course-status-progress {
+  color: var(--accent);
+}
+
+.account-course-status-done {
+  color: #2e7d32;
+}
+
+.account-course-card.is-complete {
+  border-color: rgba(46, 125, 50, 0.32);
+}
+
+.account-course-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.account-course-track {
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+.account-course-fill {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-soft));
+  transition: width 420ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.account-course-card.is-complete .account-course-fill {
+  background: linear-gradient(90deg, #2e7d32, #58b15c);
+}
+
+.account-course-progress-text {
+  font-size: 0.8rem;
+  color: rgba(0, 0, 0, 0.55);
+  font-variant-numeric: tabular-nums;
+}
+
+.account-course-cert {
+  appearance: none;
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(201, 162, 39, 0.5);
+  background: rgba(201, 162, 39, 0.1);
+  color: #8a6500;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 160ms ease;
+}
+
+.account-course-cert:hover {
+  background: rgba(201, 162, 39, 0.18);
+}
+
+.account-course-cert-icon {
+  font-size: 16px;
+  display: inline-flex;
+}
+
+/* ---- Account: rewards / badges ------------------------------------ */
+.account-rewards {
+  padding: clamp(28px, 4vw, 56px) 0;
+}
+
+.account-badge-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 14px;
+}
+
+.account-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 18px;
+  border-radius: 16px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  background: #ffffff;
+}
+
+.account-badge-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  margin-bottom: 2px;
+}
+
+.account-badge.is-earned {
+  border-color: rgba(201, 162, 39, 0.4);
+  background: linear-gradient(160deg, rgba(201, 162, 39, 0.1), rgba(201, 162, 39, 0.02));
+}
+
+.account-badge.is-earned .account-badge-icon {
+  background: rgba(201, 162, 39, 0.18);
+  color: #b08400;
+}
+
+.account-badge.is-locked {
+  opacity: 0.62;
+}
+
+.account-badge.is-locked .account-badge-icon {
+  background: rgba(0, 0, 0, 0.06);
+  color: rgba(0, 0, 0, 0.35);
+}
+
+.account-badge-name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1d1d1f;
+}
+
+.account-badge-desc {
+  font-size: 0.85rem;
+  line-height: 1.45;
+  color: rgba(0, 0, 0, 0.55);
+}
+
+.account-badge-state {
+  margin-top: 4px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(0, 0, 0, 0.4);
+}
+
+.account-badge.is-earned .account-badge-state {
+  color: #b08400;
+}
+
+/* ---- Account: certificates ---------------------------------------- */
+.account-certificates {
+  padding: clamp(28px, 4vw, 56px) 0;
+}
+
+.account-cert-empty {
+  margin: 0;
+  color: rgba(0, 0, 0, 0.55);
+}
+
+.account-cert-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 14px;
+}
+
+.account-cert-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px;
+  border-radius: 16px;
+  border: 1px solid rgba(201, 162, 39, 0.35);
+  background: linear-gradient(160deg, rgba(201, 162, 39, 0.08), rgba(201, 162, 39, 0.02));
+}
+
+.account-cert-seal {
+  flex: 0 0 auto;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  background: rgba(201, 162, 39, 0.18);
+  color: #b08400;
+}
+
+.account-cert-body {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.account-cert-course {
+  margin: 0;
+  font-size: 0.98rem;
+  font-weight: 600;
+  color: #1d1d1f;
+}
+
+.account-cert-distinction {
+  margin: 2px 0 0;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #8a6500;
+}
+
+.account-cert-date {
+  margin: 2px 0 0;
+  font-size: 0.8rem;
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.account-cert-view {
+  flex: 0 0 auto;
+  font-size: 0.85rem;
+}
+
+/* ---- Certificate modal + printable sheet -------------------------- */
+.cert-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 240;
+  background: rgba(17, 17, 17, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  overflow: auto;
+}
+
+.cert-modal-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: min(680px, 100%);
+}
+
+.certificate-sheet {
+  position: relative;
+  background: #fffdf7;
+  border: 2px solid #c9a227;
+  border-radius: 10px;
+  padding: clamp(28px, 5vw, 56px);
+  text-align: center;
+  box-shadow: 0 30px 80px -30px rgba(0, 0, 0, 0.5);
+}
+
+.certificate-sheet::before {
+  content: '';
+  position: absolute;
+  inset: 10px;
+  border: 1px solid rgba(201, 162, 39, 0.5);
+  border-radius: 6px;
+  pointer-events: none;
+}
+
+.certificate-brand {
+  margin: 0 0 18px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #b08400;
+}
+
+.certificate-heading {
+  margin: 0 0 20px;
+  font-size: clamp(1.4rem, 3vw, 2rem);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: #1d1d1f;
+}
+
+.certificate-line {
+  margin: 4px 0;
+  font-size: 0.9rem;
+  color: rgba(0, 0, 0, 0.55);
+}
+
+.certificate-name {
+  margin: 8px 0;
+  font-size: clamp(1.3rem, 2.6vw, 1.8rem);
+  font-weight: 600;
+  color: #1d1d1f;
+}
+
+.certificate-course {
+  margin: 8px auto 0;
+  max-width: 32ch;
+  font-size: clamp(1.05rem, 2vw, 1.3rem);
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.certificate-distinction {
+  margin: 8px 0 0;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: #8a6500;
+}
+
+.certificate-seal {
+  width: 56px;
+  height: 56px;
+  margin: 20px auto 0;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 34px;
+  background: rgba(201, 162, 39, 0.16);
+  color: #b08400;
+}
+
+.certificate-date {
+  margin: 14px 0 0;
+  font-size: 0.84rem;
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.cert-modal-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+@media print {
+  body * {
+    visibility: hidden !important;
+  }
+  .certificate-sheet,
+  .certificate-sheet * {
+    visibility: visible !important;
+  }
+  .certificate-sheet {
+    position: fixed;
+    inset: 0;
+    margin: auto;
+    width: 92%;
+    height: fit-content;
+    box-shadow: none;
+  }
+  .cert-modal {
+    background: none;
+    padding: 0;
+  }
+  .cert-modal-actions {
+    display: none !important;
+  }
+}
+
+@media (max-width: 720px) {
+  .account-stat-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .account-level-card {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+  }
+  .account-level-ring {
+    align-self: center;
+  }
+  .account-xp-row {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+}
