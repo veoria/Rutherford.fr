@@ -8947,6 +8947,19 @@ svg {
   cursor: not-allowed;
 }
 
+/* Brand logos are filled marks, not line icons — override the global
+   `svg { fill: none; stroke: currentColor }` defaults so the Google G keeps
+   its colors with no outline, and the Apple mark renders as a solid fill. */
+.signin-provider svg {
+  width: 20px;
+  height: 20px;
+  stroke: none;
+}
+
+.signin-provider-apple svg {
+  fill: currentColor;
+}
+
 .signin-divider {
   display: flex;
   align-items: center;
