@@ -249,6 +249,7 @@ type Props = {
   quiz?: PublicQuiz | null;
   quizPassed?: boolean;
   quizBest?: { score: number; total: number } | null;
+  initialModule?: number;
 };
 
 export function AcademyCoursePage({
@@ -259,6 +260,7 @@ export function AcademyCoursePage({
   quiz = null,
   quizPassed = false,
   quizBest = null,
+  initialModule = 0,
 }: Props) {
   const { locale } = useLanguage();
   const tp = PROGRESS_COPY[locale];
@@ -267,7 +269,7 @@ export function AcademyCoursePage({
   const siblings = tone === 'premium' ? PREMIUM_COURSE_LIST : FREE_COURSE_LIST;
   const lessons = getLessonsForCourse(course.id);
   const totalModules = lessons?.length ?? 0;
-  const [openLesson, setOpenLesson] = useState<number>(0);
+  const [openLesson, setOpenLesson] = useState<number>(initialModule);
   const [checkoutLoading, setCheckoutLoading] = useState<null | 'course' | 'pass'>(null);
   const [completed, setCompleted] = useState<Set<number>>(() => new Set(completedLessons));
   const [celebration, setCelebration] = useState<CelebrationContent | null>(null);

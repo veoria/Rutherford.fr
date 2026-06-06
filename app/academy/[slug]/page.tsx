@@ -24,12 +24,22 @@ export function generateMetadata({ params }: { params: RouteParams }): Metadata 
   };
 }
 
-export default async function AcademyCourseRoute({ params }: { params: RouteParams }) {
+export default async function AcademyCourseRoute({
+  params,
+  searchParams,
+}: {
+  params: RouteParams;
+  searchParams?: { m?: string };
+}) {
   if (process.env.NEXT_PUBLIC_ACADEMY_ENABLED !== 'true') notFound();
   const course = getCourseBySlug(params.slug);
   if (!course) {
     notFound();
   }
+  // Deep-link to a specific module (used by "continue where you left off").
+  const moduleParam = Number(searchParams?.m);
+  const initialModule =
+    Number.isInteger(moduleParam) && moduleParam >= 0 && moduleParam < course.modules ? moduleParam : 0;
   const access = await getCourseAccess(course);
   // Signed in but onboarding not finished: force the lead-capture step before any
   // course content. The marketing page itself stays public for signed-out visitors.
@@ -85,6 +95,7 @@ export default async function AcademyCourseRoute({ params }: { params: RoutePara
       quiz={quiz}
       quizPassed={quizPassed}
       quizBest={quizBest}
+      initialModule={initialModule}
     />
   );
 }
