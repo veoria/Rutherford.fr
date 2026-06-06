@@ -3,6 +3,7 @@
 import { type Locale, useLanguage } from '@/components/language-provider';
 
 type Props = {
+  slug: string;
   recipientName: string;
   company: string | null;
   courseTitle: string;
@@ -24,7 +25,7 @@ type CertCopy = {
   issuedOn: (date: string) => string;
   referenceLabel: string;
   issuer: string;
-  print: string;
+  download: string;
   back: string;
   hint: string;
 };
@@ -40,9 +41,9 @@ const COPY: Record<Locale, CertCopy> = {
     issuedOn: (d) => `Issued on ${d}`,
     referenceLabel: 'Certificate ID',
     issuer: 'Rutherford Academy · rutherford.fr — closed-loop color management',
-    print: 'Print / Save as PDF',
+    download: 'Download PDF',
     back: 'Back to your account',
-    hint: 'Use “Save as PDF” in the print dialog for a one-page PDF.',
+    hint: 'Your certificate downloads as a one-page PDF, ready to share.',
   },
   fr: {
     kicker: 'Rutherford Academy',
@@ -54,9 +55,9 @@ const COPY: Record<Locale, CertCopy> = {
     issuedOn: (d) => `Délivré le ${d}`,
     referenceLabel: 'N° de certificat',
     issuer: 'Rutherford Academy · rutherford.fr — gestion de la couleur closed-loop',
-    print: 'Imprimer / Enregistrer en PDF',
+    download: 'Télécharger le PDF',
     back: 'Retour à votre compte',
-    hint: 'Choisissez « Enregistrer au format PDF » dans la boîte d’impression pour un PDF d’une page.',
+    hint: 'Votre certificat est téléchargé en PDF d’une page, prêt à partager.',
   },
   de: {
     kicker: 'Rutherford Academy',
@@ -68,9 +69,9 @@ const COPY: Record<Locale, CertCopy> = {
     issuedOn: (d) => `Ausgestellt am ${d}`,
     referenceLabel: 'Zertifikat-Nr.',
     issuer: 'Rutherford Academy · rutherford.fr — Closed-Loop-Farbmanagement',
-    print: 'Drucken / Als PDF speichern',
+    download: 'PDF herunterladen',
     back: 'Zurück zu Ihrem Konto',
-    hint: 'Wählen Sie im Druckdialog „Als PDF speichern“ für ein einseitiges PDF.',
+    hint: 'Ihr Zertifikat wird als einseitiges PDF heruntergeladen, bereit zum Teilen.',
   },
   it: {
     kicker: 'Rutherford Academy',
@@ -82,9 +83,9 @@ const COPY: Record<Locale, CertCopy> = {
     issuedOn: (d) => `Rilasciato il ${d}`,
     referenceLabel: 'N. certificato',
     issuer: 'Rutherford Academy · rutherford.fr — gestione del colore closed-loop',
-    print: 'Stampa / Salva come PDF',
+    download: 'Scarica il PDF',
     back: 'Torna al suo account',
-    hint: 'Scelga “Salva come PDF” nella finestra di stampa per un PDF di una pagina.',
+    hint: 'Il suo certificato viene scaricato come PDF di una pagina, pronto da condividere.',
   },
   es: {
     kicker: 'Rutherford Academy',
@@ -96,9 +97,9 @@ const COPY: Record<Locale, CertCopy> = {
     issuedOn: (d) => `Emitido el ${d}`,
     referenceLabel: 'N.º de certificado',
     issuer: 'Rutherford Academy · rutherford.fr — gestión del color closed-loop',
-    print: 'Imprimir / Guardar como PDF',
+    download: 'Descargar PDF',
     back: 'Volver a su cuenta',
-    hint: 'Use «Guardar como PDF» en el diálogo de impresión para un PDF de una página.',
+    hint: 'Su certificado se descarga como PDF de una página, listo para compartir.',
   },
 };
 
@@ -112,6 +113,7 @@ function formatDate(value: string | null, locale: Locale) {
 }
 
 export function CertificateView({
+  slug,
   recipientName,
   company,
   courseTitle,
@@ -128,9 +130,9 @@ export function CertificateView({
   return (
     <main className="certificate-page">
       <div className="certificate-actions no-print">
-        <button type="button" className="button button-accent" onClick={() => window.print()}>
-          {t.print}
-        </button>
+        <a className="button button-accent" href={`/account/certificate/${slug}/pdf?lang=${locale}`}>
+          {t.download}
+        </a>
         <a className="button button-light" href="/account">
           {t.back}
         </a>
