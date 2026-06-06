@@ -10847,8 +10847,12 @@ svg {
     gap: 12px;
     position: fixed;
     left: 0;
-    right: 0;
+    right: auto;
     bottom: 0;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
     z-index: 120;
     padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 0px));
     background: rgba(255, 255, 255, 0.96);
@@ -10859,6 +10863,8 @@ svg {
     display: flex;
     align-items: center;
     gap: 8px;
+    min-width: 0;
+    flex: 0 1 auto;
     font-size: 0.85rem;
     font-weight: 600;
     color: #1d1d1f;
@@ -10880,6 +10886,7 @@ svg {
   }
   .account-mobilebar-cta {
     flex: 0 0 auto;
+    min-height: 44px;
     padding: 10px 18px;
   }
 }
