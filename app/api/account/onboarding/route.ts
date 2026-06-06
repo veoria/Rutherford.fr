@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { isJobTitleKey, isKnownCountry } from '@/data/onboarding-options';
+import { syncLeadToPipedrive } from '@/lib/pipedrive';
 
 export const dynamic = 'force-dynamic';
 
@@ -37,6 +38,15 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Missing or invalid fields' }, { status: 400 });
   }
 
+  // Was the user already onboarded? We only push to the CRM on the first
+  // completion, so re-submitting an edit doesn't create duplicate notes.
+  const { data: existing } = await supabase
+    .from('profiles')
+    .select('onboarded_at, full_name')
+    .eq('id', user.id)
+    .maybeSingle();
+  const firstOnboarding = !existing?.onboarded_at;
+
   const update: Record<string, unknown> = {
     country,
     company,
@@ -49,6 +59,17 @@ export async function POST(request: NextRequest) {
   const { error } = await supabase.from('profiles').update(update).eq('id', user.id);
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  // Lead capture → CRM (no-op until PipeDrive is configured; never throws).
+  if (firstOnboarding) {
+    await syncLeadToPipedrive({
+      email: user.email ?? '',
+      name: fullName || (existing?.full_name as string) || null,
+      company,
+      country,
+      jobTitle,
+    });
   }
 
   return NextResponse.json({ ok: true });
