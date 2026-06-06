@@ -8947,17 +8947,6 @@ svg {
   cursor: not-allowed;
 }
 
-.signin-provider-apple {
-  background: #1d1d1f;
-  color: #ffffff;
-  border-color: #1d1d1f;
-}
-
-.signin-provider-apple:hover {
-  background: #000000;
-  border-color: #000000;
-}
-
 .signin-divider {
   display: flex;
   align-items: center;

@@ -194,7 +194,7 @@ export function SignInPage() {
               onClick={handleGoogle}
               disabled={status === 'sending'}
             >
-              <svg width="20" height="20" viewBox="0 0 40 40" aria-hidden="true">
+              <svg width="20" height="20" viewBox="10 10 20 20" aria-hidden="true">
                 <path
                   d="M29.6 20.2273C29.6 19.5182 29.5364 18.8364 29.4182 18.1818H20V22.05H25.3818C25.15 23.3 24.4455 24.3591 23.3864 25.0682V27.5773H26.6182C28.5091 25.8364 29.6 23.2727 29.6 20.2273Z"
                   fill="#4285F4"
