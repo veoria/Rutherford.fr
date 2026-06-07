@@ -3,9 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { type Locale, useLanguage } from '@/components/language-provider';
 import type { AppModule, AppStep } from '@/data/academy-app';
-
-/** Illustrations are served from public/academy/illustrations/. */
-const ASSET = (file: string) => `/academy/illustrations/${file}`;
+import { AcademyIllustration } from '@/components/academy-illustration';
 
 type PlayerCopy = {
   exit: string;
@@ -266,9 +264,7 @@ export function AcademyPlayer({
                 // Trusted, static course copy (inline <b>/<i> only).
                 <p key={i} dangerouslySetInnerHTML={{ __html: para }} />
               ))}
-              {current.illustration ? (
-                <img className="academy-player-illustration" src={ASSET(current.illustration)} alt="" />
-              ) : null}
+              {current.illustration ? <AcademyIllustration name={current.illustration} /> : null}
               {current.capture ? (
                 <div className="academy-capture" role="note">
                   <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">

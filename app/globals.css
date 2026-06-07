@@ -11433,3 +11433,101 @@ svg {
     transition: none;
   }
 }
+
+/* Academy illustration — tap-to-enlarge lightbox (mobile legibility) */
+.academy-illus {
+  display: block;
+  width: 100%;
+  margin: 6px 0 22px;
+  padding: 0;
+  border: 0;
+  background: none;
+  position: relative;
+  cursor: zoom-in;
+  font: inherit;
+  color: inherit;
+}
+.academy-illus-img {
+  width: 100%;
+  display: block;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+}
+.academy-illus-zoom {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: rgba(17, 17, 17, 0.6);
+  color: #fff;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+}
+.academy-illus:hover .academy-illus-zoom,
+.academy-illus:focus-visible .academy-illus-zoom {
+  display: inline-flex;
+}
+.academy-illus-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 240;
+  background: rgba(10, 12, 16, 0.93);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  overflow: auto;
+  cursor: zoom-out;
+  animation: academy-fadein 180ms ease;
+}
+.academy-illus-lightbox-img {
+  display: block;
+  margin: auto;
+  width: min(96vw, 1100px);
+  height: auto;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 30px 80px -30px rgba(0, 0, 0, 0.7);
+}
+.academy-illus-close {
+  position: fixed;
+  top: 16px;
+  right: 18px;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 0;
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+  font-size: 1.1rem;
+  cursor: pointer;
+  z-index: 1;
+}
+.academy-illus-close:hover {
+  background: rgba(255, 255, 255, 0.28);
+}
+@media (max-width: 700px) {
+  .academy-illus-zoom {
+    display: inline-flex; /* no hover on touch — always show the hint */
+  }
+  .academy-illus-lightbox {
+    padding: 0;
+    align-items: flex-start;
+    justify-content: flex-start;
+  }
+  .academy-illus-lightbox-img {
+    /* Larger than the viewport so dense labels stay legible; pan to read. */
+    width: max(165vw, 720px);
+    border-radius: 0;
+    margin: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .academy-illus-lightbox {
+    animation: none;
+  }
+}
