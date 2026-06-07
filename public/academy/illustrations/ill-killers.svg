@@ -4,7 +4,8 @@
     <rect width="392" height="140" rx="16" fill="#fff" stroke="#e8ecf0" stroke-width="1.5"/>
     <text x="24" y="36" font-size="13.5" font-weight="700" fill="#111418">1 · Drift</text>
     <polyline points="24,96 84,92 144,98 204,88 264,100 324,84 364,102" fill="none" stroke="#dc2626" stroke-width="3"/>
-    <text x="24" y="126" font-size="11.5" fill="#6b7480">Fountains warm, blankets compress — 0.3 D over 10,000 sheets, invisible sheet-to-sheet</text>
+    <text x="24" y="120" font-size="11" fill="#6b7480">Fountains warm, blankets compress —</text>
+    <text x="24" y="134" font-size="11" fill="#6b7480">0.3 D over 10,000 sheets, invisible sheet-to-sheet</text>
   </g>
   <g transform="translate(460,40)">
     <rect width="392" height="140" rx="16" fill="#fff" stroke="#e8ecf0" stroke-width="1.5"/>
@@ -22,8 +23,8 @@
       <rect x="214" y="56" width="60" height="24" rx="12" fill="#f4f6f8"/><text x="244" y="72" text-anchor="middle">IPA %</text>
       <rect x="282" y="56" width="60" height="24" rx="12" fill="#f4f6f8"/><text x="312" y="72" text-anchor="middle">temp</text>
     </g>
-    <text x="24" y="112" font-size="11.5" fill="#6b7480">Checked on Mondays… and Fridays look different. Color shifts with chemistry,</text>
-    <text x="24" y="128" font-size="11.5" fill="#6b7480">even when the keys never moved</text>
+    <text x="24" y="112" font-size="11.5" fill="#6b7480">Checked on Mondays… Fridays look different.</text>
+    <text x="24" y="128" font-size="11.5" fill="#6b7480">Chemistry shifts color even with keys untouched</text>
   </g>
   <g transform="translate(460,200)">
     <rect width="392" height="140" rx="16" fill="#fff" stroke="#e8ecf0" stroke-width="1.5"/>
