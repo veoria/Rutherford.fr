@@ -35,10 +35,10 @@ export const FREE_COURSES: AcademyCourse[] = [
     title: 'Press-Side Measurement Essentials',
     duration: '35 min',
     modules: 4,
-    description: 'From manual densitometer to inline scanning.',
+    description: 'From manual densitometer to automated scanning.',
     videoSrc: '/videos/academy/measurement-essentials.mp4',
     syllabus: [
-      'Handheld vs strip-reader vs inline scanner: pros, cons, cost',
+      'Handheld vs automated scanning vs true inline: pros, cons, cost',
       'The geometry that matters: 45°/0°, polarization, UV filtering',
       'Color bars decoded: what to put on the sheet and why',
       'Repeatability vs reproducibility: the trap that costs you hours',
