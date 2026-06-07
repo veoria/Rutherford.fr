@@ -26,6 +26,7 @@ These are product / company names. Always keep exact spelling and casing across 
 
 - **Rutherford**, **Rutherford.fr**
 - **ColorLoop**, **ColorLoop.ai**, **ColorLoop Connect**
+- **EasySet**, **EasyLoop** (Rutherford's operator-driven presetting / closed-loop line, pre-ColorLoop)
 - **Veoria**, **Veoria.fr** (lowercase `.fr`)
 - **MeasureColor**
 - **IntelliTrax2**, **IntelliTrax** (older model)

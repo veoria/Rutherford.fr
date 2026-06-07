@@ -497,7 +497,7 @@ The console interface shows the live ΔE 00 heatmap per ink zone, current densit
 
 Ink-zone control is the link between Rutherford's decisions and the press. On Heidelberg presses, Rutherford talks to the Prinect Press Center via INK-Net. On KBA presses, it integrates with LogoTronic via ECS XML. On Komori, the path is via PDC. On Manroland, through the InkDriver protocol. Each integration is one-time; once it is in place, the operator does not see the protocol, only the result.
 
-Learning logic is the Rutherford-specific layer. The system records what worked on similar jobs in the past, same substrate, same ink set, same coverage profile, and pre-positions ink keys before the first sheet rolls. After 30 jobs on similar work, the cold-start drops dramatically. After 90 jobs, the system has a confident first-sheet correction. After a year, it predicts.
+Learning is the Rutherford-specific layer — and on the EasyLoop / EasySet line it is operator-driven, not automatic. The operator chooses which jobs to record as references; EasySet then adjusts the presetting curves from that accumulated history, so a recorded substrate, ink set and coverage profile pre-position the ink keys closer to target on the next similar job. The more good jobs the operator records, the better the cold-start becomes. The flip side is discipline: record a bad job as a reference and EasySet faithfully learns the wrong curve — what gets recorded matters as much as what gets printed. Fully automatic learning, where the system itself decides what to record, is the ColorLoop layer covered in its own course.
 
 #### Leçon 3 — Integrating with your press brand: Heidelberg, KBA, Komori, Manroland
 
@@ -521,9 +521,9 @@ CIP3 is the industry consortium that defined the PPF (Print Production Format) f
 
 The math is simple: ink demand for a zone is proportional to the total dot coverage of that zone summed across the sheet. A zone covered 80 % needs roughly twice the ink-key opening of a zone covered 40 %. The press OEM consoles have used this principle for thirty years to pre-position ink keys before the makeready starts.
 
-Where Rutherford adds value is in calibrating the relationship. The raw coverage-to-opening formula varies by ink, by substrate, by press, by ambient temperature. Rutherford's learning logic adjusts the formula based on what actually happened on previous similar jobs, so the first sheet lands closer to target than a vanilla CIP3 preset would deliver.
+Where Rutherford adds value is in calibrating the relationship. The raw coverage-to-opening formula varies by ink, by substrate, by press, by ambient temperature. EasySet adjusts the formula from the jobs the operator has recorded as references, so the first sheet lands closer to target than a vanilla CIP3 preset would deliver.
 
-In production, this is the difference between a 600-sheet makeready (vanilla CIP3) and a 250-sheet makeready (CIP3 + Rutherford learned offsets). The same prepress data, processed with site-specific learning, produces a meaningfully better starting point.
+In production, this is the difference between a 600-sheet makeready (vanilla CIP3) and a 250-sheet makeready (CIP3 + EasySet offsets built from recorded jobs). The same prepress data, refined with site-specific history, produces a meaningfully better starting point.
 
 #### Leçon 5 — Spectral targets and ΔE strategy in production
 
@@ -545,7 +545,7 @@ Day one of a closed-loop install is hostile. Experienced press operators have sp
 
 Week one shifts the dynamic. Operators notice the system catching subtle drift that the eye missed, or holding stability through a substrate-batch change. Confidence builds slowly. The shift lead becomes critical here: if the most respected operator on the floor publicly endorses the system, adoption accelerates across the shift.
 
-Month three is the inflection point. By this time the learning logic has accumulated enough job history to be visibly better than vanilla presetting on common work. Makereadies are shorter; rejects are rarer; the data trail is intact. Operators stop overriding except on genuinely unusual jobs. This is the milestone where ROI starts showing in monthly waste reports.
+Month three is the inflection point. By this time EasySet has accumulated enough recorded job history to be visibly better than vanilla presetting on common work. Makereadies are shorter; rejects are rarer; the data trail is intact. Operators stop overriding except on genuinely unusual jobs. This is the milestone where ROI starts showing in monthly waste reports.
 
 Year one is the new normal. Closed-loop is part of the workflow; new hires are trained on it from their first shift. The conversation shifts from "is this working" to "how do we extend this to the second press, second site, extended gamut work". Plan the rollout with this arc in mind; do not promise month-three results in week one.
 
@@ -1210,7 +1210,7 @@ ColorLoop's AI is not a generative model and is not the same technology that pow
 
 What it does: predict starting ink-key positions for a new job based on the closest historical match. The prediction is then refined by real-time closed-loop correction during makeready. The combined effect is fewer correction cycles before reaching target color.
 
-What it does not do: replace the closed-loop layer beneath it. The AI is a starting-point predictor; the closed-loop system is the actual color controller. If you remove the closed-loop, the AI prediction alone is a guess. If you remove the AI, the closed-loop still works, just with a generic CIP3-based starting position instead of a learned one.
+What it does not do: replace the closed-loop layer beneath it. The AI is a starting-point predictor; the closed-loop system is the actual color controller. If you remove the closed-loop, the AI prediction alone is a guess. If you remove the AI, the closed-loop still works — it falls back to EasySet, where the operator records reference jobs and EasySet adjusts the curves from that history. The difference ColorLoop makes is automation: instead of relying on the operator to record the right jobs, the AI decides on its own what to record for the next learning cycle, based on the printing conditions — which also removes the risk of learning from a job the operator recorded by mistake.
 
 The honest framing: AI-guided makeready typically saves 15-30 % of additional time and waste on top of vanilla closed-loop. Vanilla closed-loop already saved 30-55 % over open-loop. The AI is a refinement, not a revolution.
 
