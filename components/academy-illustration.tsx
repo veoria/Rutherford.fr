@@ -1,17 +1,10 @@
 'use client';
 
-import { type ComponentType, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { type Locale, useLanguage } from '@/components/language-provider';
-import { IllVariance } from '@/components/academy-illustrations/ill-variance';
 
 /** Illustrations are served from public/academy/illustrations/. */
 const ASSET = (file: string) => `/academy/illustrations/${file}`;
-
-// Illustrations migrated to inline SVG (animatable, crisp at any size). Names
-// not listed here fall back to the static <img> from /academy/illustrations/.
-const REACT_ILLUSTRATIONS: Record<string, ComponentType<{ className?: string }>> = {
-  'ill-variance.svg': IllVariance,
-};
 
 const LABELS: Record<Locale, { enlarge: string; close: string }> = {
   en: { enlarge: 'Enlarge illustration', close: 'Close' },
@@ -34,7 +27,6 @@ export function AcademyIllustration({ name, label }: { name: string; label?: str
   const { locale } = useLanguage();
   const t = LABELS[locale] ?? LABELS.en;
   const [zoom, setZoom] = useState(false);
-  const Inline = REACT_ILLUSTRATIONS[name];
 
   // While zoomed, swallow Esc / arrows in the capture phase so the underlying
   // player doesn't also close or page behind the lightbox.
@@ -53,11 +45,7 @@ export function AcademyIllustration({ name, label }: { name: string; label?: str
   return (
     <>
       <button type="button" className="academy-illus" onClick={() => setZoom(true)} aria-label={t.enlarge}>
-        {Inline ? (
-          <Inline className="academy-illus-img" />
-        ) : (
-          <img className="academy-illus-img" src={ASSET(name)} alt={label ?? ''} loading="lazy" />
-        )}
+        <img className="academy-illus-img" src={ASSET(name)} alt={label ?? ''} loading="lazy" />
         <span className="academy-illus-zoom" aria-hidden="true">
           ⤢
         </span>
@@ -67,11 +55,7 @@ export function AcademyIllustration({ name, label }: { name: string; label?: str
           <button type="button" className="academy-illus-close" onClick={() => setZoom(false)} aria-label={t.close}>
             ✕
           </button>
-          {Inline ? (
-            <Inline className="academy-illus-lightbox-img" />
-          ) : (
-            <img className="academy-illus-lightbox-img" src={ASSET(name)} alt={label ?? ''} />
-          )}
+          <img className="academy-illus-lightbox-img" src={ASSET(name)} alt={label ?? ''} />
         </div>
       ) : null}
     </>
