@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 400" font-family="-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif">
+  <rect width="900" height="400" fill="#ffffff"/>
+
+  <!-- left: paper with OBA under UV -->
+  <g transform="translate(60,52)">
+    <rect width="360" height="260" rx="16" fill="#ffffff" stroke="#e8ecf0" stroke-width="1.5"/>
+    <text x="180" y="34" font-size="11.5" font-weight="700" letter-spacing="1.5" fill="#7c3aed" text-anchor="middle">MODERN PAPER + UV LIGHT</text>
+    <!-- UV rays -->
+    <g stroke="#7c3aed" stroke-width="3" stroke-linecap="round">
+      <path d="M120 64 L150 110"/><path d="M180 56 L180 108"/><path d="M240 64 L210 110"/>
+    </g>
+    <!-- sheet glowing -->
+    <rect x="80" y="116" width="200" height="86" rx="8" fill="#f4f9ff" stroke="#bcd6f7" stroke-width="2"/>
+    <text x="180" y="152" font-size="12.5" font-weight="700" fill="#2563eb" text-anchor="middle">Optical brighteners</text>
+    <text x="180" y="170" font-size="12.5" font-weight="700" fill="#2563eb" text-anchor="middle">fluoresce — paper reads "whiter"</text>
+    <text x="180" y="236" font-size="12" fill="#6b7480" text-anchor="middle">Most coated commercial &amp; packaging</text>
+    <text x="180" y="252" font-size="12" fill="#6b7480" text-anchor="middle">stock contains OBAs today</text>
+  </g>
+
+  <!-- right: consequence -->
+  <g transform="translate(480,52)">
+    <rect width="360" height="260" rx="16" fill="#ffffff" stroke="#e8ecf0" stroke-width="1.5"/>
+    <text x="180" y="34" font-size="11.5" font-weight="700" letter-spacing="1.5" fill="#9aa3ae" text-anchor="middle">SAME SHEET, TWO NUMBERS</text>
+    <!-- two readings -->
+    <g transform="translate(38,60)">
+      <rect width="136" height="118" rx="12" fill="#eaf1fe" stroke="#2563eb" stroke-width="2"/>
+      <text x="68" y="30" font-size="13" font-weight="700" fill="#2563eb" text-anchor="middle">M1 · UV in</text>
+      <text x="68" y="62" font-size="20" font-weight="700" fill="#111418" text-anchor="middle">b* −2.4</text>
+      <text x="68" y="88" font-size="10.5" fill="#6b7480" text-anchor="middle">how the customer's</text>
+      <text x="68" y="102" font-size="10.5" fill="#6b7480" text-anchor="middle">D50 booth shows it</text>
+    </g>
+    <g transform="translate(188,60)">
+      <rect width="136" height="118" rx="12" fill="#f4f6f8" stroke="#c8d0d9" stroke-dasharray="6 5"/>
+      <text x="68" y="30" font-size="13" font-weight="700" fill="#9aa3ae" text-anchor="middle">M2 · UV cut</text>
+      <text x="68" y="62" font-size="20" font-weight="700" fill="#6b7480" text-anchor="middle">b* +1.1</text>
+      <text x="68" y="88" font-size="10.5" fill="#9aa3ae" text-anchor="middle">the M1−M2 gap IS</text>
+      <text x="68" y="102" font-size="10.5" fill="#9aa3ae" text-anchor="middle">the OBA signature</text>
+    </g>
+    <text x="180" y="214" font-size="12" fill="#6b7480" text-anchor="middle">When two instruments disagree, check the</text>
+    <text x="180" y="230" font-size="12" fill="#6b7480" text-anchor="middle">measurement condition before blaming the ink</text>
+  </g>
+
+  <!-- bottom band -->
+  <rect x="60" y="334" width="780" height="40" rx="10" fill="#f4f6f8"/>
+  <text x="450" y="359" font-size="14" font-weight="600" fill="#111418" text-anchor="middle">M1 (D50 + UV) is the modern default — it reads OBAs the way your customer sees them</text>
+</svg>

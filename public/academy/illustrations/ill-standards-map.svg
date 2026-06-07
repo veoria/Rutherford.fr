@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 420" font-family="-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif">
+  <rect width="900" height="420" fill="#ffffff"/>
+
+  <!-- US side -->
+  <g transform="translate(60,48)">
+    <rect width="360" height="240" rx="16" fill="#ffffff" stroke="#e8ecf0" stroke-width="1.5"/>
+    <text x="180" y="36" font-size="11.5" font-weight="700" letter-spacing="1.5" fill="#9aa3ae" text-anchor="middle">🇺🇸 NORTH AMERICA</text>
+    <rect x="40" y="56" width="280" height="58" rx="12" fill="#eaf1fe"/>
+    <text x="180" y="80" font-size="14" font-weight="700" fill="#2563eb" text-anchor="middle">GRACoL 2013 (CGATS.21)</text>
+    <text x="180" y="100" font-size="11.5" fill="#3c434b" text-anchor="middle">characterization · premium coated sheetfed</text>
+    <rect x="40" y="126" width="280" height="58" rx="12" fill="#f4f6f8"/>
+    <text x="180" y="150" font-size="14" font-weight="700" fill="#111418" text-anchor="middle">+ G7 methodology</text>
+    <text x="180" y="170" font-size="11.5" fill="#6b7480" text-anchor="middle">gray-balance calibration (Idealliance)</text>
+    <text x="180" y="216" font-size="12" fill="#6b7480" text-anchor="middle">"We print GRACoL, G7-calibrated"</text>
+  </g>
+
+  <!-- EU side -->
+  <g transform="translate(480,48)">
+    <rect width="360" height="240" rx="16" fill="#ffffff" stroke="#e8ecf0" stroke-width="1.5"/>
+    <text x="180" y="36" font-size="11.5" font-weight="700" letter-spacing="1.5" fill="#9aa3ae" text-anchor="middle">🇪🇺 EUROPE</text>
+    <rect x="40" y="56" width="280" height="58" rx="12" fill="#eaf1fe"/>
+    <text x="180" y="80" font-size="14" font-weight="700" fill="#2563eb" text-anchor="middle">ISO 12647-2</text>
+    <text x="180" y="100" font-size="11.5" fill="#3c434b" text-anchor="middle">the normative aims, per substrate class</text>
+    <rect x="40" y="126" width="280" height="58" rx="12" fill="#f4f6f8"/>
+    <text x="180" y="150" font-size="14" font-weight="700" fill="#111418" text-anchor="middle">+ FOGRA datasets (39 · 51 · 52 · 55)</text>
+    <text x="180" y="170" font-size="11.5" fill="#6b7480" text-anchor="middle">characterizations of conforming conditions</text>
+    <text x="180" y="216" font-size="12" fill="#6b7480" text-anchor="middle">"We print ISO 12647-2 / FOGRA51"</text>
+  </g>
+
+  <!-- the rule -->
+  <rect x="60" y="312" width="780" height="76" rx="14" fill="#fff7ed" stroke="#fed7aa"/>
+  <text x="450" y="343" font-size="14.5" font-weight="700" fill="#9a3412" text-anchor="middle">Both are valid. Pick one · document it · train and measure against it.</text>
+  <text x="450" y="368" font-size="13" fill="#9a3412" text-anchor="middle">Switching methodologies mid-project is the fastest way to lose a brand owner's trust.</text>
+</svg>

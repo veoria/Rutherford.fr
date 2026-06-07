@@ -11,6 +11,8 @@ import type { CourseAccess } from '@/lib/entitlements';
 import { coursePercent, newlyCrossedPaliers, type Palier } from '@/lib/gamification';
 // Type-only import: erased at build, so the server-only answer key is NOT bundled.
 import type { PublicQuiz } from '@/data/academy-quizzes';
+import { getCourseApp } from '@/data/academy-app';
+import { AcademyPlayer } from '@/components/academy-player';
 
 type QuizResultClient = {
   score: number;
@@ -276,6 +278,10 @@ export function AcademyCoursePage({
   const celebrationSeq = useRef(0);
   const toggleLesson = (index: number) => setOpenLesson((current) => (current === index ? -1 : index));
   const coursePct = coursePercent({ completedCount: completed.size, total: totalModules });
+  // New step-based player (Phase 1): present only for courses that have step content.
+  const app = getCourseApp(course.id);
+  const appNextIndex = app ? app.modules.findIndex((_, i) => !completed.has(i)) : -1;
+  const [playerModule, setPlayerModule] = useState<number | null>(null);
 
   // Final-assessment (QCM) state.
   const quizPassPct = quiz ? Math.round(quiz.passThreshold * 100) : 0;
@@ -386,6 +392,16 @@ export function AcademyCoursePage({
     } catch {
       setCompleted(before); // revert optimistic update on failure
     }
+  };
+
+  // Open the player on a module, respecting the gate (previous module done).
+  const openPlayer = (index: number) => {
+    if (index !== 0 && !completed.has(index - 1)) return;
+    setPlayerModule(index);
+  };
+  // Idempotent completion used by the player when a module's steps are finished.
+  const markComplete = (index: number) => {
+    if (!completed.has(index)) void toggleComplete(index);
   };
 
   const handleCheckout = async (target: 'course' | 'pass') => {
@@ -613,6 +629,41 @@ export function AcademyCoursePage({
                   <span className="academy-progress-fill" style={{ width: `${coursePct}%` }} />
                 </div>
               </div>
+              {app ? (
+                <ol className="academy-modlist">
+                  {app.modules.map((m, index) => {
+                    const done = completed.has(index);
+                    const unlocked = index === 0 || completed.has(index - 1);
+                    const isNext = unlocked && !done && index === appNextIndex;
+                    return (
+                      <li
+                        key={index}
+                        className={`academy-modrow ${done ? 'is-done' : isNext ? 'is-next' : !unlocked ? 'is-locked' : ''}`}
+                      >
+                        <button
+                          type="button"
+                          className="academy-modrow-btn"
+                          onClick={() => openPlayer(index)}
+                          disabled={!unlocked}
+                        >
+                          <span className="academy-modrow-num" aria-hidden="true">
+                            {done ? '✓' : m.num}
+                          </span>
+                          <span className="academy-modrow-txt">
+                            <b>{m.title}</b>
+                            <span>
+                              {m.summary} · {m.time}
+                            </span>
+                          </span>
+                          <span className="academy-modrow-act" aria-hidden="true">
+                            {done ? '✓' : isNext ? 'Start →' : unlocked ? 'Open' : '🔒'}
+                          </span>
+                        </button>
+                      </li>
+                    );
+                  })}
+                </ol>
+              ) : (
               <ol className="academy-course-lessons-list">
                 {lessons.map((lesson, index) => {
                   const isOpen = openLesson === index;
@@ -678,6 +729,7 @@ export function AcademyCoursePage({
                   );
                 })}
               </ol>
+              )}
             </div>
           </section>
         ) : tone === 'premium' ? (
@@ -958,6 +1010,16 @@ export function AcademyCoursePage({
         </div>
       </section>
 
+      {app && playerModule !== null ? (
+        <AcademyPlayer
+          courseTitle={course.title}
+          modules={app.modules}
+          completedModules={[...completed]}
+          startModule={playerModule}
+          onClose={() => setPlayerModule(null)}
+          onModuleComplete={markComplete}
+        />
+      ) : null}
       <Celebration content={celebration} onDismiss={() => setCelebration(null)} />
 
       <SiteFooter />

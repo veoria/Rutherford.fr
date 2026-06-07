@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 380" font-family="-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif">
+  <rect width="900" height="380" fill="#fff"/>
+  <!-- inks -->
+  <g transform="translate(60,52)">
+    <rect width="380" height="250" rx="16" fill="#fff" stroke="#e8ecf0" stroke-width="1.5"/>
+    <text x="190" y="34" font-size="11.5" font-weight="700" letter-spacing="1.3" fill="#9aa3ae" text-anchor="middle">7 INKS INSTEAD OF 4</text>
+    <g transform="translate(46,56)">
+      <rect width="60" height="44" rx="8" fill="#00b3d6"/><rect x="72" width="60" height="44" rx="8" fill="#e6007e"/><rect x="144" width="60" height="44" rx="8" fill="#ffd200"/><rect x="216" width="60" height="44" rx="8" fill="#111418"/>
+      <text x="138" y="74" font-size="16" font-weight="700" fill="#9aa3ae">+</text>
+      <rect y="92" width="60" height="44" rx="8" fill="#ff7a00"/><rect x="72" y="92" width="60" height="44" rx="8" fill="#15a04a"/><rect x="144" y="92" width="60" height="44" rx="8" fill="#6d28d9"/>
+      <text x="246" y="120" font-size="12" font-weight="700" fill="#3c434b">O · G · V</text>
+    </g>
+    <text x="190" y="222" font-size="12" fill="#6b7480" text-anchor="middle">More brand spot colors printed in process —</text>
+    <text x="190" y="238" font-size="12" fill="#6b7480" text-anchor="middle">no custom ink mixing for short runs</text>
+  </g>
+  <!-- demands -->
+  <g transform="translate(480,52)">
+    <rect width="360" height="250" rx="16" fill="#fff" stroke="#e8ecf0" stroke-width="1.5"/>
+    <text x="180" y="34" font-size="11.5" font-weight="700" letter-spacing="1.3" fill="#9a3412" text-anchor="middle">THE PRICE: MORE DISCIPLINE</text>
+    <g font-size="12.5" fill="#3c434b">
+      <text x="28" y="72">• 7 channels of ink-key control, 7 curves, 7 targets</text>
+      <text x="28" y="104">• The device must read high-chroma O/V cleanly</text>
+      <text x="28" y="136">• More overprints → trapping errors cascade —</text>
+      <text x="40" y="156">the loop must not over-correct a trapping issue</text>
+      <text x="28" y="188">• Prepress must deliver clean ECG separations</text>
+    </g>
+    <rect x="28" y="206" width="304" height="30" rx="8" fill="#fff7ed"/>
+    <text x="180" y="226" font-size="11.5" font-weight="700" fill="#9a3412" text-anchor="middle">Master 4-color closed-loop first — then ECG</text>
+  </g>
+  <rect x="60" y="326" width="780" height="36" rx="10" fill="#f4f6f8"/>
+  <text x="450" y="349" font-size="13.5" font-weight="600" fill="#111418" text-anchor="middle">ECG closed-loop works in production today — on pressrooms that already run 4-color flawlessly</text>
+</svg>
