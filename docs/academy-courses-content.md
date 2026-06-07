@@ -63,7 +63,7 @@ _The standard your brand owners assume you follow._
 
 ISO 12647 is the family of process control standards for graphic technology printing. The part you care about depends on your process: 12647-2 for offset, 12647-3 for newsprint, 12647-6 for flexo. For sheetfed offset packaging, 12647-2 is the document brand owners cite when they write specifications.
 
-The standard does three useful things at once. It defines paper classes — PT1 through PT5 — so that you and your customer can agree on which substrate behavior you are aiming for. It defines target tonal value increase (TVI) curves so that the dot gain on press lands on a predictable curve. And it defines aim points for the solids (cyan, magenta, yellow, black) in CIELAB terms, again per paper class.
+The standard does three useful things at once. It defines printing substrate classes — PS1 through PS8 in the current ISO 12647-2:2013 (the older 2004 edition used paper types PT1–PT5, still quoted in legacy contracts) — so that you and your customer can agree on which substrate behavior you are aiming for. It defines target tonal value increase (TVI) curves so that the dot gain on press lands on a predictable curve. And it defines aim points for the solids (cyan, magenta, yellow, black) in CIELAB terms, again per paper class.
 
 You do not need to memorize the tables. You need to know that they exist, that your prepress and press fingerprints should be tied to them, and that any deviation should be a deliberate choice, not an accident. When a brand owner says "we want ISO 12647-2 PT1 with G7 calibration", you should know which substrate class that maps to in your shop and which fingerprint you will print against.
 
@@ -79,21 +79,21 @@ M0 is the legacy condition: a tungsten illuminant (CIE Standard Illuminant A). I
 
 M1 is the modern default: D50 illuminant with UV component included. It is the right choice for any paper containing OBAs, which is most coated commercial and packaging stock today. ISO 13655:2009 specifies M1, and any new equipment installed in the last decade defaults to it.
 
-M2 is D50 with UV excluded — useful when you want to read the color as it would appear without OBA contribution, for instance when matching to a non-OBA substrate.
+M2 is D50 with UV excluded. Good to know, rarely used in daily offset production: its real uses are OBA diagnostics (the gap between an M1 and an M2 reading of the paper white is the brightener signature) and substrates without OBAs (films, foils). Treat it as an aside, not a daily tool.
 
-M3 is polarized — useful for reading wet ink during a press run because it removes surface gloss. M3 typically produces higher density values than M0/M1/M2 by 0.05 to 0.20 D depending on ink and coating.
+M3 is polarized — a density tool for reading wet ink during a press run because it removes surface gloss. M3 typically produces higher density values than M0/M1/M2 by 0.05 to 0.20 D depending on ink and coating. Critical rule: never use M3 for G7 calibration or for any ΔE comparison against ISO 12647-2 / GRACoL / FOGRA aims — those reference datasets are measured unpolarized (G7 requires ISO 13655 M1; M0 on legacy datasets). M3 is for ink-film control on the run; M1 is for color conformance. Never mix them.
 
-Modern scanning systems like IntelliTrax2 can capture two conditions in a single pass (M0/M1, M0/M3, or M1/M3), which means you can satisfy both a legacy brand specification and a modern OBA-aware measurement on the same sheet.
+Modern scanning systems like IntelliTrax2 can capture M0 and M1 simultaneously in one pass (Small and Medium Spot heads); the optional Polarizer head adds M3, reading polarized and unpolarized data in a single scan. One pulled sheet can therefore satisfy both a legacy specification and a modern OBA-aware measurement.
 
 #### Leçon 4 — ΔE, ΔE 00, density: what to trust on the press floor
 
 _Three numbers, three different jobs._
 
-Density measures the absorption of a single channel — cyan, magenta, yellow, or black — in transmission or reflection. It is fast, robust, and the variable that ink-key adjustments push directly. Operators have used density for fifty years for one good reason: when density is high, you give less ink; when it is low, you give more. Density is the press floor language for "more or less ink".
+Density measures the reflectance of a single channel — cyan, magenta, yellow, or black — on the printed sheet. It is fast, robust, and the variable that ink-key adjustments push directly. Operators have used density for fifty years for one good reason: when density is high, you give less ink; when it is low, you give more. Density is the press floor language for "more or less ink".
 
 ΔE is the perceptual color difference between two CIELAB readings. ΔE 1976 was the original formula and is now considered too lenient at low chroma and too strict at high chroma. ΔE 94 and ΔE 2000 refined it. ΔE 00 (CIEDE2000) is the modern industry standard because it correlates much better with what the eye actually perceives.
 
-Brand owners typically specify ΔE 00 tolerances. A tight specification might require ΔE 00 < 2 on solids and ΔE 00 < 1.5 on grays. Looser specifications go to ΔE 00 < 4. Anything above ΔE 00 = 5 is generally visible to a trained eye at arm length.
+Brand owners typically specify ΔE 00 tolerances. A tight specification might require ΔE 00 < 2 on solids and ΔE 00 < 1.5 on grays. Looser specifications go to ΔE 00 < 4. Visibility depends on hue, context and viewing conditions: in a side-by-side comparison a trained eye can spot ΔE 00 ≈ 1–2 on critical colors, while from memory even larger gaps can pass.
 
 On the press, the operator works with density because density responds to ink-key movement. The quality system works with ΔE 00 because that is what the brand owner contract says. The bridge between the two is what closed-loop color management automates: read ΔE 00 against the target, decide which densities need to move, and adjust the ink keys.
 
@@ -105,7 +105,7 @@ G7 is a calibration methodology developed by Idealliance in the US. Its anchor i
 
 GRACoL (General Requirements for Applications in Commercial Offset Lithography) is the US characterization for high-quality sheetfed offset on premium coated paper. GRACoL 2013 (CGATS21) is the modern reference, and its aim points are widely tied to G7 methodology.
 
-FOGRA is the German research institute. Their characterization data sets — FOGRA39, FOGRA51, FOGRA52, FOGRA55 — define aim points and proofing characteristics for European offset production on various substrate classes. ISO 12647-2 references FOGRA characterizations directly.
+FOGRA is the German research institute. Their characterization data sets — FOGRA39, FOGRA51, FOGRA52, FOGRA55 — define aim points and proofing characteristics for European offset production on various substrate classes, each characterizing a printing condition compliant with ISO 12647-2 (the standard itself defines the aims; the FOGRA datasets describe conforming conditions).
 
 Practically: a US packaging printer is likely calibrated to GRACoL with G7 methodology. A European packaging printer is likely calibrated to ISO 12647-2 against a FOGRA characterization. Both are valid; the difference matters when you serve customers across the Atlantic. Brand owners often specify which characterization their production should target.
 
@@ -126,11 +126,11 @@ Pick one, document it, train against it, and measure against it. Switching metho
 **Q2.** ISO 12647-2 — the part brand owners usually cite for packaging — covers which process, and what does it define?
 
 - A. Flexo; it defines anilox volumes
-- B. Sheetfed offset; it defines paper classes (PT1–PT5), TVI curves and CIELAB aim points  ✅
+- B. Sheetfed offset; it defines substrate classes (PS1–PS8 in the 2013 edition; PT1–PT5 in the older 2004 one), TVI curves and CIELAB aim points  ✅
 - C. Digital toner; it defines screening angles
 - D. Gravure; it defines cylinder engraving depths
 
-> **Explication.** 12647-2 is the offset part. It defines paper classes PT1–PT5, target tonal value increase (TVI) curves, and CIELAB aim points for the solids.
+> **Explication.** 12647-2 is the offset part. It defines printing substrate classes (PS1–PS8 since 2013; formerly PT1–PT5), target tonal value increase (TVI) curves, and CIELAB aim points for the solids.
 > _(réf. module 2)_
 
 **Q3.** Which measurement condition uses a D50 illuminant with the UV component included, and is the modern default for papers with optical brighteners?
@@ -181,21 +181,21 @@ Pick one, document it, train against it, and measure against it. Switching metho
 
 **Durée** — 35 min  ·  **Modules** — 4  ·  **Prix** — gratuit
 
-**Description** — From manual densitometer to inline scanning.
+**Description** — From manual densitometer to automated scanning.
 
 **Vidéo** — `/videos/academy/measurement-essentials.mp4`
 **ID (slug)** — `measurement-essentials`
 
 ### Programme
 
-1. Handheld vs strip-reader vs inline scanner: pros, cons, cost
+1. Handheld vs automated scanning vs true inline: pros, cons, cost
 2. The geometry that matters: 45°/0°, polarization, UV filtering
 3. Color bars decoded: what to put on the sheet and why
 4. Repeatability vs reproducibility: the trap that costs you hours
 
 ### Leçons (4)
 
-#### Leçon 1 — Handheld vs strip-reader vs inline scanner
+#### Leçon 1 — Handheld vs automated scanning vs true inline
 
 _Three device classes, three different jobs._
 
@@ -203,9 +203,11 @@ Handheld spectrophotometers — X-Rite eXact 2, eXact 2 Plus, eXact 2 Xp — are
 
 Strip readers (scanning tables) sit beside the press and scan color bars across the full sheet width. They take a sheet from the operator, scan it in a few seconds, and feed the result back to a console or to ink-key correction software. They strike the balance between speed and capital cost, and are common in mid-volume sheetfed shops.
 
-Inline scanners like X-Rite IntelliTrax2 (model 2900) and IntelliTrax2 Pro (model 2900PRO) sit at the delivery end of the press and scan every sheet that needs measuring. Scan time is under 10 seconds. They are the right answer when you run multiple jobs per shift and cannot afford to interrupt the press for measurement.
+Automated scanning systems like X-Rite IntelliTrax2 (model 2900) and IntelliTrax2 Pro (model 2900PRO) are the high end of press-side measurement — but they are not inline: the system is semi-automatic and works off-press. The operator pulls a sheet from the delivery and places it on the scan track; the head then scans the full color bar automatically in seconds. Only the reading is automated, not the sampling.
 
-The choice is not "which is best" — it is "which fits your volume and your tolerance". A 50-makeready-per-week shop running tight ΔE specs needs inline. A 5-makeready-per-week shop printing forgiving work can live with a handheld. Most real shops own at least two device classes and use them for different jobs.
+True inline systems are a separate class entirely: cameras or spectros mounted inside the press (e.g. in-press measurement systems offered by press OEMs) that read continuously during the run without pulling sheets. They carry their own trade-offs in cost, patch requirements and serviceability, and are not interchangeable with off-press scanning in either workflow or data.
+
+The choice is not "which is best" — it is "which fits your volume and your tolerance". A 50-makeready-per-week shop running tight ΔE specs needs automated scanning at minimum. A 5-makeready-per-week shop printing forgiving work can live with a handheld. Most real shops own at least two device classes and use them for different jobs.
 
 #### Leçon 2 — The geometry that matters: 45°/0°, polarization, UV
 
@@ -213,9 +215,11 @@ _Three optical choices that drive your results._
 
 A 45°/0° geometry illuminates the sample at 45° and reads it at 0° (normal). This is the standard for graphic arts because it most closely simulates how the human eye views a print under typical lighting. ISO 5-4:2009 specifies the geometry for spectro measurement of printed surfaces. IntelliTrax2 uses 45°/0° ring illumination (the sample is lit from all 360° around the 45° cone) to minimize directional artifacts.
 
-Polarization is an optical filter that removes the specular component — the surface gloss — from the measurement. Polarized readings give you the "wet" ink density even on a dry sheet, which is useful when you compare wet press readings to dry proofs. Polarization typically raises density values by 0.05–0.20 D and increases inter-instrument agreement on glossy stocks.
+Polarization is an optical filter that removes the specular component — the surface gloss — from the measurement. Polarized readings give you the "wet" ink density even on a dry sheet, which is useful when you compare wet press readings to dry sheets. Polarization typically raises density values by 0.05–0.20 D, and polarizer quality and orientation vary between instruments, which tends to worsen inter-instrument agreement. And the rule that matters: polarized (M3) data is for density only — never for G7 calibration or ΔE checks against ISO/GRACoL/FOGRA aims, which are all defined unpolarized.
 
-UV filtering matters because most modern papers contain optical brighteners that fluoresce under UV. A measurement that includes UV (M1) reads the paper as your customer sees it under D50 viewing booths. A measurement that excludes UV (M2) reads the substrate "as if" it had no brighteners. M1 is the safer default for new contracts; M2 is useful when you need to match a non-OBA reference.
+UV filtering matters because most modern papers contain optical brighteners that fluoresce under UV. A measurement that includes UV (M1) reads the paper as your customer sees it under D50 viewing booths. A measurement that excludes UV (M2) reads the substrate "as if" it had no brighteners — a diagnostic tool more than a production condition. M1 is the default for any current work.
+
+Do not confuse this "UV in the measurement light" with UV in the process — UV varnish, dispersion coating, UV/H-UV/LED-UV inks. That is a separate subject with its own golden rule: never varnish or coat over the control strip. Coating shifts gloss, density and L*a*b*, and your targets (fingerprint, ISO/G7 aims, brand tolerances) are defined on bare ink — measuring through varnish creates false drift. Plan a varnish knockout over the bar zone in prepress; if the customer requires post-varnish numbers, build separate post-coating targets measured in the same state. A varnish layer also absorbs UV and damps OBA fluorescence, so even the paper white reads differently through it. And UV-cured inks have no conventional dry-back: a fingerprint made with conventional drying is not valid for a press converted to LED-UV.
 
 The geometry, polarization, and UV choices are not independent — they are stacked on each measurement. Every spectro reports them in the metadata. When two readings disagree, the first place to look is the measurement condition, not the ink.
 
@@ -227,7 +231,9 @@ A color bar is the strip of test patches placed on every press sheet, typically 
 
 Common color bar systems include System Brunner, GMI / Bestcolor, X-Rite Standard, and customer-specific bars. They differ in patch sequence, patch size, and inclusion of special tests. The right choice depends on your customer requirements and your measurement device capabilities.
 
-Patch height matters. IntelliTrax2 can read patches as small as 2 mm high — significantly tighter than the 4–5 mm minimum for older inline systems. Smaller bars steal less printable area, but they require the scan head to position the sheet precisely. Patch width is typically 3–4 mm, sized to match an ink zone (most presses have 32 mm ink zones).
+Patch height matters. IntelliTrax2 can read patches as small as 2 mm high with the Small Spot head (3 mm with the standard Medium head) — significantly tighter than the 4–5 mm minimum of older scanning systems. Smaller bars steal less printable area, but they require precise sheet positioning on the track. Patch width is typically 3–4 mm; what follows the ink zones is the pitch between patches, not the patch width — one patch (or patch group) positioned per zone, so the bar spans the full live sheet width (zone widths vary by press OEM, roughly 30–38 mm).
+
+The varnish rule belongs here too: if the job carries a UV or dispersion coating, the imposition must include a varnish-free reserve over the color bar — together with the scanner edge-distance constraint, it is one of the two bar-placement decisions prepress must get right.
 
 The edge zone — the distance between the sheet edge and the start of the color bar — matters because it determines where the scan head can position. IntelliTrax2 needs to engage the bar within 38 mm of the sheet edge. Plan the imposition accordingly: a color bar pushed too close to the edge will not scan reliably; a color bar pushed too far in steals printable area.
 
@@ -237,26 +243,26 @@ Spot colors deserve their own discussion. If you run Pantone or custom brand col
 
 _The trap that costs you hours._
 
-Repeatability is the variation when the same instrument reads the same sample multiple times in a row, by the same operator, under the same conditions. It is an intrinsic property of the instrument. A modern handheld spectro has repeatability around 0.05 ΔE on white; a modern inline scanner like IntelliTrax2 reports 0.15 ΔE max on white. These are tight enough for most production work.
+Repeatability is the variation when the same instrument reads the same sample multiple times in a row, by the same operator, under the same conditions. It is an intrinsic property of the instrument. A modern handheld spectro has repeatability around 0.05 ΔE on white; a modern automated scanning system like IntelliTrax2 reports 0.15 ΔE max on white. These are tight enough for most production work.
 
 Reproducibility is the variation when different instruments — or different operators, different times, different temperatures — read the same sample. Reproducibility is always worse than repeatability. The relevant industry metric is Inter-Instrument Agreement (IIA), and a good modern spectro reports IIA in the 0.3 ΔE average / 0.45 ΔE maximum range.
 
-Why this matters: a brand owner with a handheld in their lab will read a different number than your inline scanner reads on the press, even on the same sample. If you do not understand the gap, you will spend hours chasing a phantom drift that is actually just inter-instrument disagreement.
+Why this matters: a brand owner with a handheld in their lab will read a different number than your scanning system reads at the press, even on the same sample. If you do not understand the gap, you will spend hours chasing a phantom drift that is actually just inter-instrument disagreement.
 
-The fix is procedural, not technical. Establish which instrument is the reference for each customer relationship, calibrate the others against it on known samples, and document the offsets. When the brand owner says "we measured 1.8 ΔE on your latest delivery", you should be able to say "our inline measured 1.3 ΔE; our handheld measured 1.6 ΔE; both agree with you within IIA tolerance".
+The fix is procedural, not technical. Establish which instrument is the reference for each customer relationship, calibrate the others against it on known samples, and document the offsets. When the brand owner says "we measured 1.8 ΔE on your latest delivery", you should be able to say "our scanning system measured 1.3 ΔE; our handheld measured 1.6 ΔE; both agree with you within IIA tolerance".
 
 The other fix is hardware: scheduled annual recertification of every measurement device through the manufacturer (or a certified service partner). UV LED sources drift, sensors age, and tile references wear. Without recertification, you are slowly walking away from your own reference.
 
 ### Quiz final — 6 questions · seuil de réussite 80 %
 
-**Q1.** Which device class sits at the press delivery and scans every sheet in under 10 seconds?
+**Q1.** How does an automated scanning system like IntelliTrax2 actually work?
 
-- A. Handheld spectrophotometer (e.g. eXact 2)
-- B. Strip reader / scanning table
-- C. Inline scanner (e.g. IntelliTrax2)  ✅
-- D. Densitometer pen
+- A. It measures every sheet inside the running press
+- B. The operator pulls a sheet and places it on the track; the head then scans the bar automatically  ✅
+- C. It replaces the color bar entirely
+- D. It only reads single patches like a handheld
 
-> **Explication.** Inline scanners like IntelliTrax2 sit at the delivery and scan every sheet in under 10 seconds — the right answer when you run multiple jobs per shift.
+> **Explication.** IntelliTrax2 is semi-automatic and off-press: the operator pulls a sheet from the delivery onto the scan track, and only the reading is automated. True inline (in-press) systems are a separate device class.
 > _(réf. module 1)_
 
 **Q2.** Why is 45°/0° the standard measurement geometry for graphic arts?
@@ -286,7 +292,7 @@ The other fix is hardware: scheduled annual recertification of every measurement
 - C. 5 mm
 - D. 10 mm
 
-> **Explication.** IntelliTrax2 reads patches down to 2 mm — much tighter than the 4–5 mm of legacy inline systems — so bars steal less printable area.
+> **Explication.** IntelliTrax2 reads patches down to 2 mm — much tighter than the 4–5 mm of legacy scanning systems — so bars steal less printable area.
 > _(réf. module 3)_
 
 **Q5.** Repeatability versus reproducibility — which statement is correct?
@@ -335,7 +341,7 @@ The other fix is hardware: scheduled annual recertification of every measurement
 
 _The cost stack of one makeready, multiplied by your year._
 
-Take a typical B1 6-color sheetfed press, premium coated 250 g/m² paper at €1 200 per tonne. One sheet costs roughly €0.5346. A makeready that consumes 800 sheets to first good copy costs €428 in paper alone before you count anything else.
+Take a typical B1 6-color sheetfed press, premium coated 250 g/m² paper at €1 200 per tonne. A B1 sheet (707 × 1000 mm = 0.707 m²) weighs ≈177 g, so one sheet costs roughly €0.21. A makeready that consumes 800 sheets to first good copy costs ≈€170 in paper alone before you count anything else.
 
 Add press time. A loaded sheetfed B1 6-color press costs €150 per hour to run, sometimes more. A 120-minute makeready burns €300 in press time. The press is not earning while it is being set up — and the operator is paid either way.
 
@@ -377,7 +383,7 @@ _The capital case in three numbers._
 
 A closed-loop color management system costs less than most people assume — typically a fraction of the price of the press it sits on. The capital case is built on three measurable returns: paper saved, press time recovered, and brand-owner reject reduction.
 
-Paper saved is the most direct. A 55 % reduction in makeready sheet waste on the B1 6-color baseline above (800 sheets per makeready) saves 440 sheets per makeready, 297 000 sheets per year, around €159 000 in paper per press per year. That number alone is usually larger than the system payment within the first year.
+Paper saved is the most direct. A 55 % reduction in makeready sheet waste on the B1 6-color baseline above (800 sheets per makeready) saves 440 sheets per makeready, 297 000 sheets per year, around €63 000 in paper per press per year (at ≈€0.21 per sheet) — a substantial share of the system cost on its own.
 
 Press time recovered is the second lever. A 38 % reduction in makeready time on a 120-minute baseline saves 46 minutes per makeready, 31 000 minutes per year, 513 hours of press time. At €150 per hour, that is €77 000 of capacity. The capacity does not appear as cash directly — it appears as the ability to take on more work without buying another press.
 
@@ -394,7 +400,7 @@ A typical installation pays for itself in 9 to 18 months on a single press, befo
 - C. About €5,000
 - D. It is negligible
 
-> **Explication.** ≈€428 paper (800 sheets) + €300 press time (120 min at €150/h) plus sundries lands at a conservative €450–500 per makeready.
+> **Explication.** ≈€170 paper (800 sheets at ≈€0.21) + €300 press time (120 min at €150/h) plus sundries lands at a conservative €450–500 per makeready.
 > _(réf. module 1)_
 
 **Q2.** What is the fix for the "good copy" myth (subjective approval)?
@@ -475,7 +481,7 @@ _Three components, one feedback loop._
 
 Every closed-loop system, whether in a chemical plant, an aircraft autopilot, or a printing press, has the same three components: a sensor that reads what is actually happening, a decision layer that compares the reading to a target and chooses an action, and an actuator that executes the action. Remove any one and the loop opens.
 
-In a sheetfed offset closed-loop installation, the sensor is the spectral measurement device, typically an inline scanner like IntelliTrax2 reading every sheet (or every Nth sheet) as it leaves the delivery. The decision layer compares the measured ΔE 00 per ink zone against the target and decides which zones need more ink and which need less. The actuator is the ink-key servo that physically opens or closes the zone on the next pull.
+In a sheetfed offset closed-loop installation, the sensor is the spectral measurement device — typically an automated scanning system like IntelliTrax2 reading sheets the operator pulls from the delivery at regular intervals. The loop runs on sampled pulled sheets, not on every printed sheet. The decision layer compares the measured ΔE 00 per ink zone against the target and decides which zones need more ink and which need less. The actuator is the ink-key servo that physically opens or closes the zone on the next pull.
 
 Open-loop production is the alternative: the operator looks at the sheet, decides subjectively whether it is good, and adjusts the keys manually when something looks off. The operator is both sensor and decision layer in this model, and their judgment varies by shift, by mood, by the day.
 
@@ -491,7 +497,7 @@ The console interface shows the live ΔE 00 heatmap per ink zone, current densit
 
 Ink-zone control is the link between Rutherford's decisions and the press. On Heidelberg presses, Rutherford talks to the Prinect Press Center via INK-Net. On KBA presses, it integrates with LogoTronic via ECS XML. On Komori, the path is via PDC. On Manroland, through the InkDriver protocol. Each integration is one-time; once it is in place, the operator does not see the protocol, only the result.
 
-Learning logic is the Rutherford-specific layer. The system records what worked on similar jobs in the past, same substrate, same ink set, same coverage profile, and pre-positions ink keys before the first sheet rolls. After 30 jobs on similar work, the cold-start drops dramatically. After 90 jobs, the system has a confident first-sheet correction. After a year, it predicts.
+Learning is the Rutherford-specific layer — and on the EasyLoop / EasySet line it is operator-driven, not automatic. The operator chooses which jobs to record as references; EasySet then adjusts the presetting curves from that accumulated history, so a recorded substrate, ink set and coverage profile pre-position the ink keys closer to target on the next similar job. The more good jobs the operator records, the better the cold-start becomes. The flip side is discipline: record a bad job as a reference and EasySet faithfully learns the wrong curve — what gets recorded matters as much as what gets printed. Fully automatic learning, where the system itself decides what to record, is the ColorLoop layer covered in its own course.
 
 #### Leçon 3 — Integrating with your press brand: Heidelberg, KBA, Komori, Manroland
 
@@ -515,9 +521,9 @@ CIP3 is the industry consortium that defined the PPF (Print Production Format) f
 
 The math is simple: ink demand for a zone is proportional to the total dot coverage of that zone summed across the sheet. A zone covered 80 % needs roughly twice the ink-key opening of a zone covered 40 %. The press OEM consoles have used this principle for thirty years to pre-position ink keys before the makeready starts.
 
-Where Rutherford adds value is in calibrating the relationship. The raw coverage-to-opening formula varies by ink, by substrate, by press, by ambient temperature. Rutherford's learning logic adjusts the formula based on what actually happened on previous similar jobs, so the first sheet lands closer to target than a vanilla CIP3 preset would deliver.
+Where Rutherford adds value is in calibrating the relationship. The raw coverage-to-opening formula varies by ink, by substrate, by press, by ambient temperature. EasySet adjusts the formula from the jobs the operator has recorded as references, so the first sheet lands closer to target than a vanilla CIP3 preset would deliver.
 
-In production, this is the difference between a 600-sheet makeready (vanilla CIP3) and a 250-sheet makeready (CIP3 + Rutherford learned offsets). The same prepress data, processed with site-specific learning, produces a meaningfully better starting point.
+In production, this is the difference between a 600-sheet makeready (vanilla CIP3) and a 250-sheet makeready (CIP3 + EasySet offsets built from recorded jobs). The same prepress data, refined with site-specific history, produces a meaningfully better starting point.
 
 #### Leçon 5 — Spectral targets and ΔE strategy in production
 
@@ -539,7 +545,7 @@ Day one of a closed-loop install is hostile. Experienced press operators have sp
 
 Week one shifts the dynamic. Operators notice the system catching subtle drift that the eye missed, or holding stability through a substrate-batch change. Confidence builds slowly. The shift lead becomes critical here: if the most respected operator on the floor publicly endorses the system, adoption accelerates across the shift.
 
-Month three is the inflection point. By this time the learning logic has accumulated enough job history to be visibly better than vanilla presetting on common work. Makereadies are shorter; rejects are rarer; the data trail is intact. Operators stop overriding except on genuinely unusual jobs. This is the milestone where ROI starts showing in monthly waste reports.
+Month three is the inflection point. By this time EasySet has accumulated enough recorded job history to be visibly better than vanilla presetting on common work. Makereadies are shorter; rejects are rarer; the data trail is intact. Operators stop overriding except on genuinely unusual jobs. This is the milestone where ROI starts showing in monthly waste reports.
 
 Year one is the new normal. Closed-loop is part of the workflow; new hires are trained on it from their first shift. The conversation shifts from "is this working" to "how do we extend this to the second press, second site, extended gamut work". Plan the rollout with this arc in mind; do not promise month-three results in week one.
 
@@ -549,11 +555,11 @@ _More inks, more channels, more discipline required._
 
 Extended Color Gamut workflows print with seven inks instead of four: typically CMYK plus orange, green, and violet. The expanded gamut covers more brand spot colors directly in process, eliminating the need to mix custom inks for short-run jobs. The trade-off is operational complexity: seven channels of ink-key control, seven calibration curves, seven targets.
 
-Closed-loop on ECG is harder than on 4-color in three ways. First, the measurement device must read all seven inks reliably; not all spectros handle high-chroma orange and violet well. IntelliTrax2 reads ECG inks without clipping; older inline systems struggle.
+Closed-loop on ECG is harder than on 4-color in three ways. First, the measurement device must read all seven inks reliably; not all spectros handle high-chroma orange and violet well. IntelliTrax2 reads ECG inks without clipping; older scanning systems struggle.
 
 Second, trapping behavior in ECG is more complex. Three additional inks mean more overprint combinations, more sensitivity to ink sequence, and more places for trapping errors to cascade. The closed-loop system needs to recognize when a target deviation is caused by trapping rather than ink density and decline to over-correct.
 
-Third, the prepress workflow has to feed the press a clean ECG separation. Equinox is the most common conversion technology; Esko Equinox-aware RIPs produce ECG separations from CMYK or RGB inputs. The closed-loop layer reads the resulting ECG color bars and corrects per channel.
+Third, the prepress workflow has to feed the press a clean ECG separation. Esko Equinox is one of the most widely used conversion technologies (GMG and others exist); Equinox-aware RIPs produce ECG separations from CMYK or RGB inputs. The closed-loop layer reads the resulting ECG color bars and corrects per channel.
 
 Bottom line: ECG closed-loop works in production today on packaging presses, but it requires a pressroom that has already mastered 4-color closed-loop and a prepress team comfortable with extended gamut separation.
 
@@ -701,7 +707,7 @@ Color bar layout follows your existing pressroom practice. If you use System Bru
 
 Targets per patch come from your fingerprint. The most reliable source is a measured press fingerprint taken under controlled conditions on the same substrate the production will run on. Generic targets from ISO 12647 or GRACoL work as a starting point but always sit looser than a measured fingerprint.
 
-Tolerances are where customer requirements meet operational reality. A typical setup uses ΔE 00 for solids, ΔE 00 for grays, ΔH for hue at low chroma, and density for ink-key feedback. The tighter the tolerance, the more often the operator will need to react; calibrate tolerances to your shop's actual capability, not aspirational targets.
+Tolerances are where customer requirements meet operational reality. A typical setup uses ΔE 00 for solids and grays, ΔH for chromatic spot and brand colors (hue angle is unstable at low chroma, so grays are toleranced in ΔE/ΔCh, not ΔH), and density for ink-key feedback. The tighter the tolerance, the more often the operator will need to react; calibrate tolerances to your shop's actual capability, not aspirational targets.
 
 Templates evolve. Quarterly review your top 10 templates and look at failure-mode distribution. If a specific patch fails frequently, it might need a tolerance review or a target update. The template library is a living asset, not a one-time setup.
 
@@ -899,7 +905,7 @@ The goal is not perfect attribution every time. The goal is to narrow the search
 
 _The supplier-side of the contract conversation._
 
-Brand-owner reporting requirements have tightened steadily over the last decade. Major converters now ask suppliers for quarterly or monthly quality reports as standard contract terms. The supplier that can produce these reports automatically wins on operational cost; the supplier that produces them manually loses time and accuracy.
+Brand-owner reporting requirements have tightened steadily over the last decade. Major brand owners now ask their print suppliers and converters for quarterly or monthly quality reports as standard contract terms. The supplier that can produce these reports automatically wins on operational cost; the supplier that produces them manually loses time and accuracy.
 
 What to send depends on the contract. Common asks: aggregate ΔE 00 distribution per ink per quarter, count of jobs delivered, count of rejects with root-cause notes, certificate of conformance per job. Sophisticated brand owners also ask for PQX files attached to each delivery so they can re-verify your numbers in their own systems.
 
@@ -1029,7 +1035,7 @@ A pressroom that runs this loop monthly will outperform a pressroom that does no
 
 _Two scan-head variants for two operational profiles._
 
-IntelliTrax2 (model 2900) is the standard scanning system, introduced as the successor to the original IntelliTrax (model 2246, now discontinued). It covers the majority of sheetfed offset use cases: scan times under 10 seconds, color-bar height down to 2 mm, M0/M1/M3 measurement conditions, 45°/0° ring geometry per ISO 5-4:2009.
+IntelliTrax2 (model 2900) is the standard scanning system, introduced as the successor to the original IntelliTrax (model 2246, now discontinued). It covers the majority of sheetfed offset use cases: fast automated scans of a pulled sheet, color-bar height down to 2 mm (Small Spot head — the standard Medium head reads from 3 mm), simultaneous M0/M1 capture, M3 via the optional Polarizer head (3 mm min), 45°/0° ring geometry per ISO 5-4:2009.
 
 IntelliTrax2 Pro (model 2900PRO) was introduced in March 2021. It targets pressrooms with higher throughput requirements or tighter quality demands. The Pro variant typically ships with enhancements around uptime, single-pass condition flexibility, and integration depth with quality software like MeasureColor Production.
 
@@ -1059,11 +1065,11 @@ _The optical choices baked into every measurement._
 
 IntelliTrax2 uses 45°/0° ring illumination, meaning the sample is lit from a 45° cone around its full 360° azimuth and read at 0° (normal). This geometry minimizes directional artifacts from press anisotropy and matches ISO 5-4:2009. It is the right geometry for graphic-arts measurement and the assumed default in modern color management.
 
-M0, M1, M3 are the three measurement conditions IntelliTrax2 supports. M0 is the legacy tungsten illuminant; M1 is D50 with UV component (the modern default for OBA papers); M3 is polarized (for press-side measurement of wet ink and high-gloss substrates). The scanner can capture two conditions in a single pass: M0/M1, M0/M3, or M1/M3.
+M0, M1, M3 are the measurement conditions IntelliTrax2 supports — but which ones you get depends on the scan head. The Small Spot head (2 mm patches) and Medium Spot head (3 mm, the standard) capture M0 and M1 simultaneously in one pass. The Polarizer head (3 mm min) adds M3, reading polarized and unpolarized data in a single scan. Note the trade-off: you cannot combine 2 mm patches with polarized measurement — the polarizer head needs 3 mm.
 
-Single-pass dual-condition matters operationally. Without it, you would need to scan each sheet twice, once for each condition, doubling the operator time. With dual-condition single-pass, the operator gets both readings in under 10 seconds, satisfying both legacy contracts (M0) and modern OBA-aware brands (M1) on the same sheet.
+Single-pass dual-condition matters operationally. Without it, you would need to scan each sheet twice, once per condition, doubling the operator time. With it, one pulled sheet satisfies both a legacy contract (M0) and a modern OBA-aware brand spec (M1) in the same scan.
 
-Spectral range is 400-700 nm at 10 nm intervals, the graphic-arts standard. Inter-instrument agreement averages 0.3 ΔEab with a maximum of 0.45 ΔEab; these are the X-Rite published numbers and represent the realistic ceiling for inline scanning today.
+Spectral range is 400-700 nm at 10 nm intervals, the graphic-arts standard. Inter-instrument agreement averages 0.3 ΔEab with a maximum of 0.45 ΔEab; these are the X-Rite published numbers and represent the realistic ceiling for automated bar scanning today.
 
 For brand-owner contracts that specify M2 (D50 UV-cut), note that IntelliTrax2 captures M2 as a software-derived condition from M1 and M0 data, not directly. The accuracy is typically adequate for production use but a dedicated M2 spectro might be preferred for primary characterization work.
 
@@ -1071,13 +1077,13 @@ For brand-owner contracts that specify M2 (D50 UV-cut), note that IntelliTrax2 c
 
 _The smallest patches in the industry, and their constraints._
 
-IntelliTrax2 reads patches as small as 2 mm in height (small patch) or 3 mm (medium or polarizer patch). This is significantly tighter than legacy inline systems, which typically required 4-5 mm. Smaller bars steal less printable area and let you fit more patches on the same sheet width.
+IntelliTrax2 reads patches as small as 2 mm in height (small patch) or 3 mm (medium or polarizer patch). This is significantly tighter than legacy scanning systems, which typically required 4-5 mm. Smaller bars steal less printable area and let you fit more patches on the same sheet width.
 
 What fits at 2 mm: solid C, M, Y, K, three-quarter tone (75 %), midtone (50 %), quarter-tone (25 %), highlight (5 %), gray balance (CMY equal to K), overprint solids (R, G, B), and per-zone bars across the full sheet width. A 32-zone bar plus the global patches fits comfortably on a B1 sheet at the gripper or tail edge.
 
 What breaks at 2 mm: ink trapping is visible. The smaller the patch, the more an ink misregister (typically 0.05-0.1 mm) shows up as patch-to-patch variation rather than within-patch variation. Tight register is a precondition for tight-tolerance 2 mm measurement.
 
-Patch width matters too. The default 3 mm patch width matches the 32-mm ink-zone width well; a bar with 32 zones at 3 mm wide patches gives 96 mm of total bar length per row, comfortably under typical sheet widths.
+Patch width matters too — but do not confuse patch width with zone width. Each ink zone gets its own patch (or patch group) positioned within that zone, so the patches are spaced at the zone pitch (roughly 30–38 mm depending on press OEM) and the bar spans the full live width of the sheet — around a metre on B1 — even though each individual patch is only 3–4 mm wide.
 
 The trade-off is repeatability. 2 mm patches have lower repeatability than 4 mm patches because the sensor integration window is smaller. For routine production, 2 mm is fine; for press fingerprinting (where you only do it occasionally and want maximum statistical confidence), use 4 mm bars on a dedicated test run.
 
@@ -1085,7 +1091,7 @@ The trade-off is repeatability. 2 mm patches have lower repeatability than 4 mm 
 
 _The recurring costs that protect your data._
 
-Non-contact measurement is one of IntelliTrax2's structural advantages. The scan head does not touch the sheet, so there is no contact wear, no transfer of ink to the sensor, and no scratches on the sheet. This is the main reason inline scanners outlive handheld spectros in equivalent duty cycles.
+Non-contact measurement is one of IntelliTrax2's structural advantages. The scan head does not touch the sheet, so there is no contact wear, no transfer of ink to the sensor, and no scratches on the sheet. This is the main reason scanning systems outlive handheld spectros in equivalent duty cycles.
 
 UV LED life is the dominant aging factor. The UV light source ages with operating hours; output gradually decreases, M1 readings drift, and inter-instrument agreement degrades. Annual recertification through X-Rite or a certified service partner restores the calibration and resets the drift clock.
 
@@ -1135,12 +1141,12 @@ Total cost of migration is typically 15-25 % of an original purchase, depending 
 
 **Q3.** Which is true of IntelliTrax2 measurement conditions?
 
-- A. It supports only M0
-- B. It can capture two conditions in a single pass (M0/M1, M0/M3, or M1/M3)  ✅
+- A. Every head supports M0, M1 and M3 at once
+- B. Small/Medium heads capture M0+M1 simultaneously; M3 requires the Polarizer head (3 mm min — so no 2 mm patches with M3)  ✅
 - C. M1 excludes UV
 - D. M3 is unpolarized
 
-> **Explication.** IntelliTrax2 captures two conditions in one pass, so a single scan can satisfy a legacy M0 contract and a modern M1 brand spec at once.
+> **Explication.** Conditions depend on the scan head: M0/M1 simultaneous on Small (2 mm) and Medium (3 mm) heads; the Polarizer head adds M3 at 3 mm minimum. One scan can still satisfy a legacy M0 contract and a modern M1 spec at once.
 > _(réf. module 3)_
 
 **Q4.** What is a precondition for reliable tight-tolerance 2 mm patch measurement?
@@ -1204,7 +1210,7 @@ ColorLoop's AI is not a generative model and is not the same technology that pow
 
 What it does: predict starting ink-key positions for a new job based on the closest historical match. The prediction is then refined by real-time closed-loop correction during makeready. The combined effect is fewer correction cycles before reaching target color.
 
-What it does not do: replace the closed-loop layer beneath it. The AI is a starting-point predictor; the closed-loop system is the actual color controller. If you remove the closed-loop, the AI prediction alone is a guess. If you remove the AI, the closed-loop still works, just with a generic CIP3-based starting position instead of a learned one.
+What it does not do: replace the closed-loop layer beneath it. The AI is a starting-point predictor; the closed-loop system is the actual color controller. If you remove the closed-loop, the AI prediction alone is a guess. If you remove the AI, the closed-loop still works — it falls back to EasySet, where the operator records reference jobs and EasySet adjusts the curves from that history. The difference ColorLoop makes is automation: instead of relying on the operator to record the right jobs, the AI decides on its own what to record for the next learning cycle, based on the printing conditions — which also removes the risk of learning from a job the operator recorded by mistake.
 
 The honest framing: AI-guided makeready typically saves 15-30 % of additional time and waste on top of vanilla closed-loop. Vanilla closed-loop already saved 30-55 % over open-loop. The AI is a refinement, not a revolution.
 
@@ -1220,7 +1226,7 @@ After 30 days (typically 90-120 makereadies), the model has seen enough of your 
 
 After 90 days (300+ makereadies), the model has covered most of your routine production. It also has learned the substrate-specific quirks: how this paper batch behaves versus the previous one, how this ink set drifts versus that one. Gain over generic CIP3: 20-25 %.
 
-After 365 days (1000+ makereadies), the model has seen the seasonal effects (humidity changes, ink supplier batches over time, operator rotation) and edge cases. Gain over generic CIP3: 25-35 %. The model continues to improve beyond a year, but the curve flattens.
+After 365 days (around 700–900 makereadies on a 3-per-day, 5-day pattern), the model has seen the seasonal effects (humidity changes, ink supplier batches over time, operator rotation) and edge cases. Gain over generic CIP3: 25-35 %. The model continues to improve beyond a year, but the curve flattens.
 
 New press? New substrate? New ink supplier? The model needs additional training data for the new variable. Plan for 30-60 days of slightly degraded prediction after any major input change, then back to the previous learning rate.
 
@@ -1349,7 +1355,7 @@ Each stage transition is a deliberate decision, not a feature toggle. Document t
 
 _Three layers, one outcome._
 
-Offset360 is not a product in the catalog sense; it is a solution bundle that X-Rite assembles from three independent technologies. The first layer is Rutherford closed-loop control: ink-key actuation, decision logic, operator console. The second layer is IntelliTrax2 inline scanning: the measurement that feeds the loop. The third layer is MeasureColor Production and Reports: the software backbone for quality data capture, storage, and reporting.
+Offset360 is not a product in the catalog sense; it is a solution bundle that X-Rite assembles from three independent technologies. The first layer is Rutherford closed-loop control: ink-key actuation, decision logic, operator console. The second layer is IntelliTrax2 automated scanning: the measurement that feeds the loop. The third layer is MeasureColor Production and Reports: the software backbone for quality data capture, storage, and reporting.
 
 The three layers are independently capable. You can buy IntelliTrax2 without Offset360 (many pressrooms do). You can buy MeasureColor without IntelliTrax2 (using handhelds or strip readers). You can buy Rutherford closed-loop with a different measurement device. Offset360 is the configuration where all three are sourced together and pre-integrated.
 
@@ -1363,7 +1369,7 @@ The Offset360 landing page lives at xrite.com/page/offset360, which is also the 
 
 _The integration topology, link by link._
 
-IntelliTrax2 sits at the delivery end of the press, on a track. It connects via Ethernet to its dedicated controller PC. That PC also hosts (or is networked to) MeasureColor Production. The measurement data flows from scanner to controller to MeasureColor in under a second per sheet.
+IntelliTrax2 sits press-side on its scan track, next to the console: the operator pulls a sheet from the delivery and places it on the track for the automated read. The system connects via Ethernet to its dedicated controller PC, which also hosts (or is networked to) MeasureColor Production. The measurement data flows from scanner to controller to MeasureColor in under a second per scanned sheet.
 
 MeasureColor Production sits on a Windows workstation near the operator. Its SQL database can be local (single-machine install) or central (multi-machine, multi-site install). For Offset360, single-machine is the norm; central is an upgrade path.
 
@@ -1381,7 +1387,7 @@ Prepress is stage zero. The job arrives from the customer, gets imposed, separat
 
 Setup is stage one. The CIP3 file imports into the press console; Rutherford reads it and applies learned offsets to refine the predicted ink-key positions. The operator loads the plates, mounts the inks, calls up the job template from MeasureColor.
 
-Measure is stage two. The press starts; IntelliTrax2 scans each sheet (or every Nth) as it leaves the delivery; the spectral data flows to MeasureColor. Within 10 seconds of the sheet hitting the delivery, the system has ΔE 00 per ink per zone.
+Measure is stage two. The press starts; the operator pulls sheets from the delivery at regular intervals and runs them across IntelliTrax2; the spectral data flows to MeasureColor. Seconds after the pulled sheet hits the track, the system has ΔE 00 per ink per zone.
 
 Correct is stage three. The measurement data flows to Rutherford, which computes the next ink-key adjustment, sends it to the OEM console, which moves the keys before the next sheet pulls. The cycle repeats; ΔE 00 converges toward target.
 
@@ -1393,9 +1399,9 @@ The job has one data trail across all five stages. That continuity is what makes
 
 _Three named benefits, with the math behind each._
 
-Makeready time reduction is the most measurable benefit. A B1 6-color press averaging 120 minutes of makeready before Offset360 typically drops to 75-85 minutes after. At 3 makereadies per day, 225 production days per year, and €150/h press cost, a 40-minute saving is worth €112,500 per press per year in recovered press time.
+Makeready time reduction is the most measurable benefit. A B1 6-color press averaging 120 minutes of makeready before Offset360 typically drops to 75-85 minutes after. At 3 makereadies per day, 225 production days per year (675 makereadies), and €150/h press cost, a 40-minute saving is worth €67,500 per press per year in recovered press time.
 
-Paper waste reduction is the second benefit. Sheet count per makeready drops from a typical 800 to a typical 350-450. At €0.5346 per sheet (B1 250 g/m² at €1 200/t) and 675 makereadies per year, a 400-sheet saving per makeready is worth €144,000 per press per year in paper alone.
+Paper waste reduction is the second benefit. Sheet count per makeready drops from a typical 800 to a typical 350-450. At ≈€0.21 per sheet (B1 250 g/m² at €1 200/t) and 675 makereadies per year, a 400-sheet saving per makeready is worth ≈€57,000 per press per year in paper alone.
 
 Brand-owner reporting is the third benefit and the hardest to quantify in euros. The supplier that delivers PDF or PQX quality reports on schedule, with audit-grade data trails, has fewer contract renegotiations, lower audit risk, and longer customer relationships. A single avoided contract loss can be worth more than the entire system payback.
 
@@ -1423,12 +1429,12 @@ Avoid these five and the install runs smoothly. Fall into any of them and the pr
 
 **Q1.** Offset360 bundles which three technologies?
 
-- A. Rutherford closed-loop control, IntelliTrax2 inline scanning, and MeasureColor Production/Reports  ✅
+- A. Rutherford closed-loop control, IntelliTrax2 automated scanning, and MeasureColor Production/Reports  ✅
 - B. Three different presses
 - C. Three inks
 - D. Three RIPs
 
-> **Explication.** Offset360 is the pre-integrated bundle of Rutherford closed-loop control, IntelliTrax2 inline scanning, and MeasureColor Production/Reports.
+> **Explication.** Offset360 is the pre-integrated bundle of Rutherford closed-loop control, IntelliTrax2 automated scanning, and MeasureColor Production/Reports.
 > _(réf. module 1)_
 
 **Q2.** Why run NTP (time synchronization) across all three Offset360 systems?

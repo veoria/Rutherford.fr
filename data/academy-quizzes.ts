@@ -62,13 +62,13 @@ export const COURSE_QUIZZES: Record<string, CourseQuiz> = {
           'ISO 12647-2 — the part brand owners usually cite for packaging — covers which process, and what does it define?',
         options: [
           'Flexo; it defines anilox volumes',
-          'Sheetfed offset; it defines paper classes (PT1–PT5), TVI curves and CIELAB aim points',
+          'Sheetfed offset; it defines substrate classes (PS1–PS8 in the 2013 edition; PT1–PT5 in the older 2004 one), TVI curves and CIELAB aim points',
           'Digital toner; it defines screening angles',
           'Gravure; it defines cylinder engraving depths',
         ],
         correct: [1],
         explanation:
-          '12647-2 is the offset part. It defines paper classes PT1–PT5, target tonal value increase (TVI) curves, and CIELAB aim points for the solids.',
+          '12647-2 is the offset part. It defines printing substrate classes (PS1–PS8 since 2013; formerly PT1–PT5), target tonal value increase (TVI) curves, and CIELAB aim points for the solids.',
         moduleRef: 2,
       },
       {
@@ -131,16 +131,16 @@ export const COURSE_QUIZZES: Record<string, CourseQuiz> = {
     questions: [
       {
         id: 'q1',
-        prompt: 'Which device class sits at the press delivery and scans every sheet in under 10 seconds?',
+        prompt: 'How does an automated scanning system like IntelliTrax2 actually work?',
         options: [
-          'Handheld spectrophotometer (e.g. eXact 2)',
-          'Strip reader / scanning table',
-          'Inline scanner (e.g. IntelliTrax2)',
-          'Densitometer pen',
+          'It measures every sheet inside the running press',
+          'The operator pulls a sheet and places it on the track; the head then scans the bar automatically',
+          'It replaces the color bar entirely',
+          'It only reads single patches like a handheld',
         ],
-        correct: [2],
+        correct: [1],
         explanation:
-          'Inline scanners like IntelliTrax2 sit at the delivery and scan every sheet in under 10 seconds — the right answer when you run multiple jobs per shift.',
+          'IntelliTrax2 is semi-automatic and off-press: the operator pulls a sheet from the delivery onto the scan track, and only the reading is automated. True inline (in-press) systems are a separate device class.',
         moduleRef: 1,
       },
       {
@@ -177,7 +177,7 @@ export const COURSE_QUIZZES: Record<string, CourseQuiz> = {
         options: ['0.5 mm', '2 mm', '5 mm', '10 mm'],
         correct: [1],
         explanation:
-          'IntelliTrax2 reads patches down to 2 mm — much tighter than the 4–5 mm of legacy inline systems — so bars steal less printable area.',
+          'IntelliTrax2 reads patches down to 2 mm — much tighter than the 4–5 mm of legacy scanning systems — so bars steal less printable area.',
         moduleRef: 3,
       },
       {
@@ -220,7 +220,7 @@ export const COURSE_QUIZZES: Record<string, CourseQuiz> = {
         options: ['About €50', 'About €450–500', 'About €5,000', 'It is negligible'],
         correct: [1],
         explanation:
-          '≈€428 paper (800 sheets) + €300 press time (120 min at €150/h) plus sundries lands at a conservative €450–500 per makeready.',
+          '≈€170 paper (800 sheets at ≈€0.21) + €300 press time (120 min at €150/h) plus sundries lands at a conservative €450–500 per makeready.',
         moduleRef: 1,
       },
       {
@@ -595,14 +595,14 @@ export const COURSE_QUIZZES: Record<string, CourseQuiz> = {
         id: 'q3',
         prompt: 'Which is true of IntelliTrax2 measurement conditions?',
         options: [
-          'It supports only M0',
-          'It can capture two conditions in a single pass (M0/M1, M0/M3, or M1/M3)',
+          'Every head supports M0, M1 and M3 at once',
+          'Small/Medium heads capture M0+M1 simultaneously; M3 requires the Polarizer head (3 mm min — so no 2 mm patches with M3)',
           'M1 excludes UV',
           'M3 is unpolarized',
         ],
         correct: [1],
         explanation:
-          'IntelliTrax2 captures two conditions in one pass, so a single scan can satisfy a legacy M0 contract and a modern M1 brand spec at once.',
+          'Conditions depend on the scan head: M0/M1 simultaneous on Small (2 mm) and Medium (3 mm) heads; the Polarizer head adds M3 at 3 mm minimum. One scan can still satisfy a legacy M0 contract and a modern M1 spec at once.',
         moduleRef: 3,
       },
       {
@@ -733,14 +733,14 @@ export const COURSE_QUIZZES: Record<string, CourseQuiz> = {
         id: 'q1',
         prompt: 'Offset360 bundles which three technologies?',
         options: [
-          'Rutherford closed-loop control, IntelliTrax2 inline scanning, and MeasureColor Production/Reports',
+          'Rutherford closed-loop control, IntelliTrax2 automated scanning, and MeasureColor Production/Reports',
           'Three different presses',
           'Three inks',
           'Three RIPs',
         ],
         correct: [0],
         explanation:
-          'Offset360 is the pre-integrated bundle of Rutherford closed-loop control, IntelliTrax2 inline scanning, and MeasureColor Production/Reports.',
+          'Offset360 is the pre-integrated bundle of Rutherford closed-loop control, IntelliTrax2 automated scanning, and MeasureColor Production/Reports.',
         moduleRef: 1,
       },
       {
