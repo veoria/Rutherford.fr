@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 420" font-family="-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif">
+  <rect width="900" height="420" fill="#ffffff"/>
+
+  <!-- left: DENSITY -->
+  <g transform="translate(60,48)">
+    <rect width="360" height="280" rx="16" fill="#ffffff" stroke="#e8ecf0" stroke-width="1.5"/>
+    <rect width="360" height="6" rx="3" fill="#111418"/>
+    <text x="180" y="40" font-size="11.5" font-weight="700" letter-spacing="1.5" fill="#9aa3ae" text-anchor="middle">DENSITY — THE PRESS LANGUAGE</text>
+    <!-- ink key dial -->
+    <g transform="translate(116,64)">
+      <rect width="128" height="74" rx="10" fill="#f4f6f8" stroke="#e8ecf0"/>
+      <text x="64" y="26" font-size="11" font-weight="700" fill="#6b7480" text-anchor="middle">INK KEY · ZONE 14</text>
+      <rect x="20" y="40" width="88" height="14" rx="7" fill="#e8ecf0"/>
+      <rect x="20" y="40" width="56" height="14" rx="7" fill="#111418"/>
+    </g>
+    <g transform="translate(70,160)" font-size="13" fill="#3c434b">
+      <text y="0">• One channel at a time (C, M, Y, K)</text>
+      <text y="30">• Responds <tspan font-weight="700">directly</tspan> to the key:</text>
+      <text x="12" y="52">high → less ink · low → more ink</text>
+      <text y="84">• Fast, robust — 50 years on the floor</text>
+    </g>
+  </g>
+
+  <!-- right: ΔE00 -->
+  <g transform="translate(480,48)">
+    <rect width="360" height="280" rx="16" fill="#ffffff" stroke="#2563eb" stroke-width="2"/>
+    <rect width="360" height="6" rx="3" fill="#2563eb"/>
+    <text x="180" y="40" font-size="11.5" font-weight="700" letter-spacing="1.5" fill="#2563eb" text-anchor="middle">ΔE00 — THE CONTRACT LANGUAGE</text>
+    <!-- contract chip -->
+    <g transform="translate(96,64)">
+      <rect width="168" height="74" rx="10" fill="#eaf1fe"/>
+      <text x="84" y="28" font-size="11" font-weight="700" fill="#2563eb" text-anchor="middle">BRAND SPEC</text>
+      <text x="84" y="54" font-size="17" font-weight="700" fill="#111418" text-anchor="middle">ΔE00 &lt; 2.0</text>
+    </g>
+    <g transform="translate(70,160)" font-size="13" fill="#3c434b">
+      <text y="0">• Perceptual difference vs the target</text>
+      <text y="30">• What the <tspan font-weight="700">brand owner</tspan> writes</text>
+      <text x="12" y="52">into the contract &amp; audits against</text>
+      <text y="84">• Trained eye spots ≈1–2 side-by-side</text>
+    </g>
+  </g>
+
+  <!-- bottom band -->
+  <rect x="60" y="352" width="780" height="44" rx="10" fill="#f4f6f8"/>
+  <text x="450" y="379" font-size="14" font-weight="600" fill="#111418" text-anchor="middle">Two different measurements, two different jobs — closed-loop is the translator between them</text>
+</svg>

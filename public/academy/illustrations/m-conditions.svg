@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 560" font-family="-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif">
+  <defs>
+    <linearGradient id="sheet" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#eef2f6"/>
+    </linearGradient>
+  </defs>
+  <rect width="960" height="560" fill="#ffffff"/>
+
+  <!-- title -->
+  <text x="48" y="56" font-size="13" font-weight="700" letter-spacing="2.2" fill="#2563eb">MEASUREMENT CONDITIONS · ISO 13655</text>
+  <text x="48" y="92" font-size="28" font-weight="700" fill="#111418">One sheet, four numbers</text>
+  <text x="48" y="118" font-size="14.5" fill="#6b7480">The same cyan patch reads differently under each condition — pick by job, not by habit.</text>
+
+  <!-- 4 columns -->
+  <!-- M0 -->
+  <g transform="translate(48,160)">
+    <rect width="198" height="300" rx="16" fill="url(#sheet)" stroke="#e8ecf0"/>
+    <text x="20" y="40" font-size="20" font-weight="700" fill="#111418">M0</text>
+    <text x="20" y="60" font-size="11.5" font-weight="700" letter-spacing="1.5" fill="#9aa3ae">TUNGSTEN · LEGACY</text>
+    <!-- lamp -->
+    <circle cx="99" cy="120" r="26" fill="#f7c873"/>
+    <path d="M99 146 l0 18" stroke="#c8d0d9" stroke-width="4" stroke-linecap="round"/>
+    <rect x="58" y="178" width="82" height="34" rx="6" fill="#00b3d6" opacity=".85"/>
+    <text x="99" y="200" font-size="12" font-weight="700" fill="#ffffff" text-anchor="middle">D 1.43</text>
+    <text x="99" y="240" font-size="12.5" fill="#6b7480" text-anchor="middle">Contracts written</text>
+    <text x="99" y="257" font-size="12.5" fill="#6b7480" text-anchor="middle">before ~2010</text>
+    <rect x="20" y="272" width="158" height="0" fill="none"/>
+  </g>
+
+  <!-- M1 highlighted -->
+  <g transform="translate(266,148)">
+    <rect width="198" height="324" rx="16" fill="#ffffff" stroke="#2563eb" stroke-width="2.5"/>
+    <rect x="49" y="-14" width="100" height="26" rx="13" fill="#2563eb"/>
+    <text x="99" y="4" font-size="11" font-weight="700" fill="#ffffff" text-anchor="middle" letter-spacing="1">THE DEFAULT</text>
+    <text x="20" y="52" font-size="20" font-weight="700" fill="#111418">M1</text>
+    <text x="20" y="72" font-size="11.5" font-weight="700" letter-spacing="1.5" fill="#2563eb">D50 + UV INCLUDED</text>
+    <circle cx="99" cy="132" r="26" fill="#ffffff" stroke="#2563eb" stroke-width="3"/>
+    <g stroke="#7c3aed" stroke-width="3" stroke-linecap="round">
+      <path d="M84 108 l-8 -14"/><path d="M99 102 l0 -16"/><path d="M114 108 l8 -14"/>
+    </g>
+    <text x="99" y="138" font-size="11" font-weight="700" fill="#2563eb" text-anchor="middle">D50+UV</text>
+    <rect x="58" y="190" width="82" height="34" rx="6" fill="#00b3d6"/>
+    <text x="99" y="212" font-size="12" font-weight="700" fill="#ffffff" text-anchor="middle">D 1.47</text>
+    <text x="99" y="252" font-size="12.5" font-weight="600" fill="#14702f" text-anchor="middle">✓ Color conformance</text>
+    <text x="99" y="269" font-size="12.5" font-weight="600" fill="#14702f" text-anchor="middle">✓ G7 · GRACoL · FOGRA</text>
+    <text x="99" y="286" font-size="12.5" fill="#6b7480" text-anchor="middle">Reads OBAs the way the</text>
+    <text x="99" y="302" font-size="12.5" fill="#6b7480" text-anchor="middle">customer's booth shows them</text>
+  </g>
+
+  <!-- M2 aside -->
+  <g transform="translate(484,160)">
+    <rect width="198" height="300" rx="16" fill="url(#sheet)" stroke="#e8ecf0" stroke-dasharray="6 5"/>
+    <text x="20" y="40" font-size="20" font-weight="700" fill="#9aa3ae">M2</text>
+    <text x="20" y="60" font-size="11.5" font-weight="700" letter-spacing="1.5" fill="#9aa3ae">D50 · UV CUT</text>
+    <circle cx="99" cy="120" r="26" fill="#ffffff" stroke="#c8d0d9" stroke-width="3"/>
+    <line x1="80" y1="101" x2="118" y2="139" stroke="#c8d0d9" stroke-width="3"/>
+    <text x="99" y="126" font-size="10" font-weight="700" fill="#9aa3ae" text-anchor="middle">UV ✕</text>
+    <rect x="58" y="178" width="82" height="34" rx="6" fill="#00b3d6" opacity=".55"/>
+    <text x="99" y="200" font-size="12" font-weight="700" fill="#ffffff" text-anchor="middle">D 1.45</text>
+    <text x="99" y="240" font-size="12.5" fill="#6b7480" text-anchor="middle">Good to know, rarely used:</text>
+    <text x="99" y="257" font-size="12.5" fill="#6b7480" text-anchor="middle">OBA diagnostics (M1−M2),</text>
+    <text x="99" y="274" font-size="12.5" fill="#6b7480" text-anchor="middle">non-OBA films &amp; foils</text>
+  </g>
+
+  <!-- M3 warning -->
+  <g transform="translate(702,160)">
+    <rect width="198" height="300" rx="16" fill="url(#sheet)" stroke="#e8ecf0"/>
+    <text x="20" y="40" font-size="20" font-weight="700" fill="#111418">M3</text>
+    <text x="20" y="60" font-size="11.5" font-weight="700" letter-spacing="1.5" fill="#9aa3ae">POLARIZED</text>
+    <circle cx="99" cy="120" r="26" fill="#ffffff" stroke="#111418" stroke-width="3"/>
+    <g stroke="#111418" stroke-width="2.5"><path d="M86 110 l26 0 M86 120 l26 0 M86 130 l26 0"/></g>
+    <rect x="58" y="178" width="82" height="34" rx="6" fill="#0083a8"/>
+    <text x="99" y="200" font-size="12" font-weight="700" fill="#ffffff" text-anchor="middle">D 1.59</text>
+    <text x="99" y="238" font-size="12.5" font-weight="600" fill="#111418" text-anchor="middle">Wet-ink density on the run</text>
+    <rect x="16" y="252" width="166" height="36" rx="8" fill="#fdeaea"/>
+    <text x="99" y="268" font-size="11.5" font-weight="700" fill="#b33" text-anchor="middle">⚠ NEVER for G7 or ΔE</text>
+    <text x="99" y="282" font-size="11.5" font-weight="700" fill="#b33" text-anchor="middle">vs ISO / GRACoL / FOGRA aims</text>
+  </g>
+
+  <!-- footer rule -->
+  <rect x="48" y="496" width="852" height="40" rx="10" fill="#f4f6f8"/>
+  <text x="474" y="521" font-size="14" font-weight="600" fill="#111418" text-anchor="middle">Rule of thumb — M3 to dose the ink · M1 to judge the color · never mix them</text>
+</svg>

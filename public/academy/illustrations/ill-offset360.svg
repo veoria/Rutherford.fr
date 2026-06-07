@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 420" font-family="-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif">
+  <rect width="900" height="420" fill="#fff"/>
+  <!-- three layers -->
+  <g transform="translate(160,40)">
+    <rect width="580" height="86" rx="14" fill="#15324d"/>
+    <text x="24" y="36" font-size="14" font-weight="700" fill="#fff">Rutherford — closed-loop control</text>
+    <text x="24" y="60" font-size="11.5" fill="#aeb6bf">decision logic · ink-key actuation · operator console</text>
+    <text x="540" y="50" font-size="11" font-weight="700" fill="#7da4c4" text-anchor="end">ACTUATOR + DECISION</text>
+  </g>
+  <g transform="translate(160,142)">
+    <rect width="580" height="86" rx="14" fill="#2563eb"/>
+    <text x="24" y="36" font-size="14" font-weight="700" fill="#fff">IntelliTrax2 — automated scanning</text>
+    <text x="24" y="60" font-size="11.5" fill="#cfe0fb">the measurement feeding the loop · pulled sheets, off-press</text>
+    <text x="540" y="50" font-size="11" font-weight="700" fill="#a8c6f5" text-anchor="end">SENSOR</text>
+  </g>
+  <g transform="translate(160,244)">
+    <rect width="580" height="86" rx="14" fill="#00b3d6"/>
+    <text x="24" y="36" font-size="14" font-weight="700" fill="#fff">MeasureColor Production + Reports</text>
+    <text x="24" y="60" font-size="11.5" fill="#dff6fc">data capture · storage · quality reporting · dashboards</text>
+    <text x="540" y="50" font-size="11" font-weight="700" fill="#bfeaf4" text-anchor="end">DATA BACKBONE</text>
+  </g>
+  <!-- brace -->
+  <path d="M770 56 Q 800 60 800 100 V 160 Q 800 185 814 185 Q 800 185 800 210 V 300 Q 800 320 770 318" fill="none" stroke="#c8d0d9" stroke-width="2.5"/>
+  <text x="836" y="178" font-size="13" font-weight="700" fill="#111418" text-anchor="middle" transform="rotate(90 836 178)">OFFSET360</text>
+  <!-- notes -->
+  <rect x="60" y="356" width="780" height="44" rx="10" fill="#f4f6f8"/>
+  <text x="450" y="374" font-size="12.5" font-weight="600" fill="#111418" text-anchor="middle">Each layer works alone — the bundle's value is pre-integration: faster install, cleaner data flow, one support number.</text>
+  <text x="450" y="392" font-size="11.5" fill="#6b7480" text-anchor="middle">Trade-off: less flexibility than a bespoke stack. For most packaging &amp; commercial offset, the bundle wins.</text>
+</svg>

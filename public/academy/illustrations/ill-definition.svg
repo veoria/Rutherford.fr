@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 400" font-family="-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif">
+  <rect width="900" height="400" fill="#ffffff"/>
+
+  <!-- TARGET -->
+  <g transform="translate(48,60)">
+    <rect width="212" height="220" rx="16" fill="#ffffff" stroke="#e8ecf0" stroke-width="1.5"/>
+    <text x="106" y="34" font-size="11.5" font-weight="700" letter-spacing="1.5" fill="#2563eb" text-anchor="middle">1 · TARGET</text>
+    <rect x="66" y="52" width="80" height="58" rx="8" fill="#00b3d6"/>
+    <text x="106" y="134" font-size="12.5" font-weight="700" fill="#111418" text-anchor="middle">L* 54 · a* −37 · b* −50</text>
+    <text x="106" y="158" font-size="11.5" fill="#6b7480" text-anchor="middle">A fingerprint or brand</text>
+    <text x="106" y="174" font-size="11.5" fill="#6b7480" text-anchor="middle">reference — in CIELAB or</text>
+    <text x="106" y="190" font-size="11.5" fill="#6b7480" text-anchor="middle">spectral values</text>
+  </g>
+  <text x="290" y="180" font-size="34" font-weight="700" fill="#9aa3ae" text-anchor="middle">+</text>
+
+  <!-- TOLERANCE -->
+  <g transform="translate(322,60)">
+    <rect width="212" height="220" rx="16" fill="#ffffff" stroke="#e8ecf0" stroke-width="1.5"/>
+    <text x="106" y="34" font-size="11.5" font-weight="700" letter-spacing="1.5" fill="#2563eb" text-anchor="middle">2 · TOLERANCE</text>
+    <circle cx="106" cy="84" r="34" fill="none" stroke="#e9f7ef" stroke-width="11"/>
+    <circle cx="106" cy="84" r="34" fill="none" stroke="#16a34a" stroke-width="11" stroke-dasharray="160 54" stroke-linecap="round" transform="rotate(-90 106 84)"/>
+    <circle cx="106" cy="84" r="7" fill="#00b3d6"/>
+    <text x="106" y="142" font-size="13.5" font-weight="700" fill="#111418" text-anchor="middle">ΔE00 &lt; 2.0</text>
+    <text x="106" y="164" font-size="11.5" fill="#6b7480" text-anchor="middle">A ΔE budget: anything</text>
+    <text x="106" y="180" font-size="11.5" fill="#6b7480" text-anchor="middle">inside the ring passes —</text>
+    <text x="106" y="196" font-size="11.5" fill="#6b7480" text-anchor="middle">no debate, no mood</text>
+  </g>
+  <text x="564" y="180" font-size="34" font-weight="700" fill="#9aa3ae" text-anchor="middle">+</text>
+
+  <!-- MEASUREMENT -->
+  <g transform="translate(596,60)">
+    <rect width="212" height="220" rx="16" fill="#ffffff" stroke="#e8ecf0" stroke-width="1.5"/>
+    <text x="106" y="34" font-size="11.5" font-weight="700" letter-spacing="1.5" fill="#2563eb" text-anchor="middle">3 · MEASUREMENT</text>
+    <!-- spectro icon -->
+    <g transform="translate(66,52)">
+      <rect width="80" height="46" rx="10" fill="#111418"/>
+      <circle cx="40" cy="23" r="11" fill="#2563eb"/>
+      <rect x="30" y="46" width="20" height="12" rx="3" fill="#c8d0d9"/>
+    </g>
+    <text x="106" y="134" font-size="12.5" font-weight="700" fill="#111418" text-anchor="middle">A device, not an eye</text>
+    <text x="106" y="158" font-size="11.5" fill="#6b7480" text-anchor="middle">Spectro or scanning system —</text>
+    <text x="106" y="174" font-size="11.5" fill="#6b7480" text-anchor="middle">the same verdict on every</text>
+    <text x="106" y="190" font-size="11.5" fill="#6b7480" text-anchor="middle">shift, with a data trail</text>
+  </g>
+
+  <!-- equals band -->
+  <g transform="translate(48,320)">
+    <rect width="760" height="48" rx="12" fill="#e9f7ef" stroke="#bbe7c9"/>
+    <text x="380" y="30" font-size="15" font-weight="700" fill="#14702f" text-anchor="middle">= GOOD COLOR — defensible · auditable · repeatable · improvable</text>
+  </g>
+</svg>

@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 420" font-family="-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif">
+  <rect width="900" height="420" fill="#fff"/>
+  <defs><marker id="a3" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#9b59ff"/></marker></defs>
+  <g stroke="#9b59ff" stroke-width="3" fill="none" marker-end="url(#a3)">
+    <path d="M330 120 Q 450 80 570 118"/>
+    <path d="M640 210 Q 660 280 575 318"/>
+    <path d="M500 340 Q 450 356 400 342"/>
+    <path d="M322 320 Q 240 280 258 212"/>
+  </g>
+  <g text-anchor="middle">
+    <g transform="translate(250,120)"><rect x="-90" y="-44" width="180" height="88" rx="14" fill="#fff" stroke="#e8ecf0" stroke-width="1.5"/><text y="-12" font-size="13.5" font-weight="700" fill="#111418">1 · Observe</text><text y="10" font-size="11" fill="#6b7480">weekly dashboard scan —</text><text y="25" font-size="11" fill="#6b7480">flag what trends wrong</text></g>
+    <g transform="translate(650,120)"><rect x="-90" y="-44" width="180" height="88" rx="14" fill="#fff" stroke="#9b59ff" stroke-width="2"/><text y="-12" font-size="13.5" font-weight="700" fill="#111418">2 · Hypothesize</text><text y="10" font-size="11" fill="#6b7480">drill down + a falsifiable</text><text y="25" font-size="11" fill="#6b7480">prediction ("ΔE → &lt;1.5 in 4 wks")</text></g>
+    <g transform="translate(650,330)"><rect x="-90" y="-44" width="180" height="88" rx="14" fill="#fff" stroke="#e8ecf0" stroke-width="1.5"/><text y="-12" font-size="13.5" font-weight="700" fill="#111418">3 · Act</text><text y="10" font-size="11" fill="#6b7480">maintenance, training,</text><text y="25" font-size="11" fill="#6b7480">tolerance or substrate change</text></g>
+    <g transform="translate(250,330)"><rect x="-90" y="-44" width="180" height="88" rx="14" fill="#fff" stroke="#e8ecf0" stroke-width="1.5"/><text y="-12" font-size="13.5" font-weight="700" fill="#111418">4 · Verify</text><text y="10" font-size="11" fill="#6b7480">next month's dashboard:</text><text y="25" font-size="11" fill="#6b7480">prediction held — or revise</text></g>
+  </g>
+  <text x="450" y="232" font-size="12" font-weight="700" fill="#9b59ff" text-anchor="middle">monthly</text>
+  <rect x="60" y="386" width="780" height="0" fill="none"/>
+  <text x="450" y="404" font-size="13" font-weight="600" fill="#111418" text-anchor="middle">A pressroom that runs this loop monthly outperforms one that doesn't — with identical equipment</text>
+</svg>

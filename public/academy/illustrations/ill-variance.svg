@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 430" font-family="-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif">
+  <rect width="900" height="430" fill="#ffffff"/>
+
+  <!-- the sheet -->
+  <g transform="translate(330,28)">
+    <rect width="240" height="64" rx="12" fill="#f4f6f8" stroke="#e8ecf0"/>
+    <rect x="18" y="18" width="40" height="28" rx="4" fill="#00b3d6"/>
+    <text x="74" y="32" font-size="12.5" font-weight="700" fill="#111418">Same sheet, same job</text>
+    <text x="74" y="49" font-size="11.5" fill="#6b7480">measured after the fact: ΔE00 = 2.6</text>
+  </g>
+
+  <!-- arrows down -->
+  <g stroke="#c8d0d9" stroke-width="2.5" fill="none">
+    <path d="M450 96 V 120 M450 120 H 160 V 142 M450 120 H 740 V 142 M450 120 V 142"/>
+  </g>
+
+  <!-- three operator verdicts -->
+  <!-- Shift 1 -->
+  <g transform="translate(60,150)">
+    <rect width="200" height="170" rx="16" fill="#ffffff" stroke="#e8ecf0" stroke-width="1.5"/>
+    <circle cx="100" cy="44" r="22" fill="#f4f6f8" stroke="#c8d0d9"/>
+    <circle cx="100" cy="38" r="8" fill="#9aa3ae"/><path d="M84 58 q16 -14 32 0" fill="#9aa3ae"/>
+    <text x="100" y="92" font-size="11.5" font-weight="700" letter-spacing="1.2" fill="#9aa3ae" text-anchor="middle">NIGHT SHIFT</text>
+    <rect x="48" y="106" width="104" height="30" rx="15" fill="#e9f7ef"/>
+    <text x="100" y="126" font-size="13" font-weight="700" fill="#14702f" text-anchor="middle">PASS ✓</text>
+    <text x="100" y="156" font-size="11.5" fill="#6b7480" text-anchor="middle" font-style="italic">"Looks good to me."</text>
+  </g>
+  <!-- Shift 2 -->
+  <g transform="translate(350,150)">
+    <rect width="200" height="170" rx="16" fill="#ffffff" stroke="#e8ecf0" stroke-width="1.5"/>
+    <circle cx="100" cy="44" r="22" fill="#f4f6f8" stroke="#c8d0d9"/>
+    <circle cx="100" cy="38" r="8" fill="#9aa3ae"/><path d="M84 58 q16 -14 32 0" fill="#9aa3ae"/>
+    <text x="100" y="92" font-size="11.5" font-weight="700" letter-spacing="1.2" fill="#9aa3ae" text-anchor="middle">DAY SHIFT</text>
+    <rect x="48" y="106" width="104" height="30" rx="15" fill="#fdeaea"/>
+    <text x="100" y="126" font-size="13" font-weight="700" fill="#b33" text-anchor="middle">FAIL ✕</text>
+    <text x="100" y="156" font-size="11.5" fill="#6b7480" text-anchor="middle" font-style="italic">"Needs more cyan."</text>
+  </g>
+  <!-- Shift 3 -->
+  <g transform="translate(640,150)">
+    <rect width="200" height="170" rx="16" fill="#ffffff" stroke="#e8ecf0" stroke-width="1.5"/>
+    <circle cx="100" cy="44" r="22" fill="#f4f6f8" stroke="#c8d0d9"/>
+    <circle cx="100" cy="38" r="8" fill="#9aa3ae"/><path d="M84 58 q16 -14 32 0" fill="#9aa3ae"/>
+    <text x="100" y="92" font-size="11.5" font-weight="700" letter-spacing="1.2" fill="#9aa3ae" text-anchor="middle">WEEKEND SHIFT</text>
+    <rect x="48" y="106" width="104" height="30" rx="15" fill="#e9f7ef"/>
+    <text x="100" y="126" font-size="13" font-weight="700" fill="#14702f" text-anchor="middle">PASS ✓</text>
+    <text x="100" y="156" font-size="11.5" fill="#6b7480" text-anchor="middle" font-style="italic">"Customer won't notice."</text>
+  </g>
+
+  <!-- bottom band -->
+  <rect x="60" y="352" width="780" height="44" rx="10" fill="#fff7ed" stroke="#fed7aa"/>
+  <text x="450" y="379" font-size="14" font-weight="600" fill="#9a3412" text-anchor="middle">Three verdicts, zero data — this is the variance your brand owner finds before you do.</text>
+</svg>

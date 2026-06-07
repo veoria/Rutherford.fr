@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 400" font-family="-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif">
+  <rect width="900" height="400" fill="#fff"/>
+  <!-- stairs -->
+  <g>
+    <g transform="translate(60,250)">
+      <rect width="190" height="90" rx="12" fill="#fff" stroke="#e8ecf0" stroke-width="1.5"/>
+      <text x="95" y="28" font-size="12.5" font-weight="700" fill="#111418" text-anchor="middle">1 · Advisory</text>
+      <text x="95" y="48" font-size="10.5" fill="#6b7480" text-anchor="middle">System recommends,</text>
+      <text x="95" y="62" font-size="10.5" fill="#6b7480" text-anchor="middle">operator executes everything</text>
+      <text x="95" y="80" font-size="9.5" font-weight="700" fill="#9aa3ae" text-anchor="middle">FIRST 4–8 WEEKS</text>
+    </g>
+    <g transform="translate(270,190)">
+      <rect width="190" height="90" rx="12" fill="#fff" stroke="#e8ecf0" stroke-width="1.5"/>
+      <text x="95" y="28" font-size="12.5" font-weight="700" fill="#111418" text-anchor="middle">2 · Assisted</text>
+      <text x="95" y="48" font-size="10.5" fill="#6b7480" text-anchor="middle">One-click approval before</text>
+      <text x="95" y="62" font-size="10.5" fill="#6b7480" text-anchor="middle">each correction executes</text>
+      <text x="95" y="80" font-size="9.5" font-weight="700" fill="#9aa3ae" text-anchor="middle">2–4 MONTHS · "HUMAN IN THE LOOP"</text>
+    </g>
+    <g transform="translate(480,130)">
+      <rect width="190" height="90" rx="12" fill="#fff" stroke="#2563eb" stroke-width="2"/>
+      <text x="95" y="28" font-size="12.5" font-weight="700" fill="#2563eb" text-anchor="middle">3 · Supervised auto</text>
+      <text x="95" y="48" font-size="10.5" fill="#6b7480" text-anchor="middle">Corrections run alone; operator</text>
+      <text x="95" y="62" font-size="10.5" fill="#6b7480" text-anchor="middle">monitors, intervenes on alerts</text>
+      <text x="95" y="80" font-size="9.5" font-weight="700" fill="#2563eb" text-anchor="middle">PRODUCTION MODE · 6+ MONTHS</text>
+    </g>
+    <g transform="translate(690,70)">
+      <rect width="190" height="90" rx="12" fill="#fff" stroke="#e8ecf0" stroke-width="1.5"/>
+      <text x="95" y="28" font-size="12.5" font-weight="700" fill="#111418" text-anchor="middle">4 · Fully autonomous</text>
+      <text x="95" y="48" font-size="10.5" fill="#6b7480" text-anchor="middle">End-to-end makeready;</text>
+      <text x="95" y="62" font-size="10.5" fill="#6b7480" text-anchor="middle">operator handles exceptions</text>
+      <text x="95" y="80" font-size="9.5" font-weight="700" fill="#9a3412" text-anchor="middle">CAUTIOUSLY · KNOWN JOB TYPES</text>
+    </g>
+    <path d="M255 280 L268 262 M465 220 L478 202 M675 160 L688 142" stroke="#c8d0d9" stroke-width="2.5"/>
+  </g>
+  <rect x="60" y="356" width="820" height="0" fill="none"/>
+  <rect x="60" y="352" width="780" height="36" rx="10" fill="#f4f6f8"/>
+  <text x="450" y="375" font-size="13" font-weight="600" fill="#111418" text-anchor="middle">Each transition is a documented decision (e.g. "30 jobs in stage 2, zero escalations") — not a feature toggle. High-stakes work often stays at stage 3.</text>
+</svg>

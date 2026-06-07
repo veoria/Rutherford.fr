@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 400" font-family="-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif">
+  <rect width="900" height="400" fill="#fff"/>
+  <!-- 45/0 -->
+  <g transform="translate(48,44)">
+    <rect width="380" height="300" rx="16" fill="#fff" stroke="#2563eb" stroke-width="2"/>
+    <text x="190" y="36" font-size="11.5" font-weight="700" letter-spacing="1.3" fill="#2563eb" text-anchor="middle">45°/0° — ISO 5-4 GEOMETRY</text>
+    <!-- sample -->
+    <rect x="90" y="220" width="200" height="16" rx="4" fill="#00b3d6"/>
+    <text x="190" y="262" font-size="11.5" fill="#6b7480" text-anchor="middle">printed sample</text>
+    <!-- light at 45 -->
+    <g stroke="#f59e0b" stroke-width="4" stroke-linecap="round">
+      <path d="M88 92 L176 218"/><path d="M292 92 L204 218"/>
+    </g>
+    <circle cx="80" cy="84" r="16" fill="#f59e0b"/><circle cx="300" cy="84" r="16" fill="#f59e0b"/>
+    <text x="60" y="64" font-size="11" font-weight="700" fill="#b45309">45°</text>
+    <text x="306" y="64" font-size="11" font-weight="700" fill="#b45309">45°</text>
+    <!-- sensor at 0 -->
+    <path d="M190 210 L190 120" stroke="#2563eb" stroke-width="4" stroke-linecap="round"/>
+    <rect x="172" y="86" width="36" height="34" rx="8" fill="#2563eb"/>
+    <text x="190" y="76" font-size="11" font-weight="700" fill="#2563eb" text-anchor="middle">sensor · 0°</text>
+    <text x="190" y="292" font-size="11.5" fill="#6b7480" text-anchor="middle">Ring illumination = lit from all around the 45° cone — no directional artifacts</text>
+  </g>
+  <!-- right column: the two filters -->
+  <g transform="translate(460,44)">
+    <rect width="392" height="142" rx="16" fill="#fff" stroke="#e8ecf0" stroke-width="1.5"/>
+    <text x="24" y="34" font-size="12.5" font-weight="700" fill="#111418">Polarization (M3)</text>
+    <text x="24" y="58" font-size="12" fill="#6b7480">Strips surface gloss → wet ink reads like dry.</text>
+    <text x="24" y="76" font-size="12" fill="#6b7480">Raises density +0.05–0.20 D.</text>
+    <rect x="24" y="92" width="344" height="32" rx="8" fill="#fdeaea"/>
+    <text x="196" y="113" font-size="11.5" font-weight="700" fill="#b33" text-anchor="middle">Density tool only — never vs G7 / ISO / FOGRA aims</text>
+  </g>
+  <g transform="translate(460,202)">
+    <rect width="392" height="142" rx="16" fill="#fff" stroke="#e8ecf0" stroke-width="1.5"/>
+    <text x="24" y="34" font-size="12.5" font-weight="700" fill="#111418">UV in the light (M1 vs M2)</text>
+    <text x="24" y="58" font-size="12" fill="#6b7480">OBAs fluoresce under UV → M1 reads the sheet</text>
+    <text x="24" y="76" font-size="12" fill="#6b7480">like the customer's D50 booth.</text>
+    <rect x="24" y="92" width="344" height="32" rx="8" fill="#fff7ed"/>
+    <text x="196" y="113" font-size="11.5" font-weight="700" fill="#9a3412" text-anchor="middle">≠ UV varnish! Never coat the control strip</text>
+  </g>
+  <rect x="48" y="360" width="804" height="0" fill="none"/>
+</svg>

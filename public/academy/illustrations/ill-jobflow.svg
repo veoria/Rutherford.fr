@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 360" font-family="-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif">
+  <rect width="900" height="360" fill="#fff"/>
+  <!-- 5 chevrons -->
+  <g font-size="12.5" font-weight="700" text-anchor="middle">
+    <g transform="translate(48,90)">
+      <path d="M0 0 H132 L156 45 L132 90 H0 L24 45 Z" fill="#f4f6f8" stroke="#e8ecf0"/>
+      <text x="84" y="40" fill="#111418">Prepress</text><text x="84" y="60" font-size="10" font-weight="500" fill="#6b7480">plates + CIP3/PPF</text>
+    </g>
+    <g transform="translate(196,90)">
+      <path d="M0 0 H132 L156 45 L132 90 H0 L24 45 Z" fill="#f4f6f8" stroke="#e8ecf0"/>
+      <text x="88" y="40" fill="#111418">Setup</text><text x="88" y="60" font-size="10" font-weight="500" fill="#6b7480">preset + learned offsets</text>
+    </g>
+    <g transform="translate(344,90)">
+      <path d="M0 0 H132 L156 45 L132 90 H0 L24 45 Z" fill="#eaf1fe" stroke="#2563eb"/>
+      <text x="88" y="40" fill="#2563eb">Measure</text><text x="88" y="60" font-size="10" font-weight="500" fill="#3c6ec9">pulled sheet → ΔE00/zone</text>
+    </g>
+    <g transform="translate(492,90)">
+      <path d="M0 0 H132 L156 45 L132 90 H0 L24 45 Z" fill="#eaf1fe" stroke="#2563eb"/>
+      <text x="88" y="40" fill="#2563eb">Correct</text><text x="88" y="60" font-size="10" font-weight="500" fill="#3c6ec9">keys move before next pull</text>
+    </g>
+    <g transform="translate(640,90)">
+      <path d="M0 0 H132 L156 45 L132 90 H0 L24 45 Z" fill="#e9f7ef" stroke="#16a34a"/>
+      <text x="88" y="40" fill="#14702f">Report</text><text x="88" y="60" font-size="10" font-weight="500" fill="#3d8b57">PDF + PQX to customer</text>
+    </g>
+  </g>
+  <!-- loop back measure<->correct -->
+  <path d="M560 196 Q 520 232 480 198" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-dasharray="6 5"/>
+  <text x="520" y="240" font-size="10.5" font-weight="700" fill="#2563eb" text-anchor="middle">loop until in tolerance</text>
+  <!-- data trail -->
+  <rect x="48" y="268" width="748" height="14" rx="7" fill="#f4f6f8"/>
+  <rect x="48" y="268" width="748" height="14" rx="7" fill="none" stroke="#e8ecf0"/>
+  <text x="422" y="302" font-size="12.5" font-weight="700" fill="#111418" text-anchor="middle">ONE data trail across all five stages</text>
+  <text x="422" y="322" font-size="11.5" fill="#6b7480" text-anchor="middle">that continuity = painless audits, real ROI math, factual brand-owner conversations</text>
+</svg>

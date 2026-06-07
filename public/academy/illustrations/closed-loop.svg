@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 630" font-family="-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#2563eb"/>
+    </marker>
+  </defs>
+  <rect width="960" height="630" fill="#ffffff"/>
+
+  <text x="48" y="56" font-size="13" font-weight="700" letter-spacing="2.2" fill="#2563eb">CLOSED-LOOP COLOR CONTROL</text>
+  <text x="48" y="92" font-size="28" font-weight="700" fill="#111418">Sensor · Decision · Actuator</text>
+  <text x="48" y="118" font-size="14.5" fill="#6b7480">One feedback loop, four stations — running on sampled pulled sheets, the same way every time.</text>
+
+  <!-- loop arrows (circle path between nodes) -->
+  <g stroke="#2563eb" stroke-width="3" fill="none" marker-end="url(#arr)">
+    <path d="M318 230 Q 480 168 632 228"/>
+    <path d="M708 320 Q 730 410 620 462"/>
+    <path d="M548 492 Q 480 512 404 494"/>
+    <path d="M330 460 Q 226 408 248 318"/>
+  </g>
+
+  <!-- center label -->
+  <circle cx="480" cy="360" r="64" fill="#f4f6f8" stroke="#e8ecf0"/>
+  <text x="480" y="352" font-size="13" font-weight="700" fill="#111418" text-anchor="middle">EVERY</text>
+  <text x="480" y="370" font-size="13" font-weight="700" fill="#111418" text-anchor="middle">PULLED</text>
+  <text x="480" y="388" font-size="13" font-weight="700" fill="#111418" text-anchor="middle">SHEET</text>
+
+  <!-- Node 1: PRESS -->
+  <g transform="translate(130,180)">
+    <rect width="200" height="118" rx="16" fill="#ffffff" stroke="#e8ecf0" stroke-width="1.5"/>
+    <rect width="200" height="6" rx="3" fill="#111418"/>
+    <text x="100" y="38" font-size="12" font-weight="700" letter-spacing="1.5" fill="#9aa3ae" text-anchor="middle">1 · PRESS</text>
+    <text x="100" y="62" font-size="15" font-weight="700" fill="#111418" text-anchor="middle">Sheet printed</text>
+    <text x="100" y="84" font-size="12.5" fill="#6b7480" text-anchor="middle">Operator pulls a sheet</text>
+    <text x="100" y="100" font-size="12.5" fill="#6b7480" text-anchor="middle">from the delivery</text>
+  </g>
+
+  <!-- Node 2: SENSOR -->
+  <g transform="translate(630,180)">
+    <rect width="200" height="118" rx="16" fill="#ffffff" stroke="#2563eb" stroke-width="2"/>
+    <rect width="200" height="6" rx="3" fill="#2563eb"/>
+    <text x="100" y="38" font-size="12" font-weight="700" letter-spacing="1.5" fill="#2563eb" text-anchor="middle">2 · SENSOR</text>
+    <text x="100" y="62" font-size="15" font-weight="700" fill="#111418" text-anchor="middle">Automated scan</text>
+    <text x="100" y="84" font-size="12.5" fill="#6b7480" text-anchor="middle">IntelliTrax2 reads the bar</text>
+    <text x="100" y="100" font-size="12.5" fill="#6b7480" text-anchor="middle">off-press · M0/M1 in one pass</text>
+  </g>
+
+  <!-- Node 3: DECISION -->
+  <g transform="translate(630,440)">
+    <rect width="200" height="118" rx="16" fill="#ffffff" stroke="#e8ecf0" stroke-width="1.5"/>
+    <rect width="200" height="6" rx="3" fill="#00b3d6"/>
+    <text x="100" y="38" font-size="12" font-weight="700" letter-spacing="1.5" fill="#0083a8" text-anchor="middle">3 · DECISION</text>
+    <text x="100" y="62" font-size="15" font-weight="700" fill="#111418" text-anchor="middle">ΔE00 vs target</text>
+    <text x="100" y="84" font-size="12.5" fill="#6b7480" text-anchor="middle">Which zones need more ink,</text>
+    <text x="100" y="100" font-size="12.5" fill="#6b7480" text-anchor="middle">which need less</text>
+  </g>
+
+  <!-- Node 4: ACTUATOR -->
+  <g transform="translate(130,440)">
+    <rect width="200" height="118" rx="16" fill="#ffffff" stroke="#e8ecf0" stroke-width="1.5"/>
+    <rect width="200" height="6" rx="3" fill="#16a34a"/>
+    <text x="100" y="38" font-size="12" font-weight="700" letter-spacing="1.5" fill="#14702f" text-anchor="middle">4 · ACTUATOR</text>
+    <text x="100" y="62" font-size="15" font-weight="700" fill="#111418" text-anchor="middle">Ink keys move</text>
+    <text x="100" y="84" font-size="12.5" fill="#6b7480" text-anchor="middle">Correction sent to the OEM</text>
+    <text x="100" y="100" font-size="12.5" fill="#6b7480" text-anchor="middle">console before the next pull</text>
+  </g>
+
+  <!-- side note -->
+  <rect x="48" y="582" width="864" height="36" rx="10" fill="#f4f6f8"/>
+  <text x="480" y="605" font-size="13.5" font-weight="600" fill="#111418" text-anchor="middle">Remove any one station and the loop opens — the operator becomes sensor and decision layer again, and variance returns.</text>
+</svg>
