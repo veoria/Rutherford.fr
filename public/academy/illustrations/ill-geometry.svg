@@ -18,7 +18,8 @@
     <path d="M190 210 L190 120" stroke="#2563eb" stroke-width="4" stroke-linecap="round"/>
     <rect x="172" y="86" width="36" height="34" rx="8" fill="#2563eb"/>
     <text x="190" y="76" font-size="11" font-weight="700" fill="#2563eb" text-anchor="middle">sensor · 0°</text>
-    <text x="190" y="292" font-size="11.5" fill="#6b7480" text-anchor="middle">Ring illumination = lit from all around the 45° cone — no directional artifacts</text>
+    <text x="190" y="284" font-size="11" fill="#6b7480" text-anchor="middle">Ring illumination — lit from all around the 45° cone,</text>
+    <text x="190" y="298" font-size="11" fill="#6b7480" text-anchor="middle">no directional artifacts</text>
   </g>
   <!-- right column: the two filters -->
   <g transform="translate(460,44)">

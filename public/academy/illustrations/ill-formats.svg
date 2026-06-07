@@ -34,8 +34,8 @@
     <text x="22" y="36" font-size="16" font-weight="700" fill="#111418">ICC</text>
     <text x="22" y="56" font-size="10.5" font-weight="700" fill="#9aa3ae">PROFILES</text>
     <text x="22" y="84" font-size="12" fill="#3c434b">→ Characterization &amp; soft-proofing</text>
-    <text x="22" y="104" font-size="11.5" fill="#b33" font-weight="600">NOT a per-sheet measurement record —</text>
-    <text x="22" y="120" font-size="11.5" fill="#6b7480">describes what a process produces in general</text>
+    <text x="22" y="104" font-size="11.5" fill="#b33" font-weight="600">NOT a per-sheet measurement —</text>
+    <text x="22" y="120" font-size="11.5" fill="#6b7480">describes a process in general</text>
   </g>
   <!-- CGATS -->
   <g transform="translate(459,240)">
