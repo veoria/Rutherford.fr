@@ -30,6 +30,8 @@ import measurecolorReports from '@/data/academy-steps/measurecolor-reports';
 import intellitrax2 from '@/data/academy-steps/intellitrax2';
 import colorloopAi from '@/data/academy-steps/colorloop-ai';
 import offset360 from '@/data/academy-steps/offset360';
+import frFundamentals from '@/data/academy-steps/fr/fundamentals';
+import type { Locale } from '@/components/language-provider';
 
 export type StepQuiz = {
   q: string;
@@ -344,6 +346,15 @@ export const COURSE_APP: Record<string, CourseApp> = {
   offset360: { courseId: 'offset360', modules: offset360 },
 };
 
-export function getCourseApp(slug: string): CourseApp | undefined {
-  return COURSE_APP[slug];
+// Per-locale step content. Falls back to English when a locale or course is
+// not yet translated, so partial coverage never breaks a course.
+const COURSE_APP_I18N: Partial<Record<Locale, Record<string, AppModule[]>>> = {
+  fr: {
+    fundamentals: frFundamentals,
+  },
+};
+
+export function getCourseApp(slug: string, locale: Locale = 'en'): CourseApp | undefined {
+  const modules = COURSE_APP_I18N[locale]?.[slug] ?? COURSE_APP[slug]?.modules;
+  return modules ? { courseId: slug, modules } : undefined;
 }

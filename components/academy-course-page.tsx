@@ -279,7 +279,7 @@ export function AcademyCoursePage({
   const toggleLesson = (index: number) => setOpenLesson((current) => (current === index ? -1 : index));
   const coursePct = coursePercent({ completedCount: completed.size, total: totalModules });
   // New step-based player (Phase 1): present only for courses that have step content.
-  const app = getCourseApp(course.id);
+  const app = getCourseApp(course.id, locale);
   const appNextIndex = app ? app.modules.findIndex((_, i) => !completed.has(i)) : -1;
   const [playerModule, setPlayerModule] = useState<number | null>(null);
 
