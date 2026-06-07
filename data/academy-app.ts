@@ -22,6 +22,15 @@
 // Paragraph strings may contain inline <b>/<i> and the entities &lt; / &gt;;
 // the player renders them as trusted, controlled rich text.
 
+import measurementEssentials from '@/data/academy-steps/measurement-essentials';
+import whereColorHurts from '@/data/academy-steps/where-color-hurts';
+import closedLoopFlagship from '@/data/academy-steps/closed-loop-flagship';
+import measurecolorProduction from '@/data/academy-steps/measurecolor-production';
+import measurecolorReports from '@/data/academy-steps/measurecolor-reports';
+import intellitrax2 from '@/data/academy-steps/intellitrax2';
+import colorloopAi from '@/data/academy-steps/colorloop-ai';
+import offset360 from '@/data/academy-steps/offset360';
+
 export type StepQuiz = {
   q: string;
   options: string[];
@@ -325,6 +334,14 @@ export const COURSE_APP: Record<string, CourseApp> = {
       },
     ],
   },
+  'measurement-essentials': { courseId: 'measurement-essentials', modules: measurementEssentials },
+  'where-color-hurts': { courseId: 'where-color-hurts', modules: whereColorHurts },
+  'closed-loop-flagship': { courseId: 'closed-loop-flagship', modules: closedLoopFlagship },
+  'measurecolor-production': { courseId: 'measurecolor-production', modules: measurecolorProduction },
+  'measurecolor-reports': { courseId: 'measurecolor-reports', modules: measurecolorReports },
+  intellitrax2: { courseId: 'intellitrax2', modules: intellitrax2 },
+  'colorloop-ai': { courseId: 'colorloop-ai', modules: colorloopAi },
+  offset360: { courseId: 'offset360', modules: offset360 },
 };
 
 export function getCourseApp(slug: string): CourseApp | undefined {
