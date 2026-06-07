@@ -399,9 +399,42 @@ export function AcademyCoursePage({
     if (index !== 0 && !completed.has(index - 1)) return;
     setPlayerModule(index);
   };
-  // Idempotent completion used by the player when a module's steps are finished.
-  const markComplete = (index: number) => {
-    if (!completed.has(index)) void toggleComplete(index);
+  // Completion from the player: persist + always celebrate. Every validated
+  // module gets a toast/confetti, upgraded to the palier/course celebration
+  // when a 25/50/75/100% threshold is crossed.
+  const completeFromPlayer = (index: number) => {
+    if (completed.has(index)) return;
+    const before = new Set(completed);
+    const after = new Set(completed);
+    after.add(index);
+    setCompleted(after);
+
+    const oldPct = coursePercent({ completedCount: before.size, total: totalModules });
+    const newPct = coursePercent({ completedCount: after.size, total: totalModules });
+    const crossed = newlyCrossedPaliers(oldPct, newPct);
+    const top = crossed.length > 0 ? crossed[crossed.length - 1] : null;
+    const finished = top === 100;
+    celebrationSeq.current += 1;
+    setCelebration({
+      id: celebrationSeq.current,
+      variant: finished ? 'course' : 'palier',
+      title: top ? tp.palierTitle[top] : tp.markedDone,
+      subtitle: finished && course.certificate ? tp.certificateUnlocked : tp.xpGain(10 + (finished ? 50 : 0)),
+    });
+
+    void fetch('/api/account/progress', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ courseSlug: course.id, lessonIndex: index, completed: true }),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error('progress request failed');
+        return res.json() as Promise<{ completedLessons?: number[] }>;
+      })
+      .then((json) => {
+        if (Array.isArray(json.completedLessons)) setCompleted(new Set(json.completedLessons));
+      })
+      .catch(() => setCompleted(before));
   };
 
   const handleCheckout = async (target: 'course' | 'pass') => {
@@ -1017,7 +1050,7 @@ export function AcademyCoursePage({
           completedModules={[...completed]}
           startModule={playerModule}
           onClose={() => setPlayerModule(null)}
-          onModuleComplete={markComplete}
+          onModuleComplete={completeFromPlayer}
         />
       ) : null}
       <Celebration content={celebration} onDismiss={() => setCelebration(null)} />
