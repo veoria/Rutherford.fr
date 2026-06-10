@@ -6821,6 +6821,72 @@ svg {
   gap: 18px;
 }
 
+/* ROI — machine presets (sheet format × colors) */
+.roi-machine {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  padding-bottom: 16px;
+}
+
+.roi-machine-label {
+  margin: 0 0 10px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.roi-machine-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.roi-machine-group-label {
+  font-size: 0.86rem;
+  font-weight: 500;
+  color: #1d1d1f;
+  min-width: 118px;
+}
+
+.roi-seg {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.roi-seg button {
+  appearance: none;
+  font: inherit;
+  font-size: 0.86rem;
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: 10px;
+  border: 1.5px solid rgba(0, 0, 0, 0.12);
+  background: #ffffff;
+  color: #1d1d1f;
+  cursor: pointer;
+  transition: border-color 140ms ease, background 140ms ease, color 140ms ease;
+}
+
+.roi-seg button:hover {
+  border-color: rgba(0, 113, 227, 0.45);
+}
+
+.roi-seg button.is-active {
+  border-color: var(--accent);
+  background: rgba(0, 113, 227, 0.08);
+  color: var(--accent);
+}
+
+.roi-sheet-note {
+  margin: 2px 0 0;
+  font-size: 0.82rem;
+  color: rgba(0, 0, 0, 0.55);
+}
+
 .roi-input {
   display: flex;
   flex-direction: column;
