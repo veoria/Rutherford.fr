@@ -4281,7 +4281,11 @@ a.blog-card-image:hover img {
     text-align: center;
   }
 
-  .mobile-nav-link {
+  /* Plain mobile-only links (Sign in / Account) render as regular menu rows:
+     same 12px padding and hairline divider as the other items. Only the
+     accent/dark variants (Support, Console Validation) become pills. */
+  .mobile-nav-link-accent,
+  .mobile-nav-link-dark {
     display: inline-flex;
     justify-content: center;
     text-align: center;
