@@ -1,7 +1,6 @@
 'use client';
 
 import { useLanguage, type Locale } from '@/components/language-provider';
-import { ColorLoopROI } from '@/components/colorloop-roi';
 
 type Benefit = { title: string; body: string };
 
@@ -188,8 +187,6 @@ export function ColorLoopSection() {
             </article>
           ))}
         </div>
-
-        <ColorLoopROI />
 
         <div className="colorloop-offset-tech">
           <div className="colorloop-offset-tech-copy">

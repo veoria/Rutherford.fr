@@ -18,6 +18,9 @@ const ColorLoopSection = dynamic(
   () => import('@/components/colorloop-section').then((module) => module.ColorLoopSection),
   { ssr: true }
 );
+const RoiTeaser = dynamic(() => import('@/components/roi-teaser').then((module) => module.RoiTeaser), {
+  ssr: true,
+});
 const ConsoleValidationCTA = dynamic(
   () => import('@/components/console-validation-cta').then((module) => module.ConsoleValidationCTA),
   { ssr: true }
@@ -200,6 +203,8 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      <RoiTeaser />
 
       <RutherfordIdentitySection />
 
