@@ -241,6 +241,7 @@ export function ConsoleValidationPage() {
               <div className="console-simple-intro">
                 <p className="section-kicker">Console validation</p>
                 <h1>Stop losing money on every makeready.</h1>
+                <p className="console-simple-tagline">The system that pays for itself.</p>
                 <div className="console-simple-intro-image">
                   <Image
                     src="/images/Bundle Rutherford-4.jpg"

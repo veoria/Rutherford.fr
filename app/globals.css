@@ -11737,3 +11737,23 @@ a.blog-card-image:hover img {
 .console-simple-roi-link a:hover {
   text-decoration: underline;
 }
+
+/* Console validation intro — centered header + self-paying tagline */
+.console-simple-intro > .section-kicker,
+.console-simple-intro h1,
+.console-simple-tagline {
+  text-align: center;
+}
+
+.console-simple-intro h1 {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.console-simple-tagline {
+  margin: 10px 0 18px;
+  font-size: clamp(1.1rem, 1.8vw, 1.35rem);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--accent);
+}
