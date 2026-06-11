@@ -183,6 +183,14 @@ export function ConsoleValidationPage({
   const [submitted, setSubmitted] = useState(false);
   const [sending, setSending] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [refCode, setRefCode] = useState('');
+
+  // Reseller attribution: carry a ?ref= code through to the submission. Read
+  // from the URL on mount to keep this page statically renderable.
+  useEffect(() => {
+    const ref = new URLSearchParams(window.location.search).get('ref');
+    if (ref) setRefCode(ref.slice(0, 100));
+  }, []);
 
   useEffect(() => {
     return () => {
@@ -322,6 +330,7 @@ export function ConsoleValidationPage({
               </div>
 
               <form id="submit" className="console-simple-form" onSubmit={handleSubmit}>
+                <input type="hidden" name="ref" value={refCode} />
                 <div className="console-simple-grid">
                   <label className="console-simple-field">
                     <span>Email address *</span>

@@ -1,8 +1,11 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { createSupabaseAdminClient } from '@/lib/supabase/server';
-import { syncConsoleValidationToPipedrive } from '@/lib/pipedrive';
+import { createSupabaseAdminClient, createSupabaseServerClient } from '@/lib/supabase/server';
+import { addDealNote, createConsoleValidationDeal } from '@/lib/pipedrive';
 import { dropboxEnabled, uploadConsoleValidation } from '@/lib/dropbox';
 import { createConsoleValidationTask } from '@/lib/asana';
+import { sendMail } from '@/lib/msgraph';
+import { acknowledgementEmail } from '@/lib/console-validation-emails';
+import { insertConsoleValidation } from '@/lib/console-validations';
 
 export const dynamic = 'force-dynamic';
 
@@ -33,6 +36,7 @@ export async function POST(request: NextRequest) {
   const country = String(form.get('country') ?? '').trim();
   const machineName = String(form.get('machineName') ?? '').trim();
   const notes = String(form.get('notes') ?? '').trim();
+  const refCode = String(form.get('ref') ?? '').trim().slice(0, 100) || null;
 
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 200) {
     return NextResponse.json({ error: 'A valid email address is required' }, { status: 400 });
@@ -58,31 +62,50 @@ export async function POST(request: NextRequest) {
     }
   }
 
-  const folder = `${new Date().toISOString().slice(0, 10)}-${Date.now().toString(36)}-${slug(companyName)}`;
-  const record = {
-    email,
-    companyName,
-    country,
-    machineName,
-    notes,
-    photos: photos.map((p) => p.field),
-    source: 'rutherford.fr/console-validation',
-    submittedAt: new Date().toISOString(),
-    userAgent: request.headers.get('user-agent') ?? null,
-  };
+  // Link the request to the visitor's account when they happen to be signed in.
+  let userId: string | null = null;
+  try {
+    if (process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+      const { data } = await createSupabaseServerClient().auth.getUser();
+      userId = data.user?.id ?? null;
+    }
+  } catch {
+    // Anonymous submission — fine.
+  }
 
-  // Photos land in Dropbox when it is configured, otherwise in Supabase
-  // Storage. Either way we end up with clickable links to drop into Asana / the
-  // CRM, plus a human-readable reference to the folder.
+  // 1) Pipedrive Deal first: its id stamps the title that everything else reuses.
+  const deal = await createConsoleValidationDeal({ company: companyName, country, machine: machineName });
+  const baseTitle = [country, companyName, machineName].map((s) => s.trim()).filter(Boolean).join(' - ');
+  const title = deal?.title ?? baseTitle;
+  const dealId = deal?.id ?? null;
+
+  const submittedAt = new Date().toISOString();
+  const infosTxt = [
+    'Console validation request',
+    `Date     : ${submittedAt}`,
+    `Company  : ${companyName}`,
+    `Country  : ${country}`,
+    `Machine  : ${machineName}`,
+    `Email    : ${email}`,
+    `Pipedrive: ${dealId ? `ID${dealId}` : 'n/a'}`,
+    refCode ? `Referral : ${refCode}` : null,
+    notes ? `Notes    : ${notes}` : null,
+    '',
+    `Photos   : ${photos.map((p) => p.field).join(', ') || 'none'}`,
+  ]
+    .filter(Boolean)
+    .join('\n');
+
+  // 2) Photos → Dropbox (folder named after the deal) or Supabase Storage.
   let photoLinks: Record<string, string> = {};
   let folderLink: string | null = null;
-  let storageRef = folder;
+  let storageRef = title;
   let photoCount = 0;
   let stored = false;
 
   if (dropboxEnabled()) {
     try {
-      const result = await uploadConsoleValidation(folder, photos, JSON.stringify(record, null, 2));
+      const result = await uploadConsoleValidation(title, photos, infosTxt);
       photoLinks = result.links;
       folderLink = result.folderLink;
       storageRef = result.folderPath;
@@ -93,14 +116,10 @@ export async function POST(request: NextRequest) {
     }
   }
 
-  if (!stored) {
+  if (!stored && process.env.SUPABASE_SERVICE_ROLE_KEY) {
     const supabase = createSupabaseAdminClient();
-
-    // The bucket is created lazily so the route works on a fresh Supabase
-    // project without manual setup; createBucket fails silently if it exists.
     await supabase.storage.createBucket(BUCKET, { public: false }).catch(() => {});
-
-    const uploaded: string[] = [];
+    const folder = `${submittedAt.slice(0, 10)}-${Date.now().toString(36)}-${slug(companyName)}`;
     for (const { field, file } of photos) {
       const ext = (file.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '') || 'jpg';
       const path = `${folder}/${field}.${ext}`;
@@ -111,46 +130,48 @@ export async function POST(request: NextRequest) {
         console.error('console-validation photo upload failed:', field, error.message);
         continue;
       }
-      uploaded.push(path);
+      photoCount += 1;
       const { data: signed } = await supabase.storage.from(BUCKET).createSignedUrl(path, SIGNED_URL_TTL);
       if (signed?.signedUrl) photoLinks[field] = signed.signedUrl;
     }
-    photoCount = uploaded.length;
-    record.photos = uploaded;
-
-    const { error: jsonError } = await supabase.storage
+    await supabase.storage
       .from(BUCKET)
-      .upload(`${folder}/request.json`, JSON.stringify(record, null, 2), {
-        contentType: 'application/json',
+      .upload(`${folder}/infos.txt`, new TextEncoder().encode(infosTxt), {
+        contentType: 'text/plain; charset=utf-8',
         upsert: true,
-      });
-    if (jsonError) {
-      console.error('console-validation request.json upload failed:', jsonError.message);
-      return NextResponse.json({ error: 'Could not store the request, please retry' }, { status: 500 });
-    }
+      })
+      .catch(() => {});
+    storageRef = folder;
   }
 
-  // Asana task in the "Console Validation V2" board — dormant without a token.
-  await createConsoleValidationTask({
-    email,
-    company: companyName,
-    country,
-    machine: machineName,
-    notes,
-    photoLinks,
-    folderLink,
-  });
+  // 3) Asana task (To do list), 4) acknowledgement email, 5) deal note + row.
+  const asanaTaskGid = await createConsoleValidationTask({ title, email, notes, photoLinks, folderLink });
 
-  // CRM sync is best-effort and dormant without PIPEDRIVE_API_TOKEN.
-  await syncConsoleValidationToPipedrive({
+  const ack = acknowledgementEmail(companyName);
+  await sendMail({ to: email, subject: ack.subject, html: ack.html });
+
+  await addDealNote(
+    dealId,
+    [
+      'Console validation request received via rutherford.fr/console-validation.',
+      `Photos: ${photoCount}`,
+      folderLink ? `Dropbox: <a href="${folderLink}">folder</a>` : `Storage: ${storageRef}`,
+    ].join('<br>')
+  );
+
+  await insertConsoleValidation({
+    userId,
+    refCode,
     email,
     company: companyName,
     country,
     machine: machineName,
     notes,
-    photoCount,
-    storagePath: storageRef,
-    photosLink: folderLink,
+    pipedriveDealId: dealId,
+    dropboxFolder: storageRef,
+    dropboxLink: folderLink,
+    asanaTaskGid,
+    photos: photoLinks,
   });
 
   return NextResponse.json({ ok: true });

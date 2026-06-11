@@ -1,91 +1,82 @@
-# Console validation — lead routing
+# Console validation — intake, status & customer portal
 
-How a submission on **rutherford.fr/console-validation** is handled, and how to
-connect each downstream service.
+Replaces the old **Typeform + 4 Zaps** workflow with the website form
+(`rutherford.fr/console-validation`) and direct API integrations. Every
+integration is **dormant-safe**: leave its env vars blank and that step is
+skipped without breaking the others.
 
 ## Flow
 
-1. The visitor fills the form (`components/console-validation-page.tsx`) and
-   uploads up to five photos straight from their phone.
-2. The browser POSTs `multipart/form-data` to `app/api/console-validation/route.ts`.
-3. The route validates the fields, then:
-   - **Photos →** Dropbox if configured, otherwise Supabase Storage (fallback).
-     Either way it produces clickable links + a folder reference.
-   - **Asana →** one task in the *Console Validation V2* board (`lib/asana.ts`).
-   - **Pipedrive →** Person + Organization + Note (`lib/pipedrive.ts`).
-4. The visitor sees the thank-you screen.
+### Intake — `app/api/console-validation/route.ts` (replaces Zap A)
+1. Visitor submits the form with up to five photos (`?ref=` reseller code is carried through).
+2. **Pipedrive Deal first** (`lib/pipedrive.ts`, API v2) → the deal id stamps the
+   title `Country - Company - Machine - ID{id}`. That id is the spine of the workflow.
+3. **Dropbox** (`lib/dropbox.ts`) → folder named after the deal under
+   `/Dossier RUTHERFORD/Prospects information`, with the photos + `infos.txt`.
+   Falls back to Supabase Storage when Dropbox isn't configured.
+4. **Asana task** (`lib/asana.ts`) in *Console Validation V2 → To do list*, named with
+   the deal id, assignee FX, follower Shajith, photo links in the notes.
+5. **Acknowledgement email** to the client (`lib/msgraph.ts` + `lib/console-validation-emails.ts`).
+6. **Row** written to `console_validations` (Supabase) — the source of truth.
 
-Every integration is **dormant-safe**: leave its env vars blank and that step is
-skipped without breaking the others. With nothing configured at all, photos
-still land in Supabase Storage so no lead is ever lost.
+### Approval — `app/api/asana-webhook/route.ts` (replaces Zaps B/C/D)
+When FX moves the card, Asana calls the webhook → it maps the section to a status,
+updates the row, emails the client and adds a Pipedrive note:
+
+| Section | Status | Client email | Pipedrive note |
+|---|---|---|---|
+| Can be connected | `can_be_connected` | "we can connect…" (BCC fx+fabrice) | "…can be connected" |
+| Rejected | `rejected` | "we cannot connect…" | "…cannot be connected" |
+| In progress | `changes_requested` | — | "Please contact FX. We need more info…" |
+
+### Customer portal — `/account/console-validations`
+Signed-in clients/resellers track their requests and live status. Reuses the
+Academy's Supabase auth. RLS scopes each user to their own rows (by `user_id`
+**or** the email they registered with). Gated by `NEXT_PUBLIC_CONSOLE_TRACKING_ENABLED`.
+The `reseller_id` / `ref_code` columns are in place for future reseller views.
+
+## Data model
+
+`console_validations` (migration applied to the Rutherford Academy project):
+`id, user_id, reseller_id, ref_code, email, company, country, machine, notes,
+status, pipedrive_deal_id, dropbox_folder, dropbox_link, asana_task_gid, photos`.
+Written by the service role only; read via RLS.
 
 ## Environment variables
 
-Set these in **Vercel → Project `website5` (it serves rutherford.fr) →
-Settings → Environment Variables** (Production), and locally in `.env.local`.
+Set in **Vercel → `website5` (serves rutherford.fr) → Production**, and `.env.local`.
 Template: `.env.local.example`.
 
-### Dropbox (photo storage)
-
-Recommended: a long-lived **refresh token** (Dropbox access tokens now expire
-after ~4h; the route exchanges the refresh token for a fresh one per upload).
-
-1. https://www.dropbox.com/developers/apps → **Create app** → *Scoped access* →
-   *Full Dropbox* (or *App folder* if you prefer an isolated folder).
-2. **Permissions** tab — enable `files.content.write`, `files.content.read`,
-   `sharing.write`. Submit.
-3. **Settings** tab — copy the **App key** and **App secret**.
-4. Generate a refresh token once (OAuth with `token_access_type=offline`):
-   - Open `https://www.dropbox.com/oauth2/authorize?client_id=APP_KEY&response_type=code&token_access_type=offline`,
-     approve, copy the `code`.
-   - Exchange it:
-     ```
-     curl https://api.dropbox.com/oauth2/token \
-       -d code=THE_CODE -d grant_type=authorization_code \
-       -u APP_KEY:APP_SECRET
-     ```
-   - The JSON `refresh_token` is what you store.
-
 ```
-DROPBOX_REFRESH_TOKEN=...
-DROPBOX_APP_KEY=...
-DROPBOX_APP_SECRET=...
-# DROPBOX_FOLDER=/Console Validations   # optional, this is the default
+# Portal
+NEXT_PUBLIC_CONSOLE_TRACKING_ENABLED=true
+
+# Pipedrive (Deal API v2 + Notes)
+PIPEDRIVE_API_TOKEN= · PIPEDRIVE_DOMAIN= · PIPEDRIVE_PIPELINE_ID= · PIPEDRIVE_STAGE_ID= · PIPEDRIVE_OWNER_ID=
+
+# Dropbox (refresh-token preferred; Team space needs PATH_ROOT/SELECT_USER)
+DROPBOX_REFRESH_TOKEN= · DROPBOX_APP_KEY= · DROPBOX_APP_SECRET= · DROPBOX_FOLDER= · DROPBOX_PATH_ROOT= · DROPBOX_SELECT_USER=
+
+# Asana (PAT; project/section/FX default to the live board)
+ASANA_ACCESS_TOKEN= · ASANA_FOLLOWER_GID= (Shajith) · ASANA_WEBHOOK_SECRET=
+
+# Microsoft Graph (Mail.Send application permission on MAIL_FROM)
+MSGRAPH_TENANT_ID= · MSGRAPH_CLIENT_ID= · MSGRAPH_CLIENT_SECRET= · MAIL_FROM=
 ```
 
-For a one-off test you can instead drop a raw `DROPBOX_ACCESS_TOKEN=` (Settings
-tab → *Generate access token*), but it stops working after ~4h.
+## Cutover from Typeform/Zapier
 
-### Asana (task per request)
+1. Set the env vars above + redeploy; merge this branch to `main`.
+2. Find the ids: Pipedrive pipeline/stage(`Console Validation`)/owner(FX); Asana
+   Shajith GID. Put them in env.
+3. Register the **Asana webhook** on the *Console Validation V2* project pointing at
+   `https://rutherford.fr/api/asana-webhook` (the route echoes the handshake; copy the
+   `X-Hook-Secret` into `ASANA_WEBHOOK_SECRET`).
+4. Replace the email templates in `lib/console-validation-emails.ts` with the branded
+   Mailchimp versions from Zaps B/C.
+5. Test in parallel (Zaps stay ON) with a real submission.
+6. Turn the 4 Zaps **off** (don't delete — rollback). The Pipedrive Deal actions in
+   Zapier deprecate **2026-07-31**, so don't miss that window.
 
-Tasks are created in **Console Validation V2** (project `1124959442904601`),
-landing in the **To do list** column (section `1124959442904602`) — the same
-board, with the same note layout, that Typeform used to feed.
-
-1. Asana → **Settings → Apps → Developer apps → Personal access tokens** →
-   *Create new token*.
-2. The token's user must be a member of the board.
-
-```
-ASANA_ACCESS_TOKEN=...
-# ASANA_CONSOLE_VALIDATION_PROJECT / ASANA_CONSOLE_VALIDATION_SECTION
-# default to the live board — only set them to retarget.
-```
-
-### Pipedrive (CRM)
-
-```
-PIPEDRIVE_API_TOKEN=...          # Pipedrive → Personal preferences → API
-# PIPEDRIVE_DOMAIN=veoria        # optional subdomain → veoria.pipedrive.com
-```
-
-## Verifying
-
-After setting the vars and redeploying, submit a test request and confirm:
-
-- a folder under *Console Validations/* in Dropbox with the photos + `request.json`,
-- a new task in *Console Validation V2 → To do list*,
-- a Note on the Person/Organization in Pipedrive.
-
-Server-side failures are logged (`console-validation … failed`) and visible in
-the Vercel runtime logs without ever failing the visitor's submission.
+Server-side failures are logged (`… failed`) and visible in the Vercel runtime logs
+without ever failing the visitor's submission.

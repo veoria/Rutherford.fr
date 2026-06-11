@@ -43,6 +43,84 @@ async function pd(path: string, init?: RequestInit): Promise<any> {
   return res.json();
 }
 
+// Pipedrive API v2 — used for deals, because the Zapier "Create/Update Deal"
+// actions the team relies on are deprecating (July 31 2026). Same token, same
+// host, /api/v2 prefix.
+const HOST = process.env.PIPEDRIVE_DOMAIN
+  ? `https://${process.env.PIPEDRIVE_DOMAIN}.pipedrive.com`
+  : 'https://api.pipedrive.com';
+
+const PIPELINE_ID = process.env.PIPEDRIVE_PIPELINE_ID ? Number(process.env.PIPEDRIVE_PIPELINE_ID) : undefined;
+const STAGE_ID = process.env.PIPEDRIVE_STAGE_ID ? Number(process.env.PIPEDRIVE_STAGE_ID) : undefined;
+const OWNER_ID = process.env.PIPEDRIVE_OWNER_ID ? Number(process.env.PIPEDRIVE_OWNER_ID) : undefined;
+
+async function pdv2(path: string, init?: RequestInit): Promise<any> {
+  const sep = path.includes('?') ? '&' : '?';
+  const res = await fetch(`${HOST}/api/v2${path}${sep}api_token=${TOKEN}`, {
+    ...init,
+    headers: { 'Content-Type': 'application/json', ...(init?.headers ?? {}) },
+    signal: AbortSignal.timeout(TIMEOUT_MS),
+    cache: 'no-store',
+  });
+  if (!res.ok) throw new Error(`PipeDrive v2 ${init?.method ?? 'GET'} ${path} → ${res.status}`);
+  return res.json();
+}
+
+export type ConsoleValidationDealInput = {
+  company: string;
+  country: string;
+  machine: string;
+};
+
+/**
+ * Create the console-validation Deal and stamp its own id into the title
+ * (`Country - Company - Machine - ID{id}`). That id is the spine of the whole
+ * workflow — the Asana task name and Dropbox folder reuse this title, and the
+ * downstream notes/emails resolve the deal back from it. Returns null when not
+ * configured or on failure, so the caller can carry on without an id.
+ */
+export async function createConsoleValidationDeal(
+  input: ConsoleValidationDealInput
+): Promise<{ id: number; title: string } | null> {
+  if (!TOKEN) return null;
+  try {
+    const baseTitle = [input.country, input.company, input.machine]
+      .map((part) => part.trim())
+      .filter(Boolean)
+      .join(' - ');
+
+    const created = await pdv2('/deals', {
+      method: 'POST',
+      body: JSON.stringify({
+        title: baseTitle || 'Console validation',
+        ...(PIPELINE_ID ? { pipeline_id: PIPELINE_ID } : {}),
+        ...(STAGE_ID ? { stage_id: STAGE_ID } : {}),
+        ...(OWNER_ID ? { owner_id: OWNER_ID } : {}),
+      }),
+    });
+
+    const id = created?.data?.id as number | undefined;
+    if (!id) return null;
+
+    const title = `${baseTitle} - ID${id}`;
+    await pdv2(`/deals/${id}`, { method: 'PATCH', body: JSON.stringify({ title }) }).catch(() => {});
+    return { id, title };
+  } catch (error) {
+    console.error('PipeDrive deal create failed:', error);
+    return null;
+  }
+}
+
+/** Attach a Note to a deal. No-op without a token or deal id; never throws. */
+export async function addDealNote(dealId: number | null, content: string): Promise<void> {
+  if (!TOKEN || !dealId) return;
+  try {
+    await pd('/notes', { method: 'POST', body: JSON.stringify({ content, deal_id: dealId }) });
+  } catch (error) {
+    console.error('PipeDrive deal note failed:', error);
+  }
+}
+
 async function findOrgId(name: string): Promise<number | null> {
   const r = await pd(
     `/organizations/search?term=${encodeURIComponent(name)}&fields=name&exact_match=true&limit=1`
