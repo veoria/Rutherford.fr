@@ -12068,3 +12068,186 @@ a.blog-card-image:hover img {
     margin-left: -12.5%;
   }
 }
+
+/* ============================================================
+   Console validation — Apple-grade polish
+   Centered text in every box, generous breathing room, soft
+   surfaces. Appended last so it wins the cascade at equal
+   specificity.
+   ============================================================ */
+
+.console-simple-section {
+  padding-top: 72px;
+  padding-bottom: 96px;
+}
+
+.console-simple-shell {
+  gap: 40px;
+  max-width: 980px;
+}
+
+/* Intro rhythm: tight heading cluster, air around the visuals */
+.console-simple-intro {
+  display: grid;
+  gap: 0;
+}
+
+.console-simple-intro > .section-kicker {
+  margin-bottom: 14px;
+}
+
+.console-simple-intro h1 {
+  margin-bottom: 14px;
+}
+
+.console-simple-tagline {
+  margin: 0 0 6px;
+}
+
+.console-simple-phone {
+  margin: 0 0 26px;
+}
+
+.console-simple-cta-row {
+  margin: 0 0 40px;
+}
+
+.console-simple-intro-image {
+  margin: 0 0 36px;
+}
+
+.console-simple-intro-image img {
+  border-radius: 28px;
+}
+
+.console-simple-presses-label {
+  margin: 6px 0 2px;
+}
+
+.console-simple-presses {
+  margin: 10px auto 18px;
+}
+
+.console-simple-roi-link {
+  margin: 4px 0 0;
+}
+
+/* The form card: one soft surface */
+.console-simple-form {
+  padding: clamp(32px, 5vw, 56px);
+  gap: 36px;
+  border-radius: 28px;
+  background: #ffffff;
+  border: 1px solid rgba(17, 17, 17, 0.06);
+  box-shadow: 0 24px 60px -42px rgba(0, 0, 0, 0.25);
+}
+
+.console-simple-grid {
+  gap: 24px;
+}
+
+.console-simple-field {
+  gap: 10px;
+  text-align: center;
+}
+
+.console-simple-field span {
+  font-weight: 600;
+}
+
+.console-simple-field input,
+.console-simple-field select,
+.console-simple-field textarea {
+  border-radius: 14px;
+  text-align: center;
+}
+
+/* Upload cards: centered, airy, consistent */
+.console-simple-uploads {
+  gap: 24px;
+}
+
+.console-simple-upload-card {
+  gap: 18px;
+  padding: 28px 26px 26px;
+  border-radius: 24px;
+  background: #fbfbf9;
+  border: 1px solid rgba(17, 17, 17, 0.06);
+  text-align: center;
+  justify-items: center;
+}
+
+.console-simple-upload-copy {
+  display: grid;
+  gap: 6px;
+  justify-items: center;
+}
+
+.console-simple-upload-copy h3 {
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.console-simple-upload-copy p,
+.console-simple-upload-copy span {
+  margin: 0;
+  color: var(--muted);
+}
+
+.console-simple-example {
+  justify-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.console-simple-example img {
+  border-radius: 16px;
+  max-height: 230px;
+  width: auto;
+  max-width: 100%;
+  object-fit: contain;
+}
+
+.console-simple-upload {
+  width: 100%;
+  min-height: 200px;
+  border-radius: 20px;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.console-simple-upload:hover {
+  border-color: rgba(0, 113, 227, 0.7);
+  background: rgba(0, 113, 227, 0.03);
+}
+
+.console-simple-submit {
+  gap: 14px;
+  padding-top: 8px;
+}
+
+/* FAQ: centered cards, same surface language as the form */
+.console-faq-section {
+  padding-top: 10px;
+  padding-bottom: 90px;
+}
+
+.console-faq-title {
+  margin-bottom: 32px;
+}
+
+.console-faq-list {
+  gap: 18px;
+}
+
+.console-faq-item {
+  text-align: center;
+  padding: 28px 30px;
+  border-radius: 22px;
+  border: 1px solid rgba(17, 17, 17, 0.06);
+  box-shadow: 0 16px 40px -34px rgba(0, 0, 0, 0.18);
+}
+
+.console-faq-item dt {
+  margin-bottom: 10px;
+  font-size: 1.06rem;
+}
