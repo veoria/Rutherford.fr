@@ -11780,3 +11780,23 @@ a.blog-card-image:hover img {
 .console-simple-intro-image img {
   background: #ffffff;
 }
+
+/* Console validation — press-brand marquee on light background */
+.console-simple-presses-label {
+  text-align: center;
+  margin: 22px 0 0;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.console-simple-presses {
+  margin: 6px auto 10px;
+}
+
+.console-simple-presses .console-cta-press img {
+  filter: grayscale(1) brightness(0.35);
+  opacity: 0.8;
+}

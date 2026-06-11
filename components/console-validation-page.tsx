@@ -21,6 +21,16 @@ type UploadConfig = {
   exampleAlt: string;
 };
 
+const PRESS_BRANDS = [
+  { src: '/images/komori.webp', alt: 'Komori' },
+  { src: '/images/koenig-bauer.webp', alt: 'Koenig & Bauer' },
+  { src: '/images/manroland.webp', alt: 'Manroland' },
+  { src: '/images/mitsubishi.webp', alt: 'Mitsubishi' },
+  { src: '/images/ryobi.webp', alt: 'Ryobi' },
+  { src: '/images/presstek.webp', alt: 'Presstek' },
+  { src: '/images/goss.webp', alt: 'Goss' },
+];
+
 const countryOptions = [
   'Belgium',
   'Canada',
@@ -258,9 +268,22 @@ export function ConsoleValidationPage() {
                   Rutherford closes the loop. Check your press eligibility for free: a few photos, two minutes,
                   answer within one business day. No commitment.
                 </p>
-                <p className="console-simple-brands">
-                  Compatible consoles: <strong>Heidelberg · Komori · Koenig &amp; Bauer · Manroland · Mitsubishi · Ryobi</strong>
-                </p>
+                <p className="console-simple-presses-label">Compatible consoles</p>
+                <div className="console-cta-presses console-simple-presses" aria-label="Compatible offset press brands">
+                  <div className="console-cta-presses-track">
+                    {[...PRESS_BRANDS, ...PRESS_BRANDS].map((brand, i) => (
+                      <span className="console-cta-press" key={`${brand.alt}-${i}`}>
+                        <Image
+                          src={brand.src}
+                          alt={i < PRESS_BRANDS.length ? brand.alt : ''}
+                          width={240}
+                          height={80}
+                          sizes="140px"
+                        />
+                      </span>
+                    ))}
+                  </div>
+                </div>
                 <p className="console-simple-roi-link">
                   Curious what color drift costs you? <a href="/#roi">Try the ROI calculator →</a>
                 </p>
