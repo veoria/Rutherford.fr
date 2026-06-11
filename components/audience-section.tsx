@@ -146,15 +146,15 @@ export function AudienceSection() {
 
         <SnapSlider className="audience-grid">
           {t.cards.map((c, i) => (
-            <article className="audience-card" key={c.title}>
-              <span className="audience-card-index" aria-hidden="true">
-                0{i + 1}
-              </span>
+            <article className={`audience-card audience-card-${['accent', 'light', 'dark'][i]}`} key={c.title}>
               <div className="audience-card-media">
                 <img src={AUDIENCE_PHOTOS[i].src} alt={AUDIENCE_PHOTOS[i].alt} loading="lazy" />
               </div>
-              <h3>{c.title}</h3>
-              <p>{c.body}</p>
+              <div className="audience-card-body">
+                <p className="audience-card-label">0{i + 1}</p>
+                <h3>{c.title}</h3>
+                <p>{c.body}</p>
+              </div>
             </article>
           ))}
         </SnapSlider>

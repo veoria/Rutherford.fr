@@ -7535,31 +7535,66 @@ a.blog-card-image:hover img {
 }
 
 .audience-card {
-  display: grid;
-  gap: 14px;
-  padding: 36px 30px 36px;
+  display: flex;
+  flex-direction: column;
+  border-radius: 24px;
   background: #f5f5f7;
-  border-radius: 22px;
+  overflow: hidden;
   transition: transform 220ms ease, box-shadow 220ms ease;
 }
 
 .audience-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 24px 48px -28px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 22px 48px -28px rgba(0, 0, 0, 0.2);
 }
 
-.audience-card-index {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 999px;
-  background: var(--accent);
-  color: #ffffff;
-  font-size: 0.85rem;
+.audience-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 28px 26px 30px;
+  flex-grow: 1;
+}
+
+.audience-card-label {
+  margin: 0;
+  font-size: 0.78rem;
   font-weight: 700;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(0, 0, 0, 0.4);
+}
+
+.audience-card-accent {
+  background: linear-gradient(165deg, #0071e3 0%, #0056b3 100%);
+}
+
+.audience-card.audience-card-accent .audience-card-label {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.audience-card.audience-card-accent h3 {
+  color: #ffffff;
+}
+
+.audience-card.audience-card-accent p {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.audience-card-dark {
+  background: linear-gradient(165deg, #1d1d1f 0%, #2d2d30 100%);
+}
+
+.audience-card.audience-card-dark .audience-card-label {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.audience-card.audience-card-dark h3 {
+  color: #ffffff;
+}
+
+.audience-card.audience-card-dark p {
+  color: rgba(255, 255, 255, 0.78);
 }
 
 .audience-card-picto {
@@ -7585,7 +7620,7 @@ a.blog-card-image:hover img {
 
 .audience-card h3 {
   margin: 0;
-  font-size: 1.34rem;
+  font-size: 1.55rem;
   font-weight: 700;
   letter-spacing: -0.01em;
   color: #1d1d1f;
@@ -11830,12 +11865,11 @@ a.blog-card-image:hover img {
 
 /* Audience card schemas — line-style, consistent with the how-rutherford icons */
 .audience-card-media {
+  position: relative;
   width: 100%;
-  height: 170px;
-  margin: 6px 0 12px;
-  border-radius: 16px;
+  aspect-ratio: 16 / 9;
   overflow: hidden;
-  background: #f2f2ed;
+  background: #1a1a1a;
 }
 
 .audience-card-media img {
@@ -11844,11 +11878,13 @@ a.blog-card-image:hover img {
   object-fit: cover;
   display: block;
   filter: grayscale(1);
-  transition: filter 0.35s ease;
+  transition: filter 420ms ease, transform 520ms ease;
 }
 
-.audience-card:hover .audience-card-media img {
+.audience-card:hover .audience-card-media img,
+.audience-card:focus-within .audience-card-media img {
   filter: grayscale(0);
+  transform: scale(1.04);
 }
 
 .console-simple-error {
