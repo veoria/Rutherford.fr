@@ -6821,6 +6821,15 @@ svg {
   height: auto;
 }
 
+/* The global line-icon default (svg { stroke: currentColor; stroke-width: 1.8 })
+   inherits onto the press, and each drum's ~12x matrix scales that stroke into
+   a thick ring that engulfs the cylinders as solid dark ellipses ("ronds
+   noirs"). The press draws with fills only, so reset stroke throughout. */
+.roi-press-svg,
+.roi-press-svg * {
+  stroke: none;
+}
+
 .roi-hero-controls {
   position: absolute;
   top: 14px;
