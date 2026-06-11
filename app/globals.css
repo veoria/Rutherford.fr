@@ -6808,6 +6808,101 @@ svg {
   max-width: 60ch;
 }
 
+/* ROI — animated press illustration hero, with the machine controls (format +
+   colors) laid over its top-left corner. */
+.roi-hero {
+  position: relative;
+  margin: 0;
+}
+
+.roi-press-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.roi-hero-controls {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 326px;
+  padding: 14px 16px;
+  background: rgba(255, 255, 255, 0.84);
+  -webkit-backdrop-filter: blur(7px);
+  backdrop-filter: blur(7px);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 14px;
+  box-shadow: 0 12px 34px -24px rgba(17, 17, 17, 0.35);
+}
+
+.roi-hero-controls .roi-seg button {
+  padding: 7px 11px;
+  font-size: 0.8rem;
+}
+
+/* The added / removed printing units slide in and out one by one; the rest of
+   the line stays put. */
+.roi-tower.enter {
+  animation: roiTowerEnter 0.5s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+@keyframes roiTowerEnter {
+  from {
+    transform: translate(118px, -66px);
+    opacity: 0;
+  }
+  to {
+    transform: translate(0, 0);
+    opacity: 1;
+  }
+}
+
+.roi-tower.exit {
+  animation: roiTowerExit 0.42s cubic-bezier(0.4, 0, 0.7, 0.35) both;
+}
+
+@keyframes roiTowerExit {
+  from {
+    transform: translate(0, 0);
+    opacity: 1;
+  }
+  to {
+    transform: translate(118px, -66px);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .roi-tower.enter,
+  .roi-tower.exit {
+    animation: none;
+  }
+}
+
+.colorloop-roi-figures-heading {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1d1d1f;
+}
+
+@media (max-width: 820px) {
+  .roi-hero-controls {
+    position: static;
+    max-width: none;
+    margin-bottom: 14px;
+    background: #ffffff;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+}
+
 .colorloop-roi-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -6838,17 +6933,15 @@ svg {
 
 .roi-machine-group {
   display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-  margin-bottom: 10px;
+  flex-direction: column;
+  gap: 7px;
 }
 
 .roi-machine-group-label {
-  font-size: 0.86rem;
-  font-weight: 500;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
   color: #1d1d1f;
-  min-width: 118px;
 }
 
 .roi-seg {
@@ -6973,94 +7066,72 @@ svg {
 .colorloop-roi-result {
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  background: #f5f5f7;
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  border-radius: 16px;
+  background: linear-gradient(180deg, #f6f9ff, #eef4ff);
+  border: 1px solid #d8e6fb;
+  border-radius: 18px;
   padding: clamp(18px, 2.4vw, 26px);
 }
 
-.colorloop-roi-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.95rem;
-}
-
-.colorloop-roi-table thead th {
-  text-align: left;
+.colorloop-roi-result-label {
+  margin: 0 0 6px;
   font-size: 0.78rem;
-  font-weight: 500;
+  font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: rgba(29, 29, 31, 0.5);
-  padding: 0 0 10px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
 }
 
-.colorloop-roi-table tbody th {
-  text-align: left;
-  font-weight: 500;
-  padding: 14px 0;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-  vertical-align: top;
+.colorloop-roi-result-total {
+  font-size: clamp(2rem, 5vw, 2.7rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
 }
 
-.colorloop-roi-table tbody td {
-  padding: 14px 0;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+.colorloop-roi-result-month {
+  margin: 6px 0 16px;
+  font-size: 0.92rem;
+  color: rgba(29, 29, 31, 0.55);
 }
 
-.colorloop-roi-row-label {
-  display: block;
+.colorloop-roi-breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border-top: 1px solid #d8e6fb;
+  padding-top: 14px;
+}
+
+.colorloop-roi-brk-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.colorloop-roi-brk-key {
+  font-size: 0.9rem;
   color: #1d1d1f;
 }
 
-.colorloop-roi-row-sub {
+.colorloop-roi-brk-key small {
   display: block;
-  font-size: 0.78rem;
-  font-weight: 400;
-  color: rgba(29, 29, 31, 0.5);
   margin-top: 2px;
+  font-size: 0.76rem;
+  color: rgba(29, 29, 31, 0.5);
 }
 
-.colorloop-roi-table-num {
-  text-align: right;
+.colorloop-roi-brk-val {
+  font-weight: 700;
+  color: #1d1d1f;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
 
-.colorloop-roi-table tfoot th {
-  text-align: left;
-  padding: 16px 0 4px;
-  font-size: 0.92rem;
-  font-weight: 500;
-  color: rgba(29, 29, 31, 0.7);
-}
-
-.colorloop-roi-table tfoot td {
-  padding: 16px 0 4px;
-}
-
-.colorloop-roi-table tfoot tr:first-child th {
-  color: #1d1d1f;
-  font-weight: 700;
-}
-
-.colorloop-roi-table-total {
-  font-size: 1.7rem;
-  font-weight: 700;
-  color: var(--accent);
-}
-
-.colorloop-roi-table-sub-row {
-  font-size: 0.82rem !important;
-  color: rgba(29, 29, 31, 0.55) !important;
-  padding-top: 0 !important;
-  font-weight: 400 !important;
-}
-
 .colorloop-roi-disclaimer {
-  margin: 6px 0 0;
+  margin: 16px 0 14px;
   font-size: 0.78rem;
   color: rgba(29, 29, 31, 0.5);
   line-height: 1.5;
@@ -7071,7 +7142,7 @@ svg {
   background: var(--accent);
   color: #ffffff;
   border: none;
-  margin-top: 4px;
+  margin-top: 0;
 }
 
 .colorloop-roi-cta:hover {
@@ -7082,9 +7153,6 @@ svg {
 @media (max-width: 820px) {
   .colorloop-roi-grid {
     grid-template-columns: 1fr;
-  }
-  .colorloop-roi-table-total {
-    font-size: 1.35rem;
   }
 }
 
