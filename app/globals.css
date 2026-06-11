@@ -11757,3 +11757,26 @@ a.blog-card-image:hover img {
   letter-spacing: -0.01em;
   color: var(--accent);
 }
+
+.console-simple-phone {
+  text-align: center;
+  margin: -8px 0 14px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.console-simple-brands {
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.console-simple-brands strong {
+  color: var(--ink, #111111);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.console-simple-intro-image img {
+  background: #ffffff;
+}
