@@ -482,7 +482,8 @@ export function Offset360Page() {
           <p className="o360-eyebrow">Next step</p>
           <h2 className="o360-h2">Get it on your press.</h2>
           <p>
-            Send a few photos of your console, we come back with an Offset360 scope tailored to your machines and brand standards.
+            Send a few photos of your console: we confirm your press eligibility within one business day, for the full
+            Offset360 pack or for Rutherford ColorLoop on its own with your existing measurement devices.
           </p>
           <div className="o360-cta-row">
             <a className="o360-btn o360-btn-primary" href="/console-validation">

@@ -230,7 +230,8 @@ export function ConsoleValidationPage() {
               <h1>Thank you.</h1>
               <p>
                 Your console validation request has been received. Our team reviews every submission and comes back
-                within one business day with the compatibility assessment for your press.
+                within one business day with your press eligibility and a recommendation: ColorLoop closed-loop on
+                its own, or the full Offset360 pack.
               </p>
               <button type="button" className="button button-dark" onClick={() => setSubmitted(false)}>
                 Fill another form
@@ -252,8 +253,31 @@ export function ConsoleValidationPage() {
                   />
                 </div>
                 <p>
-                  Fill in the information below and upload the requested pictures. The form is designed to be simple on
-                  desktop and very easy to complete on a phone.
+                  Console validation is the free eligibility check for Rutherford closed-loop color. Send a few
+                  photos of your console: our team confirms within one business day whether your press qualifies,
+                  and recommends the right path.
+                </p>
+
+                <div className="console-paths" aria-label="What a validated console unlocks">
+                  <div className="console-path">
+                    <p className="console-path-kicker">Option 1</p>
+                    <h2>Rutherford ColorLoop</h2>
+                    <p>
+                      The closed-loop software on its own. ColorLoop connects to your existing measurement setup and
+                      pushes ink-key corrections straight to your console.
+                    </p>
+                  </div>
+                  <div className="console-path">
+                    <p className="console-path-kicker">Option 2</p>
+                    <h2>Offset360 pack</h2>
+                    <p>
+                      The complete X-Rite bundle: IntelliTrax2 scanning, MeasureColor process control and Rutherford
+                      ColorLoop, deployed as one workflow.
+                    </p>
+                  </div>
+                </div>
+                <p className="console-paths-note">
+                  One validation covers both options. It takes two minutes and commits you to nothing.
                 </p>
               </div>
 
