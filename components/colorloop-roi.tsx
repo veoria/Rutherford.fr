@@ -2,7 +2,6 @@
 
 import { useMemo, useState } from 'react';
 import { useLanguage, type Locale } from '@/components/language-provider';
-import { PressSchematic } from '@/components/press-schematic';
 
 type Profile = 'commercial' | 'packaging' | 'luxe';
 type MachineFormat = 'b2' | 'b1' | 'vlf';
@@ -12,7 +11,6 @@ type Copy = {
   kicker: string;
   headline: string;
   intro: string;
-  resultTitle: string;
   inputs: {
     calages: { label: string; hint: string };
     temps: { label: string; hint: string };
@@ -47,7 +45,6 @@ const COPY: Record<Locale, Copy> = {
     headline: 'How much could ColorLoop save your pressroom?',
     intro:
       'Pick your production profile, press format and number of colors — then fine-tune your makeready figures. Every value stays adjustable.',
-    resultTitle: 'Estimated annual saving',
     inputs: {
       calages: { label: 'Makereadies per day', hint: 'Set by the profile — adjust freely' },
       temps: { label: 'Makeready time (minutes)', hint: 'From wash-up to press-OK' },
@@ -81,7 +78,6 @@ const COPY: Record<Locale, Copy> = {
     headline: 'Combien ColorLoop peut-il vous faire économiser ?',
     intro:
       'Choisissez votre profil de production, le format de presse et le nombre de couleurs — puis affinez vos chiffres de calage. Toutes les valeurs restent ajustables.',
-    resultTitle: 'Économie annuelle estimée',
     inputs: {
       calages: { label: 'Calages par jour', hint: 'Défini par le profil — ajustez librement' },
       temps: { label: 'Temps de calage (minutes)', hint: 'Du lavage au BAT presse OK' },
@@ -115,7 +111,6 @@ const COPY: Record<Locale, Copy> = {
     headline: 'Wie viel kann ColorLoop in Ihrer Druckerei sparen?',
     intro:
       'Wählen Sie Produktionsprofil, Druckformat und Farbenzahl — und verfeinern Sie dann Ihre Einrichtungswerte. Alle Werte bleiben einstellbar.',
-    resultTitle: 'Geschätzte jährliche Ersparnis',
     inputs: {
       calages: { label: 'Einrichtungen pro Tag', hint: 'Vom Profil gesetzt — frei anpassbar' },
       temps: { label: 'Einrichtungszeit (Minuten)', hint: 'Vom Waschen bis Druck-OK' },
@@ -149,7 +144,6 @@ const COPY: Record<Locale, Copy> = {
     headline: 'Quanto può farti risparmiare ColorLoop?',
     intro:
       'Scelga il profilo di produzione, il formato di stampa e il numero di colori — poi affini i parametri di avviamento. Tutti i valori restano regolabili.',
-    resultTitle: 'Risparmio annuo stimato',
     inputs: {
       calages: { label: 'Avviamenti al giorno', hint: 'Impostato dal profilo — regola liberamente' },
       temps: { label: 'Tempo di avviamento (minuti)', hint: 'Dal lavaggio al BAT pressa OK' },
@@ -183,7 +177,6 @@ const COPY: Record<Locale, Copy> = {
     headline: '¿Cuánto puede ahorrarle ColorLoop a su sala de prensa?',
     intro:
       'Elija su perfil de producción, el formato de prensa y el número de colores — y luego ajuste sus cifras de puesta a punto. Todos los valores siguen siendo ajustables.',
-    resultTitle: 'Ahorro anual estimado',
     inputs: {
       calages: { label: 'Puestas a punto por día', hint: 'Definido por el perfil — ajuste libremente' },
       temps: { label: 'Tiempo de puesta a punto (minutos)', hint: 'Del lavado al BAT prensa OK' },
@@ -389,11 +382,9 @@ export function ColorLoopROI() {
         <p className="colorloop-roi-intro">{t.intro}</p>
       </header>
 
-      <div className="colorloop-roi-press" aria-hidden="true">
-        <PressSchematic format={machineFormat} colorCount={colorCount} />
-      </div>
-
-      <div className="roi-machine">
+      <div className="colorloop-roi-grid">
+        <div className="colorloop-roi-inputs">
+          <div className="roi-machine">
             <div className="roi-machine-group">
               <span className="roi-machine-group-label">{t.machine.profile}</span>
               <div className="roi-seg" role="group" aria-label={t.machine.profile}>
@@ -446,10 +437,7 @@ export function ColorLoopROI() {
                 paperNote
               )}
             </p>
-      </div>
-
-      <div className="colorloop-roi-grid">
-        <div className="colorloop-roi-inputs">
+          </div>
           <SliderInput
             id="roi-calages"
             label={t.inputs.calages.label}
@@ -493,37 +481,58 @@ export function ColorLoopROI() {
         </div>
 
         <div className="colorloop-roi-result">
-          <div className="roi-result-card">
-            <p className="roi-result-label">{t.resultTitle}</p>
-            <p className="roi-result-hero">{formatEur(locale, result.total)}</p>
-            <p className="roi-result-permonth">
-              ≈ {formatEur(locale, result.total / 12)} {t.table.perMonth}
-            </p>
-            <div className="roi-result-rows">
-              <div className="roi-result-row">
-                <span className="roi-result-row-k">
-                  {t.table.paper}
-                  <small>
+          <table className="colorloop-roi-table">
+            <thead>
+              <tr>
+                <th scope="col">{t.table.line}</th>
+                <th scope="col" className="colorloop-roi-table-num">
+                  {t.table.perYear}
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">
+                  <span className="colorloop-roi-row-label">{t.table.paper}</span>
+                  <span className="colorloop-roi-row-sub">
                     {formatNum(locale, result.sheetsSaved)} {t.table.sheets}
-                  </small>
-                </span>
-                <span className="roi-result-row-v">{formatEur(locale, result.paperEur)}</span>
-              </div>
-              <div className="roi-result-row">
-                <span className="roi-result-row-k">
-                  {t.table.press}
-                  <small>
+                  </span>
+                </th>
+                <td className="colorloop-roi-table-num">{formatEur(locale, result.paperEur)}</td>
+              </tr>
+              <tr>
+                <th scope="row">
+                  <span className="colorloop-roi-row-label">{t.table.press}</span>
+                  <span className="colorloop-roi-row-sub">
                     {formatNum(locale, result.hoursSaved)} {t.table.hours}
-                  </small>
-                </span>
-                <span className="roi-result-row-v">{formatEur(locale, result.pressEur)}</span>
-              </div>
-            </div>
-            <p className="colorloop-roi-disclaimer">{t.disclaimer}</p>
-            <a className="button button-dark colorloop-roi-cta" href="mailto:contact@rutherford.fr">
-              {t.cta}
-            </a>
-          </div>
+                  </span>
+                </th>
+                <td className="colorloop-roi-table-num">{formatEur(locale, result.pressEur)}</td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr>
+                <th scope="row">{t.table.total}</th>
+                <td className="colorloop-roi-table-num colorloop-roi-table-total">
+                  {formatEur(locale, result.total)}
+                </td>
+              </tr>
+              <tr>
+                <th scope="row" className="colorloop-roi-table-sub-row">
+                  {t.table.perMonth}
+                </th>
+                <td className="colorloop-roi-table-num colorloop-roi-table-sub-row">
+                  {formatEur(locale, result.total / 12)}
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+
+          <p className="colorloop-roi-disclaimer">{t.disclaimer}</p>
+
+          <a className="button button-dark colorloop-roi-cta" href="mailto:contact@rutherford.fr">
+            {t.cta}
+          </a>
         </div>
       </div>
     </section>
