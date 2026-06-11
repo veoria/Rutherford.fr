@@ -10,7 +10,7 @@ import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 // Front-end demo mode: sign-in buttons drop straight into the sample
 // dashboard so collaborators can walk the UI without real auth.
 // Flip to false (or wire NEXT_PUBLIC_AUTH_DEMO) to restore real Supabase auth.
-const DEMO_AUTH = true;
+const DEMO_AUTH = false;
 const DEMO_DASHBOARD = '/account/demo';
 
 type SignInCopy = {
