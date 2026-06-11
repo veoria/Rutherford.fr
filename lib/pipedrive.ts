@@ -115,6 +115,7 @@ export type ConsoleValidationLead = {
   notes: string;
   photoCount: number;
   storagePath: string;
+  photosLink?: string | null;
 };
 
 /**
@@ -150,7 +151,7 @@ export async function syncConsoleValidationToPipedrive(lead: ConsoleValidationLe
       lead.country ? `Pays : ${lead.country}` : null,
       lead.machine ? `Machine : ${lead.machine}` : null,
       lead.notes ? `Notes : ${lead.notes}` : null,
-      `Photos : ${lead.photoCount} (Supabase Storage → console-validations/${lead.storagePath})`,
+      `Photos : ${lead.photoCount}${lead.photosLink ? ` — <a href="${lead.photosLink}">voir les photos</a>` : ` (${lead.storagePath})`}`,
     ].filter(Boolean);
 
     await pd('/notes', {
