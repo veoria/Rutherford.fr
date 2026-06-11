@@ -12084,3 +12084,12 @@ a.blog-card-image:hover img {
   color: var(--muted);
   line-height: 1.6;
 }
+
+/* ROI press schematic: 25% larger on mobile (slight edge bleed, kept centered) */
+@media (max-width: 640px) {
+  .roi-press-svg {
+    width: 125%;
+    max-width: none;
+    margin-left: -12.5%;
+  }
+}
