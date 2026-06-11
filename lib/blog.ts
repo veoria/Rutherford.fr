@@ -10,6 +10,12 @@ export type BlogArticle = {
   paragraphs: string[];
   originalUrl: string;
   category: string;
+  /**
+   * Optional override for the article's destination URL. When set, the blog
+   * index card routes to this URL instead of /blog/<slug>. Use for teaser
+   * articles that should land users on a dedicated page (e.g. /offset360).
+   */
+  href?: string;
   sources?: Array<{
     label: string;
     href: string;

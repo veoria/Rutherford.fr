@@ -106,3 +106,62 @@ export async function syncLeadToPipedrive(lead: Lead): Promise<void> {
     console.error('PipeDrive lead sync failed:', error);
   }
 }
+
+export type ConsoleValidationLead = {
+  email: string;
+  company: string;
+  country: string;
+  machine: string;
+  notes: string;
+  photoCount: number;
+  storagePath: string;
+};
+
+/**
+ * Console-validation request → PipeDrive (Person + Organization + Note).
+ * Same dormant-safe contract as syncLeadToPipedrive: never throws, no-op
+ * without a token.
+ */
+export async function syncConsoleValidationToPipedrive(lead: ConsoleValidationLead): Promise<void> {
+  if (!TOKEN || !lead.email) return;
+  try {
+    const orgId = lead.company ? await findOrgId(lead.company) : null;
+
+    let personId = await findPersonId(lead.email);
+    if (!personId) {
+      const created = await pd('/persons', {
+        method: 'POST',
+        body: JSON.stringify({
+          name: lead.email,
+          email: [lead.email],
+          ...(orgId ? { org_id: orgId } : {}),
+        }),
+      });
+      personId = (created?.data?.id as number) ?? null;
+    } else if (orgId) {
+      await pd(`/persons/${personId}`, { method: 'PUT', body: JSON.stringify({ org_id: orgId }) }).catch(
+        () => {}
+      );
+    }
+
+    const lines = [
+      '<b>Demande de validation console</b>',
+      lead.company ? `Société : ${lead.company}` : null,
+      lead.country ? `Pays : ${lead.country}` : null,
+      lead.machine ? `Machine : ${lead.machine}` : null,
+      lead.notes ? `Notes : ${lead.notes}` : null,
+      `Photos : ${lead.photoCount} (Supabase Storage → console-validations/${lead.storagePath})`,
+    ].filter(Boolean);
+
+    await pd('/notes', {
+      method: 'POST',
+      body: JSON.stringify({
+        content: lines.join('<br>'),
+        ...(personId ? { person_id: personId } : {}),
+        ...(orgId ? { org_id: orgId } : {}),
+      }),
+    });
+  } catch (error) {
+    console.error('PipeDrive console-validation sync failed:', error);
+  }
+}

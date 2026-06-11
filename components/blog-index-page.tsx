@@ -34,12 +34,14 @@ export function BlogIndexPage({ articles }: { articles: BlogArticle[] }) {
           </div>
 
           <div className="blog-grid">
-            {articles.map((article) => (
+            {articles.map((article) => {
+              const href = article.href ?? `/blog/${article.slug}`;
+              return (
               <article className="blog-card" key={article.slug}>
                 {article.image ? (
-                  <div className="blog-card-image">
+                  <a className="blog-card-image" href={href} aria-label={article.title}>
                     <img src={article.image} alt={article.title} loading="lazy" />
-                  </div>
+                  </a>
                 ) : null}
                 <div className="blog-card-body">
                   <div className="blog-card-meta">
@@ -54,14 +56,17 @@ export function BlogIndexPage({ articles }: { articles: BlogArticle[] }) {
                       </time>
                     ) : null}
                   </div>
-                  <h2>{article.title}</h2>
+                  <h2>
+                    <a className="blog-card-title-link" href={href}>{article.title}</a>
+                  </h2>
                   <p>{article.excerpt}</p>
-                  <a className="button button-outline blog-card-button" href={`/blog/${article.slug}`}>
+                  <a className="button button-outline blog-card-button" href={href}>
                     {t.read}
                   </a>
                 </div>
               </article>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>
