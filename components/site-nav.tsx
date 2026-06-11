@@ -42,7 +42,6 @@ export function SiteNav({ current = 'home' }: SiteNavProps) {
       colorloop: string;
       cases: string;
       blog: string;
-      news: string;
       academy: string;
       support: string;
       console: string;
@@ -60,7 +59,6 @@ export function SiteNav({ current = 'home' }: SiteNavProps) {
       colorloop: 'ColorLoop',
       cases: 'Case Studies',
       blog: 'Blog',
-      news: 'News',
       academy: 'Academy',
       support: 'Support',
       console: 'Console Validation',
@@ -77,7 +75,6 @@ export function SiteNav({ current = 'home' }: SiteNavProps) {
       colorloop: 'ColorLoop',
       cases: 'Cas clients',
       blog: 'Blog',
-      news: 'Actualités',
       academy: 'Academy',
       support: 'Support',
       console: 'Validation console',
@@ -94,7 +91,6 @@ export function SiteNav({ current = 'home' }: SiteNavProps) {
       colorloop: 'ColorLoop',
       cases: 'Referenzen',
       blog: 'Blog',
-      news: 'News',
       academy: 'Academy',
       support: 'Support',
       console: 'Konsolenvalidierung',
@@ -111,7 +107,6 @@ export function SiteNav({ current = 'home' }: SiteNavProps) {
       colorloop: 'ColorLoop',
       cases: 'Case Study',
       blog: 'Blog',
-      news: 'News',
       academy: 'Academy',
       support: 'Supporto',
       console: 'Validazione console',
@@ -128,7 +123,6 @@ export function SiteNav({ current = 'home' }: SiteNavProps) {
       colorloop: 'ColorLoop',
       cases: 'Casos prácticos',
       blog: 'Blog',
-      news: 'Noticias',
       academy: 'Academy',
       support: 'Soporte',
       console: 'Validación de consola',
@@ -203,12 +197,11 @@ export function SiteNav({ current = 'home' }: SiteNavProps) {
             {labels.colorloop}
           </a>
           <a className={current === 'blog' ? 'is-current' : undefined} href="/blog" onClick={() => setOpen(false)}>
-            {labels.news}
+            {labels.blog}
           </a>
           {academyEnabled ? (
-            <a className={`nav-has-badge ${current === 'academy' ? 'is-current' : ''}`} href="/academy" onClick={() => setOpen(false)}>
+            <a className={current === 'academy' ? 'is-current' : undefined} href="/academy" onClick={() => setOpen(false)}>
               {labels.academy}
-              <span className="nav-badge-new">New</span>
             </a>
           ) : null}
           {academyEnabled ? (
@@ -240,6 +233,39 @@ export function SiteNav({ current = 'home' }: SiteNavProps) {
         </nav>
 
         <div className="header-actions">
+          <div className="locale-dropdown" ref={localeRef}>
+            <button
+              type="button"
+              className={`locale-dropdown-trigger ${localeOpen ? 'is-open' : ''}`}
+              aria-haspopup="menu"
+              aria-expanded={localeOpen}
+              onClick={() => setLocaleOpen((value) => !value)}
+            >
+              <span>{locale.toUpperCase()}</span>
+              <span className="locale-dropdown-caret" aria-hidden="true">⌄</span>
+            </button>
+
+            {localeOpen ? (
+              <div className="locale-dropdown-menu" role="menu" aria-label={labels.localeLabel}>
+                {languageOptions.map((option) => (
+                  <button
+                    key={option.code}
+                    type="button"
+                    className={option.code === locale ? 'is-active' : undefined}
+                    role="menuitemradio"
+                    aria-checked={option.code === locale}
+                    onClick={() => {
+                      setLocale(option.code);
+                      setLocaleOpen(false);
+                    }}
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
+            ) : null}
+          </div>
+
           {academyEnabled ? (
             <a
               className={`header-account-icon ${current === 'account' ? 'is-current' : ''}`}

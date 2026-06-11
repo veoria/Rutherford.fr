@@ -79,7 +79,7 @@ export function AcademyPage() {
 
       <section className="academy-hero section">
         <div className="container academy-hero-shell">
-          <h1 className="academy-hero-title">Rutherford&rsquo;s Academy</h1>
+          <h1 className="academy-hero-title">Rutherford&rsquo;s Academy 🎓</h1>
           <p className="academy-hero-lead">
             Offset color management, taught by people who run pressrooms.
           </p>
@@ -98,6 +98,8 @@ export function AcademyPage() {
           </div>
         </div>
       </section>
+
+      <AcademyFreeVideos />
 
       <section className="academy-section section" id="free">
         <div className="container">
@@ -157,8 +159,6 @@ export function AcademyPage() {
           </aside>
         </div>
       </section>
-
-      <AcademyFreeVideos />
 
       <section className="academy-why section">
         <div className="container academy-why-shell">

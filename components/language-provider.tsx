@@ -14,19 +14,26 @@ type LanguageContextValue = {
 const LanguageContext = createContext<LanguageContextValue | null>(null);
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  // Locked to English. All other translations (fr/de/it/es) stay in the codebase
-  // for future use; the language switcher in the nav has been removed.
-  // To re-enable user-facing language switching, restore the auto-detection
-  // useEffect below from git history and re-mount the locale dropdown in site-nav.
   const [locale, setLocaleState] = useState<Locale>('en');
 
   useEffect(() => {
-    document.documentElement.lang = 'en';
+    const stored = window.localStorage.getItem('rutherford-locale') as Locale | null;
+    const browserLocale = window.navigator.language.slice(0, 2) as Locale;
+    const nextLocale = SUPPORTED_LOCALES.includes(stored as Locale)
+      ? (stored as Locale)
+      : SUPPORTED_LOCALES.includes(browserLocale)
+        ? browserLocale
+        : 'en';
+
+    setLocaleState(nextLocale);
+    document.documentElement.lang = nextLocale;
+    window.localStorage.setItem('rutherford-locale', nextLocale);
   }, []);
 
   const setLocale = (nextLocale: Locale) => {
     setLocaleState(nextLocale);
     document.documentElement.lang = nextLocale;
+    window.localStorage.setItem('rutherford-locale', nextLocale);
   };
 
   const contextValue = useMemo(() => ({ locale, setLocale }), [locale]);
