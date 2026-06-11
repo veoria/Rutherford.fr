@@ -268,11 +268,6 @@ export function ConsoleValidationPage() {
                     sizes="(max-width: 768px) 100vw, 960px"
                   />
                 </div>
-                <p>
-                  Color drift and manual key chasing burn sheets, ink and press time, on every single job.
-                  Rutherford closes the loop. Check your press eligibility for free: a few photos, two minutes,
-                  answer within one business day. No commitment.
-                </p>
                 <p className="console-simple-presses-label">Compatible consoles</p>
                 <div className="console-cta-presses console-simple-presses" aria-label="Compatible offset press brands">
                   <div className="console-cta-presses-track">
@@ -292,11 +287,6 @@ export function ConsoleValidationPage() {
                 <p className="console-simple-roi-link">
                   Curious what color drift costs you? <a href="/#roi">Try the ROI calculator →</a>
                 </p>
-                <div className="console-simple-cta-row">
-                  <a className="button button-dark" href="#submit">
-                    Start the free check, submit your information
-                  </a>
-                </div>
               </div>
 
               <form id="submit" className="console-simple-form" onSubmit={handleSubmit}>

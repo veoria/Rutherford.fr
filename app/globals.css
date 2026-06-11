@@ -11726,6 +11726,7 @@ a.blog-card-image:hover img {
 
 
 .console-simple-roi-link {
+  text-align: center;
   font-weight: 600;
 }
 
@@ -11794,6 +11795,16 @@ a.blog-card-image:hover img {
 
 .console-simple-presses {
   margin: 6px auto 10px;
+  /* viewport-based width: the track is wider than any container, so any
+     %-based sizing lets its max-content stretch the grid column and break
+     the h1 wrap. 100vw breaks that circular dependency. */
+  width: min(800px, calc(100vw - 72px));
+  max-width: none;
+}
+
+.console-simple-intro {
+  min-width: 0;
+  max-width: 100%;
 }
 
 .console-simple-presses .console-cta-press img {
