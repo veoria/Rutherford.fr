@@ -21,6 +21,16 @@ type UploadConfig = {
   exampleAlt: string;
 };
 
+const PRESS_BRANDS = [
+  { src: '/images/komori.webp', alt: 'Komori' },
+  { src: '/images/koenig-bauer.webp', alt: 'Koenig & Bauer' },
+  { src: '/images/manroland.webp', alt: 'Manroland' },
+  { src: '/images/mitsubishi.webp', alt: 'Mitsubishi' },
+  { src: '/images/ryobi.webp', alt: 'Ryobi' },
+  { src: '/images/presstek.webp', alt: 'Presstek' },
+  { src: '/images/goss.webp', alt: 'Goss' },
+];
+
 const countryOptions = [
   'Belgium',
   'Canada',
@@ -155,10 +165,24 @@ function UploadField({
   );
 }
 
-export function ConsoleValidationPage() {
+export type ConsoleValidationBrand = {
+  name: string;
+  consoles: string;
+  presses: string;
+  machinePlaceholder: string;
+};
+
+export type ConsoleValidationFaqItem = { q: string; a: string };
+
+export function ConsoleValidationPage({
+  brand,
+  faq,
+}: { brand?: ConsoleValidationBrand; faq?: ConsoleValidationFaqItem[] } = {}) {
   const [files, setFiles] = useState<FileMap>(emptyFiles);
   const [previews, setPreviews] = useState<PreviewMap>(emptyPreviews);
   const [submitted, setSubmitted] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   useEffect(() => {
     return () => {
@@ -183,10 +207,37 @@ export function ConsoleValidationPage() {
     });
   };
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setSubmitted(true);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (sending) return;
+    setSending(true);
+    setErrorMsg(null);
+
+    const data = new FormData(event.currentTarget);
+    // File inputs live in component state, not in the form element.
+    (Object.keys(files) as UploadFieldId[]).forEach((field) => {
+      const file = files[field];
+      if (file) data.set(field, file);
+    });
+
+    try {
+      const res = await fetch('/api/console-validation', { method: 'POST', body: data });
+      if (!res.ok) {
+        const body = await res.json().catch(() => null);
+        throw new Error(body?.error ?? 'Something went wrong, please retry.');
+      }
+      // GA4 conversion event (no-op when analytics is not loaded).
+      (window as any).gtag?.('event', 'console_validation_submit', {
+        event_category: 'lead',
+        machine: String(data.get('machineName') ?? ''),
+      });
+      setSubmitted(true);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (error) {
+      setErrorMsg(error instanceof Error ? error.message : 'Something went wrong, please retry.');
+    } finally {
+      setSending(false);
+    }
   };
 
   return (
@@ -200,8 +251,8 @@ export function ConsoleValidationPage() {
               <p className="section-kicker">Console validation</p>
               <h1>Thank you.</h1>
               <p>
-                Your request has been prepared. If you want, I can next connect this form to email, CRM or database
-                storage so the submissions are actually collected automatically.
+                Your console validation request has been received. Our team reviews every submission and comes back
+                within one business day with your press eligibility and the next steps.
               </p>
               <button type="button" className="button button-dark" onClick={() => setSubmitted(false)}>
                 Fill another form
@@ -210,25 +261,69 @@ export function ConsoleValidationPage() {
           ) : (
             <>
               <div className="console-simple-intro">
-                <p className="section-kicker">Console validation</p>
-                <h1>Validate your press console.</h1>
+                <p className="section-kicker">
+                  {brand ? `Console validation · ${brand.name}` : 'Console validation'}
+                </p>
+                <h1>
+                  {brand
+                    ? `Stop losing money on your ${brand.name} makeready.`
+                    : 'Stop losing money on every makeready.'}
+                </h1>
+                <p className="console-simple-tagline">The system that pays for itself.</p>
+                <p className="console-simple-phone">Do everything from your phone.</p>
+                {brand ? (
+                  <p className="console-simple-brand-line">
+                    Works with <strong>{brand.consoles}</strong> consoles on {brand.presses}.
+                  </p>
+                ) : null}
+                <div className="console-simple-cta-row">
+                  <a className="button button-accent" href="#submit">
+                    Submit your information ↓
+                  </a>
+                </div>
                 <div className="console-simple-intro-image">
                   <Image
-                    src="/images/Bundle Rutherford-4.jpg"
-                    alt="Rutherford console validation setup"
-                    width={1024}
-                    height={768}
+                    src="/images/console-validation-sketch.png"
+                    alt="Sketch of an offset press console"
+                    width={1448}
+                    height={1086}
                     priority
                     sizes="(max-width: 768px) 100vw, 960px"
                   />
                 </div>
-                <p>
-                  Fill in the information below and upload the requested pictures. The form is designed to be simple on
-                  desktop and very easy to complete on a phone.
+                <p className="console-simple-presses-label">Compatible consoles</p>
+                <div className="console-cta-presses console-simple-presses" aria-label="Compatible offset press brands">
+                  <div className="console-cta-presses-track">
+                    {[...PRESS_BRANDS, ...PRESS_BRANDS].map((brand, i) => (
+                      <span className="console-cta-press" key={`${brand.alt}-${i}`}>
+                        <Image
+                          src={brand.src}
+                          alt={i < PRESS_BRANDS.length ? brand.alt : ''}
+                          width={240}
+                          height={80}
+                          sizes="140px"
+                        />
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                <p className="console-simple-brand-links">
+                  Your press:{' '}
+                  <a href="/console-validation/heidelberg">Heidelberg</a> ·{' '}
+                  <a href="/console-validation/komori">Komori</a> ·{' '}
+                  <a href="/console-validation/koenig-bauer">Koenig &amp; Bauer</a> ·{' '}
+                  <a href="/console-validation/manroland">Manroland</a> ·{' '}
+                  <a href="/console-validation/mitsubishi">Mitsubishi</a> ·{' '}
+                  <a href="/console-validation/ryobi">Ryobi</a> ·{' '}
+                  <a href="/console-validation/goss">Goss</a> ·{' '}
+                  <a href="/console-validation/presstek">Presstek</a>
+                </p>
+                <p className="console-simple-roi-link">
+                  Curious what color drift costs you? <a href="/#roi">Try the ROI calculator →</a>
                 </p>
               </div>
 
-              <form className="console-simple-form" onSubmit={handleSubmit}>
+              <form id="submit" className="console-simple-form" onSubmit={handleSubmit}>
                 <div className="console-simple-grid">
                   <label className="console-simple-field">
                     <span>Email address *</span>
@@ -256,7 +351,12 @@ export function ConsoleValidationPage() {
 
                   <label className="console-simple-field">
                     <span>Machine name *</span>
-                    <input type="text" name="machineName" placeholder="Brand, model, units" required />
+                    <input
+                      type="text"
+                      name="machineName"
+                      placeholder={brand ? brand.machinePlaceholder : 'Brand, model, units'}
+                      required
+                    />
                   </label>
                 </div>
 
@@ -282,11 +382,12 @@ export function ConsoleValidationPage() {
                 </label>
 
                 <div className="console-simple-submit">
-                  <button className="button button-dark" type="submit">
-                    Send
+                  <button className="button button-dark" type="submit" disabled={sending}>
+                    {sending ? 'Sending…' : 'Send'}
                   </button>
+                  {errorMsg ? <p className="console-simple-error" role="alert">{errorMsg}</p> : null}
                   <p>
-                    Mobile friendly. Images can be taken directly from the phone camera.
+                    Do everything from your phone, photos straight from the camera.
                   </p>
                 </div>
               </form>
@@ -294,6 +395,22 @@ export function ConsoleValidationPage() {
           )}
         </div>
       </section>
+
+      {faq && faq.length > 0 ? (
+        <section className="section console-faq-section" aria-label="Frequently asked questions">
+          <div className="container console-faq-shell">
+            <h2 className="console-faq-title">Frequently asked questions</h2>
+            <dl className="console-faq-list">
+              {faq.map((item) => (
+                <div className="console-faq-item" key={item.q}>
+                  <dt>{item.q}</dt>
+                  <dd>{item.a}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+        </section>
+      ) : null}
 
       <SiteFooter />
     </main>

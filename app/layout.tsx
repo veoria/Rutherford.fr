@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { LanguageProvider } from '@/components/language-provider';
 import { GoogleAnalytics } from '@/components/google-analytics';
 import './globals.css';
+// import './brutalism.css'; // disabled, v1 design
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://rutherford.fr'),
@@ -34,10 +35,27 @@ export const metadata: Metadata = {
   },
 };
 
+const ORG_JSON_LD = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'Rutherford.fr',
+  url: 'https://rutherford.fr',
+  logo: 'https://rutherford.fr/images/rutherford-logo-black.png',
+  description:
+    'European specialist in closed-loop color management for offset and flexo printing. X-Rite PANTONE partner. ColorLoop software, console validation and the Offset360 bundle.',
+  sameAs: [
+    'https://www.linkedin.com/company/rutherford-graphic-products-llc',
+    'https://www.instagram.com/rutherfordgraphic/',
+    'https://www.youtube.com/channel/UChiClIodg9rbuTDnInE4GmQ',
+    'https://www.tiktok.com/@rutherfordgraphic',
+  ],
+};
+
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
       <body>
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ORG_JSON_LD) }} />
         <LanguageProvider>
           {children}
         </LanguageProvider>

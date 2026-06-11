@@ -1,6 +1,7 @@
 'use client';
 
 import { useLanguage, type Locale } from '@/components/language-provider';
+import { SnapSlider } from '@/components/snap-slider';
 
 type Benefit = { title: string; body: string };
 
@@ -16,7 +17,7 @@ const COPY: Record<Locale, Copy> = {
     kicker: 'How Rutherford helps',
     headline: 'Concrete outcomes for real offset production environments.',
     intro:
-      'Rutherford supports offset teams with color management, press-side workflow, and production standardization — focused on what moves the press, not buzzwords.',
+      'Rutherford supports offset teams with color management, press-side workflow, and production standardization, focused on what moves the press, not buzzwords.',
     benefits: [
       {
         title: 'Stable color across runs',
@@ -32,7 +33,7 @@ const COPY: Record<Locale, Copy> = {
       },
       {
         title: 'Production standardization',
-        body: 'Repeatable processes across presses, shifts, and sites — so brand owners and converters can trust what ships.',
+        body: 'Repeatable processes across presses, shifts, and sites, so brand owners and converters can trust what ships.',
       },
     ],
   },
@@ -40,7 +41,7 @@ const COPY: Record<Locale, Copy> = {
     kicker: 'Comment Rutherford aide',
     headline: 'Des résultats concrets pour la production offset.',
     intro:
-      'Rutherford accompagne les équipes offset sur la gestion couleur, le workflow presse et la standardisation de production — centré sur ce qui fait tourner les machines, pas sur des slogans.',
+      'Rutherford accompagne les équipes offset sur la gestion couleur, le workflow presse et la standardisation de production, centré sur ce qui fait tourner les machines, pas sur des slogans.',
     benefits: [
       {
         title: 'Couleur stable à chaque tirage',
@@ -56,7 +57,7 @@ const COPY: Record<Locale, Copy> = {
       },
       {
         title: 'Standardisation production',
-        body: 'Des processus reproductibles entre presses, équipes et sites — pour que marques et converters puissent s’y fier.',
+        body: 'Des processus reproductibles entre presses, équipes et sites, pour que marques et converters puissent s’y fier.',
       },
     ],
   },
@@ -64,7 +65,7 @@ const COPY: Record<Locale, Copy> = {
     kicker: 'Wie Rutherford hilft',
     headline: 'Konkrete Ergebnisse für reale Offset-Produktion.',
     intro:
-      'Rutherford unterstützt Offsetteams bei Farbmanagement, pressenseitigem Workflow und Produktionsstandardisierung — fokussiert auf das, was die Presse bewegt, nicht auf Schlagworte.',
+      'Rutherford unterstützt Offsetteams bei Farbmanagement, pressenseitigem Workflow und Produktionsstandardisierung, fokussiert auf das, was die Presse bewegt, nicht auf Schlagworte.',
     benefits: [
       {
         title: 'Stabile Farbe über alle Aufträge',
@@ -80,7 +81,7 @@ const COPY: Record<Locale, Copy> = {
       },
       {
         title: 'Produktionsstandardisierung',
-        body: 'Reproduzierbare Prozesse über Maschinen, Schichten und Standorte hinweg — verlässlich für Markeninhaber und Verarbeiter.',
+        body: 'Reproduzierbare Prozesse über Maschinen, Schichten und Standorte hinweg, verlässlich für Markeninhaber und Verarbeiter.',
       },
     ],
   },
@@ -112,7 +113,7 @@ const COPY: Record<Locale, Copy> = {
     kicker: 'Cómo ayuda Rutherford',
     headline: 'Resultados concretos para entornos reales de producción offset.',
     intro:
-      'Rutherford acompaña a los equipos offset en gestión del color, flujo de trabajo junto a la prensa y estandarización de producción — centrado en lo que mueve la prensa, no en eslóganes.',
+      'Rutherford acompaña a los equipos offset en gestión del color, flujo de trabajo junto a la prensa y estandarización de producción, centrado en lo que mueve la prensa, no en eslóganes.',
     benefits: [
       {
         title: 'Color estable en cada tirada',
@@ -128,7 +129,7 @@ const COPY: Record<Locale, Copy> = {
       },
       {
         title: 'Estandarización de producción',
-        body: 'Procesos repetibles entre prensas, turnos y plantas — fiables para marcas y converters.',
+        body: 'Procesos repetibles entre prensas, turnos y plantas, fiables para marcas y converters.',
       },
     ],
   },
@@ -154,7 +155,7 @@ export function HowRutherfordHelps() {
           <p className="how-rutherford-intro">{t.intro}</p>
         </header>
 
-        <div className="how-rutherford-grid">
+        <SnapSlider className="how-rutherford-grid">
           {t.benefits.map((b, i) => (
             <article className="how-rutherford-card" key={b.title}>
               <span className="how-rutherford-card-index" aria-hidden="true">
@@ -167,7 +168,7 @@ export function HowRutherfordHelps() {
               <p>{b.body}</p>
             </article>
           ))}
-        </div>
+        </SnapSlider>
       </div>
     </section>
   );

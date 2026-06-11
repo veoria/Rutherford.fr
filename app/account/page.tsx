@@ -16,7 +16,7 @@ import {
 import { courseHasQuiz } from '@/data/academy-quizzes';
 
 export const metadata: Metadata = {
-  title: 'Your account — Rutherford Academy',
+  title: 'Your account | Rutherford Academy',
 };
 
 export const dynamic = 'force-dynamic';

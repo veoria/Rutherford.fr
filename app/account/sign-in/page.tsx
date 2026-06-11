@@ -4,7 +4,7 @@ import { Suspense } from 'react';
 import { SignInPage } from '@/components/sign-in-page';
 
 export const metadata: Metadata = {
-  title: 'Sign in — Rutherford Academy',
+  title: 'Sign in | Rutherford Academy',
   description: 'Sign in to access your enrolled courses and progress.',
 };
 

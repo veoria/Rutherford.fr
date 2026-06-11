@@ -15,19 +15,19 @@ const COPY: Record<Locale, Copy> = {
   en: {
     kicker: 'Made in France',
     headline: 'Our Team',
-    body: 'Rutherford.fr and Veoria.fr are two sister companies based in France. Our team combines offset expertise, software engineering, and industrial printing technology to support printers, converters, and brands across Europe and beyond. Every project is handled directly from France — with people who know your press, your workflow, and your business.',
+    body: 'Rutherford.fr and Veoria.fr are two sister companies based in France. Our team combines offset expertise, software engineering, and industrial printing technology to support printers, converters, and brands across Europe and beyond. Every project is handled directly from France, with people who know your press, your workflow, and your business.',
     ctaLabel: 'Talk to our team',
   },
   fr: {
     kicker: 'Fait en France',
     headline: 'Notre équipe',
-    body: 'Rutherford.fr et Veoria.fr sont deux sociétés sœurs basées en France. Notre équipe réunit expertise offset, ingénierie logicielle et technologies d’impression industrielle pour accompagner imprimeurs, convertisseurs et marques en Europe et au-delà. Chaque projet est pris en charge directement depuis la France — par des personnes qui connaissent votre presse, votre workflow et votre métier.',
+    body: 'Rutherford.fr et Veoria.fr sont deux sociétés sœurs basées en France. Notre équipe réunit expertise offset, ingénierie logicielle et technologies d’impression industrielle pour accompagner imprimeurs, convertisseurs et marques en Europe et au-delà. Chaque projet est pris en charge directement depuis la France, par des personnes qui connaissent votre presse, votre workflow et votre métier.',
     ctaLabel: 'Parler à notre équipe',
   },
   de: {
     kicker: 'Made in France',
     headline: 'Unser Team',
-    body: 'Rutherford.fr und Veoria.fr sind zwei Schwesterunternehmen aus Frankreich. Unser Team verbindet Offset-Expertise, Software-Engineering und industrielle Drucktechnologie, um Druckereien, Verarbeiter und Marken in Europa und darüber hinaus zu unterstützen. Jedes Projekt wird direkt aus Frankreich betreut — von Menschen, die Ihre Presse, Ihren Workflow und Ihr Geschäft kennen.',
+    body: 'Rutherford.fr und Veoria.fr sind zwei Schwesterunternehmen aus Frankreich. Unser Team verbindet Offset-Expertise, Software-Engineering und industrielle Drucktechnologie, um Druckereien, Verarbeiter und Marken in Europa und darüber hinaus zu unterstützen. Jedes Projekt wird direkt aus Frankreich betreut, von Menschen, die Ihre Presse, Ihren Workflow und Ihr Geschäft kennen.',
     ctaLabel: 'Unser Team kontaktieren',
   },
   it: {
@@ -39,7 +39,7 @@ const COPY: Record<Locale, Copy> = {
   es: {
     kicker: 'Hecho en Francia',
     headline: 'Nuestro equipo',
-    body: 'Rutherford.fr y Veoria.fr son dos empresas hermanas con sede en Francia. Nuestro equipo combina experiencia offset, ingeniería de software y tecnologías de impresión industrial para acompañar a impresores, convertidores y marcas en Europa y más allá. Cada proyecto se gestiona directamente desde Francia — por personas que conocen su prensa, su flujo de trabajo y su negocio.',
+    body: 'Rutherford.fr y Veoria.fr son dos empresas hermanas con sede en Francia. Nuestro equipo combina experiencia offset, ingeniería de software y tecnologías de impresión industrial para acompañar a impresores, convertidores y marcas en Europa y más allá. Cada proyecto se gestiona directamente desde Francia, por personas que conocen su prensa, su flujo de trabajo y su negocio.',
     ctaLabel: 'Hablar con nuestro equipo',
   },
 };

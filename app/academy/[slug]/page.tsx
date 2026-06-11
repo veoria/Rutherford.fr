@@ -19,7 +19,7 @@ export function generateMetadata({ params }: { params: RouteParams }): Metadata 
   const course = getCourseBySlug(params.slug);
   if (!course) return { title: 'Rutherford Academy' };
   return {
-    title: `${course.title} — Rutherford Academy`,
+    title: `${course.title} | Rutherford Academy`,
     description: course.description,
   };
 }
@@ -86,16 +86,40 @@ export default async function AcademyCourseRoute({
     }
   }
 
+  const courseJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Course',
+    name: course.title,
+    description: course.description,
+    provider: { '@type': 'Organization', name: 'Rutherford.fr', url: 'https://rutherford.fr' },
+    url: `https://rutherford.fr/academy/${course.id}`,
+    ...(course.tone === 'free'
+      ? { isAccessibleForFree: true }
+      : course.price
+        ? {
+            offers: {
+              '@type': 'Offer',
+              price: course.price.replace(/[^0-9.,]/g, '').replace(',', '.'),
+              priceCurrency: 'EUR',
+              url: `https://rutherford.fr/academy/${course.id}`,
+            },
+          }
+        : {}),
+  };
+
   return (
-    <AcademyCoursePage
-      course={course}
-      access={access}
-      videoUrl={videoUrl}
-      completedLessons={completedLessons}
-      quiz={quiz}
-      quizPassed={quizPassed}
-      quizBest={quizBest}
-      initialModule={initialModule}
-    />
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(courseJsonLd) }} />
+      <AcademyCoursePage
+        course={course}
+        access={access}
+        videoUrl={videoUrl}
+        completedLessons={completedLessons}
+        quiz={quiz}
+        quizPassed={quizPassed}
+        quizBest={quizBest}
+        initialModule={initialModule}
+      />
+    </>
   );
 }
