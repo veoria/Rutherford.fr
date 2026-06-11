@@ -6891,6 +6891,37 @@ svg {
   }
 }
 
+/* Easter egg: the press operator wiggles when you hover over them. Pivot at the
+   feet (fill-box bottom-centre) so it reads as a little side-to-side bounce. */
+.roi-operator {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  cursor: pointer;
+}
+
+.roi-operator:hover {
+  animation: roiOperatorWiggle 0.55s ease-in-out infinite;
+}
+
+@keyframes roiOperatorWiggle {
+  0%,
+  100% {
+    transform: rotate(0deg) translateY(0);
+  }
+  25% {
+    transform: rotate(-6deg) translateY(-2px);
+  }
+  75% {
+    transform: rotate(6deg) translateY(-2px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .roi-operator:hover {
+    animation: none;
+  }
+}
+
 .colorloop-roi-figures-heading {
   margin: 0;
   font-size: 0.95rem;
@@ -7003,8 +7034,8 @@ svg {
 
 .roi-input-row {
   display: grid;
-  grid-template-columns: 1fr 92px;
-  gap: 12px;
+  grid-template-columns: 1fr auto;
+  gap: 16px;
   align-items: center;
 }
 
@@ -7039,18 +7070,29 @@ svg {
   border: 2px solid #ffffff;
 }
 
+/* The value reads as a big bold figure rather than a boxed field, but stays an
+   editable number input (border/background appear only on hover/focus so it
+   remains discoverable and accessible). */
 .roi-input-number {
-  background: #ffffff;
-  border: 1px solid rgba(0, 0, 0, 0.12);
+  min-width: 3.5ch;
+  background: transparent;
+  border: 1px solid transparent;
   color: #1d1d1f;
-  border-radius: 8px;
-  padding: 6px 10px;
+  border-radius: 9px;
+  padding: 4px 6px;
   font: inherit;
-  font-size: 0.92rem;
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
   text-align: right;
   font-variant-numeric: tabular-nums;
   -moz-appearance: textfield;
   appearance: textfield;
+  transition: background 140ms ease, border-color 140ms ease;
+}
+
+.roi-input-number:hover {
+  background: rgba(0, 0, 0, 0.04);
 }
 
 .roi-input-number::-webkit-outer-spin-button,
@@ -7060,7 +7102,12 @@ svg {
   margin: 0;
 }
 
-.roi-input-number:focus,
+.roi-input-number:focus {
+  background: rgba(0, 113, 227, 0.08);
+  border-color: var(--accent);
+  outline: none;
+}
+
 .roi-input-range:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
@@ -7097,6 +7144,7 @@ svg {
   line-height: 1;
   color: var(--accent);
   font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 
 .colorloop-roi-result-month {

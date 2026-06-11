@@ -500,7 +500,11 @@ export function ColorLoopROI() {
 
         <div className="colorloop-roi-result">
           <p className="colorloop-roi-result-label">{t.table.annual}</p>
-          <div className="colorloop-roi-result-total">{formatEur(locale, result.total)}</div>
+          {/* hero figure: normalise the locale's narrow no-break space to a plain
+              space so the big number reads clearly, e.g. "122 267 €" */}
+          <div className="colorloop-roi-result-total">
+            {formatEur(locale, result.total).replace(/[\u202f\u00a0]/g, ' ')}
+          </div>
           <p className="colorloop-roi-result-month">
             ≈ {formatEur(locale, result.total / 12)} {t.table.perMonth}
           </p>
