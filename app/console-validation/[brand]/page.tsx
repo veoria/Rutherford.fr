@@ -60,6 +60,7 @@ export default function BrandConsoleValidationRoute({ params }: { params: RouteP
           presses: brand.presses,
           machinePlaceholder: brand.machinePlaceholder,
         }}
+        faq={brand.faq}
       />
     </>
   );

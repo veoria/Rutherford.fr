@@ -11857,3 +11857,40 @@ a.blog-card-image:hover img {
 .console-simple-brand-links a:hover {
   color: var(--accent);
 }
+
+/* Console validation — visible FAQ (backs the FAQPage JSON-LD) */
+.console-faq-shell {
+  max-width: 760px;
+}
+
+.console-faq-title {
+  text-align: center;
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  letter-spacing: -0.02em;
+  margin: 0 0 26px;
+}
+
+.console-faq-list {
+  display: grid;
+  gap: 14px;
+  margin: 0;
+}
+
+.console-faq-item {
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: #ffffff;
+  padding: 20px 24px;
+}
+
+.console-faq-item dt {
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin-bottom: 8px;
+}
+
+.console-faq-item dd {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.6;
+}

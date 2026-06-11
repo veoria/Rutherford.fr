@@ -172,7 +172,12 @@ export type ConsoleValidationBrand = {
   machinePlaceholder: string;
 };
 
-export function ConsoleValidationPage({ brand }: { brand?: ConsoleValidationBrand } = {}) {
+export type ConsoleValidationFaqItem = { q: string; a: string };
+
+export function ConsoleValidationPage({
+  brand,
+  faq,
+}: { brand?: ConsoleValidationBrand; faq?: ConsoleValidationFaqItem[] } = {}) {
   const [files, setFiles] = useState<FileMap>(emptyFiles);
   const [previews, setPreviews] = useState<PreviewMap>(emptyPreviews);
   const [submitted, setSubmitted] = useState(false);
@@ -390,6 +395,22 @@ export function ConsoleValidationPage({ brand }: { brand?: ConsoleValidationBran
           )}
         </div>
       </section>
+
+      {faq && faq.length > 0 ? (
+        <section className="section console-faq-section" aria-label="Frequently asked questions">
+          <div className="container console-faq-shell">
+            <h2 className="console-faq-title">Frequently asked questions</h2>
+            <dl className="console-faq-list">
+              {faq.map((item) => (
+                <div className="console-faq-item" key={item.q}>
+                  <dt>{item.q}</dt>
+                  <dd>{item.a}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+        </section>
+      ) : null}
 
       <SiteFooter />
     </main>
