@@ -253,6 +253,11 @@ export function ConsoleValidationPage() {
                 <h1>Stop losing money on every makeready.</h1>
                 <p className="console-simple-tagline">The system that pays for itself.</p>
                 <p className="console-simple-phone">Do everything from your phone.</p>
+                <div className="console-simple-cta-row">
+                  <a className="button button-accent" href="#submit">
+                    Submit your information ↓
+                  </a>
+                </div>
                 <div className="console-simple-intro-image">
                   <Image
                     src="/images/console-validation-sketch.png"
@@ -287,9 +292,14 @@ export function ConsoleValidationPage() {
                 <p className="console-simple-roi-link">
                   Curious what color drift costs you? <a href="/#roi">Try the ROI calculator →</a>
                 </p>
+                <div className="console-simple-cta-row">
+                  <a className="button button-dark" href="#submit">
+                    Start the free check, submit your information
+                  </a>
+                </div>
               </div>
 
-              <form className="console-simple-form" onSubmit={handleSubmit}>
+              <form id="submit" className="console-simple-form" onSubmit={handleSubmit}>
                 <div className="console-simple-grid">
                   <label className="console-simple-field">
                     <span>Email address *</span>

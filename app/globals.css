@@ -11800,3 +11800,18 @@ a.blog-card-image:hover img {
   filter: grayscale(1) brightness(0.35);
   opacity: 0.8;
 }
+
+/* Console validation — anchor CTAs to the form */
+.console-simple-cta-row {
+  display: flex;
+  justify-content: center;
+  margin: 6px 0 18px;
+}
+
+#submit {
+  scroll-margin-top: 110px;
+}
+
+.console-simple-page {
+  scroll-behavior: smooth;
+}
