@@ -2807,9 +2807,11 @@ svg {
 
 .console-simple-submit {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  gap: 18px;
+  justify-content: center;
+  text-align: center;
+  gap: 12px;
   padding-top: 4px;
 }
 
@@ -11825,4 +11827,33 @@ a.blog-card-image:hover img {
 
 .console-simple-page {
   scroll-behavior: smooth;
+}
+
+.console-simple-brand-line {
+  text-align: center;
+  margin: -6px 0 14px;
+  color: var(--muted);
+  font-size: 0.97rem;
+}
+
+.console-simple-brand-line strong {
+  color: #111111;
+  font-weight: 600;
+}
+
+.console-simple-brand-links {
+  text-align: center;
+  margin: 4px 0 0;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.console-simple-brand-links a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.console-simple-brand-links a:hover {
+  color: var(--accent);
 }

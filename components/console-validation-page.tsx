@@ -165,7 +165,14 @@ function UploadField({
   );
 }
 
-export function ConsoleValidationPage() {
+export type ConsoleValidationBrand = {
+  name: string;
+  consoles: string;
+  presses: string;
+  machinePlaceholder: string;
+};
+
+export function ConsoleValidationPage({ brand }: { brand?: ConsoleValidationBrand } = {}) {
   const [files, setFiles] = useState<FileMap>(emptyFiles);
   const [previews, setPreviews] = useState<PreviewMap>(emptyPreviews);
   const [submitted, setSubmitted] = useState(false);
@@ -249,10 +256,21 @@ export function ConsoleValidationPage() {
           ) : (
             <>
               <div className="console-simple-intro">
-                <p className="section-kicker">Console validation</p>
-                <h1>Stop losing money on every makeready.</h1>
+                <p className="section-kicker">
+                  {brand ? `Console validation · ${brand.name}` : 'Console validation'}
+                </p>
+                <h1>
+                  {brand
+                    ? `Stop losing money on your ${brand.name} makeready.`
+                    : 'Stop losing money on every makeready.'}
+                </h1>
                 <p className="console-simple-tagline">The system that pays for itself.</p>
                 <p className="console-simple-phone">Do everything from your phone.</p>
+                {brand ? (
+                  <p className="console-simple-brand-line">
+                    Works with <strong>{brand.consoles}</strong> consoles on {brand.presses}.
+                  </p>
+                ) : null}
                 <div className="console-simple-cta-row">
                   <a className="button button-accent" href="#submit">
                     Submit your information ↓
@@ -284,6 +302,17 @@ export function ConsoleValidationPage() {
                     ))}
                   </div>
                 </div>
+                <p className="console-simple-brand-links">
+                  Your press:{' '}
+                  <a href="/console-validation/heidelberg">Heidelberg</a> ·{' '}
+                  <a href="/console-validation/komori">Komori</a> ·{' '}
+                  <a href="/console-validation/koenig-bauer">Koenig &amp; Bauer</a> ·{' '}
+                  <a href="/console-validation/manroland">Manroland</a> ·{' '}
+                  <a href="/console-validation/mitsubishi">Mitsubishi</a> ·{' '}
+                  <a href="/console-validation/ryobi">Ryobi</a> ·{' '}
+                  <a href="/console-validation/goss">Goss</a> ·{' '}
+                  <a href="/console-validation/presstek">Presstek</a>
+                </p>
                 <p className="console-simple-roi-link">
                   Curious what color drift costs you? <a href="/#roi">Try the ROI calculator →</a>
                 </p>
@@ -317,7 +346,12 @@ export function ConsoleValidationPage() {
 
                   <label className="console-simple-field">
                     <span>Machine name *</span>
-                    <input type="text" name="machineName" placeholder="Brand, model, units" required />
+                    <input
+                      type="text"
+                      name="machineName"
+                      placeholder={brand ? brand.machinePlaceholder : 'Brand, model, units'}
+                      required
+                    />
                   </label>
                 </div>
 

@@ -1,6 +1,7 @@
 import type { MetadataRoute } from 'next';
 import { getAllArticles } from '@/lib/blog';
 import { ALL_COURSES } from '@/data/academy-courses';
+import { PRESS_BRANDS_PAGES } from '@/data/press-brands';
 
 const BASE = 'https://rutherford.fr';
 
@@ -13,6 +14,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE}/blog`, changeFrequency: 'weekly', priority: 0.7 },
     { url: `${BASE}/support`, changeFrequency: 'yearly', priority: 0.3 },
   ];
+
+  const brandRoutes: MetadataRoute.Sitemap = PRESS_BRANDS_PAGES.map((brand) => ({
+    url: `${BASE}/console-validation/${brand.slug}`,
+    changeFrequency: 'monthly',
+    priority: 0.8,
+  }));
 
   const courseRoutes: MetadataRoute.Sitemap = ALL_COURSES.map((course) => ({
     url: `${BASE}/academy/${course.id}`,
@@ -27,5 +34,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.5,
   }));
 
-  return [...staticRoutes, ...courseRoutes, ...articleRoutes];
+  return [...staticRoutes, ...brandRoutes, ...courseRoutes, ...articleRoutes];
 }

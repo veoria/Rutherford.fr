@@ -19,6 +19,22 @@ export const metadata: Metadata = {
   },
 };
 
+const PRODUCT_JSON_LD = {
+  '@context': 'https://schema.org',
+  '@type': 'Product',
+  name: 'Offset360',
+  brand: { '@type': 'Brand', name: 'X-Rite' },
+  description:
+    'Closed-loop color bundle for sheetfed offset: IntelliTrax2 scanning, MeasureColor process control and Rutherford ColorLoop, deployed as one workflow.',
+  url: 'https://rutherford.fr/offset360',
+  image: 'https://rutherford.fr/images/Bundle Rutherford-4.jpg',
+};
+
 export default function Offset360Route() {
-  return <Offset360Page />;
+  return (
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(PRODUCT_JSON_LD) }} />
+      <Offset360Page />
+    </>
+  );
 }
