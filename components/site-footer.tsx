@@ -93,7 +93,7 @@ export function SiteFooter() {
   const resourceLinks: { key: ResourceKey; href: string }[] = [
     { key: 'blog', href: '/blog' },
     { key: 'support', href: 'https://form.typeform.com/to/LZtPUH' },
-    { key: 'console', href: 'https://form.typeform.com/to/elOTOK?typeform-source=rgproducts.typeform.com#english=xxxxx' },
+    { key: 'console', href: '/console-validation' },
     { key: 'contact', href: 'mailto:contact@rutherford.fr' },
   ];
 

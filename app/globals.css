@@ -11717,3 +11717,9 @@ a.blog-card-image:hover img {
   width: 140px;
   height: 96px;
 }
+
+.console-simple-error {
+  color: #c62828;
+  font-weight: 600;
+  margin: 10px 0 0;
+}
