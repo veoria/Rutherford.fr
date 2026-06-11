@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 400" font-family="-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif">
+  <rect width="900" height="400" fill="#fff"/>
+  <!-- left: coverage per zone -->
+  <g transform="translate(48,44)">
+    <rect width="360" height="280" rx="16" fill="#fff" stroke="#e8ecf0" stroke-width="1.5"/>
+    <text x="180" y="34" font-size="11.5" font-weight="700" letter-spacing="1.3" fill="#9aa3ae" text-anchor="middle">CIP3 / PPF — DOT COVERAGE PER ZONE</text>
+    <g transform="translate(40,60)" fill="#00b3d6">
+      <rect y="120" width="24" height="40" rx="4"/><rect x="32" y="80" width="24" height="80" rx="4"/><rect x="64" y="40" width="24" height="120" rx="4"/><rect x="96" y="96" width="24" height="64" rx="4"/><rect x="128" y="60" width="24" height="100" rx="4"/><rect x="160" y="130" width="24" height="30" rx="4"/><rect x="192" y="20" width="24" height="140" rx="4"/><rect x="224" y="104" width="24" height="56" rx="4"/><rect x="256" y="70" width="24" height="90" rx="4"/>
+    </g>
+    <line x1="40" y1="220" x2="320" y2="220" stroke="#e8ecf0" stroke-width="2"/>
+    <text x="180" y="244" font-size="11.5" fill="#6b7480" text-anchor="middle">from the RIP — coverage of each separation,</text>
+    <text x="180" y="260" font-size="11.5" fill="#6b7480" text-anchor="middle">summed per ink-zone column</text>
+  </g>
+  <!-- arrow -->
+  <g transform="translate(424,180)">
+    <path d="M0 0 H40" stroke="#2563eb" stroke-width="4" stroke-linecap="round"/><path d="M42 0 l-13 -8 v16 z" fill="#2563eb"/>
+  </g>
+  <!-- right: key openings -->
+  <g transform="translate(492,44)">
+    <rect width="360" height="280" rx="16" fill="#fff" stroke="#2563eb" stroke-width="2"/>
+    <text x="180" y="34" font-size="11.5" font-weight="700" letter-spacing="1.3" fill="#2563eb" text-anchor="middle">INK-KEY PRE-POSITIONING</text>
+    <g transform="translate(40,60)">
+      <g fill="#111418"><rect y="140" width="24" height="20" rx="4"/><rect x="32" y="120" width="24" height="40" rx="4"/><rect x="64" y="100" width="24" height="60" rx="4"/><rect x="96" y="128" width="24" height="32" rx="4"/><rect x="128" y="110" width="24" height="50" rx="4"/><rect x="160" y="145" width="24" height="15" rx="4"/><rect x="192" y="90" width="24" height="70" rx="4"/><rect x="224" y="132" width="24" height="28" rx="4"/><rect x="256" y="115" width="24" height="45" rx="4"/></g>
+      <!-- learned offsets -->
+      <g fill="none" stroke="#16a34a" stroke-width="3" stroke-linecap="round"><path d="M76 92 v-12"/><path d="M204 82 v-12"/><path d="M140 102 v-10"/></g>
+    </g>
+    <line x1="40" y1="220" x2="320" y2="220" stroke="#e8ecf0" stroke-width="2"/>
+    <text x="180" y="244" font-size="11.5" fill="#6b7480" text-anchor="middle">opening ∝ zone coverage — then refined by</text>
+    <text x="180" y="260" font-size="11.5" fill="#14702f" font-weight="600" text-anchor="middle">learned offsets from similar past jobs ▲</text>
+  </g>
+  <rect x="48" y="352" width="804" height="36" rx="10" fill="#f4f6f8"/>
+  <text x="450" y="375" font-size="13.5" font-weight="600" fill="#111418" text-anchor="middle">The first sheet is decided before the press starts — vanilla CIP3 vs learned offsets is hundreds of waste sheets</text>
+</svg>

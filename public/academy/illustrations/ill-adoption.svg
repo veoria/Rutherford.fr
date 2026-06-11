@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 360" font-family="-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif">
+  <rect width="900" height="360" fill="#fff"/>
+  <line x1="70" y1="240" x2="830" y2="240" stroke="#e8ecf0" stroke-width="3"/>
+  <!-- curve of trust -->
+  <path d="M80 228 C 220 232, 300 200, 420 150 S 700 70, 820 58" fill="none" stroke="#2563eb" stroke-width="3.5"/>
+  <text x="836" y="50" font-size="10.5" font-weight="700" fill="#2563eb" text-anchor="end">operator trust</text>
+  <!-- milestones -->
+  <g text-anchor="middle">
+    <g transform="translate(120,240)"><circle r="7" fill="#dc2626"/><text y="28" font-size="12.5" font-weight="700" fill="#111418">Day 1</text><text y="46" font-size="11" fill="#6b7480">Hostile. Overrides.</text><text y="61" font-size="11" fill="#6b7480">Plan a low-pressure job.</text></g>
+    <g transform="translate(345,240)"><circle r="7" fill="#f59e0b"/><text y="28" font-size="12.5" font-weight="700" fill="#111418">Week 1</text><text y="46" font-size="11" fill="#6b7480">System catches drift the</text><text y="61" font-size="11" fill="#6b7480">eye missed. Shift lead is key.</text></g>
+    <g transform="translate(580,240)"><circle r="7" fill="#16a34a"/><text y="28" font-size="12.5" font-weight="700" fill="#111418">Month 3</text><text y="46" font-size="11" fill="#6b7480">Inflection: learning beats</text><text y="61" font-size="11" fill="#6b7480">presets. ROI shows in reports.</text></g>
+    <g transform="translate(800,240)"><circle r="7" fill="#2563eb"/><text y="28" font-size="12.5" font-weight="700" fill="#111418">Year 1</text><text y="46" font-size="11" fill="#6b7480">The new normal. New hires</text><text y="61" font-size="11" fill="#6b7480">train on it from shift one.</text></g>
+  </g>
+  <rect x="70" y="312" width="760" height="36" rx="10" fill="#f4f6f8"/>
+  <text x="450" y="335" font-size="13.5" font-weight="600" fill="#111418" text-anchor="middle">Plan the rollout on this arc — never promise month-3 results in week 1</text>
+</svg>
