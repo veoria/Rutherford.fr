@@ -225,7 +225,7 @@ export function SiteNav({ current = 'home' }: SiteNavProps) {
           </a>
           <a
             className="mobile-nav-link mobile-nav-link-dark"
-            href="/console-validation"
+            href="https://form.typeform.com/to/elOTOK?typeform-source=rgproducts.typeform.com#english=xxxxx" target="_blank" rel="noreferrer"
             onClick={() => setOpen(false)}
           >
             {labels.console}
@@ -288,7 +288,7 @@ export function SiteNav({ current = 'home' }: SiteNavProps) {
           </a>
           <a
             className={`button button-dark header-button ${current === 'console-validation' ? 'is-current' : ''}`}
-            href="/console-validation"
+            href="https://form.typeform.com/to/elOTOK?typeform-source=rgproducts.typeform.com#english=xxxxx" target="_blank" rel="noreferrer"
           >
             {labels.console}
           </a>

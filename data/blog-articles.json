@@ -1,52 +1,5 @@
 [
   {
-    "slug": "offset360-closed-loop-bundle",
-    "title": "Offset360",
-    "excerpt": "The X-Rite + Rutherford closed-loop bundle for sheetfed offset. Discover the dedicated page.",
-    "lead": "Offset360 is the X-Rite + Rutherford bundle that pairs IntelliTrax2 scanning, MeasureColor reporting and Rutherford ColorLoop closed-loop control into a single workflow for sheetfed offset printing. The dedicated landing page is at rutherford.fr/offset360.",
-    "image": "/images/Bundle Rutherford-4.jpg",
-    "publishedAt": "2026-05-26",
-    "category": "Rutherford Insights",
-    "href": "/offset360",
-    "paragraphs": [
-      "Offset360 is not a new product. It is a bundle, a packaged way to deploy three best-of-breed pieces of color technology that have lived in different conversations for too long. IntelliTrax2 measures, MeasureColor reports, Rutherford ColorLoop closes the loop on the console. Together they form a single, opinionated workflow for sheetfed offset.",
-      "The bundle was built jointly by X-Rite and Rutherford for a specific reason: most printers already own the measurement device, sometimes the software, but they rarely have a working closed-loop on the press. The result is that color is measured, reports are generated, audits are filed, but the operator still chases the color manually at the start of every job. Offset360 was designed to fix that gap.",
-      "IntelliTrax2 is the desktop spectrophotometer that does the scanning. It reads a full color bar in under ten seconds, at 45°/0° geometry, supporting M0, M1 and M3 conditions in a single pass. Color bars can go down to 2 mm. It is the de-facto press-side scanner across the European packaging industry.",
-      "MeasureColor is the production color management platform, now part of X-Rite since the ColorWare acquisition in November 2024. It aggregates measurement data from the press, the proof and the brand standard, computes ΔE in real time, and produces audit-ready reports in PQX, CXF and CGATS formats. For a brand owner, MeasureColor is the layer that converts press data into something the supply chain can act on.",
-      "Rutherford ColorLoop is the closed-loop layer. It takes the deltas computed by MeasureColor, converts them into ink-key corrections, and pushes them directly to the press console. The operator validates and continues. The loop is closed, the color OK is reached faster, and the press stays in spec across the run. ColorLoop is also what makes the bundle press-agnostic: Heidelberg, Komori, Koenig & Bauer, Manroland, Mitsubishi, Ryobi all integrate.",
-      "On the press floor, the impact is measurable on three numbers: makeready waste comes down (typically around 50 percent on shops that adopt the loop discipline), setup time drops by roughly a third because key corrections happen automatically instead of by ear, and in-run color stability holds below ΔE 2 once the loop is running. The fourth, less visible number, is traceability: every sheet, every measurement, every correction is logged.",
-      "Offset360 is built for packaging converters who serve brand owners with strict color tolerances, for commercial offset shops running short-to-medium jobs where setup time dominates the cost structure, and for brand owners who want certainty that their color is reproducible across plants and suppliers. It works at its best where the entire chain, proof, plate, press, audit, is treated as one system rather than three.",
-      "The dedicated Offset360 landing page on rutherford.fr explains the bundle, the workflow, and the audiences in detail. It also links back to X-Rite's official Offset360 solution page for the product specs, datasheets and the X-Rite side of the support story. If you want to evaluate Offset360 on your own machine, the fastest entry point is the console validation form on rutherford.fr: send a few photos of your console and the press, and we come back with a scope tailored to the machines, the jobs and the brand standards on the floor."
-    ],
-    "originalUrl": "https://rutherford.fr/offset360",
-    "sources": [
-      {
-        "label": "Rutherford, Offset360 landing page",
-        "href": "https://rutherford.fr/offset360"
-      },
-      {
-        "label": "X-Rite, Offset360 solution",
-        "href": "https://www.xrite.com/page/offset360"
-      },
-      {
-        "label": "X-Rite, IntelliTrax2",
-        "href": "https://www.xrite.com/categories/scanning-instruments/intellitrax2"
-      },
-      {
-        "label": "X-Rite, MeasureColor Production",
-        "href": "https://www.xrite.com/categories/formulation-and-quality-assurance-software/measurecolor-production"
-      },
-      {
-        "label": "Rutherford, ColorLoop on the home page",
-        "href": "https://rutherford.fr/#colorloop"
-      },
-      {
-        "label": "Rutherford, Console validation form",
-        "href": "https://rutherford.fr/console-validation"
-      }
-    ]
-  },
-  {
     "slug": "ppwr-dpp-for-offset-printing",
     "title": "PPWR & DPP",
     "excerpt": "A practical guide to PPWR and DPP readiness for packaging, labels, and offset printing operations serving the European market.",

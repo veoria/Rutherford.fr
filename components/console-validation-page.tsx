@@ -159,8 +159,6 @@ export function ConsoleValidationPage() {
   const [files, setFiles] = useState<FileMap>(emptyFiles);
   const [previews, setPreviews] = useState<PreviewMap>(emptyPreviews);
   const [submitted, setSubmitted] = useState(false);
-  const [sending, setSending] = useState(false);
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   useEffect(() => {
     return () => {
@@ -185,37 +183,10 @@ export function ConsoleValidationPage() {
     });
   };
 
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (sending) return;
-    setSending(true);
-    setErrorMsg(null);
-
-    const data = new FormData(event.currentTarget);
-    // File inputs live in component state, not in the form element.
-    (Object.keys(files) as UploadFieldId[]).forEach((field) => {
-      const file = files[field];
-      if (file) data.set(field, file);
-    });
-
-    try {
-      const res = await fetch('/api/console-validation', { method: 'POST', body: data });
-      if (!res.ok) {
-        const body = await res.json().catch(() => null);
-        throw new Error(body?.error ?? 'Something went wrong, please retry.');
-      }
-      // GA4 conversion event (no-op when analytics is not loaded).
-      (window as any).gtag?.('event', 'console_validation_submit', {
-        event_category: 'lead',
-        machine: String(data.get('machineName') ?? ''),
-      });
-      setSubmitted(true);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    } catch (error) {
-      setErrorMsg(error instanceof Error ? error.message : 'Something went wrong, please retry.');
-    } finally {
-      setSending(false);
-    }
+    setSubmitted(true);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   return (
@@ -229,8 +200,8 @@ export function ConsoleValidationPage() {
               <p className="section-kicker">Console validation</p>
               <h1>Thank you.</h1>
               <p>
-                Your console validation request has been received. Our team reviews every submission and comes back
-                within one business day with the compatibility assessment for your press.
+                Your request has been prepared. If you want, I can next connect this form to email, CRM or database
+                storage so the submissions are actually collected automatically.
               </p>
               <button type="button" className="button button-dark" onClick={() => setSubmitted(false)}>
                 Fill another form
@@ -311,10 +282,9 @@ export function ConsoleValidationPage() {
                 </label>
 
                 <div className="console-simple-submit">
-                  <button className="button button-dark" type="submit" disabled={sending}>
-                    {sending ? 'Sending…' : 'Send'}
+                  <button className="button button-dark" type="submit">
+                    Send
                   </button>
-                  {errorMsg ? <p className="console-simple-error" role="alert">{errorMsg}</p> : null}
                   <p>
                     Mobile friendly. Images can be taken directly from the phone camera.
                   </p>
