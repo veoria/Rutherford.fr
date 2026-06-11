@@ -21,9 +21,9 @@ still land in Supabase Storage so no lead is ever lost.
 
 ## Environment variables
 
-Set these in **Vercel → Project (`rutherford`) → Settings → Environment
-Variables** (Production + Preview), and locally in `.env.local`. Template:
-`.env.local.example`.
+Set these in **Vercel → Project `website5` (it serves rutherford.fr) →
+Settings → Environment Variables** (Production), and locally in `.env.local`.
+Template: `.env.local.example`.
 
 ### Dropbox (photo storage)
 
