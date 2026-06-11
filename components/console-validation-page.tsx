@@ -240,7 +240,7 @@ export function ConsoleValidationPage() {
             <>
               <div className="console-simple-intro">
                 <p className="section-kicker">Console validation</p>
-                <h1>Validate your press console.</h1>
+                <h1>Stop losing money on every makeready.</h1>
                 <div className="console-simple-intro-image">
                   <Image
                     src="/images/Bundle Rutherford-4.jpg"
@@ -252,9 +252,12 @@ export function ConsoleValidationPage() {
                   />
                 </div>
                 <p>
-                  Console validation is the free eligibility check for Rutherford closed-loop color. Send a few
-                  photos of your console: our team confirms within one business day whether your press qualifies.
-                  Two minutes, no commitment.
+                  Color drift and manual key chasing burn sheets, ink and press time, on every single job.
+                  Rutherford closes the loop. Check your press eligibility for free: a few photos, two minutes,
+                  answer within one business day. No commitment.
+                </p>
+                <p className="console-simple-roi-link">
+                  Curious what color drift costs you? <a href="/#roi">Try the ROI calculator →</a>
                 </p>
               </div>
 

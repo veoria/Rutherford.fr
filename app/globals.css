@@ -11724,3 +11724,16 @@ a.blog-card-image:hover img {
   margin: 10px 0 0;
 }
 
+
+.console-simple-roi-link {
+  font-weight: 600;
+}
+
+.console-simple-roi-link a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.console-simple-roi-link a:hover {
+  text-decoration: underline;
+}

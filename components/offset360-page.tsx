@@ -480,14 +480,14 @@ export function Offset360Page() {
       <section className="o360-section">
         <div className="o360-narrow o360-end o360-reveal">
           <p className="o360-eyebrow">Next step</p>
-          <h2 className="o360-h2">Get it on your press.</h2>
+          <h2 className="o360-h2">Stop losing money on makeready.</h2>
           <p>
-            Send a few photos of your console: we confirm your press eligibility within one business day. Two
-            minutes, no commitment.
+            Every uncontrolled makeready costs sheets, ink and press time. Check your press eligibility for free:
+            a few photos, two minutes, answer within one business day.
           </p>
           <div className="o360-cta-row">
             <a className="o360-btn o360-btn-primary" href="/console-validation">
-              Request console validation
+              Test your eligibility for free
             </a>
             <a className="o360-btn o360-btn-ghost" href={XRITE_OFFSET360_URL} target="_blank" rel="noreferrer">
               Learn more on X-Rite
