@@ -1,8 +1,54 @@
 'use client';
 
 import { useLanguage, type Locale } from '@/components/language-provider';
+import { SnapSlider } from '@/components/snap-slider';
 
 type Card = { title: string; body: string };
+
+/* Line-style schemas, one per audience card, matching the site's icon set. */
+const SCHEMA_PROPS = {
+  fill: 'none',
+  stroke: 'currentColor',
+  strokeWidth: 2,
+  strokeLinecap: 'round',
+  strokeLinejoin: 'round',
+} as const;
+
+const AUDIENCE_SCHEMAS = [
+  // 01 — Offset printers: press cylinder feeding a sheet + stopwatch (faster makeready)
+  <svg key="press" viewBox="0 0 140 96" width="140" height="96" {...SCHEMA_PROPS} aria-hidden="true">
+    <circle cx="46" cy="34" r="18" />
+    <circle cx="46" cy="34" r="3" fill="currentColor" stroke="none" />
+    <path d="M14 66h64" />
+    <path d="M20 74h52" />
+    <path d="M46 52v6" />
+    <circle cx="104" cy="58" r="20" />
+    <path d="M104 46v12l8 6" />
+    <path d="M98 32h12" />
+    <path d="M120 38l5-5" stroke="var(--accent)" />
+  </svg>,
+  // 02 — Packaging converters: carton box + repeat loop (standardization)
+  <svg key="box" viewBox="0 0 140 96" width="140" height="96" {...SCHEMA_PROPS} aria-hidden="true">
+    <path d="M28 40l28-14 28 14-28 14-28-14z" />
+    <path d="M28 40v24l28 14 28-14V40" />
+    <path d="M56 54v24" />
+    <path d="M42 33l28 14" />
+    <path d="M104 28a22 22 0 0 1 18 24" />
+    <path d="M126 44l-4 10-9-6" stroke="var(--accent)" />
+    <path d="M120 76a22 22 0 0 1-18-24" />
+    <path d="M98 60l4-10 9 6" stroke="var(--accent)" />
+  </svg>,
+  // 03 — Decision makers: rising bars + check (validated deployment)
+  <svg key="chart" viewBox="0 0 140 96" width="140" height="96" {...SCHEMA_PROPS} aria-hidden="true">
+    <path d="M22 78h96" />
+    <path d="M36 78V58" />
+    <path d="M58 78V44" />
+    <path d="M80 78V30" />
+    <path d="M36 50l22-14 22-12" />
+    <circle cx="106" cy="36" r="16" />
+    <path d="M99 36l5 5 9-10" stroke="var(--accent)" />
+  </svg>,
+];
 
 type Copy = {
   kicker: string;
@@ -127,17 +173,18 @@ export function AudienceSection() {
           <p className="audience-intro">{t.intro}</p>
         </header>
 
-        <div className="audience-grid">
+        <SnapSlider className="audience-grid">
           {t.cards.map((c, i) => (
             <article className="audience-card" key={c.title}>
               <span className="audience-card-index" aria-hidden="true">
                 0{i + 1}
               </span>
+              <div className="audience-card-media">{AUDIENCE_SCHEMAS[i]}</div>
               <h3>{c.title}</h3>
               <p>{c.body}</p>
             </article>
           ))}
-        </div>
+        </SnapSlider>
       </div>
     </section>
   );

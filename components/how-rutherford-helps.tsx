@@ -1,6 +1,7 @@
 'use client';
 
 import { useLanguage, type Locale } from '@/components/language-provider';
+import { SnapSlider } from '@/components/snap-slider';
 
 type Benefit = { title: string; body: string };
 
@@ -154,7 +155,7 @@ export function HowRutherfordHelps() {
           <p className="how-rutherford-intro">{t.intro}</p>
         </header>
 
-        <div className="how-rutherford-grid">
+        <SnapSlider className="how-rutherford-grid">
           {t.benefits.map((b, i) => (
             <article className="how-rutherford-card" key={b.title}>
               <span className="how-rutherford-card-index" aria-hidden="true">
@@ -167,7 +168,7 @@ export function HowRutherfordHelps() {
               <p>{b.body}</p>
             </article>
           ))}
-        </div>
+        </SnapSlider>
       </div>
     </section>
   );

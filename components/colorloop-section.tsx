@@ -1,6 +1,7 @@
 'use client';
 
 import { useLanguage, type Locale } from '@/components/language-provider';
+import { SnapSlider } from '@/components/snap-slider';
 import { ColorLoopROI } from '@/components/colorloop-roi';
 
 type Benefit = { title: string; body: string };
@@ -171,7 +172,7 @@ export function ColorLoopSection() {
           <p className="colorloop-offset-intro">{t.intro}</p>
         </header>
 
-        <div className="colorloop-offset-grid">
+        <SnapSlider className="colorloop-offset-grid">
           {t.benefits.map((b, i) => (
             <article className="colorloop-offset-card" key={b.title}>
               <div className="colorloop-offset-card-media">
@@ -187,7 +188,7 @@ export function ColorLoopSection() {
               </div>
             </article>
           ))}
-        </div>
+        </SnapSlider>
 
         <ColorLoopROI />
 
