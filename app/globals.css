@@ -11901,58 +11901,6 @@ svg {
   color: var(--muted);
 }
 
-.roi-page-faq-inner {
-  max-width: 760px;
-}
-
-.roi-page-faq-list {
-  margin-top: 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.roi-page-faq-item {
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  border-radius: 14px;
-  padding: 0 20px;
-  background: #ffffff;
-}
-
-.roi-page-faq-item summary {
-  cursor: pointer;
-  list-style: none;
-  padding: 16px 0;
-  font-weight: 600;
-  font-size: 1.02rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-}
-
-.roi-page-faq-item summary::-webkit-details-marker {
-  display: none;
-}
-
-.roi-page-faq-item summary::after {
-  content: '+';
-  font-weight: 400;
-  font-size: 1.4rem;
-  line-height: 1;
-  color: var(--accent);
-}
-
-.roi-page-faq-item[open] summary::after {
-  content: '−';
-}
-
-.roi-page-faq-item p {
-  margin: 0 0 16px;
-  line-height: 1.6;
-  color: var(--muted);
-}
-
 /* capture email */
 .roi-page-capture {
   background: #15171c;

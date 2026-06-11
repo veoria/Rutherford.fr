@@ -10,7 +10,6 @@ import { ConsoleValidationCTA } from '@/components/console-validation-cta';
 
 type Lever = { title: string; body: string };
 type Assumption = { value: string; unit: string; note: string };
-type Faq = { q: string; a: string };
 
 type RoiCopy = {
   hero: { kicker: string; h1: string; lead: string; ctaCalc: string; ctaConsole: string; trust: string };
@@ -29,7 +28,6 @@ type RoiCopy = {
   levers: { kicker: string; h2: string; items: Lever[] };
   method: { kicker: string; h2: string; lead: string; items: Assumption[] };
   testimonial: { kicker: string; quote: string; author: string };
-  faq: { kicker: string; h2: string; items: Faq[] };
 };
 
 // The reused sections (calculator, case studies, final CTA, nav, footer) are
@@ -83,16 +81,6 @@ const COPY: Record<Locale, RoiCopy> = {
       quote: '“Since ColorLoop, our makereadies are shorter and waste has dropped sharply. Color is stable from one shift to the next, with no re-adjustments.”',
       author: 'Production manager · packaging printer',
     },
-    faq: {
-      kicker: 'FAQ',
-      h2: 'Frequently asked questions',
-      items: [
-        { q: 'Where do the figures come from?', a: 'From the typical gains of a closed-loop workflow (−55% waste, −38% makeready time) applied to your volumes. Every assumption is adjustable in the calculator.' },
-        { q: 'Will it work on my press?', a: 'ColorLoop integrates with the main offset presses (Heidelberg, Komori, Koenig & Bauer, Manroland…) and with your measurement tools (X-Rite, MeasureColor, IntelliTrax2).' },
-        { q: 'How fast does it pay off?', a: 'Most pressrooms recover their investment within a few months through saved waste and makeready time. A console validation refines the calculation for your configuration.' },
-        { q: 'What about flexo?', a: 'The same closed-loop logic applies to flexo through our sister company Veoria, specialized in inline color control for labels.' },
-      ],
-    },
   },
   fr: {
     hero: {
@@ -140,16 +128,6 @@ const COPY: Record<Locale, RoiCopy> = {
       kicker: 'Témoignage',
       quote: '« Depuis ColorLoop, nos calages sont plus courts et la gâche a nettement baissé. La couleur est stable d’une équipe à l’autre, sans réajustements. »',
       author: 'Directeur de production · imprimeur packaging',
-    },
-    faq: {
-      kicker: 'FAQ',
-      h2: 'Questions fréquentes',
-      items: [
-        { q: 'D’où viennent les chiffres ?', a: 'Des gains typiques d’un workflow closed-loop (−55 % de gâche, −38 % de temps de calage) appliqués à vos volumes. Toutes les hypothèses sont ajustables dans le calculateur.' },
-        { q: 'Est-ce que ça marche sur ma presse ?', a: 'ColorLoop s’intègre sur les principales presses offset (Heidelberg, Komori, Koenig & Bauer, Manroland…) et avec vos outils de mesure (X-Rite, MeasureColor, IntelliTrax2).' },
-        { q: 'En combien de temps est-ce rentabilisé ?', a: 'La plupart des ateliers récupèrent leur investissement en quelques mois grâce à la gâche et au temps de calage économisés. Une validation console précise le calcul pour votre configuration.' },
-        { q: 'Et pour le flexo ?', a: 'La même logique closed-loop s’applique au flexo via notre société sœur Veoria, spécialisée dans le contrôle couleur inline pour l’étiquette.' },
-      ],
     },
   },
   de: {
@@ -199,16 +177,6 @@ const COPY: Record<Locale, RoiCopy> = {
       quote: '„Seit ColorLoop sind unsere Einrichtevorgänge kürzer und die Makulatur ist deutlich gesunken. Die Farbe ist von Schicht zu Schicht stabil, ohne Nachjustieren."',
       author: 'Produktionsleiter · Verpackungsdruckerei',
     },
-    faq: {
-      kicker: 'FAQ',
-      h2: 'Häufige Fragen',
-      items: [
-        { q: 'Woher stammen die Zahlen?', a: 'Aus den typischen Gewinnen eines Closed-Loop-Workflows (−55 % Makulatur, −38 % Einrichtungszeit), angewandt auf Ihre Mengen. Alle Annahmen sind im Rechner anpassbar.' },
-        { q: 'Funktioniert es an meiner Druckmaschine?', a: 'ColorLoop integriert sich in die wichtigsten Offset-Druckmaschinen (Heidelberg, Komori, Koenig & Bauer, Manroland…) und mit Ihren Messgeräten (X-Rite, MeasureColor, IntelliTrax2).' },
-        { q: 'Wie schnell rechnet es sich?', a: 'Die meisten Druckereien amortisieren ihre Investition innerhalb weniger Monate durch eingesparte Makulatur und Einrichtungszeit. Eine Konsolenvalidierung verfeinert die Berechnung für Ihre Konfiguration.' },
-        { q: 'Und beim Flexodruck?', a: 'Dieselbe Closed-Loop-Logik gilt für den Flexodruck über unser Schwesterunternehmen Veoria, spezialisiert auf Inline-Farbkontrolle für Etiketten.' },
-      ],
-    },
   },
   it: {
     hero: {
@@ -257,16 +225,6 @@ const COPY: Record<Locale, RoiCopy> = {
       quote: '« Da quando usiamo ColorLoop, gli avviamenti sono più brevi e lo scarto è calato nettamente. Il colore è stabile da un turno all’altro, senza riaggiustamenti. »',
       author: 'Direttore di produzione · stampatore packaging',
     },
-    faq: {
-      kicker: 'FAQ',
-      h2: 'Domande frequenti',
-      items: [
-        { q: 'Da dove vengono i numeri?', a: 'Dai guadagni tipici di un workflow closed-loop (−55 % di scarto, −38 % di tempo di avviamento) applicati ai Suoi volumi. Tutte le ipotesi sono regolabili nel calcolatore.' },
-        { q: 'Funziona sulla mia macchina?', a: 'ColorLoop si integra con le principali macchine offset (Heidelberg, Komori, Koenig & Bauer, Manroland…) e con i Suoi strumenti di misura (X-Rite, MeasureColor, IntelliTrax2).' },
-        { q: 'In quanto tempo si ripaga?', a: 'La maggior parte dei reparti stampa recupera l’investimento in pochi mesi grazie allo scarto e al tempo di avviamento risparmiati. Una validazione console affina il calcolo per la Sua configurazione.' },
-        { q: 'E per il flexo?', a: 'La stessa logica closed-loop si applica al flexo tramite la nostra società sorella Veoria, specializzata nel controllo colore inline per l’etichetta.' },
-      ],
-    },
   },
   es: {
     hero: {
@@ -314,16 +272,6 @@ const COPY: Record<Locale, RoiCopy> = {
       kicker: 'Testimonio',
       quote: '« Desde ColorLoop, nuestras puestas a punto son más cortas y el desperdicio ha bajado notablemente. El color es estable de un turno a otro, sin reajustes. »',
       author: 'Director de producción · impresor de packaging',
-    },
-    faq: {
-      kicker: 'FAQ',
-      h2: 'Preguntas frecuentes',
-      items: [
-        { q: '¿De dónde vienen las cifras?', a: 'De las ganancias típicas de un flujo closed-loop (−55 % de desperdicio, −38 % de tiempo de puesta a punto) aplicadas a sus volúmenes. Todas las hipótesis son ajustables en la calculadora.' },
-        { q: '¿Funciona en mi prensa?', a: 'ColorLoop se integra con las principales prensas offset (Heidelberg, Komori, Koenig & Bauer, Manroland…) y con sus dispositivos de medición (X-Rite, MeasureColor, IntelliTrax2).' },
-        { q: '¿En cuánto tiempo se amortiza?', a: 'La mayoría de las salas de prensa recuperan su inversión en pocos meses gracias al desperdicio y al tiempo de puesta a punto ahorrados. Una validación de consola afina el cálculo para su configuración.' },
-        { q: '¿Y para flexo?', a: 'La misma lógica closed-loop se aplica al flexo a través de nuestra empresa hermana Veoria, especializada en el control de color inline para etiquetas.' },
-      ],
     },
   },
 };
@@ -430,21 +378,6 @@ export function RoiPage() {
           <p className="section-kicker">{t.testimonial.kicker}</p>
           <blockquote className="roi-page-testimonial-quote">{t.testimonial.quote}</blockquote>
           <p className="roi-page-testimonial-author">{t.testimonial.author}</p>
-        </div>
-      </section>
-
-      <section className="section roi-page-faq">
-        <div className="container roi-page-faq-inner">
-          <p className="section-kicker">{t.faq.kicker}</p>
-          <h2>{t.faq.h2}</h2>
-          <div className="roi-page-faq-list">
-            {t.faq.items.map((item) => (
-              <details key={item.q} className="roi-page-faq-item">
-                <summary>{item.q}</summary>
-                <p>{item.a}</p>
-              </details>
-            ))}
-          </div>
         </div>
       </section>
 
