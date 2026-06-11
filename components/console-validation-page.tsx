@@ -262,12 +262,10 @@ export function ConsoleValidationPage({
             <>
               <div className="console-simple-intro">
                 <p className="section-kicker">
-                  {brand ? `Console validation · ${brand.name}` : 'Console validation'}
+                  {brand ? `Free eligibility check · ${brand.name}` : 'Free eligibility check'}
                 </p>
                 <h1>
-                  {brand
-                    ? `Stop losing money on your ${brand.name} makeready.`
-                    : 'Stop losing money on every makeready.'}
+                  {brand ? `${brand.name} Console Validation` : 'Console Validation'}
                 </h1>
                 <p className="console-simple-tagline">The system that pays for itself.</p>
                 <p className="console-simple-phone">Do everything from your phone.</p>
