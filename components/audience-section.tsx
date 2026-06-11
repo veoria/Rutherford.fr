@@ -20,30 +20,6 @@ const AUDIENCE_PHOTOS = [
   },
 ];
 
-/* Logo strips per card: press manufacturers, converter clients, brand owners. */
-const AUDIENCE_LOGOS: { src: string; alt: string }[][] = [
-  [
-    { src: '/images/heidelberg.png', alt: 'Heidelberg' },
-    { src: '/images/komori.webp', alt: 'Komori' },
-    { src: '/images/koenig-bauer.webp', alt: 'Koenig & Bauer' },
-    { src: '/images/manroland.webp', alt: 'Manroland' },
-    { src: '/images/ryobi.webp', alt: 'Ryobi' },
-  ],
-  [
-    { src: '/images/printer-ds-smith.avif', alt: 'DS Smith' },
-    { src: '/images/printer-huhtamaki.png', alt: 'Huhtamaki' },
-    { src: '/images/printer-mm-packaging.png', alt: 'MM Packaging' },
-    { src: '/images/printer-westrock.png', alt: 'WestRock' },
-    { src: '/images/printer-yuto.png', alt: 'Yuto' },
-  ],
-  [
-    { src: '/images/printer-avery-dennison.png', alt: 'Avery Dennison' },
-    { src: '/images/printer-printwell.png', alt: 'Printwell' },
-    { src: '/images/printer-wauters.jpg', alt: "Wauters B'Pack" },
-    { src: '/images/printer-rig.svg', alt: 'RIG' },
-  ],
-];
-
 type Copy = {
   kicker: string;
   headline: string;
@@ -177,11 +153,6 @@ export function AudienceSection() {
                 <p className="audience-card-label">0{i + 1}</p>
                 <h3>{c.title}</h3>
                 <p>{c.body}</p>
-                <div className="audience-card-logos" aria-label="Brands">
-                  {AUDIENCE_LOGOS[i].map((logo) => (
-                    <img key={logo.alt} src={logo.src} alt={logo.alt} loading="lazy" />
-                  ))}
-                </div>
               </div>
             </article>
           ))}
