@@ -29,6 +29,8 @@ const SWATCH = ['#29ABE2', '#2E9E47', '#F7941D', '#EC0E8C', '#ED1C24', '#2E2BB8'
 
 const DOT: Record<Tone, string> = { info: '#2E9E47', ok: '#2E9E47', warn: '#E5A100', no: '#D33A2C' };
 const VALUE_TONE: Record<string, string> = { ok: '#1F8A4C', warn: '#B07D12', no: '#C4332B' };
+// Soft background tint for a toned cell, so the Status box reads its state at a glance.
+const FILL_TONE: Record<string, string> = { ok: '#E5F4EB', warn: '#FAF1E0', no: '#FBE9E7' };
 
 // Font stacks — web font first, then the fallback the design is built to hold on.
 const F_SANS = "'Geist',Arial,Helvetica,sans-serif";
@@ -76,7 +78,8 @@ function stripBlock(cells: Cell[]): string {
     .map((s, i) => {
       const br = i < cells.length - 1 ? `border-right:1px solid ${DIVIDER};` : '';
       const color = s.tone ? VALUE_TONE[s.tone] : INK;
-      return `<td width="${width}%" valign="top" style="padding:14px 16px;${br}">
+      const bg = s.tone ? `background:${FILL_TONE[s.tone]};` : '';
+      return `<td width="${width}%" valign="top" style="padding:14px 16px;${bg}${br}">
         <div style="font-family:${F_MONO};font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:${MUTED};">${esc(s.k)}</div>
         <div style="font-family:${F_BODY};font-size:15px;font-weight:600;color:${color};margin-top:5px;">${esc(s.v)}</div>
       </td>`;
