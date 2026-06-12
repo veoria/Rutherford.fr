@@ -118,7 +118,6 @@ function UploadCard({
             className="cv-drop-input"
             type="file"
             accept="image/*"
-            capture="environment"
             aria-label={`Upload ${config.title}`}
             onChange={(e: ChangeEvent<HTMLInputElement>) => {
               accept(e.target.files?.[0] ?? null);

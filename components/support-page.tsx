@@ -98,7 +98,7 @@ function SupportUploadField({
       </div>
 
       <label className={`console-simple-upload ${preview ? 'has-preview' : ''}`}>
-        <input type="file" accept="image/*" capture="environment" onChange={handleChange} />
+        <input type="file" accept="image/*" onChange={handleChange} />
         {preview ? (
           <div className="console-simple-upload-preview">
             <img src={preview} alt="" />
