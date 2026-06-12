@@ -48,7 +48,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
   if (!row) return NextResponse.json({ error: 'Not found' }, { status: 404 });
 
   const dealId = (row.pipedrive_deal_id as number | null) ?? null;
-  const ref = dealId ? `ID-${dealId}` : String(row.id).slice(0, 8);
+  const ref = dealId ? `ID ${dealId}` : String(row.id).slice(0, 8);
 
   // Move the reply photos into the dossier folder and sign shareable links.
   const admin = createSupabaseAdminClient();

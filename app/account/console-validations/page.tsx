@@ -40,7 +40,7 @@ export default async function ConsoleValidationsRoute() {
     machine: row.machine as string | null,
     status: row.status as ConsoleValidationRow['status'],
     createdAt: row.created_at as string,
-    reference: row.pipedrive_deal_id ? `ID-${row.pipedrive_deal_id}` : null,
+    reference: row.pipedrive_deal_id ? `ID ${row.pipedrive_deal_id}` : null,
     reviewedBy: (row.reviewed_by as string | null) ?? null,
     reviewedAt: (row.reviewed_at as string | null) ?? null,
     customerReplyAt: (row.customer_reply_at as string | null) ?? null,
