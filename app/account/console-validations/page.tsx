@@ -28,7 +28,7 @@ export default async function ConsoleValidationsRoute() {
   // RLS scopes this to the visitor's own requests (by account or by email).
   const { data } = await supabase
     .from('console_validations')
-    .select('id, company, country, machine, status, created_at, dropbox_link')
+    .select('id, company, country, machine, status, created_at, pipedrive_deal_id')
     .order('created_at', { ascending: false });
 
   const rows: ConsoleValidationRow[] = (data ?? []).map((row) => ({
@@ -38,7 +38,7 @@ export default async function ConsoleValidationsRoute() {
     machine: row.machine as string | null,
     status: row.status as ConsoleValidationRow['status'],
     createdAt: row.created_at as string,
-    dropboxLink: row.dropbox_link as string | null,
+    reference: row.pipedrive_deal_id ? `PO-${row.pipedrive_deal_id}` : null,
   }));
 
   return <ConsoleValidationsPortal rows={rows} />;
