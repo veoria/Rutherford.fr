@@ -6,7 +6,7 @@ import { type Locale, useLanguage } from '@/components/language-provider';
 import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 
 type SiteNavProps = {
-  current?: 'home' | 'blog' | 'console-validation' | 'support' | 'academy' | 'account';
+  current?: 'home' | 'roi' | 'blog' | 'console-validation' | 'support' | 'academy' | 'account';
 };
 
 const ACADEMY_ENABLED = process.env.NEXT_PUBLIC_ACADEMY_ENABLED === 'true';
@@ -40,6 +40,7 @@ export function SiteNav({ current = 'home' }: SiteNavProps) {
     {
       home: string;
       colorloop: string;
+      roi: string;
       cases: string;
       blog: string;
       academy: string;
@@ -57,6 +58,7 @@ export function SiteNav({ current = 'home' }: SiteNavProps) {
     en: {
       home: 'Home',
       colorloop: 'ColorLoop',
+      roi: 'ROI',
       cases: 'Case Studies',
       blog: 'Blog',
       academy: 'Academy',
@@ -73,6 +75,7 @@ export function SiteNav({ current = 'home' }: SiteNavProps) {
     fr: {
       home: 'Accueil',
       colorloop: 'ColorLoop',
+      roi: 'ROI',
       cases: 'Cas clients',
       blog: 'Blog',
       academy: 'Academy',
@@ -89,6 +92,7 @@ export function SiteNav({ current = 'home' }: SiteNavProps) {
     de: {
       home: 'Start',
       colorloop: 'ColorLoop',
+      roi: 'ROI',
       cases: 'Referenzen',
       blog: 'Blog',
       academy: 'Academy',
@@ -105,6 +109,7 @@ export function SiteNav({ current = 'home' }: SiteNavProps) {
     it: {
       home: 'Home',
       colorloop: 'ColorLoop',
+      roi: 'ROI',
       cases: 'Case Study',
       blog: 'Blog',
       academy: 'Academy',
@@ -121,6 +126,7 @@ export function SiteNav({ current = 'home' }: SiteNavProps) {
     es: {
       home: 'Inicio',
       colorloop: 'ColorLoop',
+      roi: 'ROI',
       cases: 'Casos prácticos',
       blog: 'Blog',
       academy: 'Academy',
@@ -195,6 +201,9 @@ export function SiteNav({ current = 'home' }: SiteNavProps) {
           </a>
           <a href="/#colorloop" onClick={() => setOpen(false)}>
             {labels.colorloop}
+          </a>
+          <a className={current === 'roi' ? 'is-current' : undefined} href="/roi" onClick={() => setOpen(false)}>
+            {labels.roi}
           </a>
           <a className={current === 'blog' ? 'is-current' : undefined} href="/blog" onClick={() => setOpen(false)}>
             {labels.blog}

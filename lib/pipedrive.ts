@@ -25,6 +25,8 @@ export type Lead = {
   company: string;
   country: string;
   jobTitle: string;
+  /** Where the lead came from — used as the Note header. Defaults to "Rutherford Academy". */
+  source?: string;
 };
 
 export function pipedriveEnabled(): boolean {
@@ -166,7 +168,7 @@ export async function syncLeadToPipedrive(lead: Lead): Promise<void> {
     }
 
     const lines = [
-      'Lead Rutherford Academy',
+      `Lead ${lead.source ?? 'Rutherford Academy'}`,
       lead.company ? `Société : ${lead.company}` : null,
       lead.country ? `Pays : ${lead.country}` : null,
       lead.jobTitle ? `Poste : ${lead.jobTitle.replace(/_/g, ' ')}` : null,
