@@ -148,5 +148,5 @@ export async function POST(request: NextRequest) {
     photos: photoLinks,
   });
 
-  return NextResponse.json({ ok: true });
+  return NextResponse.json({ ok: true, reference: dealId ? `ID ${dealId}` : null });
 }
