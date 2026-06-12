@@ -13,6 +13,11 @@ const SITE = 'https://rutherford.fr';
 const LOGO = `${SITE}/images/rutherford-logo-email.png`; // 1200×275 wordmark + swirl
 const SUPPORT = 'contact@rutherford.fr';
 
+// Every email points back to the customer's tracking page in their account —
+// the request status lives there, and "schedule installation" only makes sense
+// after an order, so a single consistent CTA is clearer.
+const TRACK_CTA = { label: 'Track your request', href: `${SITE}/account/console-validations` };
+
 // ── Design tokens (from the handoff) ──────────────────────────────────────
 const BLUE = '#2433C9';
 const INK = '#181410';
@@ -238,7 +243,7 @@ export function acknowledgementEmail(lead: AckLead): { subject: string; html: st
         'Please keep your reference for any follow-up.',
       ],
       dataBlock: tableBlock(rows),
-      cta: { label: 'Track your request', href: `${SITE}/account/console-validations` },
+      cta: TRACK_CTA,
     }),
   };
 }
@@ -268,10 +273,7 @@ export function canConnectEmail(lead: ResultLead): { subject: string; html: stri
         "The next step is to schedule installation with our team. We'll align on timing, on-site requirements, and your first calibration run.",
       ],
       dataBlock: stripBlock(cells),
-      cta: {
-        label: 'Schedule installation',
-        href: `mailto:${SUPPORT}?subject=${encodeURIComponent(`Installation scheduling — ${ref || press}`)}`,
-      },
+      cta: TRACK_CTA,
     }),
   };
 }
@@ -301,10 +303,7 @@ export function cannotConnectEmail(lead: ResultLead): { subject: string; html: s
         "This isn't always final — we add support for new consoles regularly, and in some cases a press becomes eligible after a hardware or software update. Our team can walk you through the specifics and any options for your setup.",
       ],
       dataBlock: stripBlock(cells),
-      cta: {
-        label: 'Talk to our team',
-        href: `mailto:${SUPPORT}?subject=${encodeURIComponent(`Console review — ${ref || press}`)}`,
-      },
+      cta: TRACK_CTA,
     }),
   };
 }
