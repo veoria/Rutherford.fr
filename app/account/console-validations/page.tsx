@@ -38,7 +38,7 @@ export default async function ConsoleValidationsRoute() {
     machine: row.machine as string | null,
     status: row.status as ConsoleValidationRow['status'],
     createdAt: row.created_at as string,
-    reference: row.pipedrive_deal_id ? `PO-${row.pipedrive_deal_id}` : null,
+    reference: row.pipedrive_deal_id ? `ID-${row.pipedrive_deal_id}` : null,
   }));
 
   return <ConsoleValidationsPortal rows={rows} />;
