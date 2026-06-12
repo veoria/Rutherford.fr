@@ -1,8 +1,10 @@
 'use client';
 
-import { Fragment, useState } from 'react';
+import { ChangeEvent, DragEvent, Fragment, useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { SiteFooter } from '@/components/site-footer';
 import { SiteNav } from '@/components/site-nav';
+import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 
 export type ConsoleValidationStatus =
   | 'submitted'
@@ -21,7 +23,11 @@ export type ConsoleValidationRow = {
   reference: string | null;
   reviewedBy: string | null;
   reviewedAt: string | null;
+  customerReplyAt: string | null;
 };
+
+// Statuses where the customer can still add details (vs. a settled verdict).
+const CAN_REPLY: ConsoleValidationStatus[] = ['submitted', 'in_review', 'changes_requested'];
 
 // Board/group key (and tone) per status. `submitted` + `in_review` share the
 // "In review" group, mirroring the design.
@@ -177,6 +183,9 @@ function timelineFor(r: ConsoleValidationRow): TimelineItem[] {
     { label: ref ? `Received — reference ${ref} assigned` : 'Received', state: 'done' },
   ];
   if (r.status !== 'submitted') ev.push({ label: 'Assigned to a reviewer', state: 'done' });
+  if (r.customerReplyAt) {
+    ev.push({ label: 'You sent additional details', date: formatDate(r.customerReplyAt), state: 'done' });
+  }
 
   if (r.status === 'submitted') {
     ev.push({ label: 'Awaiting review', state: 'current', tone: 'blue' });
@@ -212,8 +221,18 @@ function PageHead() {
 }
 
 export function ConsoleValidationsPortal({ rows }: { rows: ConsoleValidationRow[] }) {
+  const router = useRouter();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [filter, setFilter] = useState<Tone | null>(null);
+
+  // "Provide more details" reply form state.
+  const [showReply, setShowReply] = useState(false);
+  const [replyFiles, setReplyFiles] = useState<File[]>([]);
+  const [replyComment, setReplyComment] = useState('');
+  const [sending, setSending] = useState(false);
+  const [replyError, setReplyError] = useState<string | null>(null);
+  const [replied, setReplied] = useState(false);
+  const [dragging, setDragging] = useState(false);
 
   const counts: Record<Tone, number> = { action: 0, review: 0, green: 0, red: 0 };
   rows.forEach((r) => {
@@ -225,6 +244,73 @@ export function ConsoleValidationsPortal({ rows }: { rows: ConsoleValidationRow[
   const selected = rows.find((r) => r.id === selectedId) ?? defaultSel;
 
   const shownGroups = GROUPS.filter((g) => counts[g.key] && (!filter || filter === g.key));
+
+  // Reset the reply form whenever the selected dossier changes.
+  useEffect(() => {
+    setShowReply(false);
+    setReplied(false);
+    setReplyFiles([]);
+    setReplyComment('');
+    setReplyError(null);
+    setDragging(false);
+  }, [selected?.id]);
+
+  const addReplyFiles = (files: FileList | null) => {
+    if (!files) return;
+    const images = Array.from(files).filter((f) => f.type.startsWith('image/'));
+    setReplyFiles((current) => [...current, ...images].slice(0, 9));
+  };
+
+  const handleReply = async () => {
+    if (sending || !selected) return;
+    if (!replyComment.trim() && replyFiles.length === 0) {
+      setReplyError('Add a comment or at least one photo.');
+      return;
+    }
+    setSending(true);
+    setReplyError(null);
+    try {
+      const supabase = createSupabaseBrowserClient();
+      const uploadId =
+        typeof crypto !== 'undefined' && crypto.randomUUID
+          ? crypto.randomUUID()
+          : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+      const photos: { path: string }[] = [];
+      let i = 0;
+      for (const file of replyFiles.slice(0, 9)) {
+        i += 1;
+        const ext = (file.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '') || 'jpg';
+        const urlRes = await fetch('/api/console-validation/upload-url', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ uploadId, field: `reply${i}`, ext, contentType: file.type }),
+        });
+        if (!urlRes.ok) throw new Error('Upload could not start, please retry.');
+        const { path, token } = await urlRes.json();
+        const { error } = await supabase.storage.from('console-validations').uploadToSignedUrl(path, token, file);
+        if (error) throw new Error(`Upload failed: ${error.message}`);
+        photos.push({ path });
+      }
+      const res = await fetch(`/api/console-validation/${selected.id}/reply`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ comment: replyComment, photos }),
+      });
+      if (!res.ok) {
+        const b = await res.json().catch(() => null);
+        throw new Error(b?.error ?? 'Something went wrong, please retry.');
+      }
+      setReplied(true);
+      setShowReply(false);
+      setReplyFiles([]);
+      setReplyComment('');
+      router.refresh();
+    } catch (e) {
+      setReplyError(e instanceof Error ? e.message : 'Something went wrong, please retry.');
+    } finally {
+      setSending(false);
+    }
+  };
 
   if (rows.length === 0) {
     return (
@@ -359,15 +445,112 @@ export function ConsoleValidationsPortal({ rows }: { rows: ConsoleValidationRow[
               </ol>
 
               <div className="cvp-actions">
-                <a
-                  className={`cvp-btn${selected.status === 'changes_requested' ? ' is-amber' : ''}`}
-                  href={`mailto:${SUPPORT}?subject=${encodeURIComponent(
-                    `Console validation ${selected.reference || listTitle(selected)}`
-                  )}`}
-                >
-                  {m.action} →
-                </a>
+                {CAN_REPLY.includes(selected.status) ? (
+                  <button
+                    type="button"
+                    className={`cvp-btn${selected.status === 'changes_requested' ? ' is-amber' : ''}`}
+                    onClick={() => {
+                      setReplied(false);
+                      setShowReply((v) => !v);
+                    }}
+                  >
+                    {showReply ? 'Close' : m.action} →
+                  </button>
+                ) : (
+                  <a
+                    className="cvp-btn"
+                    href={`mailto:${SUPPORT}?subject=${encodeURIComponent(
+                      `Console validation ${selected.reference || listTitle(selected)}`
+                    )}`}
+                  >
+                    {m.action} →
+                  </a>
+                )}
               </div>
+
+              {replied ? (
+                <p className="cvp-reply-msg">
+                  Thank you — your details were sent to our team and your request is back in review.
+                </p>
+              ) : null}
+
+              {showReply ? (
+                <div className="cvp-reply">
+                  <div
+                    className={`cvp-reply-drop${dragging ? ' is-dragging' : ''}`}
+                    onDragOver={(e: DragEvent<HTMLDivElement>) => {
+                      e.preventDefault();
+                      if (!dragging) setDragging(true);
+                    }}
+                    onDragLeave={(e: DragEvent<HTMLDivElement>) => {
+                      if (e.currentTarget.contains(e.relatedTarget as Node | null)) return;
+                      setDragging(false);
+                    }}
+                    onDrop={(e: DragEvent<HTMLDivElement>) => {
+                      e.preventDefault();
+                      setDragging(false);
+                      addReplyFiles(e.dataTransfer.files);
+                    }}
+                  >
+                    <input
+                      id="cvp-reply-input"
+                      className="cvp-reply-input"
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      capture="environment"
+                      onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                        addReplyFiles(e.target.files);
+                        e.currentTarget.value = '';
+                      }}
+                    />
+                    <label htmlFor="cvp-reply-input" className="cvp-reply-droplabel">
+                      <strong>Drag &amp; drop or click to add photos</strong>
+                      <span>Up to 9 images — drop here or tap to use the camera</span>
+                    </label>
+                  </div>
+
+                  {replyFiles.length > 0 ? (
+                    <div className="cvp-reply-files">
+                      {replyFiles.map((f, i) => (
+                        <span key={i} className="cvp-file-chip">
+                          {f.name}
+                          <button
+                            type="button"
+                            aria-label="Remove"
+                            onClick={() => setReplyFiles((cur) => cur.filter((_, j) => j !== i))}
+                          >
+                            ×
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+                  ) : null}
+
+                  <textarea
+                    className="cvp-reply-text"
+                    rows={4}
+                    placeholder="Add a comment for our team (what changed, extra details, answers to their questions…)"
+                    value={replyComment}
+                    onChange={(e) => setReplyComment(e.target.value)}
+                  />
+
+                  {replyError ? (
+                    <p className="cvp-reply-error" role="alert">
+                      {replyError}
+                    </p>
+                  ) : null}
+
+                  <div className="cvp-reply-actions">
+                    <button type="button" className="cvp-btn" disabled={sending} onClick={handleReply}>
+                      {sending ? 'Sending…' : 'Send to our team'}
+                    </button>
+                    <button type="button" className="cvp-ghost" onClick={() => setShowReply(false)}>
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              ) : null}
             </section>
           </div>
         </div>

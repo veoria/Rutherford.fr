@@ -12555,3 +12555,22 @@ a.blog-card-image:hover img {
   .cvp-cell { border-right: 0; border-bottom: 1px solid var(--cvp-line); }
   .cvp-cell:last-child { border-bottom: 0; }
 }
+
+/* Reply form ("provide more details") */
+.cvp-reply { margin-top: 16px; padding: 16px; border: 1px solid var(--cvp-line); border-radius: 12px; background: #fafafa; }
+.cvp-reply-input { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); border: 0; }
+.cvp-reply-drop { position: relative; display: grid; place-items: center; text-align: center; min-height: 110px; padding: 14px; border: 1px dashed rgba(37, 99, 235, 0.4); border-radius: 10px; background: #fff; cursor: pointer; }
+.cvp-reply-drop.is-dragging { border-style: solid; border-color: #2563eb; background: rgba(37, 99, 235, 0.05); }
+.cvp-reply-droplabel { display: grid; gap: 4px; cursor: pointer; }
+.cvp-reply-droplabel strong { font-size: 14px; color: var(--cvp-ink); }
+.cvp-reply-droplabel span { font-size: 12.5px; color: var(--cvp-grey); }
+.cvp-reply-files { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.cvp-file-chip { display: inline-flex; align-items: center; gap: 6px; max-width: 240px; font-size: 12.5px; color: var(--cvp-ink2); background: #fff; border: 1px solid var(--cvp-line); border-radius: 999px; padding: 5px 6px 5px 12px; overflow: hidden; }
+.cvp-file-chip button { flex: 0 0 auto; border: 0; background: #efefee; color: #555; width: 18px; height: 18px; border-radius: 50%; cursor: pointer; line-height: 1; font-size: 13px; }
+.cvp-reply-text { width: 100%; margin-top: 12px; padding: 12px 14px; border: 1px solid var(--cvp-line); border-radius: 10px; font: inherit; font-size: 14px; color: var(--cvp-ink); resize: vertical; box-sizing: border-box; }
+.cvp-reply-text:focus { outline: none; border-color: #2563eb; }
+.cvp-reply-actions { display: flex; align-items: center; gap: 14px; margin-top: 12px; }
+.cvp-reply-actions .cvp-btn { border: 0; cursor: pointer; }
+.cvp-reply-actions .cvp-ghost { border: 0; background: none; cursor: pointer; padding: 0; }
+.cvp-reply-error { margin: 10px 0 0; color: var(--cvp-red); font-size: 13px; }
+.cvp-reply-msg { margin: 14px 0 0; padding: 12px 14px; border: 1px solid #c7e6d3; background: #e7f4ec; border-radius: 10px; color: #1b7a45; font-size: 13.5px; }
