@@ -5,10 +5,10 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 type Item = { videoId: string; title: string };
 
 const VIDEOS: Item[] = [
-  { videoId: 'bldZIIdvXLE', title: 'Rutherford Academy — Free video 1' },
-  { videoId: 'bj-KzGZgKfU', title: 'Rutherford Academy — Free video 2' },
-  { videoId: 'h9r5lFubArU', title: 'Rutherford Academy — Free video 3' },
-  { videoId: 'jtb1OhiArq8', title: 'Rutherford Academy — Free video 4' },
+  { videoId: 'bldZIIdvXLE', title: 'Rutherford Academy, Free video 1' },
+  { videoId: 'bj-KzGZgKfU', title: 'Rutherford Academy, Free video 2' },
+  { videoId: 'h9r5lFubArU', title: 'Rutherford Academy, Free video 3' },
+  { videoId: 'jtb1OhiArq8', title: 'Rutherford Academy, Free video 4' },
 ];
 
 function thumbUrl(id: string) {

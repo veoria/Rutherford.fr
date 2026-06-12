@@ -22,12 +22,12 @@ type CaseStudy = {
 };
 
 const caseStudies: CaseStudy[] = [
-  { key: 'wauters', company: "Wauters B'Pack", videoId: 'yAZbtKzN_j0', videoTitle: "Wauters B'Pack — Advancing color precision" },
-  { key: 'viappiani', company: 'Viappiani Printing', videoId: 'r7_4EdplcdE', videoTitle: 'Viappiani Printing — Precision, speed & less waste' },
-  { key: 'autajon', company: 'Autajon Packaging Milan', videoId: 'FTjkGK2K-wI', videoTitle: 'Autajon Packaging Milan — Color consistency & efficiency' },
-  { key: 'lefrancq', company: 'LEFRANCQ Packaging', videoId: '78a006Kulok', videoTitle: 'LEFRANCQ Packaging — We can’t run the press without it' },
+  { key: 'wauters', company: "Wauters B'Pack", videoId: 'yAZbtKzN_j0', videoTitle: "Wauters B'Pack, Advancing color precision" },
+  { key: 'viappiani', company: 'Viappiani Printing', videoId: 'r7_4EdplcdE', videoTitle: 'Viappiani Printing, Precision, speed & less waste' },
+  { key: 'autajon', company: 'Autajon Packaging Milan', videoId: 'FTjkGK2K-wI', videoTitle: 'Autajon Packaging Milan, Color consistency & efficiency' },
+  { key: 'lefrancq', company: 'LEFRANCQ Packaging', videoId: '78a006Kulok', videoTitle: 'LEFRANCQ Packaging, We can’t run the press without it' },
   { key: 'gsmonaco', company: 'GS Monaco & Forbes Monaco', videoId: 'XjgKPUguTfw', videoTitle: 'GS Monaco & Forbes Monaco' },
-  { key: 'moderna', company: 'Moderna Printing', videoId: 'vYN1mjCK9VU', videoTitle: 'Moderna Printing — Reduced waste, smarter startups' },
+  { key: 'moderna', company: 'Moderna Printing', videoId: 'vYN1mjCK9VU', videoTitle: 'Moderna Printing, Reduced waste, smarter startups' },
   { key: 'colorconsulting', company: 'ColorConsulting Italy', videoId: 'w4sA1QzEvOs', videoTitle: 'ColorConsulting Italy' },
   { key: 'printwell', company: 'Printwell USA', videoId: 'ut247z4ren8', videoTitle: 'Printwell USA' },
   { key: 'avery', company: 'Avery Dennison Queretaro', videoId: '0bUlKQ-lIZs', videoTitle: 'Avery Dennison Queretaro' },
@@ -80,7 +80,7 @@ const COPY: Record<Locale, Copy> = {
       },
       lefrancq: {
         challenge: 'Running demanding packaging jobs with no room for color drift.',
-        result: '“We can’t run the press without it.” — closed-loop control adopted as a daily standard.',
+        result: '“We can’t run the press without it.”, closed-loop control adopted as a daily standard.',
       },
       gsmonaco: {
         challenge: 'Matching demanding luxury brand color standards with Forbes Monaco.',
@@ -128,7 +128,7 @@ const COPY: Record<Locale, Copy> = {
       },
       lefrancq: {
         challenge: 'Travaux packaging exigeants, aucune dérive couleur tolérée.',
-        result: '« On ne peut plus rouler la presse sans. » — closed-loop adopté comme standard quotidien.',
+        result: '« On ne peut plus rouler la presse sans. », closed-loop adopté comme standard quotidien.',
       },
       gsmonaco: {
         challenge: 'Tenir des exigences couleur luxe avec Forbes Monaco.',
@@ -176,7 +176,7 @@ const COPY: Record<Locale, Copy> = {
       },
       lefrancq: {
         challenge: 'Anspruchsvolle Verpackungsjobs ohne Spielraum für Farbabweichung.',
-        result: '„Wir können die Presse nicht mehr ohne es fahren.“ — Closed-Loop als Tagesstandard.',
+        result: '„Wir können die Presse nicht mehr ohne es fahren.“, Closed-Loop als Tagesstandard.',
       },
       gsmonaco: {
         challenge: 'Hohe Luxus-Farbvorgaben mit Forbes Monaco halten.',
@@ -224,7 +224,7 @@ const COPY: Record<Locale, Copy> = {
       },
       lefrancq: {
         challenge: 'Gestire lavori di packaging ad alta complessità senza margine per derive cromatiche.',
-        result: '“Non possiamo più far funzionare la macchina senza Rutherford.” — Il controllo closed-loop è diventato uno standard operativo quotidiano.',
+        result: '“Non possiamo più far funzionare la macchina senza Rutherford.”, Il controllo closed-loop è diventato uno standard operativo quotidiano.',
       },
       gsmonaco: {
         challenge: 'Rispettare gli elevati standard cromatici dei brand di lusso come Forbes Monaco.',
@@ -272,7 +272,7 @@ const COPY: Record<Locale, Copy> = {
       },
       lefrancq: {
         challenge: 'Trabajos de envase exigentes sin margen para derivas de color.',
-        result: '“No podemos hacer girar la prensa sin él.” — closed-loop como estándar diario.',
+        result: '“No podemos hacer girar la prensa sin él.”, closed-loop como estándar diario.',
       },
       gsmonaco: {
         challenge: 'Sostener estándares de color de lujo con Forbes Monaco.',
@@ -335,7 +335,7 @@ function CaseMedia({
       type="button"
       className="case-study-media"
       onClick={onPlay}
-      aria-label={`${ctaLabel} — ${study.company}`}
+      aria-label={`${ctaLabel}, ${study.company}`}
     >
       <img
         src={src}

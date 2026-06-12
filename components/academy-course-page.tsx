@@ -798,7 +798,7 @@ export function AcademyCoursePage({
                   onClick={() => handleCheckout('course')}
                   disabled={checkoutLoading !== null}
                 >
-                  {checkoutLoading === 'course' ? 'Loading…' : `Buy this course — ${course.price}`}
+                  {checkoutLoading === 'course' ? 'Loading…' : `Buy this course · ${course.price}`}
                 </button>
                 <button
                   type="button"
@@ -806,7 +806,7 @@ export function AcademyCoursePage({
                   onClick={() => handleCheckout('pass')}
                   disabled={checkoutLoading !== null}
                 >
-                  {checkoutLoading === 'pass' ? 'Loading…' : 'Get the Academy Pass — €399'}
+                  {checkoutLoading === 'pass' ? 'Loading…' : 'Get the Academy Pass · €399'}
                 </button>
               </div>
               {!access.signedIn ? (

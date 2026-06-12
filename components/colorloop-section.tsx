@@ -1,6 +1,7 @@
 'use client';
 
 import { useLanguage, type Locale } from '@/components/language-provider';
+import { SnapSlider } from '@/components/snap-slider';
 
 type Benefit = { title: string; body: string };
 
@@ -68,7 +69,7 @@ const COPY: Record<Locale, Copy> = {
     ],
     techLabel: 'Intégrations',
     techBody:
-      'ColorLoop s’intègre aux outils standards du secteur comme MeasureColor et IntelliTrax2 — vos investissements mesure et reporting restent valorisés.',
+      'ColorLoop s’intègre aux outils standards du secteur comme MeasureColor et IntelliTrax2, vos investissements mesure et reporting restent valorisés.',
     primaryCta: 'Découvrir ColorLoop',
   },
   de: {
@@ -96,7 +97,7 @@ const COPY: Record<Locale, Copy> = {
     ],
     techLabel: 'Integrationen',
     techBody:
-      'ColorLoop arbeitet mit Branchenstandards wie MeasureColor und IntelliTrax2 — Ihre bestehenden Mess- und Reporting-Investitionen bleiben erhalten.',
+      'ColorLoop arbeitet mit Branchenstandards wie MeasureColor und IntelliTrax2, Ihre bestehenden Mess- und Reporting-Investitionen bleiben erhalten.',
     primaryCta: 'ColorLoop entdecken',
   },
   it: {
@@ -152,7 +153,7 @@ const COPY: Record<Locale, Copy> = {
     ],
     techLabel: 'Integraciones',
     techBody:
-      'ColorLoop funciona con herramientas estándar del sector como MeasureColor y IntelliTrax2 — sus inversiones en medición y reporting se mantienen.',
+      'ColorLoop funciona con herramientas estándar del sector como MeasureColor y IntelliTrax2, sus inversiones en medición y reporting se mantienen.',
     primaryCta: 'Descubrir ColorLoop',
   },
 };
@@ -170,7 +171,7 @@ export function ColorLoopSection() {
           <p className="colorloop-offset-intro">{t.intro}</p>
         </header>
 
-        <div className="colorloop-offset-grid">
+        <SnapSlider className="colorloop-offset-grid">
           {t.benefits.map((b, i) => (
             <article className="colorloop-offset-card" key={b.title}>
               <div className="colorloop-offset-card-media">
@@ -186,7 +187,7 @@ export function ColorLoopSection() {
               </div>
             </article>
           ))}
-        </div>
+        </SnapSlider>
 
         <div className="colorloop-offset-tech">
           <div className="colorloop-offset-tech-copy">

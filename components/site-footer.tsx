@@ -19,7 +19,7 @@ const platformLinks = [
 ];
 
 type ResourceKey = 'blog' | 'support' | 'console' | 'contact';
-type CompanyKey = 'about' | 'colorloop' | 'cases';
+type CompanyKey = 'about' | 'colorloop' | 'offset360' | 'cases';
 
 type Copy = {
   tagline: string;
@@ -34,54 +34,54 @@ type Copy = {
 
 const COPY: Record<Locale, Copy> = {
   en: {
-    tagline: 'Offset printing expertise, software, and technology — helping printers modernize production control.',
+    tagline: 'Offset printing expertise, software, and technology, helping printers modernize production control.',
     platforms: 'Platforms',
     resources: 'Resources',
     company: 'Company',
     follow: 'Follow',
     rights: 'All rights reserved',
     resourceLabels: { blog: 'Blog', support: 'Support', console: 'Console Validation', contact: 'Contact' },
-    companyLabels: { about: 'About Rutherford', colorloop: 'ColorLoop', cases: 'Case Studies' },
+    companyLabels: { about: 'About Rutherford', colorloop: 'ColorLoop', offset360: 'Offset360', cases: 'Case Studies' },
   },
   fr: {
-    tagline: 'Expertise offset, logiciel et technologie — pour moderniser le contrôle de production.',
+    tagline: 'Expertise offset, logiciel et technologie, pour moderniser le contrôle de production.',
     platforms: 'Plateformes',
     resources: 'Ressources',
     company: 'Entreprise',
     follow: 'Suivre',
     rights: 'Tous droits réservés',
     resourceLabels: { blog: 'Blog', support: 'Support', console: 'Validation console', contact: 'Contact' },
-    companyLabels: { about: 'À propos', colorloop: 'ColorLoop', cases: 'Cas clients' },
+    companyLabels: { about: 'À propos', colorloop: 'ColorLoop', offset360: 'Offset360', cases: 'Cas clients' },
   },
   de: {
-    tagline: 'Offset-Expertise, Software und Technologie — zur Modernisierung der Produktionssteuerung.',
+    tagline: 'Offset-Expertise, Software und Technologie, zur Modernisierung der Produktionssteuerung.',
     platforms: 'Plattformen',
     resources: 'Ressourcen',
     company: 'Unternehmen',
     follow: 'Folgen',
     rights: 'Alle Rechte vorbehalten',
     resourceLabels: { blog: 'Blog', support: 'Support', console: 'Konsolenvalidierung', contact: 'Kontakt' },
-    companyLabels: { about: 'Über Rutherford', colorloop: 'ColorLoop', cases: 'Referenzen' },
+    companyLabels: { about: 'Über Rutherford', colorloop: 'ColorLoop', offset360: 'Offset360', cases: 'Referenzen' },
   },
   it: {
-    tagline: 'Competenza offset, software e tecnologia — per modernizzare il controllo della produzione.',
+    tagline: 'Competenza offset, software e tecnologia, per modernizzare il controllo della produzione.',
     platforms: 'Piattaforme',
     resources: 'Risorse',
     company: 'Azienda',
     follow: 'Seguici',
     rights: 'Tutti i diritti riservati',
     resourceLabels: { blog: 'Blog', support: 'Supporto', console: 'Validazione console', contact: 'Contatti' },
-    companyLabels: { about: 'Chi è Rutherford', colorloop: 'ColorLoop', cases: 'Case Study' },
+    companyLabels: { about: 'Chi è Rutherford', colorloop: 'ColorLoop', offset360: 'Offset360', cases: 'Case Study' },
   },
   es: {
-    tagline: 'Experiencia offset, software y tecnología — para modernizar el control de producción.',
+    tagline: 'Experiencia offset, software y tecnología, para modernizar el control de producción.',
     platforms: 'Plataformas',
     resources: 'Recursos',
     company: 'Empresa',
     follow: 'Seguir',
     rights: 'Todos los derechos reservados',
     resourceLabels: { blog: 'Blog', support: 'Soporte', console: 'Validación de consola', contact: 'Contacto' },
-    companyLabels: { about: 'Sobre Rutherford', colorloop: 'ColorLoop', cases: 'Casos prácticos' },
+    companyLabels: { about: 'Sobre Rutherford', colorloop: 'ColorLoop', offset360: 'Offset360', cases: 'Casos prácticos' },
   },
 };
 
@@ -93,13 +93,14 @@ export function SiteFooter() {
   const resourceLinks: { key: ResourceKey; href: string }[] = [
     { key: 'blog', href: '/blog' },
     { key: 'support', href: 'https://form.typeform.com/to/LZtPUH' },
-    { key: 'console', href: 'https://form.typeform.com/to/elOTOK?typeform-source=rgproducts.typeform.com#english=xxxxx' },
+    { key: 'console', href: '/console-validation' },
     { key: 'contact', href: 'mailto:contact@rutherford.fr' },
   ];
 
   const companyLinks: { key: CompanyKey; href: string }[] = [
     { key: 'about', href: '/#about' },
     { key: 'colorloop', href: '/#colorloop' },
+    { key: 'offset360', href: '/offset360' },
     { key: 'cases', href: '/#cases' },
   ];
 
@@ -173,7 +174,7 @@ export function SiteFooter() {
 
           <div className="footer-bottom">
             <p className="footer-bottom-text">
-              © {year} Rutherford.fr — {t.rights}
+              © {year} Rutherford.fr. {t.rights}
             </p>
           </div>
         </div>

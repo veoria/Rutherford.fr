@@ -34,34 +34,39 @@ export function BlogIndexPage({ articles }: { articles: BlogArticle[] }) {
           </div>
 
           <div className="blog-grid">
-            {articles.map((article) => (
-              <article className="blog-card" key={article.slug}>
-                {article.image ? (
-                  <div className="blog-card-image">
-                    <img src={article.image} alt={article.title} loading="lazy" />
+            {articles.map((article) => {
+              const href = article.href ?? `/blog/${article.slug}`;
+              return (
+                <article className="blog-card" key={article.slug}>
+                  {article.image ? (
+                    <a className="blog-card-image" href={href} aria-label={article.title}>
+                      <img src={article.image} alt={article.title} loading="lazy" />
+                    </a>
+                  ) : null}
+                  <div className="blog-card-body">
+                    <div className="blog-card-meta">
+                      <p className="section-kicker">{article.category}</p>
+                      {article.publishedAt ? (
+                        <time className="blog-card-date" dateTime={article.publishedAt}>
+                          {new Date(article.publishedAt).toLocaleDateString(t.dateLocale, {
+                            day: '2-digit',
+                            month: 'short',
+                            year: 'numeric',
+                          })}
+                        </time>
+                      ) : null}
+                    </div>
+                    <h2>
+                      <a className="blog-card-title-link" href={href}>{article.title}</a>
+                    </h2>
+                    <p>{article.excerpt}</p>
+                    <a className="button button-outline blog-card-button" href={href}>
+                      {t.read}
+                    </a>
                   </div>
-                ) : null}
-                <div className="blog-card-body">
-                  <div className="blog-card-meta">
-                    <p className="section-kicker">{article.category}</p>
-                    {article.publishedAt ? (
-                      <time className="blog-card-date" dateTime={article.publishedAt}>
-                        {new Date(article.publishedAt).toLocaleDateString(t.dateLocale, {
-                          day: '2-digit',
-                          month: 'short',
-                          year: 'numeric',
-                        })}
-                      </time>
-                    ) : null}
-                  </div>
-                  <h2>{article.title}</h2>
-                  <p>{article.excerpt}</p>
-                  <a className="button button-outline blog-card-button" href={`/blog/${article.slug}`}>
-                    {t.read}
-                  </a>
-                </div>
-              </article>
-            ))}
+                </article>
+              );
+            })}
           </div>
         </div>
       </section>

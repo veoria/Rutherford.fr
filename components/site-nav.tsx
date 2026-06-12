@@ -69,7 +69,7 @@ export function SiteNav({ current = 'home' }: SiteNavProps) {
       mainNav: 'Main navigation',
       localeLabel: 'Language selector',
       announcementBadge: 'New',
-      announcementText: 'Discover ColorLoop — Rutherford’s new software for offset production',
+      announcementText: 'Discover ColorLoop, Rutherford’s new software for offset production',
       announcementCta: 'Discover',
     },
     fr: {
@@ -86,7 +86,7 @@ export function SiteNav({ current = 'home' }: SiteNavProps) {
       mainNav: 'Navigation principale',
       localeLabel: 'Sélecteur de langue',
       announcementBadge: 'Nouveau',
-      announcementText: 'Découvrez ColorLoop — le nouveau logiciel Rutherford pour l’offset',
+      announcementText: 'Découvrez ColorLoop, le nouveau logiciel Rutherford pour l’offset',
       announcementCta: 'Découvrir',
     },
     de: {
@@ -103,7 +103,7 @@ export function SiteNav({ current = 'home' }: SiteNavProps) {
       mainNav: 'Hauptnavigation',
       localeLabel: 'Sprachauswahl',
       announcementBadge: 'Neu',
-      announcementText: 'Entdecken Sie ColorLoop — Rutherfords neue Software für Offsetdruck',
+      announcementText: 'Entdecken Sie ColorLoop, Rutherfords neue Software für Offsetdruck',
       announcementCta: 'Entdecken',
     },
     it: {
@@ -137,7 +137,7 @@ export function SiteNav({ current = 'home' }: SiteNavProps) {
       mainNav: 'Navegación principal',
       localeLabel: 'Selector de idioma',
       announcementBadge: 'Nuevo',
-      announcementText: 'Descubra ColorLoop — el nuevo software Rutherford para offset',
+      announcementText: 'Descubra ColorLoop, el nuevo software Rutherford para offset',
       announcementCta: 'Descubrir',
     },
   };
@@ -234,7 +234,7 @@ export function SiteNav({ current = 'home' }: SiteNavProps) {
           </a>
           <a
             className="mobile-nav-link mobile-nav-link-dark"
-            href="https://form.typeform.com/to/elOTOK?typeform-source=rgproducts.typeform.com#english=xxxxx" target="_blank" rel="noreferrer"
+            href="/console-validation"
             onClick={() => setOpen(false)}
           >
             {labels.console}
@@ -297,7 +297,7 @@ export function SiteNav({ current = 'home' }: SiteNavProps) {
           </a>
           <a
             className={`button button-dark header-button ${current === 'console-validation' ? 'is-current' : ''}`}
-            href="https://form.typeform.com/to/elOTOK?typeform-source=rgproducts.typeform.com#english=xxxxx" target="_blank" rel="noreferrer"
+            href="/console-validation"
           >
             {labels.console}
           </a>
