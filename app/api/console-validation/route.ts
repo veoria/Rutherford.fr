@@ -121,7 +121,7 @@ export async function POST(request: NextRequest) {
   // 3) Asana task (To do list), 4) acknowledgement email, 5) deal note + row.
   const asanaTaskGid = await createConsoleValidationTask({ title, email, notes, photoLinks, folderLink: null });
 
-  const ack = acknowledgementEmail(companyName);
+  const ack = acknowledgementEmail({ company: companyName, country, machine: machineName, dealId });
   await sendMail({ to: email, subject: ack.subject, html: ack.html });
 
   await addDealNote(

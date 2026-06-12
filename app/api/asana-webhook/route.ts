@@ -77,7 +77,7 @@ export async function POST(request: NextRequest) {
 
     if (status === 'can_be_connected') {
       if (email) {
-        const mail = canConnectEmail(name);
+        const mail = canConnectEmail({ name, dealId });
         await sendMail({ to: email, subject: mail.subject, html: mail.html, bcc: mail.bcc });
       }
       await addDealNote(
@@ -86,7 +86,7 @@ export async function POST(request: NextRequest) {
       );
     } else if (status === 'rejected') {
       if (email) {
-        const mail = cannotConnectEmail(name);
+        const mail = cannotConnectEmail({ name, dealId });
         await sendMail({ to: email, subject: mail.subject, html: mail.html });
       }
       await addDealNote(
