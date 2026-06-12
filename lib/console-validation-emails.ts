@@ -109,6 +109,8 @@ type EmailSpec = {
   eyebrow: string;
   tone: Tone;
   headline: { pre: string; accent: string; post: string };
+  /** Color for the accent word + its underline (defaults to brand blue). */
+  accentColor?: string;
   /** Body paragraphs — may contain <strong>. Caller is responsible for escaping. */
   body: string[];
   dataBlock?: string;
@@ -118,7 +120,8 @@ type EmailSpec = {
 
 function render(spec: EmailSpec): string {
   const dot = DOT[spec.tone];
-  const headline = `${esc(spec.headline.pre)}<span style="color:${BLUE};border-bottom:3px solid ${BLUE};padding-bottom:1px;">${esc(
+  const accent = spec.accentColor ?? BLUE;
+  const headline = `${esc(spec.headline.pre)}<span style="color:${accent};border-bottom:3px solid ${accent};padding-bottom:1px;">${esc(
     spec.headline.accent
   )}</span>${esc(spec.headline.post)}`;
   const paragraphs = spec.body
@@ -266,6 +269,7 @@ export function canConnectEmail(lead: ResultLead): { subject: string; html: stri
       eyebrow: `ELIGIBILITY CONFIRMED${ref ? ` · REF ${ref}` : ''}`,
       tone: 'ok',
       headline: { pre: 'Good news — your press is ', accent: 'eligible', post: '.' },
+      accentColor: VALUE_TONE.ok,
       body: [
         `We've reviewed your console validation and confirmed that your <strong>${esc(
           press
