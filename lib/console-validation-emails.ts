@@ -311,3 +311,24 @@ export function cannotConnectEmail(lead: ResultLead): { subject: string; html: s
     }),
   };
 }
+
+/** 04 · More info needed — review started, the team needs extra details. */
+export function moreInfoEmail(lead: ResultLead): { subject: string; html: string } {
+  const ref = reference(lead.dealId);
+  const press = derivePress(lead.name);
+  return {
+    subject: `We need a little more to finish your review${ref ? ` — ref ${ref}` : ''}`,
+    html: render({
+      subject: `We need a little more to finish your review${ref ? ` — ref ${ref}` : ''}`,
+      preheader: 'A few extra details before we can confirm eligibility.',
+      eyebrow: `MORE INFORMATION NEEDED${ref ? ` · REF ${ref}` : ''}`,
+      tone: 'warn',
+      headline: { pre: 'We need a little ', accent: 'more', post: ' to finish your review.' },
+      body: [
+        `Your submission${press ? ` for <strong>${esc(press)}</strong>` : ''} is almost there. Before we can confirm eligibility, our team needs a few additional details about your press and console.`,
+        'Open your request to add the details — a comment and any extra photos. Your request stays open and we resume the review as soon as they arrive.',
+      ],
+      cta: TRACK_CTA,
+    }),
+  };
+}

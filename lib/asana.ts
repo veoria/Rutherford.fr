@@ -86,11 +86,21 @@ export async function createConsoleValidationTask(task: ConsoleValidationTask): 
   }
 }
 
-export type AsanaTaskState = { name: string; notes: string; sectionName: string | null };
+export type AsanaTaskState = {
+  name: string;
+  notes: string;
+  sectionName: string | null;
+  // The verdict lives in the task's Approval status (the board uses Asana
+  // approvals: pending / approved / changes_requested / rejected), and the
+  // approver is whoever completed the approval.
+  approvalStatus: string | null;
+  completedByName: string | null;
+  completedAt: string | null;
+};
 
 /**
- * Read a task's name, notes and its current section within the board. Used by
- * the webhook (Asana events are diffs, so we re-fetch to learn the live state).
+ * Read a task's name, notes, section, approval status and approver. Used by the
+ * webhook (Asana events are diffs, so we re-fetch to learn the live state).
  * Returns null when not configured or on failure.
  */
 export async function getConsoleValidationTaskState(taskGid: string): Promise<AsanaTaskState | null> {
@@ -98,7 +108,7 @@ export async function getConsoleValidationTaskState(taskGid: string): Promise<As
   try {
     const res = await asana(
       'GET',
-      `/tasks/${taskGid}?opt_fields=name,notes,memberships.section.name,memberships.project.gid`
+      `/tasks/${taskGid}?opt_fields=name,notes,approval_status,completed_at,completed_by.name,memberships.section.name,memberships.project.gid`
     );
     const data = res?.data;
     if (!data) return null;
@@ -107,6 +117,9 @@ export async function getConsoleValidationTaskState(taskGid: string): Promise<As
       name: data.name ?? '',
       notes: data.notes ?? '',
       sectionName: membership?.section?.name ?? null,
+      approvalStatus: data.approval_status ?? null,
+      completedByName: data.completed_by?.name ?? null,
+      completedAt: data.completed_at ?? null,
     };
   } catch (error) {
     console.error('Asana task fetch failed:', error);

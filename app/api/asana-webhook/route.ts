@@ -3,8 +3,9 @@ import { createHmac, timingSafeEqual } from 'crypto';
 import { getConsoleValidationTaskState } from '@/lib/asana';
 import { addDealNote } from '@/lib/pipedrive';
 import { sendMail } from '@/lib/msgraph';
-import { canConnectEmail, cannotConnectEmail } from '@/lib/console-validation-emails';
+import { canConnectEmail, cannotConnectEmail, moreInfoEmail } from '@/lib/console-validation-emails';
 import {
+  getConsoleValidationStatusByAsanaTask,
   updateConsoleValidationStatusByAsanaTask,
   type ConsoleValidationStatus,
 } from '@/lib/console-validations';
@@ -13,11 +14,12 @@ export const dynamic = 'force-dynamic';
 
 const WEBHOOK_SECRET = process.env.ASANA_WEBHOOK_SECRET;
 
-// Board section → customer status. Sections other than these are ignored.
-const SECTION_STATUS: Record<string, ConsoleValidationStatus> = {
-  'Can be connected': 'can_be_connected',
-  Rejected: 'rejected',
-  'In progress': 'changes_requested',
+// The board uses Asana's Approval feature: the task's approval status is the
+// verdict, and whoever completes the approval is the validator.
+const APPROVAL_STATUS: Record<string, ConsoleValidationStatus> = {
+  approved: 'can_be_connected',
+  changes_requested: 'changes_requested',
+  rejected: 'rejected',
 };
 
 const extractEmail = (notes: string) => notes.match(/[\w.+-]+@[\w-]+\.[\w.]+/)?.[0] ?? null;
@@ -56,7 +58,7 @@ export async function POST(request: NextRequest) {
   }
 
   // Events are diffs; collect the task gids that changed, then re-fetch each to
-  // learn its live section.
+  // learn its live approval state.
   const taskGids = new Set<string>();
   for (const event of events) {
     if (event?.resource?.resource_type === 'task' && (event.action === 'changed' || event.action === 'added')) {
@@ -67,15 +69,24 @@ export async function POST(request: NextRequest) {
 
   for (const gid of taskGids) {
     const state = await getConsoleValidationTaskState(gid);
-    if (!state?.sectionName) continue;
-    const status = SECTION_STATUS[state.sectionName];
-    if (!status) continue;
+    if (!state) continue;
+    const status = APPROVAL_STATUS[state.approvalStatus ?? ''];
+    if (!status) continue; // still pending — no verdict yet
 
-    await updateConsoleValidationStatusByAsanaTask(gid, status);
+    // Approvals re-deliver several events; only act on an actual transition so
+    // the client isn't emailed twice.
+    const previous = await getConsoleValidationStatusByAsanaTask(gid);
+    if (previous === status) continue;
+
+    await updateConsoleValidationStatusByAsanaTask(gid, status, {
+      reviewedBy: state.completedByName,
+      reviewedAt: state.completedAt,
+    });
 
     const email = extractEmail(state.notes);
     const dealId = extractDealId(state.name);
     const name = state.name;
+    const by = state.completedByName || 'the team';
 
     if (status === 'can_be_connected') {
       if (email) {
@@ -84,7 +95,7 @@ export async function POST(request: NextRequest) {
       }
       await addDealNote(
         dealId,
-        `Based on the pictures and information received by Console Validation ID ${dealId ?? ''}, this press can be connected. ${email ?? ''}`
+        `Approved by ${by} — Console Validation ID ${dealId ?? ''}: this press can be connected. ${email ?? ''}`
       );
     } else if (status === 'rejected') {
       if (email) {
@@ -93,13 +104,16 @@ export async function POST(request: NextRequest) {
       }
       await addDealNote(
         dealId,
-        `Based on the pictures and information received by Console Validation ID ${dealId ?? ''}, this press cannot be connected. - ${email ?? ''}`
+        `Rejected by ${by} — Console Validation ID ${dealId ?? ''}: this press cannot be connected. ${email ?? ''}`
       );
     } else if (status === 'changes_requested') {
-      // No client email — internal nudge only (mirrors the existing Zap D).
+      if (email) {
+        const mail = moreInfoEmail({ name, dealId });
+        await sendMail({ to: email, subject: mail.subject, html: mail.html });
+      }
       await addDealNote(
         dealId,
-        `Please contact FX. We need more information and pictures to confirm if we can connect it or not. ID ${dealId ?? ''} - ${email ?? ''}`
+        `Changes requested by ${by} — Console Validation ID ${dealId ?? ''}: more information/pictures needed. ${email ?? ''}`
       );
     }
   }
