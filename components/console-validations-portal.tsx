@@ -19,6 +19,8 @@ export type ConsoleValidationRow = {
   status: ConsoleValidationStatus;
   createdAt: string;
   reference: string | null;
+  reviewedBy: string | null;
+  reviewedAt: string | null;
 };
 
 // Board/group key (and tone) per status. `submitted` + `in_review` share the
@@ -168,6 +170,8 @@ type TimelineItem = {
 function timelineFor(r: ConsoleValidationRow): TimelineItem[] {
   const d = formatDate(r.createdAt);
   const ref = r.reference ?? '';
+  const by = r.reviewedBy ? `by ${r.reviewedBy}` : undefined;
+  const rdate = r.reviewedAt ? formatDate(r.reviewedAt) : undefined;
   const ev: TimelineItem[] = [
     { date: d, label: 'Request submitted', state: 'done' },
     { label: ref ? `Received — reference ${ref} assigned` : 'Received', state: 'done' },
@@ -181,15 +185,15 @@ function timelineFor(r: ConsoleValidationRow): TimelineItem[] {
     ev.push({ label: 'Under review', state: 'current', tone: 'blue' });
     ev.push({ label: 'Eligibility verdict', state: 'future' });
   } else if (r.status === 'changes_requested') {
-    ev.push({ label: 'More information requested', state: 'current', tone: 'amber' });
+    ev.push({ label: 'More information requested', sub: by, date: rdate, state: 'current', tone: 'amber' });
     ev.push({ label: 'Awaiting your response', state: 'future' });
     ev.push({ label: 'Eligibility verdict', state: 'future' });
   } else if (r.status === 'can_be_connected') {
     ev.push({ label: 'Reviewed — compatible with closed-loop color', state: 'done' });
-    ev.push({ label: 'Marked connectable', state: 'done' });
+    ev.push({ label: 'Marked connectable', sub: by, date: rdate, state: 'done' });
   } else if (r.status === 'rejected') {
     ev.push({ label: 'Reviewed', state: 'done' });
-    ev.push({ label: 'Marked not eligible', state: 'done', tone: 'red' });
+    ev.push({ label: 'Marked not eligible', sub: by, date: rdate, state: 'done', tone: 'red' });
   }
   return ev;
 }

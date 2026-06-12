@@ -71,16 +71,38 @@ export async function insertConsoleValidation(record: ConsoleValidationRecord): 
   }
 }
 
+/** Current status for a task, so the webhook can skip no-op re-deliveries. */
+export async function getConsoleValidationStatusByAsanaTask(
+  asanaTaskGid: string
+): Promise<ConsoleValidationStatus | null> {
+  const supabase = adminClient();
+  if (!supabase) return null;
+  try {
+    const { data } = await supabase
+      .from('console_validations')
+      .select('status')
+      .eq('asana_task_gid', asanaTaskGid)
+      .maybeSingle();
+    return (data?.status as ConsoleValidationStatus) ?? null;
+  } catch {
+    return null;
+  }
+}
+
 export async function updateConsoleValidationStatusByAsanaTask(
   asanaTaskGid: string,
-  status: ConsoleValidationStatus
+  status: ConsoleValidationStatus,
+  reviewer?: { reviewedBy?: string | null; reviewedAt?: string | null }
 ): Promise<void> {
   const supabase = adminClient();
   if (!supabase) return;
   try {
+    const patch: Record<string, unknown> = { status };
+    if (reviewer?.reviewedBy !== undefined) patch.reviewed_by = reviewer.reviewedBy;
+    if (reviewer?.reviewedAt !== undefined) patch.reviewed_at = reviewer.reviewedAt;
     const { error } = await supabase
       .from('console_validations')
-      .update({ status })
+      .update(patch)
       .eq('asana_task_gid', asanaTaskGid);
     if (error) console.error('console_validations status update failed:', error.message);
   } catch (error) {
