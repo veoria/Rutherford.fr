@@ -498,7 +498,6 @@ export function ConsoleValidationsPortal({ rows }: { rows: ConsoleValidationRow[
                       type="file"
                       accept="image/*"
                       multiple
-                      capture="environment"
                       onChange={(e: ChangeEvent<HTMLInputElement>) => {
                         addReplyFiles(e.target.files);
                         e.currentTarget.value = '';
