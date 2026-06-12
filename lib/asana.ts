@@ -86,6 +86,19 @@ export async function createConsoleValidationTask(task: ConsoleValidationTask): 
   }
 }
 
+/** Post a comment (story) on a task — used to relay a customer's reply. No-op
+ * without a token; never throws. Returns whether it succeeded. */
+export async function addConsoleValidationTaskComment(taskGid: string, text: string): Promise<boolean> {
+  if (!TOKEN || !taskGid || !text.trim()) return false;
+  try {
+    await asana('POST', `/tasks/${taskGid}/stories`, { text });
+    return true;
+  } catch (error) {
+    console.error('Asana add-comment failed:', error);
+    return false;
+  }
+}
+
 export type AsanaTaskState = {
   name: string;
   notes: string;

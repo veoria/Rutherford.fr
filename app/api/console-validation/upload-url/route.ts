@@ -24,7 +24,11 @@ export async function POST(request: NextRequest) {
   }
 
   const field = String(body.field ?? '');
-  if (!FIELDS.has(field)) return NextResponse.json({ error: 'Invalid field' }, { status: 400 });
+  // The 5 intake photo fields, or a reply photo (reply1..reply9) for the
+  // in-account "provide more details" form.
+  if (!FIELDS.has(field) && !/^reply[1-9]$/.test(field)) {
+    return NextResponse.json({ error: 'Invalid field' }, { status: 400 });
+  }
 
   const uploadId = clean(String(body.uploadId ?? ''), 60);
   if (!uploadId) return NextResponse.json({ error: 'Invalid uploadId' }, { status: 400 });
