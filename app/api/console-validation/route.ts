@@ -1,7 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { createSupabaseAdminClient, createSupabaseServerClient } from '@/lib/supabase/server';
 import { addDealNote, createConsoleValidationDeal } from '@/lib/pipedrive';
-import { dropboxEnabled, uploadConsoleValidation } from '@/lib/dropbox';
 import { createConsoleValidationTask } from '@/lib/asana';
 import { sendMail } from '@/lib/msgraph';
 import { acknowledgementEmail } from '@/lib/console-validation-emails';
@@ -10,9 +9,8 @@ import { insertConsoleValidation } from '@/lib/console-validations';
 export const dynamic = 'force-dynamic';
 
 const BUCKET = 'console-validations';
-const MAX_PHOTO_BYTES = 10 * 1024 * 1024; // 10 MB per photo
 const SIGNED_URL_TTL = 60 * 60 * 24 * 365; // 1 year, so the Asana/CRM links keep working
-const PHOTO_FIELDS = ['consolePhoto', 'pressPhoto', 'insideConsolePhoto', 'keysPhoto', 'platePhoto'] as const;
+const PHOTO_FIELDS = new Set(['consolePhoto', 'pressPhoto', 'insideConsolePhoto', 'keysPhoto', 'platePhoto']);
 
 const slug = (value: string) =>
   value
@@ -23,20 +21,31 @@ const slug = (value: string) =>
     .replace(/(^-|-$)/g, '')
     .slice(0, 60) || 'request';
 
+// Photos are uploaded straight to Storage by the browser (see ../upload-url);
+// here we only receive their references, so the body stays tiny.
+type PhotoRef = { field: string; path: string };
+
+const validPhoto = (p: any): p is PhotoRef =>
+  p &&
+  typeof p.field === 'string' &&
+  PHOTO_FIELDS.has(p.field) &&
+  typeof p.path === 'string' &&
+  /^tmp\/[a-z0-9-]+\/[a-z]+\.[a-z0-9]+$/i.test(p.path);
+
 export async function POST(request: NextRequest) {
-  let form: FormData;
+  let body: any;
   try {
-    form = await request.formData();
+    body = await request.json();
   } catch {
-    return NextResponse.json({ error: 'Invalid form data' }, { status: 400 });
+    return NextResponse.json({ error: 'Invalid body' }, { status: 400 });
   }
 
-  const email = String(form.get('email') ?? '').trim();
-  const companyName = String(form.get('companyName') ?? '').trim();
-  const country = String(form.get('country') ?? '').trim();
-  const machineName = String(form.get('machineName') ?? '').trim();
-  const notes = String(form.get('notes') ?? '').trim();
-  const refCode = String(form.get('ref') ?? '').trim().slice(0, 100) || null;
+  const email = String(body.email ?? '').trim();
+  const companyName = String(body.companyName ?? '').trim();
+  const country = String(body.country ?? '').trim();
+  const machineName = String(body.machineName ?? '').trim();
+  const notes = String(body.notes ?? '').trim();
+  const refCode = String(body.ref ?? '').trim().slice(0, 100) || null;
 
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 200) {
     return NextResponse.json({ error: 'A valid email address is required' }, { status: 400 });
@@ -48,19 +57,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Missing or invalid fields' }, { status: 400 });
   }
 
-  const photos: { field: string; file: File }[] = [];
-  for (const field of PHOTO_FIELDS) {
-    const value = form.get(field);
-    if (value instanceof File && value.size > 0) {
-      if (value.size > MAX_PHOTO_BYTES) {
-        return NextResponse.json({ error: `Photo "${field}" exceeds 10 MB` }, { status: 400 });
-      }
-      if (!value.type.startsWith('image/')) {
-        return NextResponse.json({ error: `"${field}" must be an image` }, { status: 400 });
-      }
-      photos.push({ field, file: value });
-    }
-  }
+  const photos: PhotoRef[] = Array.isArray(body.photos) ? body.photos.filter(validPhoto).slice(0, 5) : [];
 
   // Link the request to the visitor's account when they happen to be signed in.
   let userId: string | null = null;
@@ -96,56 +93,33 @@ export async function POST(request: NextRequest) {
     .filter(Boolean)
     .join('\n');
 
-  // 2) Photos → Dropbox (folder named after the deal) or Supabase Storage.
-  let photoLinks: Record<string, string> = {};
-  let folderLink: string | null = null;
-  let storageRef = title;
+  // 2) Tidy the uploaded photos into a deal-named folder and build share links.
+  const photoLinks: Record<string, string> = {};
   let photoCount = 0;
-  let stored = false;
+  let storageRef = `${submittedAt.slice(0, 10)}-${dealId ?? Date.now().toString(36)}-${slug(companyName)}`;
 
-  if (dropboxEnabled()) {
-    try {
-      const result = await uploadConsoleValidation(title, photos, infosTxt);
-      photoLinks = result.links;
-      folderLink = result.folderLink;
-      storageRef = result.folderPath;
-      photoCount = result.count;
-      stored = true;
-    } catch (error) {
-      console.error('console-validation Dropbox upload failed, falling back to Supabase:', error);
-    }
-  }
-
-  if (!stored && process.env.SUPABASE_SERVICE_ROLE_KEY) {
+  if (process.env.SUPABASE_SERVICE_ROLE_KEY && photos.length) {
     const supabase = createSupabaseAdminClient();
-    await supabase.storage.createBucket(BUCKET, { public: false }).catch(() => {});
-    const folder = `${submittedAt.slice(0, 10)}-${Date.now().toString(36)}-${slug(companyName)}`;
-    for (const { field, file } of photos) {
-      const ext = (file.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '') || 'jpg';
-      const path = `${folder}/${field}.${ext}`;
-      const { error } = await supabase.storage
-        .from(BUCKET)
-        .upload(path, await file.arrayBuffer(), { contentType: file.type, upsert: true });
-      if (error) {
-        console.error('console-validation photo upload failed:', field, error.message);
-        continue;
-      }
+    for (const { field, path } of photos) {
+      const ext = path.split('.').pop() || 'jpg';
+      const dest = `${storageRef}/${field}.${ext}`;
+      const { error: moveError } = await supabase.storage.from(BUCKET).move(path, dest);
+      const finalPath = moveError ? path : dest;
       photoCount += 1;
-      const { data: signed } = await supabase.storage.from(BUCKET).createSignedUrl(path, SIGNED_URL_TTL);
+      const { data: signed } = await supabase.storage.from(BUCKET).createSignedUrl(finalPath, SIGNED_URL_TTL);
       if (signed?.signedUrl) photoLinks[field] = signed.signedUrl;
     }
     await supabase.storage
       .from(BUCKET)
-      .upload(`${folder}/infos.txt`, new TextEncoder().encode(infosTxt), {
+      .upload(`${storageRef}/infos.txt`, new TextEncoder().encode(infosTxt), {
         contentType: 'text/plain; charset=utf-8',
         upsert: true,
       })
       .catch(() => {});
-    storageRef = folder;
   }
 
   // 3) Asana task (To do list), 4) acknowledgement email, 5) deal note + row.
-  const asanaTaskGid = await createConsoleValidationTask({ title, email, notes, photoLinks, folderLink });
+  const asanaTaskGid = await createConsoleValidationTask({ title, email, notes, photoLinks, folderLink: null });
 
   const ack = acknowledgementEmail(companyName);
   await sendMail({ to: email, subject: ack.subject, html: ack.html });
@@ -155,7 +129,7 @@ export async function POST(request: NextRequest) {
     [
       'Console validation request received via rutherford.fr/console-validation.',
       `Photos: ${photoCount}`,
-      folderLink ? `Dropbox: <a href="${folderLink}">folder</a>` : `Storage: ${storageRef}`,
+      `Storage: ${storageRef}`,
     ].join('<br>')
   );
 
@@ -169,7 +143,7 @@ export async function POST(request: NextRequest) {
     notes,
     pipedriveDealId: dealId,
     dropboxFolder: storageRef,
-    dropboxLink: folderLink,
+    dropboxLink: null,
     asanaTaskGid,
     photos: photoLinks,
   });

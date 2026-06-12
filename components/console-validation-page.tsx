@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 import { SiteFooter } from '@/components/site-footer';
 import { SiteNav } from '@/components/site-nav';
+import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 
 type UploadFieldId =
   | 'consolePhoto'
@@ -222,14 +223,49 @@ export function ConsoleValidationPage({
     setErrorMsg(null);
 
     const data = new FormData(event.currentTarget);
-    // File inputs live in component state, not in the form element.
-    (Object.keys(files) as UploadFieldId[]).forEach((field) => {
-      const file = files[field];
-      if (file) data.set(field, file);
-    });
+    const uploadId =
+      typeof crypto !== 'undefined' && crypto.randomUUID
+        ? crypto.randomUUID()
+        : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
 
     try {
-      const res = await fetch('/api/console-validation', { method: 'POST', body: data });
+      // Photos go straight to storage at full resolution (no size limit, no
+      // quality loss); only their references are sent to the API.
+      const supabase = createSupabaseBrowserClient();
+      const photos: { field: UploadFieldId; path: string }[] = [];
+
+      for (const field of Object.keys(files) as UploadFieldId[]) {
+        const file = files[field];
+        if (!file) continue;
+        const ext = (file.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '') || 'jpg';
+
+        const urlRes = await fetch('/api/console-validation/upload-url', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ uploadId, field, ext, contentType: file.type }),
+        });
+        if (!urlRes.ok) throw new Error('Could not start the photo upload, please retry.');
+        const { path, token } = await urlRes.json();
+
+        const { error } = await supabase.storage.from('console-validations').uploadToSignedUrl(path, token, file);
+        if (error) throw new Error(`Photo upload failed: ${error.message}`);
+        photos.push({ field, path });
+      }
+
+      const res = await fetch('/api/console-validation', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: data.get('email'),
+          companyName: data.get('companyName'),
+          country: data.get('country'),
+          machineName: data.get('machineName'),
+          notes: data.get('notes'),
+          ref: refCode,
+          uploadId,
+          photos,
+        }),
+      });
       if (!res.ok) {
         const body = await res.json().catch(() => null);
         throw new Error(body?.error ?? 'Something went wrong, please retry.');
