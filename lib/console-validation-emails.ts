@@ -198,7 +198,7 @@ function render(spec: EmailSpec): string {
 
 // ── Data helpers ──────────────────────────────────────────────────────────
 
-const reference = (dealId: number | null) => (dealId ? `RF-${dealId}` : '');
+const reference = (dealId: number | null) => (dealId ? `PO-${dealId}` : '');
 
 /** Pull a clean press label out of the deal title ("ID2370 - France - FX - Heidelberg CD 74-5"). */
 function derivePress(name: string): string {
