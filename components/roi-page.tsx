@@ -24,6 +24,8 @@ type RoiCopy = {
     button: string;
     note: string;
     success: string;
+    sending: string;
+    error: string;
   };
   levers: { kicker: string; h2: string; items: Lever[] };
   method: { kicker: string; h2: string; lead: string; items: Assumption[] };
@@ -54,6 +56,8 @@ const COPY: Record<Locale, RoiCopy> = {
       button: 'Send me the estimate',
       note: 'No spam. We use your details only to send the estimate and follow up.',
       success: 'Thank you — your detailed estimate is on its way.',
+      sending: 'Sending…',
+      error: 'Something went wrong. Please try again, or email us directly.',
     },
     levers: {
       kicker: 'Levers',
@@ -102,6 +106,8 @@ const COPY: Record<Locale, RoiCopy> = {
       button: 'Envoyez-moi l’estimation',
       note: 'Pas de spam. Vos coordonnées servent uniquement à envoyer l’estimation et à vous recontacter.',
       success: 'Merci — votre estimation détaillée arrive.',
+      sending: 'Envoi…',
+      error: 'Une erreur est survenue. Réessayez, ou écrivez-nous directement.',
     },
     levers: {
       kicker: 'Leviers',
@@ -150,6 +156,8 @@ const COPY: Record<Locale, RoiCopy> = {
       button: 'Schätzung zusenden',
       note: 'Kein Spam. Wir verwenden Ihre Daten nur, um die Schätzung zu senden und Sie zu kontaktieren.',
       success: 'Danke — Ihre detaillierte Schätzung ist unterwegs.',
+      sending: 'Senden…',
+      error: 'Etwas ist schiefgelaufen. Bitte erneut versuchen oder schreiben Sie uns direkt.',
     },
     levers: {
       kicker: 'Hebel',
@@ -198,6 +206,8 @@ const COPY: Record<Locale, RoiCopy> = {
       button: 'Inviami la stima',
       note: 'Niente spam. Usiamo i Suoi dati solo per inviare la stima e ricontattarLa.',
       success: 'Grazie — la Sua stima dettagliata è in arrivo.',
+      sending: 'Invio…',
+      error: 'Si è verificato un errore. Riprovi, oppure ci scriva direttamente.',
     },
     levers: {
       kicker: 'Leve',
@@ -246,6 +256,8 @@ const COPY: Record<Locale, RoiCopy> = {
       button: 'Envíenme la estimación',
       note: 'Sin spam. Usamos sus datos solo para enviar la estimación y volver a contactarle.',
       success: 'Gracias — su estimación detallada está en camino.',
+      sending: 'Enviando…',
+      error: 'Algo salió mal. Inténtelo de nuevo o escríbanos directamente.',
     },
     levers: {
       kicker: 'Palancas',
@@ -279,11 +291,26 @@ const COPY: Record<Locale, RoiCopy> = {
 export function RoiPage() {
   const { locale } = useLanguage();
   const t = COPY[locale];
-  const [sent, setSent] = useState(false);
+  const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setSent(true);
+    const data = new FormData(event.currentTarget);
+    const email = String(data.get('email') ?? '').trim();
+    const company = String(data.get('company') ?? '').trim();
+    setStatus('sending');
+    try {
+      const res = await fetch('/api/roi-lead', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, company }),
+      });
+      if (!res.ok) throw new Error('request failed');
+      setStatus('sent');
+      window.gtag?.('event', 'roi_lead_submit', { method: 'roi_calculator' });
+    } catch {
+      setStatus('error');
+    }
   };
 
   return (
@@ -318,7 +345,7 @@ export function RoiPage() {
           <p className="section-kicker">{t.capture.kicker}</p>
           <h2>{t.capture.h2}</h2>
           <p className="roi-page-capture-lead">{t.capture.lead}</p>
-          {sent ? (
+          {status === 'sent' ? (
             <p className="roi-page-capture-success">{t.capture.success}</p>
           ) : (
             <form className="roi-page-capture-form" onSubmit={handleSubmit}>
@@ -330,9 +357,12 @@ export function RoiPage() {
                 <span>{t.capture.companyLabel}</span>
                 <input type="text" name="company" placeholder={t.capture.companyPlaceholder} required />
               </label>
-              <button type="submit" className="button button-light">
-                {t.capture.button}
+              <button type="submit" className="button button-light" disabled={status === 'sending'}>
+                {status === 'sending' ? t.capture.sending : t.capture.button}
               </button>
+              {status === 'error' ? (
+                <p className="roi-page-capture-error">{t.capture.error}</p>
+              ) : null}
             </form>
           )}
           <p className="roi-page-capture-note">{t.capture.note}</p>
