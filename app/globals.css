@@ -12017,3 +12017,16 @@ svg {
   letter-spacing: 0.06em;
   color: var(--muted);
 }
+
+.roi-page-testimonial-cta {
+  display: inline-block;
+  margin: 18px 0 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.roi-page-testimonial-cta:hover {
+  text-decoration: underline;
+}

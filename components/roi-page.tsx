@@ -29,12 +29,14 @@ type RoiCopy = {
   };
   levers: { kicker: string; h2: string; items: Lever[] };
   method: { kicker: string; h2: string; lead: string; items: Assumption[] };
-  testimonial: { kicker: string; quote: string; author: string };
+  testimonial: { kicker: string; quote: string; author: string; cta: string };
 };
 
 // The reused sections (calculator, case studies, final CTA, nav, footer) are
-// already multilingual. The testimonial quote is an illustrative placeholder
-// (generic role, no named client) — to be replaced with a real approved quote.
+// already multilingual. The testimonial is a real, on-the-record quote from
+// Viappiani Printing's Rutherford video, deep-linked to the ROI passage.
+const TESTIMONIAL_VIDEO = 'https://youtu.be/r7_4EdplcdE?t=64';
+
 const COPY: Record<Locale, RoiCopy> = {
   en: {
     hero: {
@@ -82,8 +84,9 @@ const COPY: Record<Locale, RoiCopy> = {
     },
     testimonial: {
       kicker: 'Testimonial',
-      quote: '“Since ColorLoop, our makereadies are shorter and waste has dropped sharply. Color is stable from one shift to the next, with no re-adjustments.”',
-      author: 'Production manager · packaging printer',
+      quote: '“On the press equipped with IntelliTrax, our average makeready waste dropped from 700–800 sheets per job (8 colors) to 450 — a good 40% less waste.”',
+      author: 'Viappiani Printing — label printer, Milan',
+      cta: 'Watch the testimonial',
     },
   },
   fr: {
@@ -132,8 +135,9 @@ const COPY: Record<Locale, RoiCopy> = {
     },
     testimonial: {
       kicker: 'Témoignage',
-      quote: '« Depuis ColorLoop, nos calages sont plus courts et la gâche a nettement baissé. La couleur est stable d’une équipe à l’autre, sans réajustements. »',
-      author: 'Directeur de production · imprimeur packaging',
+      quote: '« Sur la presse équipée de l’IntelliTrax, notre gâche moyenne de calage est passée de 700–800 feuilles par travail (8 couleurs) à 450 feuilles : 40 % de gâche en moins. »',
+      author: 'Viappiani Printing — imprimeur d’étiquettes, Milan',
+      cta: 'Voir le témoignage',
     },
   },
   de: {
@@ -182,8 +186,9 @@ const COPY: Record<Locale, RoiCopy> = {
     },
     testimonial: {
       kicker: 'Referenz',
-      quote: '„Seit ColorLoop sind unsere Einrichtevorgänge kürzer und die Makulatur ist deutlich gesunken. Die Farbe ist von Schicht zu Schicht stabil, ohne Nachjustieren."',
-      author: 'Produktionsleiter · Verpackungsdruckerei',
+      quote: '„Auf der mit IntelliTrax ausgestatteten Druckmaschine ist unsere durchschnittliche Makulatur beim Einrichten von 700–800 Bogen pro Auftrag (8 Farben) auf 450 Bogen gesunken — gut 40 % weniger Makulatur."',
+      author: 'Viappiani Printing — Etikettendruckerei, Mailand',
+      cta: 'Testimonial ansehen',
     },
   },
   it: {
@@ -232,8 +237,9 @@ const COPY: Record<Locale, RoiCopy> = {
     },
     testimonial: {
       kicker: 'Testimonianza',
-      quote: '« Da quando usiamo ColorLoop, gli avviamenti sono più brevi e lo scarto è calato nettamente. Il colore è stabile da un turno all’altro, senza riaggiustamenti. »',
-      author: 'Direttore di produzione · stampatore packaging',
+      quote: '« Sulla macchina da stampa dotata di IntelliTrax, lo scarto medio di avviamento è passato da 700–800 fogli per lavoro (8 colori) a 450 fogli: ben il 40 % di scarto in meno. »',
+      author: 'Viappiani Printing — stampatore di etichette, Milano',
+      cta: 'Guarda il video',
     },
   },
   es: {
@@ -282,8 +288,9 @@ const COPY: Record<Locale, RoiCopy> = {
     },
     testimonial: {
       kicker: 'Testimonio',
-      quote: '« Desde ColorLoop, nuestras puestas a punto son más cortas y el desperdicio ha bajado notablemente. El color es estable de un turno a otro, sin reajustes. »',
-      author: 'Director de producción · impresor de packaging',
+      quote: '« En la prensa equipada con IntelliTrax, nuestro desperdicio medio de puesta a punto pasó de 700–800 pliegos por trabajo (8 colores) a 450: un 40 % menos de desperdicio. »',
+      author: 'Viappiani Printing — impresor de etiquetas, Milán',
+      cta: 'Ver testimonio',
     },
   },
 };
@@ -408,6 +415,14 @@ export function RoiPage() {
           <p className="section-kicker">{t.testimonial.kicker}</p>
           <blockquote className="roi-page-testimonial-quote">{t.testimonial.quote}</blockquote>
           <p className="roi-page-testimonial-author">{t.testimonial.author}</p>
+          <a
+            className="roi-page-testimonial-cta"
+            href={TESTIMONIAL_VIDEO}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {t.testimonial.cta} →
+          </a>
         </div>
       </section>
 
