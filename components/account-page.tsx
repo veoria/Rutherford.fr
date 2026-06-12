@@ -7,6 +7,8 @@ import { type Locale, useLanguage } from '@/components/language-provider';
 import { Celebration, type CelebrationContent } from '@/components/academy-celebration';
 import { coursePercent, isCourseComplete, overallStats } from '@/lib/gamification';
 
+const CONSOLE_TRACKING_ENABLED = process.env.NEXT_PUBLIC_CONSOLE_TRACKING_ENABLED === 'true';
+
 type EnrolledCourse = {
   slug: string;
   title: string;
@@ -58,6 +60,7 @@ type BadgeId =
 type AccountCopy = {
   accountKicker: string;
   signOut: string;
+  consoleValidations: string;
   // Pass
   passKicker: string;
   passActiveTitle: string;
@@ -131,6 +134,7 @@ const COPY: Record<Locale, AccountCopy> = {
   en: {
     accountKicker: 'Your account',
     signOut: 'Sign out',
+    consoleValidations: 'Console validations',
     passKicker: 'Academy Pass',
     passActiveTitle: 'Pass active',
     passInactiveTitle: 'Get unlimited access to every masterclass',
@@ -205,6 +209,7 @@ const COPY: Record<Locale, AccountCopy> = {
   fr: {
     accountKicker: 'Votre compte',
     signOut: 'Se déconnecter',
+    consoleValidations: 'Validations console',
     passKicker: 'Academy Pass',
     passActiveTitle: 'Pass actif',
     passInactiveTitle: 'Accédez à toutes les masterclasses sans limite',
@@ -280,6 +285,7 @@ const COPY: Record<Locale, AccountCopy> = {
   de: {
     accountKicker: 'Ihr Konto',
     signOut: 'Abmelden',
+    consoleValidations: 'Konsolenvalidierungen',
     passKicker: 'Academy Pass',
     passActiveTitle: 'Pass aktiv',
     passInactiveTitle: 'Unbegrenzter Zugang zu allen Masterclasses',
@@ -354,6 +360,7 @@ const COPY: Record<Locale, AccountCopy> = {
   it: {
     accountKicker: 'Il suo account',
     signOut: 'Esci',
+    consoleValidations: 'Validazioni console',
     passKicker: 'Academy Pass',
     passActiveTitle: 'Pass attivo',
     passInactiveTitle: 'Accesso illimitato a tutte le masterclass',
@@ -429,6 +436,7 @@ const COPY: Record<Locale, AccountCopy> = {
   es: {
     accountKicker: 'Su cuenta',
     signOut: 'Cerrar sesión',
+    consoleValidations: 'Validaciones de consola',
     passKicker: 'Academy Pass',
     passActiveTitle: 'Pass activo',
     passInactiveTitle: 'Acceso ilimitado a todas las masterclasses',
@@ -721,11 +729,18 @@ export function AccountPage({
               <p className="account-hero-sub">{user.email}</p>
             </div>
           </div>
-          <form action="/api/auth/sign-out" method="post">
-            <button type="submit" className="button button-light account-signout">
-              {t.signOut}
-            </button>
-          </form>
+          <div className="account-hero-actions">
+            {CONSOLE_TRACKING_ENABLED ? (
+              <a className="button button-light" href="/account/console-validations">
+                {t.consoleValidations}
+              </a>
+            ) : null}
+            <form action="/api/auth/sign-out" method="post">
+              <button type="submit" className="button button-light account-signout">
+                {t.signOut}
+              </button>
+            </form>
+          </div>
         </div>
       </section>
 

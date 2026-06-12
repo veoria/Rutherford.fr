@@ -2764,11 +2764,18 @@ svg {
   overflow: hidden;
 }
 
-.console-simple-upload input {
+/* Visually-hidden file input: triggered by the label/actions, not a click overlay
+   (so the Replace/Remove buttons stay clickable). */
+.console-simple-upload-input {
   position: absolute;
-  inset: 0;
-  opacity: 0;
-  cursor: pointer;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .console-simple-upload-empty,
@@ -2778,6 +2785,95 @@ svg {
   text-align: center;
   gap: 10px;
   width: 100%;
+}
+
+/* Empty state fills the whole dropzone so a click/tap anywhere opens the picker. */
+.console-simple-upload-empty {
+  position: absolute;
+  inset: 0;
+  place-content: center;
+  padding: 16px;
+  cursor: pointer;
+}
+
+.console-simple-upload.is-dragging {
+  border-style: solid;
+  border-color: var(--accent);
+  background: rgba(0, 113, 227, 0.06);
+}
+
+.console-simple-upload-overlay {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--accent);
+  background: rgba(0, 113, 227, 0.1);
+  border-radius: 18px;
+  pointer-events: none;
+}
+
+.console-simple-upload-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.console-simple-upload-action {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.85rem;
+  font-weight: 600;
+  line-height: 1;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: #ffffff;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.console-simple-upload-action:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.console-simple-upload-action.is-remove:hover {
+  border-color: #d4453b;
+  color: #d4453b;
+}
+
+.console-simple-upload-error {
+  margin: 8px 0 0;
+  color: #d4453b;
+  font-size: 0.88rem;
+}
+
+.console-simple-login-hint {
+  display: block;
+  padding: 12px 16px;
+  margin-bottom: 4px;
+  border: 1px solid rgba(0, 113, 227, 0.25);
+  background: rgba(0, 113, 227, 0.05);
+  border-radius: 14px;
+  color: var(--text);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  text-decoration: none;
+}
+
+a.console-simple-login-hint:hover {
+  border-color: var(--accent);
+  background: rgba(0, 113, 227, 0.08);
+}
+
+.console-simple-login-hint.is-signed {
+  border-color: rgba(21, 128, 61, 0.3);
+  background: rgba(21, 128, 61, 0.06);
 }
 
 .console-simple-upload-empty svg {
@@ -9368,6 +9464,13 @@ a.blog-card-image:hover img {
   margin: 4px 0 0;
   color: rgba(0, 0, 0, 0.5);
   font-size: 0.92rem;
+}
+
+.account-hero-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
 .account-signout {
