@@ -30,9 +30,11 @@ export async function POST(request: NextRequest) {
   const raw = await request.text();
 
   // Asana sends X-Hook-Secret once when the webhook is created — echo it back to
-  // complete the handshake. (Store that value in ASANA_WEBHOOK_SECRET afterwards.)
+  // complete the handshake. We also log it once so it can be copied into
+  // ASANA_WEBHOOK_SECRET (then redeploy) to enable signature verification.
   const handshake = request.headers.get('x-hook-secret');
   if (handshake) {
+    console.log('[asana-webhook] handshake received — set ASANA_WEBHOOK_SECRET to:', handshake);
     return new NextResponse(null, { status: 200, headers: { 'X-Hook-Secret': handshake } });
   }
 

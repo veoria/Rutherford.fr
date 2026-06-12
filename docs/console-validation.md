@@ -71,7 +71,10 @@ MSGRAPH_TENANT_ID= · MSGRAPH_CLIENT_ID= · MSGRAPH_CLIENT_SECRET= · MAIL_FROM=
    Shajith GID. Put them in env.
 3. Register the **Asana webhook** on the *Console Validation V2* project pointing at
    `https://rutherford.fr/api/asana-webhook` (the route echoes the handshake; copy the
-   `X-Hook-Secret` into `ASANA_WEBHOOK_SECRET`).
+   `X-Hook-Secret` into `ASANA_WEBHOOK_SECRET`). Easiest: signed in as an admin, open
+   `GET /api/asana-webhook/register` once — it registers the webhook with the app's
+   `ASANA_ACCESS_TOKEN` (idempotent) and logs the handshake secret to the Vercel runtime
+   logs (`[asana-webhook] handshake received …`) to copy into `ASANA_WEBHOOK_SECRET`.
 4. Replace the email templates in `lib/console-validation-emails.ts` with the branded
    Mailchimp versions from Zaps B/C.
 5. Test in parallel (Zaps stay ON) with a real submission.
