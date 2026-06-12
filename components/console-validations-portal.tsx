@@ -18,11 +18,11 @@ export type ConsoleValidationRow = {
   dropboxLink: string | null;
 };
 
-const STATUS_META: Record<ConsoleValidationStatus, { label: string; tone: string }> = {
+const STATUS_META: Record<ConsoleValidationStatus, { label: string; tone: string; solid?: boolean }> = {
   submitted: { label: 'Received', tone: '#78716c' },
   in_review: { label: 'In review', tone: '#b45309' },
-  can_be_connected: { label: 'Connectable', tone: '#15803d' },
-  rejected: { label: 'Not connectable', tone: '#b91c1c' },
+  can_be_connected: { label: 'Connectable', tone: '#15803d', solid: true },
+  rejected: { label: 'Not connectable', tone: '#b91c1c', solid: true },
   changes_requested: { label: 'More info needed', tone: '#b45309' },
 };
 
@@ -77,7 +77,9 @@ export function ConsoleValidationsPortal({ rows }: { rows: ConsoleValidationRow[
                       justifyContent: 'space-between',
                       gap: 16,
                       padding: '18px 20px',
+                      background: '#ffffff',
                       border: '1px solid #e7e5e4',
+                      borderLeft: `5px solid ${meta.tone}`,
                       borderRadius: 14,
                     }}
                   >
@@ -90,16 +92,29 @@ export function ConsoleValidationsPortal({ rows }: { rows: ConsoleValidationRow[
                     <span
                       style={{
                         flexShrink: 0,
-                        fontSize: 13,
-                        fontWeight: 600,
-                        color: meta.tone,
-                        border: `1px solid ${meta.tone}33`,
-                        background: `${meta.tone}14`,
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 8,
+                        fontSize: 14,
+                        fontWeight: 700,
+                        letterSpacing: '-0.01em',
+                        color: meta.solid ? '#ffffff' : meta.tone,
+                        background: meta.solid ? meta.tone : `${meta.tone}1a`,
+                        border: meta.solid ? `1px solid ${meta.tone}` : `1px solid ${meta.tone}40`,
                         borderRadius: 999,
-                        padding: '5px 12px',
+                        padding: '8px 16px',
                         whiteSpace: 'nowrap',
                       }}
                     >
+                      <span
+                        aria-hidden="true"
+                        style={{
+                          width: 8,
+                          height: 8,
+                          borderRadius: '50%',
+                          background: meta.solid ? '#ffffff' : meta.tone,
+                        }}
+                      />
                       {meta.label}
                     </span>
                   </li>
