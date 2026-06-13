@@ -36,6 +36,7 @@ export async function POST(request: NextRequest) {
   const jobTitle = typeof p.job_title === 'string' ? p.job_title.trim() : '';
   const fullNameIn = typeof p.full_name === 'string' ? p.full_name.trim() : '';
   const notif = typeof p.notification_email === 'string' ? p.notification_email.trim() : '';
+  const marketingConsent = p.marketing_consent === true;
 
   const { data: existing } = await supabase
     .from('profiles')
@@ -84,7 +85,8 @@ export async function POST(request: NextRequest) {
   const { error } = await writer.from('profiles').update(update).eq('id', user.id);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
-  if (firstOnboarding) {
+  // Lead → CRM only with explicit marketing consent (GDPR).
+  if (firstOnboarding && marketingConsent) {
     await syncLeadToPipedrive({
       email: user.email ?? '',
       name: fullName || null,

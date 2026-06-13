@@ -22,6 +22,7 @@ type OnboardingCopy = {
   errorRequired: string;
   errorGeneric: string;
   fine: string;
+  consentLabel: string;
   roles: Record<JobTitleKey, string>;
 };
 
@@ -43,6 +44,7 @@ const COPY: Record<Locale, OnboardingCopy> = {
     errorRequired: 'Please fill in all fields.',
     errorGeneric: 'Something went wrong. Please try again.',
     fine: 'We use this only to personalize your experience and, where relevant, to contact you about Rutherford solutions.',
+    consentLabel: 'I agree to receive communications from Rutherford about its solutions (optional).',
     roles: {
       operator: 'Press operator',
       prepress: 'Prepress / Repro',
@@ -72,6 +74,7 @@ const COPY: Record<Locale, OnboardingCopy> = {
     errorRequired: 'Veuillez remplir tous les champs.',
     errorGeneric: 'Une erreur est survenue. Veuillez réessayer.',
     fine: 'Nous utilisons ces informations uniquement pour personnaliser votre expérience et, le cas échéant, vous contacter au sujet des solutions Rutherford.',
+    consentLabel: 'J’accepte de recevoir des communications de Rutherford au sujet de ses solutions (facultatif).',
     roles: {
       operator: 'Conducteur de presse',
       prepress: 'Prépresse / Photogravure',
@@ -101,6 +104,7 @@ const COPY: Record<Locale, OnboardingCopy> = {
     errorRequired: 'Bitte füllen Sie alle Felder aus.',
     errorGeneric: 'Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut.',
     fine: 'Wir verwenden diese Angaben ausschließlich, um Ihr Erlebnis zu personalisieren und Sie gegebenenfalls zu Rutherford-Lösungen zu kontaktieren.',
+    consentLabel: 'Ich möchte Mitteilungen von Rutherford zu seinen Lösungen erhalten (optional).',
     roles: {
       operator: 'Maschinenführer',
       prepress: 'Druckvorstufe / Repro',
@@ -130,6 +134,7 @@ const COPY: Record<Locale, OnboardingCopy> = {
     errorRequired: 'Compili tutti i campi.',
     errorGeneric: 'Si è verificato un errore. Riprovi.',
     fine: 'Utilizziamo questi dati solo per personalizzare la sua esperienza ed eventualmente contattarla in merito alle soluzioni Rutherford.',
+    consentLabel: 'Accetto di ricevere comunicazioni da Rutherford sulle sue soluzioni (facoltativo).',
     roles: {
       operator: 'Conduttore di stampa',
       prepress: 'Prestampa / Fotolito',
@@ -159,6 +164,7 @@ const COPY: Record<Locale, OnboardingCopy> = {
     errorRequired: 'Complete todos los campos.',
     errorGeneric: 'Algo salió mal. Inténtelo de nuevo.',
     fine: 'Utilizamos estos datos solo para personalizar su experiencia y, si procede, contactarle sobre las soluciones Rutherford.',
+    consentLabel: 'Acepto recibir comunicaciones de Rutherford sobre sus soluciones (opcional).',
     roles: {
       operator: 'Operador de prensa',
       prepress: 'Preimpresión / Fotomecánica',
@@ -186,6 +192,7 @@ export function OnboardingForm({ next, needsName, defaultName }: Props) {
   const [country, setCountry] = useState('');
   const [company, setCompany] = useState('');
   const [jobTitle, setJobTitle] = useState('');
+  const [consent, setConsent] = useState(false);
   const [status, setStatus] = useState<'idle' | 'saving' | 'error'>('idle');
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
@@ -207,6 +214,7 @@ export function OnboardingForm({ next, needsName, defaultName }: Props) {
           country,
           company: company.trim(),
           job_title: jobTitle,
+          marketing_consent: consent,
           ...(needsName ? { full_name: trimmedName } : {}),
         }),
       });
@@ -313,6 +321,16 @@ export function OnboardingForm({ next, needsName, defaultName }: Props) {
                   </option>
                 ))}
               </select>
+
+              <label className="signin-consent">
+                <input
+                  type="checkbox"
+                  checked={consent}
+                  onChange={(e) => setConsent(e.target.checked)}
+                  disabled={status === 'saving'}
+                />
+                <span>{t.consentLabel}</span>
+              </label>
 
               <button
                 type="submit"

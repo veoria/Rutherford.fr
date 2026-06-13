@@ -26,6 +26,7 @@ export async function POST(request: NextRequest) {
   const company = typeof payload.company === 'string' ? payload.company.trim() : '';
   const jobTitle = typeof payload.job_title === 'string' ? payload.job_title.trim() : '';
   const fullName = typeof payload.full_name === 'string' ? payload.full_name.trim() : '';
+  const marketingConsent = payload.marketing_consent === true;
 
   if (
     !country ||
@@ -51,6 +52,8 @@ export async function POST(request: NextRequest) {
     country,
     company,
     job_title: jobTitle,
+    marketing_consent: marketingConsent,
+    marketing_consent_at: marketingConsent ? new Date().toISOString() : null,
     onboarded_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   };
@@ -61,8 +64,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  // Lead capture → CRM (no-op until PipeDrive is configured; never throws).
-  if (firstOnboarding) {
+  // Lead capture → CRM, only with explicit marketing consent (GDPR). No-op
+  // until PipeDrive is configured; never throws.
+  if (firstOnboarding && marketingConsent) {
     await syncLeadToPipedrive({
       email: user.email ?? '',
       name: fullName || (existing?.full_name as string) || null,
