@@ -13949,3 +13949,64 @@ textarea.cv-input { resize: vertical; min-height: 74px; }
   opacity: 0.6;
   cursor: default;
 }
+
+/* account hub — member controls (role / remove / revoke) */
+.ah-member-ctl {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: 0 0 auto;
+}
+.ah-role-select {
+  border: 1px solid #e0dbd2;
+  border-radius: 7px;
+  padding: 3px 6px;
+  font-size: 0.78rem;
+  background: #fff;
+  color: #3b3733;
+}
+.ah-member-remove {
+  border: 0;
+  background: none;
+  color: #b0322a;
+  font-size: 0.95rem;
+  line-height: 1;
+  padding: 4px 6px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.ah-member-remove:hover {
+  background: #fbebe9;
+}
+.ah-member-remove:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.ah-revoke {
+  flex: 0 0 auto;
+  border: 1px solid #e7bdb8;
+  background: #fff;
+  color: #b0322a;
+  border-radius: 7px;
+  padding: 4px 10px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.ah-revoke:hover {
+  background: #fbebe9;
+}
+.ah-revoke:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* admin — client→reseller attribution select */
+.admin-org-select {
+  border: 1px solid #d9d4cc;
+  border-radius: 8px;
+  padding: 5px 9px;
+  font-size: 0.85rem;
+  background: #fff;
+  min-width: 180px;
+}

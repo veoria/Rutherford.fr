@@ -7,6 +7,7 @@ import { SiteNav } from '@/components/site-nav';
 import { COUNTRIES, JOB_TITLE_KEYS, isJobTitleKey, type JobTitleKey } from '@/data/onboarding-options';
 import { ACCOUNT_TYPES, type AccountType } from '@/data/account-types';
 import type { AdminConsoleValidation, AdminOverview, AdminUser } from '@/lib/admin';
+import type { AdminOrg } from '@/lib/organizations';
 
 const ROLE_LABELS: Record<JobTitleKey, string> = {
   operator: 'Conducteur de presse',
@@ -253,7 +254,53 @@ function UserDrawer({ user, isSelf, onClose }: { user: AdminUser; isSelf: boolea
   );
 }
 
-export function AdminDashboard({ overview, selfId }: { overview: AdminOverview; selfId: string }) {
+function OrgRow({ client, resellers }: { client: AdminOrg; resellers: { id: string; name: string }[] }) {
+  const router = useRouter();
+  const [busy, setBusy] = useState(false);
+  return (
+    <tr>
+      <td>{client.name}</td>
+      <td>
+        <select
+          className="admin-org-select"
+          value={client.resellerOrgId ?? ''}
+          disabled={busy}
+          onChange={async (e) => {
+            setBusy(true);
+            try {
+              const res = await fetch('/api/admin/orgs', {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ clientOrgId: client.id, resellerOrgId: e.target.value || null }),
+              });
+              if (res.ok) router.refresh();
+            } catch {
+              /* ignore */
+            }
+            setBusy(false);
+          }}
+        >
+          <option value="">— Aucun —</option>
+          {resellers.map((r) => (
+            <option key={r.id} value={r.id}>
+              {r.name}
+            </option>
+          ))}
+        </select>
+      </td>
+    </tr>
+  );
+}
+
+export function AdminDashboard({
+  overview,
+  orgs,
+  selfId,
+}: {
+  overview: AdminOverview;
+  orgs: { clients: AdminOrg[]; resellers: { id: string; name: string }[] };
+  selfId: string;
+}) {
   const { users, courses, consoleValidations, totals } = overview;
   const [query, setQuery] = useState('');
   const [editing, setEditing] = useState<AdminUser | null>(null);
@@ -464,6 +511,34 @@ export function AdminDashboard({ overview, selfId }: { overview: AdminOverview; 
                     <tr>
                       <td colSpan={10} className="admin-empty">
                         Aucune demande.
+                      </td>
+                    </tr>
+                  ) : null}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div className="admin-block">
+            <div className="admin-block-head">
+              <h2>Attribution clients ({orgs.clients.length})</h2>
+            </div>
+            <div className="admin-table-wrap">
+              <table className="admin-table">
+                <thead>
+                  <tr>
+                    <th>Client</th>
+                    <th>Revendeur</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {orgs.clients.map((c) => (
+                    <OrgRow key={c.id} client={c} resellers={orgs.resellers} />
+                  ))}
+                  {orgs.clients.length === 0 ? (
+                    <tr>
+                      <td colSpan={2} className="admin-empty">
+                        Aucune organisation cliente.
                       </td>
                     </tr>
                   ) : null}

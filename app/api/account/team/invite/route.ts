@@ -33,12 +33,15 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'self_invite' }, { status: 400 });
   }
 
-  const kind = body.kind === 'client' ? 'client' : 'member';
+  const kind = body.kind === 'client' ? 'client' : body.kind === 'reseller' ? 'reseller' : 'member';
 
   const manage = await getManageableOrg(user.id);
   if (!manage) return NextResponse.json({ error: 'forbidden' }, { status: 403 });
-  // Only resellers / distributors can invite a client org.
+  // Resellers/distributors invite clients; only distributors invite resellers.
   if (kind === 'client' && manage.orgType !== 'reseller' && manage.orgType !== 'distributor') {
+    return NextResponse.json({ error: 'forbidden' }, { status: 403 });
+  }
+  if (kind === 'reseller' && manage.orgType !== 'distributor') {
     return NextResponse.json({ error: 'forbidden' }, { status: 403 });
   }
 

@@ -2,7 +2,7 @@
 
 import { useState, type ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
-import type { MemberRole, Team } from '@/lib/organizations';
+import type { MemberRole, OrgMember, ResellerClientOrg, Team } from '@/lib/organizations';
 import { SiteFooter } from '@/components/site-footer';
 import { SiteNav } from '@/components/site-nav';
 import { type Locale, useLanguage } from '@/components/language-provider';
@@ -19,6 +19,8 @@ export type ResellerClient = {
 type Props = {
   accountType: AccountType;
   team: Team;
+  selfId: string;
+  networkResellers: ResellerClientOrg[];
   email: string;
   memberSince: string | null;
   profile: {
@@ -111,6 +113,7 @@ type Copy = {
     openShort: (n: number) => string;
     adminTitle: string; adminSub: string; adminCta: string;
     adminTag: string; memberTag: string; invitedTag: string; invitePending: string; inviteSend: string; inviteEmailPh: string;
+    remove: string; revoke: string; networkEmpty: string;
   };
   academyH: string;
   levelWord: string;
@@ -157,6 +160,7 @@ const COPY: Record<Locale, Copy> = {
       pressUnit: (n) => `${n} press${n === 1 ? '' : 'es'}`, eligibleShort: (n) => `${n} eligible`, openShort: (n) => `${n} open`,
       adminTitle: 'Back-office', adminSub: 'Rutherford team tools', adminCta: 'Open admin',
       adminTag: 'Admin', memberTag: 'Member', invitedTag: 'Invited', invitePending: 'Invitation sent', inviteSend: 'Send invite', inviteEmailPh: 'name@company.com',
+      remove: 'Remove', revoke: 'Revoke', networkEmpty: 'No resellers in your network yet.',
     },
     academyH: 'Academy', levelWord: 'Level', xpUnit: 'XP',
     xpToNext: (n, rank) => `${n} XP to ${rank}`, maxLevel: 'Top rank reached',
@@ -197,6 +201,7 @@ const COPY: Record<Locale, Copy> = {
       pressUnit: (n) => `${n} presse${n === 1 ? '' : 's'}`, eligibleShort: (n) => `${n} éligible${n === 1 ? '' : 's'}`, openShort: (n) => `${n} en cours`,
       adminTitle: 'Back-office', adminSub: 'Outils de l’équipe Rutherford', adminCta: 'Ouvrir l’admin',
       adminTag: 'Admin', memberTag: 'Membre', invitedTag: 'Invité', invitePending: 'Invitation envoyée', inviteSend: 'Envoyer l’invitation', inviteEmailPh: 'nom@entreprise.com',
+      remove: 'Retirer', revoke: 'Révoquer', networkEmpty: 'Aucun revendeur dans votre réseau pour l’instant.',
     },
     academyH: 'Academy', levelWord: 'Niveau', xpUnit: 'XP',
     xpToNext: (n, rank) => `${n} XP avant ${rank}`, maxLevel: 'Rang maximum atteint',
@@ -237,6 +242,7 @@ const COPY: Record<Locale, Copy> = {
       pressUnit: (n) => `${n} Maschine${n === 1 ? '' : 'n'}`, eligibleShort: (n) => `${n} geeignet`, openShort: (n) => `${n} offen`,
       adminTitle: 'Back-office', adminSub: 'Werkzeuge des Rutherford-Teams', adminCta: 'Admin öffnen',
       adminTag: 'Admin', memberTag: 'Mitglied', invitedTag: 'Eingeladen', invitePending: 'Einladung gesendet', inviteSend: 'Einladung senden', inviteEmailPh: 'name@firma.com',
+      remove: 'Entfernen', revoke: 'Zurückziehen', networkEmpty: 'Noch keine Wiederverkäufer in Ihrem Netzwerk.',
     },
     academyH: 'Academy', levelWord: 'Level', xpUnit: 'XP',
     xpToNext: (n, rank) => `${n} XP bis ${rank}`, maxLevel: 'Höchster Rang erreicht',
@@ -277,6 +283,7 @@ const COPY: Record<Locale, Copy> = {
       pressUnit: (n) => `${n} macchin${n === 1 ? 'a' : 'e'}`, eligibleShort: (n) => `${n} idonee`, openShort: (n) => `${n} in corso`,
       adminTitle: 'Back-office', adminSub: 'Strumenti del team Rutherford', adminCta: 'Apri admin',
       adminTag: 'Admin', memberTag: 'Membro', invitedTag: 'Invitato', invitePending: 'Invito inviato', inviteSend: 'Invia invito', inviteEmailPh: 'nome@azienda.com',
+      remove: 'Rimuovi', revoke: 'Revoca', networkEmpty: 'Ancora nessun rivenditore nella sua rete.',
     },
     academyH: 'Academy', levelWord: 'Livello', xpUnit: 'XP',
     xpToNext: (n, rank) => `${n} XP a ${rank}`, maxLevel: 'Rango massimo raggiunto',
@@ -317,6 +324,7 @@ const COPY: Record<Locale, Copy> = {
       pressUnit: (n) => `${n} prensa${n === 1 ? '' : 's'}`, eligibleShort: (n) => `${n} aptas`, openShort: (n) => `${n} en curso`,
       adminTitle: 'Back-office', adminSub: 'Herramientas del equipo Rutherford', adminCta: 'Abrir admin',
       adminTag: 'Admin', memberTag: 'Miembro', invitedTag: 'Invitado', invitePending: 'Invitación enviada', inviteSend: 'Enviar invitación', inviteEmailPh: 'nombre@empresa.com',
+      remove: 'Quitar', revoke: 'Revocar', networkEmpty: 'Aún no hay revendedores en su red.',
     },
     academyH: 'Academy', levelWord: 'Nivel', xpUnit: 'XP',
     xpToNext: (n, rank) => `${n} XP para ${rank}`, maxLevel: 'Rango máximo alcanzado',
@@ -364,7 +372,7 @@ function fmtMonth(iso: string | null, locale: Locale): string {
 type Tile = { ic: string; cls: string; t: string; s: string; href: string; statDot?: string; statV: string; statM?: string };
 
 export function AccountHub(props: Props) {
-  const { accountType, team, email, memberSince, profile, academy, consoleStat, resume, resellerClients } = props;
+  const { accountType, team, selfId, networkResellers, email, memberSince, profile, academy, consoleStat, resume, resellerClients } = props;
   const { locale } = useLanguage();
   const t = COPY[locale];
   const accent = TONE[accountType];
@@ -470,7 +478,14 @@ export function AccountHub(props: Props) {
             <div className="ah-stack">
               <SettingsCard t={t} locale={locale} profile={profile} email={email} />
               {accountType !== 'team' ? (
-                <ManagePanel t={t} accountType={accountType} team={team} clients={resellerClients} />
+                <ManagePanel
+                  t={t}
+                  accountType={accountType}
+                  team={team}
+                  selfId={selfId}
+                  networkResellers={networkResellers}
+                  clients={resellerClients}
+                />
               ) : (
                 <div className="ah-card" id="account-manage">
                   <div className="ah-card-h">
@@ -522,7 +537,23 @@ function SettingsCard({ t, locale, profile, email }: { t: Copy; locale: Locale; 
   );
 }
 
-function PersonRow({ av, accent, name, sub, tag, square }: { av: string; accent: string; name: string; sub: string; tag?: string; square?: boolean }) {
+function PersonRow({
+  av,
+  accent,
+  name,
+  sub,
+  tag,
+  square,
+  right,
+}: {
+  av: string;
+  accent: string;
+  name: string;
+  sub: string;
+  tag?: string;
+  square?: boolean;
+  right?: ReactNode;
+}) {
   return (
     <div className="ah-person">
       <span className={`ah-mono-av${square ? ' sq' : ''}`} style={{ background: `${accent}1A`, color: accent }}>{av}</span>
@@ -530,6 +561,7 @@ function PersonRow({ av, accent, name, sub, tag, square }: { av: string; accent:
         <div className="ah-person-n">{name}{tag ? <span className="ah-tag">{tag}</span> : null}</div>
         <div className="ah-person-sub">{sub}</div>
       </div>
+      {right ?? null}
     </div>
   );
 }
@@ -538,7 +570,81 @@ function roleTag(t: Copy, role: MemberRole): string {
   return role === 'owner' ? t.manage.owner : role === 'admin' ? t.manage.adminTag : t.manage.memberTag;
 }
 
-function InviteForm({ t, kind = 'member' }: { t: Copy; kind?: 'member' | 'client' }) {
+function MemberControls({ t, member }: { t: Copy; member: OrgMember }) {
+  const router = useRouter();
+  const [busy, setBusy] = useState(false);
+  const run = async (req: () => Promise<Response>) => {
+    setBusy(true);
+    try {
+      const res = await req();
+      if (res.ok) router.refresh();
+    } catch {
+      /* ignore */
+    }
+    setBusy(false);
+  };
+  return (
+    <span className="ah-member-ctl">
+      <select
+        className="ah-role-select"
+        value={member.role}
+        disabled={busy}
+        onChange={(e) =>
+          run(() =>
+            fetch('/api/account/team/member', {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ userId: member.userId, role: e.target.value }),
+            })
+          )
+        }
+      >
+        <option value="member">{t.manage.memberTag}</option>
+        <option value="admin">{t.manage.adminTag}</option>
+      </select>
+      <button
+        type="button"
+        className="ah-member-remove"
+        disabled={busy}
+        title={t.manage.remove}
+        aria-label={t.manage.remove}
+        onClick={() =>
+          run(() => fetch(`/api/account/team/member?userId=${encodeURIComponent(member.userId)}`, { method: 'DELETE' }))
+        }
+      >
+        ✕
+      </button>
+    </span>
+  );
+}
+
+function RevokeButton({ t, invitationId }: { t: Copy; invitationId: string }) {
+  const router = useRouter();
+  const [busy, setBusy] = useState(false);
+  return (
+    <button
+      type="button"
+      className="ah-revoke"
+      disabled={busy}
+      onClick={async () => {
+        setBusy(true);
+        try {
+          const res = await fetch(`/api/account/team/member?invitationId=${encodeURIComponent(invitationId)}`, {
+            method: 'DELETE',
+          });
+          if (res.ok) router.refresh();
+        } catch {
+          /* ignore */
+        }
+        setBusy(false);
+      }}
+    >
+      {t.manage.revoke}
+    </button>
+  );
+}
+
+function InviteForm({ t, kind = 'member' }: { t: Copy; kind?: 'member' | 'client' | 'reseller' }) {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [busy, setBusy] = useState(false);
@@ -588,24 +694,54 @@ function InviteForm({ t, kind = 'member' }: { t: Copy; kind?: 'member' | 'client
   );
 }
 
-function ManagePanel({ t, accountType, team, clients }: { t: Copy; accountType: AccountType; team: Team; clients: ResellerClient[] }) {
+function ManagePanel({
+  t,
+  accountType,
+  team,
+  selfId,
+  networkResellers,
+  clients,
+}: {
+  t: Copy;
+  accountType: AccountType;
+  team: Team;
+  selfId: string;
+  networkResellers: ResellerClientOrg[];
+  clients: ResellerClient[];
+}) {
   const [tab, setTab] = useState<'clients' | 'team'>(accountType === 'reseller' ? 'clients' : 'team');
   const accent = TONE[accountType];
   const title = accountType === 'distributor' ? t.manage.networkTitle : accountType === 'reseller' ? t.manage.clientsTitle : t.manage.teamTitle;
   const sub = accountType === 'distributor' ? t.manage.networkSub : accountType === 'reseller' ? t.manage.clientsSub : t.manage.teamSub;
-  const canInvite = team.myRole === 'owner' || team.myRole === 'admin';
+  const canManage = team.myRole === 'owner' || team.myRole === 'admin';
 
   const teamView = (
     <>
       <div className="ah-people">
         {team.members.map((m) => (
-          <PersonRow key={m.userId} av={initials(m.name, m.email)} accent={accent} name={m.name || m.email} sub={m.email} tag={roleTag(t, m.role)} />
+          <PersonRow
+            key={m.userId}
+            av={initials(m.name, m.email)}
+            accent={accent}
+            name={m.name || m.email}
+            sub={m.email}
+            tag={roleTag(t, m.role)}
+            right={canManage && m.role !== 'owner' && m.userId !== selfId ? <MemberControls t={t} member={m} /> : undefined}
+          />
         ))}
         {team.pending.map((p) => (
-          <PersonRow key={p.id} av={initials(null, p.email)} accent={accent} name={p.email} sub={t.manage.invitePending} tag={t.manage.invitedTag} />
+          <PersonRow
+            key={p.id}
+            av={initials(null, p.email)}
+            accent={accent}
+            name={p.email}
+            sub={t.manage.invitePending}
+            tag={t.manage.invitedTag}
+            right={canManage ? <RevokeButton t={t} invitationId={p.id} /> : undefined}
+          />
         ))}
       </div>
-      {canInvite ? <InviteForm t={t} /> : null}
+      {canManage ? <InviteForm t={t} /> : null}
     </>
   );
 
@@ -624,7 +760,25 @@ function ManagePanel({ t, accountType, team, clients }: { t: Copy; accountType: 
 
       <div className="ah-card-bd">
         {accountType === 'distributor' ? (
-          <p className="ah-empty">{t.manage.soonNetwork}</p>
+          <>
+            {networkResellers.length ? (
+              <div className="ah-people">
+                {networkResellers.map((r) => (
+                  <PersonRow
+                    key={r.orgId}
+                    av={initials(r.name, r.name)}
+                    accent={accent}
+                    square
+                    name={r.name}
+                    sub={`${r.country ? r.country + ' · ' : ''}${t.stat.clientsCount(r.memberCount)}`}
+                  />
+                ))}
+              </div>
+            ) : (
+              <p className="ah-empty">{t.manage.networkEmpty}</p>
+            )}
+            {canManage ? <InviteForm t={t} kind="reseller" /> : null}
+          </>
         ) : accountType === 'reseller' && tab === 'clients' ? (
           <>
             {clients.length ? (
@@ -643,7 +797,7 @@ function ManagePanel({ t, accountType, team, clients }: { t: Copy; accountType: 
             ) : (
               <p className="ah-empty">{t.manage.clientsEmpty}</p>
             )}
-            {canInvite ? <InviteForm t={t} kind="client" /> : null}
+            {canManage ? <InviteForm t={t} kind="client" /> : null}
           </>
         ) : (
           teamView
