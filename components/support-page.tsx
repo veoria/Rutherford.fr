@@ -1,69 +1,363 @@
 'use client';
 
-import Image from 'next/image';
 import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 import { SiteFooter } from '@/components/site-footer';
 import { SiteNav } from '@/components/site-nav';
+import { type Locale, useLanguage } from '@/components/language-provider';
+import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 
-type SupportUploadId = 'firstPicture' | 'secondPicture' | 'optionalPicture';
-
-type UploadConfig = {
-  id: SupportUploadId;
-  title: string;
-  description: string;
-};
-
+type SupportUploadId = 'support1' | 'support2' | 'support3';
 type FileMap = Record<SupportUploadId, File | null>;
 type PreviewMap = Record<SupportUploadId, string>;
 
-const supportUploads: UploadConfig[] = [
-  {
-    id: 'firstPicture',
-    title: 'First picture',
-    description: 'We need to see the full screen and not only a detail.',
-  },
-  {
-    id: 'secondPicture',
-    title: 'Second picture',
-    description: 'If you have a red error box, please touch it and capture the error message.',
-  },
-  {
-    id: 'optionalPicture',
-    title: 'Optional picture',
-    description: 'Add any extra picture that can help us understand the issue faster.',
-  },
-];
+const emptyFiles: FileMap = { support1: null, support2: null, support3: null };
+const emptyPreviews: PreviewMap = { support1: '', support2: '', support3: '' };
 
-const emptyFiles: FileMap = {
-  firstPicture: null,
-  secondPicture: null,
-  optionalPicture: null,
+type PhotoCard = { title: string; desc: string };
+type FaqItem = { q: string; a: string };
+
+type Copy = {
+  kicker: string;
+  title: string;
+  tagline: string;
+  phoneLine: string;
+  ctaPrimary: string;
+  ctaSecondary: string;
+  reassure: string[];
+  emailLabel: string;
+  emailPh: string;
+  anydeskLabel: string;
+  anydeskPh: string;
+  anydeskHelpTitle: string;
+  anydeskHelp: string;
+  problemLabel: string;
+  problemPh: string;
+  uploadCta: string;
+  uploadHint: string;
+  photoCards: [PhotoCard, PhotoCard, PhotoCard];
+  submit: string;
+  sending: string;
+  submitHint: string;
+  errFields: string;
+  errGeneric: string;
+  nextTitle: string;
+  nextSteps: [string, string, string];
+  faqTitle: string;
+  faq: FaqItem[];
+  successTitle: string;
+  successRefPre: string;
+  successBody: string;
+  trackCta: string;
+  backHome: string;
 };
 
-const emptyPreviews: PreviewMap = {
-  firstPicture: '',
-  secondPicture: '',
-  optionalPicture: '',
+const COPY: Record<Locale, Copy> = {
+  en: {
+    kicker: 'Support',
+    title: 'We’re here to help you.',
+    tagline: 'Remote support for your pressroom.',
+    phoneLine: 'Snap a photo and send it straight from your phone.',
+    ctaPrimary: 'Open a ticket',
+    ctaSecondary: 'Talk to an expert',
+    reassure: ['Free', 'Reply within 1 business day', 'We connect only with your permission', 'No commitment'],
+    emailLabel: 'Email *',
+    emailPh: 'name@example.com',
+    anydeskLabel: 'AnyDesk support number',
+    anydeskPh: 'e.g. 123 456 789',
+    anydeskHelpTitle: 'What is AnyDesk?',
+    anydeskHelp:
+      'AnyDesk lets our team see your screen to help faster. Download it free from anydesk.com, open it, and copy the 9-digit address shown under “Your Desk”. We connect only when you accept the request on your machine.',
+    problemLabel: 'Explain your problem *',
+    problemPh:
+      'What happens, on which press / software, and since when? You can write in your own language — English helps us answer faster.',
+    uploadCta: 'Upload image',
+    uploadHint: 'Tap to use the camera or choose a file',
+    photoCards: [
+      { title: 'Full screen', desc: 'One picture of the whole screen, not just a detail.' },
+      { title: 'Error message', desc: 'If you see a red error box, tap it and capture the message.' },
+      { title: 'Anything else', desc: 'Any extra picture that helps us understand faster.' },
+    ],
+    submit: 'Send support request',
+    sending: 'Sending…',
+    submitHint: 'Mobile friendly — take and upload photos straight from your phone.',
+    errFields: 'Please enter your email and describe the problem.',
+    errGeneric: 'Something went wrong, please retry.',
+    nextTitle: 'What happens next',
+    nextSteps: [
+      'Our team reviews your request and photos.',
+      'We reach out — and connect via AnyDesk only with your permission.',
+      'We follow up until it’s solved. Track everything from your account.',
+    ],
+    faqTitle: 'Frequently asked questions',
+    faq: [
+      {
+        q: 'What is AnyDesk and is it safe?',
+        a: 'AnyDesk is a remote-access tool that lets our team see your console screen to help faster. The connection starts only when you accept it on your machine, and you can end it at any time. Download it free at anydesk.com.',
+      },
+      {
+        q: 'Where do I find my AnyDesk number?',
+        a: 'Open AnyDesk on the console computer. Your 9-digit address is shown under “Your Desk” — copy it into the form.',
+      },
+      {
+        q: 'How fast will you reply?',
+        a: 'We reply within one business day, usually much sooner. Keep your ticket reference for any follow-up.',
+      },
+      {
+        q: 'Can I follow my ticket?',
+        a: 'Yes. With a Rutherford account, every ticket and its status appears under My account → Support, and we email you whenever the status changes.',
+      },
+    ],
+    successTitle: 'Thank you for your request.',
+    successRefPre: 'Your ticket reference is',
+    successBody: 'We’ve emailed you a confirmation. Our team will get back to you as quickly as possible.',
+    trackCta: 'Track my ticket',
+    backHome: 'Back to rutherford.fr',
+  },
+  fr: {
+    kicker: 'Support',
+    title: 'Nous sommes là pour vous aider.',
+    tagline: 'Une assistance à distance pour votre atelier.',
+    phoneLine: 'Prenez une photo et envoyez-la directement depuis votre téléphone.',
+    ctaPrimary: 'Ouvrir un ticket',
+    ctaSecondary: 'Parlez à un expert',
+    reassure: ['Gratuit', 'Réponse sous 1 jour ouvré', 'Connexion uniquement avec votre accord', 'Sans engagement'],
+    emailLabel: 'E-mail *',
+    emailPh: 'nom@exemple.com',
+    anydeskLabel: 'Numéro de support AnyDesk',
+    anydeskPh: 'ex. 123 456 789',
+    anydeskHelpTitle: 'Qu’est-ce qu’AnyDesk ?',
+    anydeskHelp:
+      'AnyDesk permet à notre équipe de voir votre écran pour vous aider plus vite. Téléchargez-le gratuitement sur anydesk.com, ouvrez-le et copiez l’adresse à 9 chiffres affichée sous « Votre poste ». La connexion ne démarre que lorsque vous l’acceptez sur votre machine.',
+    problemLabel: 'Expliquez votre problème *',
+    problemPh:
+      'Que se passe-t-il, sur quelle presse / quel logiciel, et depuis quand ? Vous pouvez écrire dans votre langue — l’anglais nous aide à répondre plus vite.',
+    uploadCta: 'Charger une image',
+    uploadHint: 'Touchez pour utiliser l’appareil photo ou choisir un fichier',
+    photoCards: [
+      { title: 'Écran complet', desc: 'Une photo de tout l’écran, pas seulement d’un détail.' },
+      { title: 'Message d’erreur', desc: 'Si une fenêtre d’erreur rouge s’affiche, touchez-la et capturez le message.' },
+      { title: 'Autre chose', desc: 'Toute photo supplémentaire qui nous aide à comprendre plus vite.' },
+    ],
+    submit: 'Envoyer la demande',
+    sending: 'Envoi…',
+    submitHint: 'Compatible mobile — prenez et envoyez les photos directement depuis votre téléphone.',
+    errFields: 'Veuillez indiquer votre e-mail et décrire le problème.',
+    errGeneric: 'Une erreur est survenue, veuillez réessayer.',
+    nextTitle: 'Et après ?',
+    nextSteps: [
+      'Notre équipe examine votre demande et vos photos.',
+      'Nous vous contactons — la connexion AnyDesk ne se fait qu’avec votre accord.',
+      'Nous assurons le suivi jusqu’à la résolution. Suivez tout depuis votre compte.',
+    ],
+    faqTitle: 'Questions fréquentes',
+    faq: [
+      {
+        q: 'Qu’est-ce qu’AnyDesk et est-ce sûr ?',
+        a: 'AnyDesk est un outil d’accès à distance qui permet à notre équipe de voir l’écran de votre console pour vous aider plus vite. La connexion ne démarre que lorsque vous l’acceptez sur votre machine, et vous pouvez y mettre fin à tout moment. Téléchargement gratuit sur anydesk.com.',
+      },
+      {
+        q: 'Où trouver mon numéro AnyDesk ?',
+        a: 'Ouvrez AnyDesk sur l’ordinateur de la console. Votre adresse à 9 chiffres s’affiche sous « Votre poste » — copiez-la dans le formulaire.',
+      },
+      {
+        q: 'Sous quel délai répondez-vous ?',
+        a: 'Nous répondons sous un jour ouvré, généralement bien plus vite. Conservez la référence de votre ticket pour tout suivi.',
+      },
+      {
+        q: 'Puis-je suivre mon ticket ?',
+        a: 'Oui. Avec un compte Rutherford, chaque ticket et son statut apparaissent dans Mon compte → Support, et nous vous envoyons un e-mail à chaque changement de statut.',
+      },
+    ],
+    successTitle: 'Merci pour votre demande.',
+    successRefPre: 'La référence de votre ticket est',
+    successBody: 'Nous vous avons envoyé une confirmation par e-mail. Notre équipe vous répondra dans les plus brefs délais.',
+    trackCta: 'Suivre mon ticket',
+    backHome: 'Retour à rutherford.fr',
+  },
+  de: {
+    kicker: 'Support',
+    title: 'Wir sind für Sie da.',
+    tagline: 'Fernsupport für Ihre Druckerei.',
+    phoneLine: 'Foto machen und direkt vom Smartphone senden.',
+    ctaPrimary: 'Ticket öffnen',
+    ctaSecondary: 'Sprechen Sie mit einem Experten',
+    reassure: ['Kostenlos', 'Antwort < 1 Werktag', 'Verbindung nur mit Ihrer Zustimmung', 'Unverbindlich'],
+    emailLabel: 'E-Mail *',
+    emailPh: 'name@beispiel.com',
+    anydeskLabel: 'AnyDesk-Supportnummer',
+    anydeskPh: 'z. B. 123 456 789',
+    anydeskHelpTitle: 'Was ist AnyDesk?',
+    anydeskHelp:
+      'Mit AnyDesk kann unser Team Ihren Bildschirm sehen, um schneller zu helfen. Laden Sie es kostenlos unter anydesk.com herunter, öffnen Sie es und kopieren Sie die 9-stellige Adresse unter „Dieser Arbeitsplatz“. Die Verbindung startet erst, wenn Sie sie an Ihrer Maschine bestätigen.',
+    problemLabel: 'Erklären Sie Ihr Problem *',
+    problemPh:
+      'Was passiert, an welcher Druckmaschine / Software und seit wann? Sie können in Ihrer Sprache schreiben — Englisch hilft uns, schneller zu antworten.',
+    uploadCta: 'Bild hochladen',
+    uploadHint: 'Tippen, um die Kamera zu nutzen oder eine Datei zu wählen',
+    photoCards: [
+      { title: 'Ganzer Bildschirm', desc: 'Ein Foto des gesamten Bildschirms, nicht nur eines Details.' },
+      { title: 'Fehlermeldung', desc: 'Wenn ein rotes Fehlerfenster erscheint, tippen Sie darauf und erfassen Sie die Meldung.' },
+      { title: 'Sonstiges', desc: 'Jedes weitere Foto, das uns hilft, schneller zu verstehen.' },
+    ],
+    submit: 'Anfrage senden',
+    sending: 'Senden…',
+    submitHint: 'Mobilfreundlich — Fotos direkt vom Smartphone aufnehmen und senden.',
+    errFields: 'Bitte geben Sie Ihre E-Mail an und beschreiben Sie das Problem.',
+    errGeneric: 'Etwas ist schiefgelaufen, bitte erneut versuchen.',
+    nextTitle: 'Wie geht es weiter?',
+    nextSteps: [
+      'Unser Team prüft Ihre Anfrage und Ihre Fotos.',
+      'Wir melden uns — die AnyDesk-Verbindung erfolgt nur mit Ihrer Zustimmung.',
+      'Wir bleiben dran, bis es gelöst ist. Verfolgen Sie alles in Ihrem Konto.',
+    ],
+    faqTitle: 'Häufige Fragen',
+    faq: [
+      {
+        q: 'Was ist AnyDesk und ist es sicher?',
+        a: 'AnyDesk ist ein Fernzugriffstool, mit dem unser Team Ihren Konsolenbildschirm sehen kann, um schneller zu helfen. Die Verbindung startet erst, wenn Sie sie an Ihrer Maschine bestätigen, und Sie können sie jederzeit beenden. Kostenlos unter anydesk.com.',
+      },
+      {
+        q: 'Wo finde ich meine AnyDesk-Nummer?',
+        a: 'Öffnen Sie AnyDesk auf dem Konsolencomputer. Ihre 9-stellige Adresse erscheint unter „Dieser Arbeitsplatz“ — kopieren Sie sie in das Formular.',
+      },
+      {
+        q: 'Wie schnell antworten Sie?',
+        a: 'Wir antworten innerhalb eines Werktags, meist deutlich schneller. Bewahren Sie Ihre Ticket-Referenz für Rückfragen auf.',
+      },
+      {
+        q: 'Kann ich mein Ticket verfolgen?',
+        a: 'Ja. Mit einem Rutherford-Konto sehen Sie jedes Ticket und seinen Status unter Mein Konto → Support, und bei jeder Statusänderung senden wir Ihnen eine E-Mail.',
+      },
+    ],
+    successTitle: 'Vielen Dank für Ihre Anfrage.',
+    successRefPre: 'Ihre Ticket-Referenz lautet',
+    successBody: 'Wir haben Ihnen eine Bestätigung per E-Mail gesendet. Unser Team meldet sich schnellstmöglich.',
+    trackCta: 'Mein Ticket verfolgen',
+    backHome: 'Zurück zu rutherford.fr',
+  },
+  it: {
+    kicker: 'Supporto',
+    title: 'Siamo qui per aiutarla.',
+    tagline: 'Assistenza da remoto per la sua sala stampa.',
+    phoneLine: 'Scatti una foto e la invii direttamente dal telefono.',
+    ctaPrimary: 'Apri un ticket',
+    ctaSecondary: 'Parla con un esperto',
+    reassure: ['Gratuito', 'Risposta entro 1 giorno lavorativo', 'Connessione solo con il suo consenso', 'Senza impegno'],
+    emailLabel: 'E-mail *',
+    emailPh: 'nome@esempio.com',
+    anydeskLabel: 'Numero di supporto AnyDesk',
+    anydeskPh: 'es. 123 456 789',
+    anydeskHelpTitle: 'Cos’è AnyDesk?',
+    anydeskHelp:
+      'AnyDesk permette al nostro team di vedere il suo schermo per aiutarla più velocemente. Lo scarichi gratuitamente su anydesk.com, lo apra e copi l’indirizzo a 9 cifre mostrato sotto « Questa postazione ». La connessione si avvia solo quando la accetta sulla sua macchina.',
+    problemLabel: 'Spieghi il suo problema *',
+    problemPh:
+      'Cosa succede, su quale macchina da stampa / software e da quando? Può scrivere nella sua lingua — l’inglese ci aiuta a rispondere più in fretta.',
+    uploadCta: 'Carica immagine',
+    uploadHint: 'Tocchi per usare la fotocamera o scegliere un file',
+    photoCards: [
+      { title: 'Schermo intero', desc: 'Una foto di tutto lo schermo, non solo di un dettaglio.' },
+      { title: 'Messaggio di errore', desc: 'Se compare un riquadro di errore rosso, lo tocchi e catturi il messaggio.' },
+      { title: 'Altro', desc: 'Qualsiasi foto in più che ci aiuti a capire più in fretta.' },
+    ],
+    submit: 'Invia la richiesta',
+    sending: 'Invio…',
+    submitHint: 'Ottimizzato per mobile — scatti e invii le foto direttamente dal telefono.',
+    errFields: 'Inserisca la sua e-mail e descriva il problema.',
+    errGeneric: 'Qualcosa è andato storto, riprovi.',
+    nextTitle: 'E poi?',
+    nextSteps: [
+      'Il nostro team esamina la sua richiesta e le foto.',
+      'La contattiamo — la connessione AnyDesk avviene solo con il suo consenso.',
+      'Seguiamo il caso fino alla risoluzione. Segua tutto dal suo account.',
+    ],
+    faqTitle: 'Domande frequenti',
+    faq: [
+      {
+        q: 'Cos’è AnyDesk ed è sicuro?',
+        a: 'AnyDesk è uno strumento di accesso remoto che permette al nostro team di vedere lo schermo della sua console per aiutarla più velocemente. La connessione si avvia solo quando la accetta sulla sua macchina e può interromperla in qualsiasi momento. Gratuito su anydesk.com.',
+      },
+      {
+        q: 'Dove trovo il mio numero AnyDesk?',
+        a: 'Apra AnyDesk sul computer della console. Il suo indirizzo a 9 cifre compare sotto « Questa postazione » — lo copi nel modulo.',
+      },
+      {
+        q: 'In quanto tempo rispondete?',
+        a: 'Rispondiamo entro un giorno lavorativo, di solito molto prima. Conservi il riferimento del ticket per ogni contatto successivo.',
+      },
+      {
+        q: 'Posso seguire il mio ticket?',
+        a: 'Sì. Con un account Rutherford, ogni ticket e il suo stato compaiono in Il mio account → Support, e le inviamo un’e-mail a ogni cambio di stato.',
+      },
+    ],
+    successTitle: 'Grazie per la sua richiesta.',
+    successRefPre: 'Il riferimento del suo ticket è',
+    successBody: 'Le abbiamo inviato una conferma via e-mail. Il nostro team le risponderà il prima possibile.',
+    trackCta: 'Segui il mio ticket',
+    backHome: 'Torna a rutherford.fr',
+  },
+  es: {
+    kicker: 'Soporte',
+    title: 'Estamos aquí para ayudarle.',
+    tagline: 'Asistencia remota para su sala de prensa.',
+    phoneLine: 'Haga una foto y envíela directamente desde su teléfono.',
+    ctaPrimary: 'Abrir un ticket',
+    ctaSecondary: 'Hable con un experto',
+    reassure: ['Gratis', 'Respuesta en menos de 1 día hábil', 'Conexión solo con su permiso', 'Sin compromiso'],
+    emailLabel: 'Correo electrónico *',
+    emailPh: 'nombre@ejemplo.com',
+    anydeskLabel: 'Número de soporte AnyDesk',
+    anydeskPh: 'ej. 123 456 789',
+    anydeskHelpTitle: '¿Qué es AnyDesk?',
+    anydeskHelp:
+      'AnyDesk permite a nuestro equipo ver su pantalla para ayudarle más rápido. Descárguelo gratis en anydesk.com, ábralo y copie la dirección de 9 cifras que aparece bajo « Este escritorio ». La conexión solo se inicia cuando usted la acepta en su máquina.',
+    problemLabel: 'Explique su problema *',
+    problemPh:
+      '¿Qué ocurre, en qué prensa / software y desde cuándo? Puede escribir en su idioma — el inglés nos ayuda a responder más rápido.',
+    uploadCta: 'Subir imagen',
+    uploadHint: 'Toque para usar la cámara o elegir un archivo',
+    photoCards: [
+      { title: 'Pantalla completa', desc: 'Una foto de toda la pantalla, no solo de un detalle.' },
+      { title: 'Mensaje de error', desc: 'Si aparece un recuadro de error rojo, tóquelo y capture el mensaje.' },
+      { title: 'Cualquier otra cosa', desc: 'Cualquier foto adicional que nos ayude a entender más rápido.' },
+    ],
+    submit: 'Enviar la solicitud',
+    sending: 'Enviando…',
+    submitHint: 'Compatible con móvil — haga y envíe las fotos directamente desde su teléfono.',
+    errFields: 'Indique su correo y describa el problema.',
+    errGeneric: 'Algo salió mal, vuelva a intentarlo.',
+    nextTitle: '¿Y después?',
+    nextSteps: [
+      'Nuestro equipo revisa su solicitud y sus fotos.',
+      'Le contactamos — la conexión AnyDesk solo se realiza con su permiso.',
+      'Hacemos seguimiento hasta resolverlo. Sígalo todo desde su cuenta.',
+    ],
+    faqTitle: 'Preguntas frecuentes',
+    faq: [
+      {
+        q: '¿Qué es AnyDesk y es seguro?',
+        a: 'AnyDesk es una herramienta de acceso remoto que permite a nuestro equipo ver la pantalla de su consola para ayudarle más rápido. La conexión solo se inicia cuando usted la acepta en su máquina, y puede finalizarla en cualquier momento. Gratis en anydesk.com.',
+      },
+      {
+        q: '¿Dónde encuentro mi número AnyDesk?',
+        a: 'Abra AnyDesk en el ordenador de la consola. Su dirección de 9 cifras aparece bajo « Este escritorio » — cópiela en el formulario.',
+      },
+      {
+        q: '¿En cuánto tiempo responden?',
+        a: 'Respondemos en un día hábil, normalmente mucho antes. Conserve la referencia de su ticket para cualquier seguimiento.',
+      },
+      {
+        q: '¿Puedo seguir mi ticket?',
+        a: 'Sí. Con una cuenta Rutherford, cada ticket y su estado aparecen en Mi cuenta → Soporte, y le enviamos un correo cada vez que cambia el estado.',
+      },
+    ],
+    successTitle: 'Gracias por su solicitud.',
+    successRefPre: 'La referencia de su ticket es',
+    successBody: 'Le hemos enviado una confirmación por correo. Nuestro equipo le responderá lo antes posible.',
+    trackCta: 'Seguir mi ticket',
+    backHome: 'Volver a rutherford.fr',
+  },
 };
-
-const countryOptions = [
-  'Belgium',
-  'Canada',
-  'China',
-  'France',
-  'Germany',
-  'Italy',
-  'Japan',
-  'Morocco',
-  'Netherlands',
-  'Poland',
-  'Portugal',
-  'Spain',
-  'Sweden',
-  'Switzerland',
-  'United Kingdom',
-  'United States',
-];
 
 function UploadIcon() {
   return (
@@ -75,40 +369,63 @@ function UploadIcon() {
   );
 }
 
+function InfoIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.7" />
+      <path d="M12 11v5M12 8h.01" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function CheckIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M5 12.5l4.2 4.2L19 7" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
 function SupportUploadField({
-  config,
+  id,
+  card,
+  uploadCta,
+  uploadHint,
   preview,
   file,
   onChange,
 }: {
-  config: UploadConfig;
+  id: SupportUploadId;
+  card: PhotoCard;
+  uploadCta: string;
+  uploadHint: string;
   preview: string;
   file: File | null;
   onChange: (field: SupportUploadId, file: File | null) => void;
 }) {
-  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    onChange(config.id, event.target.files?.[0] ?? null);
-  };
-
   return (
     <div className="console-simple-upload-card">
       <div className="console-simple-upload-copy">
-        <h3>{config.title}</h3>
-        <p>{config.description}</p>
+        <h3>{card.title}</h3>
+        <p>{card.desc}</p>
       </div>
-
       <label className={`console-simple-upload ${preview ? 'has-preview' : ''}`}>
-        <input type="file" accept="image/*" onChange={handleChange} />
+        <input
+          type="file"
+          accept="image/*"
+          onChange={(event: ChangeEvent<HTMLInputElement>) => onChange(id, event.target.files?.[0] ?? null)}
+        />
         {preview ? (
           <div className="console-simple-upload-preview">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={preview} alt="" />
             <strong>{file?.name}</strong>
           </div>
         ) : (
           <div className="console-simple-upload-empty">
             <UploadIcon />
-            <strong>Upload image</strong>
-            <span>Tap to use camera or choose a file</span>
+            <strong>{uploadCta}</strong>
+            <span>{uploadHint}</span>
           </div>
         )}
       </label>
@@ -117,38 +434,128 @@ function SupportUploadField({
 }
 
 export function SupportPage() {
+  const { locale } = useLanguage();
+  const t = COPY[locale];
+
   const [files, setFiles] = useState<FileMap>(emptyFiles);
   const [previews, setPreviews] = useState<PreviewMap>(emptyPreviews);
+  const [email, setEmail] = useState('');
+  const [signedIn, setSignedIn] = useState(false);
+  const [anydesk, setAnydesk] = useState('');
+  const [problem, setProblem] = useState('');
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
+  const [reference, setReference] = useState<string | null>(null);
+
+  const authConfigured = Boolean(
+    process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  );
+
+  useEffect(() => {
+    if (!authConfigured) return;
+    let active = true;
+    (async () => {
+      try {
+        const {
+          data: { user },
+        } = await createSupabaseBrowserClient().auth.getUser();
+        if (user?.email && active) {
+          setEmail(user.email);
+          setSignedIn(true);
+        }
+      } catch {
+        /* anonymous */
+      }
+    })();
+    return () => {
+      active = false;
+    };
+  }, [authConfigured]);
 
   useEffect(() => {
     return () => {
-      Object.values(previews).forEach((value) => {
-        if (value) URL.revokeObjectURL(value);
-      });
+      Object.values(previews).forEach((value) => value && URL.revokeObjectURL(value));
     };
   }, [previews]);
 
   const handleFileChange = (field: SupportUploadId, file: File | null) => {
     setFiles((current) => ({ ...current, [field]: file }));
-
     setPreviews((current) => {
-      if (current[field]) {
-        URL.revokeObjectURL(current[field]);
-      }
-
-      return {
-        ...current,
-        [field]: file ? URL.createObjectURL(file) : '',
-      };
+      if (current[field]) URL.revokeObjectURL(current[field]);
+      return { ...current, [field]: file ? URL.createObjectURL(file) : '' };
     });
   };
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setSubmitted(true);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (!email.trim() || !problem.trim()) {
+      setError(t.errFields);
+      return;
+    }
+    setSending(true);
+    setError(null);
+    try {
+      const photos: { field: string; path: string }[] = [];
+      const chosen = (Object.keys(files) as SupportUploadId[])
+        .map((field) => ({ field, file: files[field] }))
+        .filter((x) => x.file);
+      if (authConfigured && chosen.length) {
+        const supabase = createSupabaseBrowserClient();
+        const uploadId = (
+          (typeof crypto !== 'undefined' && crypto.randomUUID?.()) ||
+          Math.random().toString(36).slice(2)
+        ).replace(/[^a-z0-9-]/gi, '');
+        for (const { field, file } of chosen) {
+          const ext = (file!.name.split('.').pop() || 'jpg').toLowerCase();
+          const urlRes = await fetch('/api/console-validation/upload-url', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ field, uploadId, ext }),
+          });
+          if (!urlRes.ok) continue;
+          const { path, token } = await urlRes.json();
+          const { error: upErr } = await supabase.storage
+            .from('console-validations')
+            .uploadToSignedUrl(path, token, file!);
+          if (!upErr) photos.push({ field, path });
+        }
+      }
+
+      const res = await fetch('/api/support', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email.trim(), anydesk: anydesk.trim(), description: problem.trim(), photos }),
+      });
+      if (!res.ok) {
+        const b = await res.json().catch(() => null);
+        throw new Error(b?.error ?? t.errGeneric);
+      }
+      const b = await res.json().catch(() => null);
+      setReference(b?.reference ?? null);
+      (window as any).gtag?.('event', 'support_request_submit', { event_category: 'support' });
+      setSubmitted(true);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t.errGeneric);
+    } finally {
+      setSending(false);
+    }
   };
+
+  const NextBlock = (
+    <div className="cv-next">
+      <div className="cv-next-h">{t.nextTitle}</div>
+      <ol className="cv-next-list">
+        {t.nextSteps.map((step, i) => (
+          <li key={i}>
+            <span className="cv-next-n">{i + 1}</span>
+            {step}
+          </li>
+        ))}
+      </ol>
+    </div>
+  );
 
   return (
     <main className="page-shell console-simple-page">
@@ -158,102 +565,149 @@ export function SupportPage() {
         <div className="container console-simple-shell">
           {submitted ? (
             <div className="console-simple-thankyou">
-              <p className="section-kicker">Support</p>
-              <h1>Thank you for your request.</h1>
+              <p className="section-kicker">{t.kicker}</p>
+              <h1>{t.successTitle}</h1>
               <p>
-                You will receive an email with your support number. Our team will review your message and get back to
-                you as quickly as possible.
+                {reference ? (
+                  <>
+                    {t.successRefPre} <strong>#{reference}</strong>.{' '}
+                  </>
+                ) : null}
+                {t.successBody}
               </p>
-              <button type="button" className="button button-dark" onClick={() => setSubmitted(false)}>
-                Send another request
-              </button>
+
+              {NextBlock}
+
+              <div className="console-simple-cta-row">
+                <a
+                  className="button button-accent"
+                  href={signedIn ? '/account/support' : '/account/sign-in?next=/account/support'}
+                >
+                  {t.trackCta} →
+                </a>
+                <a className="button button-light" href="/">
+                  {t.backHome}
+                </a>
+              </div>
             </div>
           ) : (
             <>
               <div className="console-simple-intro">
-                <p className="section-kicker">Support</p>
-                <h1>We are here to help you.</h1>
-                <div className="console-simple-intro-image">
-                  <Image
-                    src="/images/Hugues on console press offset.jpg"
-                    alt="Rutherford support technician on press console"
-                    width={1152}
-                    height={768}
-                    priority
-                    sizes="(max-width: 768px) 100vw, 960px"
-                  />
+                <p className="section-kicker">{t.kicker}</p>
+                <h1>{t.title}</h1>
+                <p className="console-simple-tagline">{t.tagline}</p>
+                <p className="console-simple-phone">{t.phoneLine}</p>
+                <div className="console-simple-cta-row">
+                  <a className="button button-accent" href="#support-form">
+                    {t.ctaPrimary} ↓
+                  </a>
+                  <a className="button button-light" href="mailto:contact@rutherford.fr">
+                    {t.ctaSecondary}
+                  </a>
                 </div>
-                <p>
-                  Tell us what is happening on your press and send the essential information first. This form is
-                  optimized for mobile so it can be completed directly from the pressroom.
-                </p>
+                <div className="cv-reassure">
+                  {t.reassure.map((item) => (
+                    <span key={item} className="cv-rea">
+                      <CheckIcon />
+                      {item}
+                    </span>
+                  ))}
+                </div>
               </div>
 
-              <form className="console-simple-form" onSubmit={handleSubmit}>
-                <div className="console-simple-stack">
-                  <label className="console-simple-field">
-                    <span>Country *</span>
-                    <select name="country" defaultValue="" required>
-                      <option value="" disabled>
-                        Select a country
-                      </option>
-                      {countryOptions.map((country) => (
-                        <option key={country} value={country}>
-                          {country}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
+              <form id="support-form" className="console-simple-form" onSubmit={handleSubmit}>
+                <label className="console-simple-field">
+                  <span>{t.emailLabel}</span>
+                  <input
+                    type="email"
+                    name="email"
+                    placeholder={t.emailPh}
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    disabled={sending || signedIn}
+                  />
+                </label>
 
-                  <label className="console-simple-field">
-                    <span>Printing company name *</span>
-                    <input type="text" name="companyName" placeholder="Your company name" required />
-                  </label>
+                <label className="console-simple-field">
+                  <span>{t.anydeskLabel}</span>
+                  <input
+                    type="text"
+                    name="anydesk"
+                    inputMode="numeric"
+                    placeholder={t.anydeskPh}
+                    value={anydesk}
+                    onChange={(e) => setAnydesk(e.target.value)}
+                    disabled={sending}
+                  />
+                </label>
 
-                  <label className="console-simple-field">
-                    <span>Email *</span>
-                    <input type="email" name="email" placeholder="name@example.com" required />
-                  </label>
-
-                  <label className="console-simple-field">
-                    <span>AnyDesk support number</span>
-                    <input type="text" name="anydesk" placeholder="Type your AnyDesk number" />
-                  </label>
+                <div className="cv-hint">
+                  <InfoIcon />
+                  <span>
+                    <b>{t.anydeskHelpTitle}</b> {t.anydeskHelp}
+                  </span>
                 </div>
 
                 <label className="console-simple-field console-simple-field-full">
-                  <span>Explain your problem *</span>
+                  <span>{t.problemLabel}</span>
                   <textarea
                     name="problem"
                     rows={6}
-                    placeholder="You can use your local language, but English helps us answer faster."
+                    placeholder={t.problemPh}
+                    value={problem}
+                    onChange={(e) => setProblem(e.target.value)}
                     required
+                    disabled={sending}
                   />
                 </label>
 
                 <div className="console-simple-uploads">
-                  {supportUploads.map((upload) => (
+                  {(Object.keys(emptyFiles) as SupportUploadId[]).map((id, i) => (
                     <SupportUploadField
-                      key={upload.id}
-                      config={upload}
-                      preview={previews[upload.id]}
-                      file={files[upload.id]}
+                      key={id}
+                      id={id}
+                      card={t.photoCards[i]}
+                      uploadCta={t.uploadCta}
+                      uploadHint={t.uploadHint}
+                      preview={previews[id]}
+                      file={files[id]}
                       onChange={handleFileChange}
                     />
                   ))}
                 </div>
 
+                {error ? <p className="signin-message signin-message-error">{error}</p> : null}
+
                 <div className="console-simple-submit">
-                  <button className="button button-dark" type="submit">
-                    Send support request
+                  <button className="button button-dark" type="submit" disabled={sending}>
+                    {sending ? t.sending : t.submit}
                   </button>
-                  <p>Mobile friendly. You can take and upload the photos directly from your phone.</p>
+                  <p>{t.submitHint}</p>
                 </div>
               </form>
+
+              {NextBlock}
             </>
           )}
         </div>
       </section>
+
+      {!submitted ? (
+        <section className="section console-faq-section" aria-label={t.faqTitle}>
+          <div className="container console-faq-shell">
+            <h2 className="console-faq-title">{t.faqTitle}</h2>
+            <dl className="console-faq-list">
+              {t.faq.map((item) => (
+                <div className="console-faq-item" key={item.q}>
+                  <dt>{item.q}</dt>
+                  <dd>{item.a}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+        </section>
+      ) : null}
 
       <SiteFooter />
     </main>

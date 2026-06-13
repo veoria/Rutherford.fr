@@ -226,8 +226,8 @@ export function SiteNav({ current = 'home' }: SiteNavProps) {
             {labels.contact}
           </a>
           <a
-            className="mobile-nav-link mobile-nav-link-accent"
-            href="https://form.typeform.com/to/LZtPUH" target="_blank" rel="noreferrer"
+            className={`mobile-nav-link mobile-nav-link-accent ${current === 'support' ? 'is-current' : ''}`}
+            href="/support"
             onClick={() => setOpen(false)}
           >
             {labels.support}
@@ -291,7 +291,7 @@ export function SiteNav({ current = 'home' }: SiteNavProps) {
           ) : null}
           <a
             className={`button button-accent header-button ${current === 'support' ? 'is-current' : ''}`}
-            href="https://form.typeform.com/to/LZtPUH" target="_blank" rel="noreferrer"
+            href="/support"
           >
             {labels.support}
           </a>

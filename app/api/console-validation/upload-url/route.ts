@@ -24,9 +24,9 @@ export async function POST(request: NextRequest) {
   }
 
   const field = String(body.field ?? '');
-  // The 5 intake photo fields, or a reply photo (reply1..reply9) for the
-  // in-account "provide more details" form.
-  if (!FIELDS.has(field) && !/^reply[1-9]$/.test(field)) {
+  // The 5 intake photo fields, a reply photo (reply1..reply9), or a support
+  // ticket photo (support1..support9).
+  if (!FIELDS.has(field) && !/^reply[1-9]$/.test(field) && !/^support[1-9]$/.test(field)) {
     return NextResponse.json({ error: 'Invalid field' }, { status: 400 });
   }
 

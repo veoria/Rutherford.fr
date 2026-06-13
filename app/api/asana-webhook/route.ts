@@ -1,19 +1,31 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { createHmac, timingSafeEqual } from 'crypto';
-import { getConsoleValidationTaskState } from '@/lib/asana';
+import { getConsoleValidationTaskState, getSupportTaskState } from '@/lib/asana';
 import { addDealNote } from '@/lib/pipedrive';
 import { sendMail } from '@/lib/msgraph';
 import { canConnectEmail, cannotConnectEmail, moreInfoEmail } from '@/lib/console-validation-emails';
+import { supportStatusEmail } from '@/lib/support-emails';
 import {
   getConsoleValidationStatusByAsanaTask,
   getNotificationEmailByAsanaTask,
   updateConsoleValidationStatusByAsanaTask,
   type ConsoleValidationStatus,
 } from '@/lib/console-validations';
+import {
+  getSupportTicketByAsanaTask,
+  supportStatusFromSection,
+  updateSupportStatusByAsanaTask,
+} from '@/lib/support-tickets';
 
 export const dynamic = 'force-dynamic';
 
-const WEBHOOK_SECRET = process.env.ASANA_WEBHOOK_SECRET;
+// One secret is minted per Asana webhook, and we may run two (the console board
+// and the support project). Accept a comma-separated list and verify the
+// signature against any of them. A single value stays backward-compatible.
+const WEBHOOK_SECRETS = (process.env.ASANA_WEBHOOK_SECRET ?? '')
+  .split(',')
+  .map((s) => s.trim())
+  .filter(Boolean);
 
 // The board uses Asana's Approval feature: the task's approval status is the
 // verdict, and whoever completes the approval is the validator.
@@ -33,21 +45,25 @@ export async function POST(request: NextRequest) {
   const raw = await request.text();
 
   // Asana sends X-Hook-Secret once when the webhook is created — echo it back to
-  // complete the handshake. We also log it once so it can be copied into
-  // ASANA_WEBHOOK_SECRET (then redeploy) to enable signature verification.
+  // complete the handshake. We also log it once so it can be added to
+  // ASANA_WEBHOOK_SECRET (comma-separated when running more than one webhook),
+  // then redeploy, to enable signature verification.
   const handshake = request.headers.get('x-hook-secret');
   if (handshake) {
-    console.log('[asana-webhook] handshake received — set ASANA_WEBHOOK_SECRET to:', handshake);
+    console.log('[asana-webhook] handshake received — add to ASANA_WEBHOOK_SECRET (comma-separated if multiple):', handshake);
     return new NextResponse(null, { status: 200, headers: { 'X-Hook-Secret': handshake } });
   }
 
-  // Verify the HMAC signature of subsequent events when the secret is set.
-  if (WEBHOOK_SECRET) {
+  // Verify the HMAC signature of subsequent events when a secret is set. With
+  // two webhooks the signature matches whichever secret minted that webhook, so
+  // accept the event if it verifies against any configured secret.
+  if (WEBHOOK_SECRETS.length) {
     const signature = request.headers.get('x-hook-signature') ?? '';
-    const expected = createHmac('sha256', WEBHOOK_SECRET).update(raw).digest('hex');
-    const ok =
-      signature.length === expected.length &&
-      timingSafeEqual(Buffer.from(signature), Buffer.from(expected));
+    const sigBuf = Buffer.from(signature);
+    const ok = WEBHOOK_SECRETS.some((secret) => {
+      const expBuf = Buffer.from(createHmac('sha256', secret).update(raw).digest('hex'));
+      return sigBuf.length === expBuf.length && timingSafeEqual(sigBuf, expBuf);
+    });
     if (!ok) return new NextResponse('Invalid signature', { status: 401 });
   }
 
@@ -69,6 +85,21 @@ export async function POST(request: NextRequest) {
   }
 
   for (const gid of taskGids) {
+    // Support ticket? Its status is the Asana column (section) it sits in.
+    const ticket = await getSupportTicketByAsanaTask(gid);
+    if (ticket) {
+      const sstate = await getSupportTaskState(gid);
+      if (sstate) {
+        const next = supportStatusFromSection(sstate.sectionName, sstate.completed);
+        if (next !== ticket.status) {
+          await updateSupportStatusByAsanaTask(gid, next);
+          const mail = supportStatusEmail(next, `#${ticket.id.slice(0, 8)}`);
+          if (mail) await sendMail({ to: ticket.email, subject: mail.subject, html: mail.html });
+        }
+      }
+      continue;
+    }
+
     const state = await getConsoleValidationTaskState(gid);
     if (!state) continue;
     const status = APPROVAL_STATUS[state.approvalStatus ?? ''];
