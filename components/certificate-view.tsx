@@ -133,7 +133,7 @@ export function CertificateView({
         <a className="button button-accent" href={`/account/certificate/${slug}/pdf?lang=${locale}`}>
           {t.download}
         </a>
-        <a className="button button-light" href="/account">
+        <a className="button button-light" href="/account/academy">
           {t.back}
         </a>
         <p className="certificate-hint">{t.hint}</p>

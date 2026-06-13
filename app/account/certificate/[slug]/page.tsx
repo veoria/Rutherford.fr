@@ -38,7 +38,7 @@ export default async function CertificateRoute({ params }: { params: { slug: str
   const { certified, issuedDate, scorePct } = await resolveCertification(supabase, user.id, course);
   // Not certified yet — send them back rather than showing a blank certificate.
   if (!certified) {
-    redirect('/account');
+    redirect('/account/academy');
   }
 
   return (
