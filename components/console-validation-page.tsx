@@ -233,6 +233,7 @@ export function ConsoleValidationPage({
   const [model, setModel] = useState('');
   const [notes, setNotes] = useState('');
   const [signedInEmail, setSignedInEmail] = useState<string | null>(null);
+  const [onBehalf, setOnBehalf] = useState(false);
 
   const [step, setStep] = useState(1);
   const [maxStep, setMaxStep] = useState(1);
@@ -269,14 +270,18 @@ export function ConsoleValidationPage({
           } = await supabase.auth.getUser();
           if (user && active) {
             setSignedInEmail(user.email ?? null);
-            if (user.email) setEmail((v) => v || user.email!);
             const { data: profile } = await supabase
               .from('profiles')
-              .select('company, country')
+              .select('company, country, account_type')
               .eq('id', user.id)
               .maybeSingle();
+            // A reseller / distributor submits FOR a client: the email + company
+            // are the client's, so don't prefill the submitter's own.
+            const reseller = profile?.account_type === 'reseller' || profile?.account_type === 'distributor';
+            if (active) setOnBehalf(reseller);
+            if (!reseller && user.email) setEmail((v) => v || user.email!);
             if (profile && active) {
-              if (profile.company) setCompanyName((v) => v || (profile.company as string));
+              if (!reseller && profile.company) setCompanyName((v) => v || (profile.company as string));
               if (profile.country && isKnownCountry(profile.country as string)) {
                 setCountry((v) => v || (profile.country as string));
                 countryResolved = true;
@@ -590,7 +595,16 @@ export function ConsoleValidationPage({
                                 </svg>
                               </span>
                               <span>
-                                Signed in as <strong>{signedInEmail}</strong> — your details are prefilled.
+                                {onBehalf ? (
+                                  <>
+                                    Signed in as <strong>{signedInEmail}</strong> — submitting for a client. Enter the
+                                    client&apos;s details below.
+                                  </>
+                                ) : (
+                                  <>
+                                    Signed in as <strong>{signedInEmail}</strong> — your details are prefilled.
+                                  </>
+                                )}
                               </span>
                             </div>
                           ) : (
@@ -611,24 +625,24 @@ export function ConsoleValidationPage({
                         <div className="cv-grid2">
                           <label className="cv-field">
                             <span className="cv-label">
-                              Email address <em>*</em>
+                              {onBehalf ? 'Client email address' : 'Email address'} <em>*</em>
                             </span>
                             <input
                               className="cv-input"
                               type="email"
-                              placeholder="you@company.com"
+                              placeholder={onBehalf ? 'client@company.com' : 'you@company.com'}
                               value={email}
                               onChange={(e) => setEmail(e.target.value)}
                             />
                           </label>
                           <label className="cv-field">
                             <span className="cv-label">
-                              Printing company name <em>*</em>
+                              {onBehalf ? 'Client company name' : 'Printing company name'} <em>*</em>
                             </span>
                             <input
                               className="cv-input"
                               type="text"
-                              placeholder="Your company"
+                              placeholder={onBehalf ? 'Client company' : 'Your company'}
                               value={companyName}
                               onChange={(e) => setCompanyName(e.target.value)}
                             />
