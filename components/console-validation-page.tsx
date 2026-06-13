@@ -236,6 +236,7 @@ export function ConsoleValidationPage({
 
   const [step, setStep] = useState(1);
   const [maxStep, setMaxStep] = useState(1);
+  const [started, setStarted] = useState(false);
 
   const authConfigured = Boolean(
     process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
@@ -244,7 +245,17 @@ export function ConsoleValidationPage({
   useEffect(() => {
     const ref = new URLSearchParams(window.location.search).get('ref');
     if (ref) setRefCode(ref.slice(0, 100));
+    // Deep-link straight to the form (e.g. /console-validation#submit).
+    if (window.location.hash === '#submit') setStarted(true);
   }, []);
+
+  // Click "Submit your information ↓": fold the hero visuals away and reveal the form.
+  const startForm = () => {
+    setStarted(true);
+    setTimeout(() => {
+      document.getElementById('submit')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 60);
+  };
 
   // Prefill from the signed-in profile, then IP geo for the country.
   useEffect(() => {
@@ -496,46 +507,51 @@ export function ConsoleValidationPage({
                     Works with <strong>{brand.consoles}</strong> consoles on {brand.presses}.
                   </p>
                 ) : null}
-                <div className="console-simple-cta-row">
-                  <a className="button button-accent" href="#submit">
-                    Submit your information ↓
-                  </a>
-                </div>
-                <div className="console-simple-intro-image">
-                  <Image
-                    src="/images/console-validation-sketch.png"
-                    alt="Sketch of an offset press console"
-                    width={1448}
-                    height={1086}
-                    priority
-                    sizes="(max-width: 768px) 100vw, 960px"
-                  />
-                </div>
-                <p className="console-simple-presses-label">Compatible consoles</p>
-                <div className="console-cta-presses console-simple-presses" aria-label="Compatible offset press brands">
-                  <div className="console-cta-presses-track">
-                    {[...PRESS_BRANDS, ...PRESS_BRANDS].map((b, i) => (
-                      <span className="console-cta-press" key={`${b.alt}-${i}`}>
-                        <Image src={b.src} alt={i < PRESS_BRANDS.length ? b.alt : ''} width={240} height={80} sizes="140px" />
-                      </span>
-                    ))}
+                {!started ? (
+                  <div className="console-simple-cta-row">
+                    <button type="button" className="button button-accent" onClick={startForm}>
+                      Submit your information ↓
+                    </button>
                   </div>
+                ) : null}
+                <div className={`cv-hero-extra${started ? ' is-out' : ''}`} aria-hidden={started}>
+                  <div className="console-simple-intro-image">
+                    <Image
+                      src="/images/console-validation-sketch.png"
+                      alt="Sketch of an offset press console"
+                      width={1448}
+                      height={1086}
+                      priority
+                      sizes="(max-width: 768px) 100vw, 960px"
+                    />
+                  </div>
+                  <p className="console-simple-presses-label">Compatible consoles</p>
+                  <div className="console-cta-presses console-simple-presses" aria-label="Compatible offset press brands">
+                    <div className="console-cta-presses-track">
+                      {[...PRESS_BRANDS, ...PRESS_BRANDS].map((b, i) => (
+                        <span className="console-cta-press" key={`${b.alt}-${i}`}>
+                          <Image src={b.src} alt={i < PRESS_BRANDS.length ? b.alt : ''} width={240} height={80} sizes="140px" />
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                  <p className="console-simple-brand-links">
+                    Your press: <a href="/console-validation/heidelberg">Heidelberg</a> ·{' '}
+                    <a href="/console-validation/komori">Komori</a> ·{' '}
+                    <a href="/console-validation/koenig-bauer">Koenig &amp; Bauer</a> ·{' '}
+                    <a href="/console-validation/manroland">Manroland</a> ·{' '}
+                    <a href="/console-validation/mitsubishi">Mitsubishi</a> ·{' '}
+                    <a href="/console-validation/ryobi">Ryobi</a> · <a href="/console-validation/goss">Goss</a> ·{' '}
+                    <a href="/console-validation/presstek">Presstek</a>
+                  </p>
+                  <p className="console-simple-roi-link">
+                    Curious what color drift costs you? <a href="/#roi">Try the ROI calculator →</a>
+                  </p>
                 </div>
-                <p className="console-simple-brand-links">
-                  Your press: <a href="/console-validation/heidelberg">Heidelberg</a> ·{' '}
-                  <a href="/console-validation/komori">Komori</a> ·{' '}
-                  <a href="/console-validation/koenig-bauer">Koenig &amp; Bauer</a> ·{' '}
-                  <a href="/console-validation/manroland">Manroland</a> ·{' '}
-                  <a href="/console-validation/mitsubishi">Mitsubishi</a> ·{' '}
-                  <a href="/console-validation/ryobi">Ryobi</a> · <a href="/console-validation/goss">Goss</a> ·{' '}
-                  <a href="/console-validation/presstek">Presstek</a>
-                </p>
-                <p className="console-simple-roi-link">
-                  Curious what color drift costs you? <a href="/#roi">Try the ROI calculator →</a>
-                </p>
               </div>
 
-              <div className="cv-page" id="submit">
+              {started ? (
+              <div className="cv-page cv-stage-form" id="submit">
                 <div className="cv-wrap">
                   <div className="cv-stepcap">Step {step} of 3</div>
                   <div className="cv-stepper" key={step}>
@@ -768,6 +784,7 @@ export function ConsoleValidationPage({
                   <Reassure />
                 </div>
               </div>
+              ) : null}
             </>
           )}
         </div>

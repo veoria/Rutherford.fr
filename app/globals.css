@@ -13042,3 +13042,12 @@ textarea.cv-input { resize: vertical; min-height: 74px; }
   .cv-suc-cell { border-right: 0; border-bottom: 1px solid var(--cv-line); }
   .cv-suc-cell:last-child { border-bottom: 0; }
 }
+
+/* "Submit your information ↓": fold the hero visuals away, reveal the form. */
+.cv-hero-extra { overflow: hidden; max-height: 1600px; opacity: 1; transition: max-height 0.55s ease, opacity 0.4s ease, transform 0.45s ease, margin 0.45s ease; }
+.cv-hero-extra.is-out { max-height: 0; opacity: 0; transform: translateY(-8px) scale(0.985); margin: 0; pointer-events: none; }
+.cv-stage-form { animation: cvIn 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+@media (prefers-reduced-motion: reduce) {
+  .cv-hero-extra { transition: none; }
+  .cv-stage-form { animation: none; }
+}
