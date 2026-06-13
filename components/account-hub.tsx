@@ -538,7 +538,7 @@ function roleTag(t: Copy, role: MemberRole): string {
   return role === 'owner' ? t.manage.owner : role === 'admin' ? t.manage.adminTag : t.manage.memberTag;
 }
 
-function InviteForm({ t }: { t: Copy }) {
+function InviteForm({ t, kind = 'member' }: { t: Copy; kind?: 'member' | 'client' }) {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [busy, setBusy] = useState(false);
@@ -553,7 +553,7 @@ function InviteForm({ t }: { t: Copy }) {
       const res = await fetch('/api/account/team/invite', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: email.trim(), role: 'member' }),
+        body: JSON.stringify({ email: email.trim(), role: 'member', kind }),
       });
       if (res.ok) {
         setEmail('');
@@ -626,22 +626,25 @@ function ManagePanel({ t, accountType, team, clients }: { t: Copy; accountType: 
         {accountType === 'distributor' ? (
           <p className="ah-empty">{t.manage.soonNetwork}</p>
         ) : accountType === 'reseller' && tab === 'clients' ? (
-          clients.length ? (
-            <div className="ah-people">
-              {clients.map((c, i) => (
-                <PersonRow
-                  key={i}
-                  av={initials(c.name, c.name)}
-                  accent={accent}
-                  square
-                  name={c.name}
-                  sub={`${c.country ? c.country + ' · ' : ''}${t.manage.pressUnit(c.presses)}${c.eligible ? ' · ' + t.manage.eligibleShort(c.eligible) : ''}${c.open ? ' · ' + t.manage.openShort(c.open) : ''}`}
-                />
-              ))}
-            </div>
-          ) : (
-            <p className="ah-empty">{t.manage.clientsEmpty}</p>
-          )
+          <>
+            {clients.length ? (
+              <div className="ah-people">
+                {clients.map((c, i) => (
+                  <PersonRow
+                    key={i}
+                    av={initials(c.name, c.name)}
+                    accent={accent}
+                    square
+                    name={c.name}
+                    sub={`${c.country ? c.country + ' · ' : ''}${t.manage.pressUnit(c.presses)}${c.eligible ? ' · ' + t.manage.eligibleShort(c.eligible) : ''}${c.open ? ' · ' + t.manage.openShort(c.open) : ''}`}
+                  />
+                ))}
+              </div>
+            ) : (
+              <p className="ah-empty">{t.manage.clientsEmpty}</p>
+            )}
+            {canInvite ? <InviteForm t={t} kind="client" /> : null}
+          </>
         ) : (
           teamView
         )}

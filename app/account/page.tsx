@@ -7,7 +7,7 @@ import { ALL_COURSES } from '@/data/academy-courses';
 import { courseHasQuiz } from '@/data/academy-quizzes';
 import { getLessonsForCourse } from '@/data/academy-lessons';
 import { overallStats, type CourseStat } from '@/lib/gamification';
-import { getTeamForUser } from '@/lib/organizations';
+import { getResellerClients, getTeamForUser } from '@/lib/organizations';
 import type { AccountType } from '@/data/account-types';
 
 export const metadata: Metadata = {
@@ -121,6 +121,18 @@ export default async function AccountHubRoute() {
     } catch {
       resellerClients = [];
     }
+  }
+
+  // Merge real org-linked clients (organizations.reseller_org_id) with the ones
+  // derived from console_validations, so attribution shows whichever exists.
+  if (accountType === 'reseller') {
+    const linked = await getResellerClients(user.id);
+    const byName = new Map(resellerClients.map((c) => [c.name.toLowerCase(), c] as const));
+    for (const l of linked) {
+      const key = l.name.toLowerCase();
+      if (!byName.has(key)) byName.set(key, { name: l.name, country: l.country, presses: 0, eligible: 0, open: 0 });
+    }
+    resellerClients = [...byName.values()];
   }
 
   const team = await getTeamForUser(user.id);

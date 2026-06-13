@@ -125,20 +125,20 @@ export async function createInvitation(opts: {
 /** Returns the org where the user is owner/admin (for invite authorization). */
 export async function getManageableOrg(
   userId: string
-): Promise<{ orgId: string; role: MemberRole; orgName: string | null } | null> {
+): Promise<{ orgId: string; role: MemberRole; orgName: string | null; orgType: string | null } | null> {
   const supabase = admin();
   if (!supabase) return null;
   try {
     const { data } = await supabase
       .from('organization_members')
-      .select('org_id, role, organizations(name)')
+      .select('org_id, role, organizations(name, type)')
       .eq('user_id', userId)
       .eq('status', 'active')
       .in('role', ['owner', 'admin'])
       .maybeSingle();
     if (!data) return null;
-    const orgName = ((data as { organizations?: { name?: string } | null }).organizations?.name) ?? null;
-    return { orgId: data.org_id as string, role: data.role as MemberRole, orgName };
+    const org = (data as { organizations?: { name?: string; type?: string } | null }).organizations ?? null;
+    return { orgId: data.org_id as string, role: data.role as MemberRole, orgName: org?.name ?? null, orgType: org?.type ?? null };
   } catch {
     return null;
   }
@@ -156,13 +156,67 @@ export async function acceptPendingInvitations(userId: string, email: string): P
       .eq('status', 'pending')
       .ilike('email', email);
     for (const inv of (invites ?? []) as { id: string; org_id: string; role: MemberRole; kind: string }[]) {
-      if (inv.kind !== 'member') continue;
-      await supabase
-        .from('organization_members')
-        .upsert({ org_id: inv.org_id, user_id: userId, role: inv.role, status: 'active' }, { onConflict: 'org_id,user_id' });
+      if (inv.kind === 'member') {
+        await supabase
+          .from('organization_members')
+          .upsert({ org_id: inv.org_id, user_id: userId, role: inv.role, status: 'active' }, { onConflict: 'org_id,user_id' });
+      } else if (inv.kind === 'client') {
+        // Link the accepting user's own org to the inviting reseller org.
+        const { data: prof } = await supabase
+          .from('profiles')
+          .select('organization_id')
+          .eq('id', userId)
+          .maybeSingle();
+        const clientOrg = (prof?.organization_id as string | null) ?? null;
+        if (clientOrg) {
+          await supabase.from('organizations').update({ reseller_org_id: inv.org_id }).eq('id', clientOrg);
+        }
+      } else {
+        continue;
+      }
       await supabase.from('invitations').update({ status: 'accepted' }).eq('id', inv.id);
     }
   } catch {
     /* best-effort */
+  }
+}
+
+export type ResellerClientOrg = {
+  orgId: string;
+  name: string;
+  country: string | null;
+  memberCount: number;
+};
+
+/** Client orgs managed by this reseller (organizations.reseller_org_id = my org). */
+export async function getResellerClients(userId: string): Promise<ResellerClientOrg[]> {
+  const supabase = admin();
+  if (!supabase) return [];
+  try {
+    const { data: prof } = await supabase
+      .from('profiles')
+      .select('organization_id')
+      .eq('id', userId)
+      .maybeSingle();
+    const myOrg = (prof?.organization_id as string | null) ?? null;
+    if (!myOrg) return [];
+    const { data: clients } = await supabase
+      .from('organizations')
+      .select('id, name, country')
+      .eq('reseller_org_id', myOrg);
+    const list = (clients ?? []) as { id: string; name: string; country: string | null }[];
+    const ids = list.map((c) => c.id);
+    const counts = new Map<string, number>();
+    if (ids.length) {
+      const { data: mems } = await supabase
+        .from('organization_members')
+        .select('org_id')
+        .in('org_id', ids)
+        .eq('status', 'active');
+      for (const m of (mems ?? []) as { org_id: string }[]) counts.set(m.org_id, (counts.get(m.org_id) ?? 0) + 1);
+    }
+    return list.map((c) => ({ orgId: c.id, name: c.name, country: c.country, memberCount: counts.get(c.id) ?? 0 }));
+  } catch {
+    return [];
   }
 }
