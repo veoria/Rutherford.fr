@@ -147,7 +147,7 @@ export async function getConsoleValidationTaskState(taskGid: string): Promise<As
 
 const SUPPORT_PROJECT = process.env.ASANA_SUPPORT_PROJECT;
 
-export type SupportTask = { email: string; anydesk: string; description: string; photoLinks: string[] };
+export type SupportTask = { email: string; anydesk: string; description: string };
 
 /** Create a support ticket task in the Asana Support project. Returns its gid.
  * No-op (null) without a token or ASANA_SUPPORT_PROJECT; never throws. */
@@ -157,7 +157,6 @@ export async function createSupportTask(task: SupportTask): Promise<string | nul
     const lines = [`e-mail : ${task.email}`];
     if (task.anydesk) lines.push(`AnyDesk : ${task.anydesk}`);
     if (task.description) lines.push('', task.description);
-    task.photoLinks.forEach((l, i) => lines.push(`Photo ${i + 1} : ${l}`));
     lines.push('', 'Source : rutherford.fr/support');
     const created = await asana('POST', '/tasks', {
       name: `Support — ${task.email}${task.anydesk ? ` · AnyDesk ${task.anydesk}` : ''}`,
@@ -182,6 +181,38 @@ export async function addSupportTaskComment(taskGid: string, text: string): Prom
     return true;
   } catch (error) {
     console.error('Asana support add-comment failed:', error);
+    return false;
+  }
+}
+
+/** Attach an actual image file (not a link) to a support task. The bytes are
+ * read server-side and streamed to Asana's multipart endpoint, so this isn't
+ * bound by the request body limit. No-op without a token; never throws. */
+export async function addSupportTaskAttachment(
+  taskGid: string,
+  filename: string,
+  file: Blob
+): Promise<boolean> {
+  if (!TOKEN || !taskGid) return false;
+  try {
+    const form = new FormData();
+    form.append('parent', taskGid);
+    form.append('file', file, filename);
+    const res = await fetch(`${BASE}/attachments`, {
+      method: 'POST',
+      // No Content-Type — let fetch set the multipart boundary.
+      headers: { Authorization: `Bearer ${TOKEN}` },
+      body: form,
+      signal: AbortSignal.timeout(30000),
+      cache: 'no-store',
+    });
+    if (!res.ok) {
+      console.error('Asana support attachment failed:', res.status, await res.text().catch(() => ''));
+      return false;
+    }
+    return true;
+  } catch (error) {
+    console.error('Asana support attachment threw:', error);
     return false;
   }
 }

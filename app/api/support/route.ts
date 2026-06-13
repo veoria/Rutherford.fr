@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { createSupabaseAdminClient, createSupabaseServerClient } from '@/lib/supabase/server';
-import { createSupportTask } from '@/lib/asana';
+import { addSupportTaskAttachment, createSupportTask } from '@/lib/asana';
 import { sendMail } from '@/lib/msgraph';
 import { supportAckEmail } from '@/lib/support-emails';
 import { insertSupportTicket } from '@/lib/support-tickets';
@@ -48,26 +48,36 @@ export async function POST(request: NextRequest) {
     // anonymous — fine
   }
 
-  // Move the uploaded photos into a ticket folder and sign shareable links.
+  // Move the uploaded photos into a ticket folder and sign shareable links (for
+  // the in-account tracker). Keep the final storage paths so we can also attach
+  // the actual files to the Asana task.
   const photoLinks: Record<string, string> = {};
-  const links: string[] = [];
+  const attachable: { path: string; filename: string }[] = [];
   const storageRef = `support/${new Date().toISOString().slice(0, 10)}-${Date.now().toString(36)}`;
-  if (process.env.SUPABASE_SERVICE_ROLE_KEY && photos.length) {
-    const supabase = createSupabaseAdminClient();
+  const admin = process.env.SUPABASE_SERVICE_ROLE_KEY ? createSupabaseAdminClient() : null;
+  if (admin && photos.length) {
     for (const { field, path } of photos as { field: string; path: string }[]) {
-      const ext = path.split('.').pop() || 'jpg';
+      const ext = (path.split('.').pop() || 'jpg').toLowerCase();
       const dest = `${storageRef}/${field}.${ext}`;
-      const { error: moveErr } = await supabase.storage.from(BUCKET).move(path, dest);
+      const { error: moveErr } = await admin.storage.from(BUCKET).move(path, dest);
       const finalPath = moveErr ? path : dest;
-      const { data: signed } = await supabase.storage.from(BUCKET).createSignedUrl(finalPath, SIGNED_URL_TTL);
-      if (signed?.signedUrl) {
-        photoLinks[field] = signed.signedUrl;
-        links.push(signed.signedUrl);
-      }
+      const { data: signed } = await admin.storage.from(BUCKET).createSignedUrl(finalPath, SIGNED_URL_TTL);
+      if (signed?.signedUrl) photoLinks[field] = signed.signedUrl;
+      attachable.push({ path: finalPath, filename: `${field}.${ext}` });
     }
   }
 
-  const asanaTaskGid = await createSupportTask({ email, anydesk: anydesk ?? '', description, photoLinks: links });
+  const asanaTaskGid = await createSupportTask({ email, anydesk: anydesk ?? '', description });
+
+  // Attach the real image files to the Asana task (downloaded server-side, so
+  // not bound by the request body limit). Best-effort — a failure won't break
+  // the submission, and the photos remain on the in-account tracker.
+  if (asanaTaskGid && admin && attachable.length) {
+    for (const { path, filename } of attachable) {
+      const { data: blob } = await admin.storage.from(BUCKET).download(path);
+      if (blob) await addSupportTaskAttachment(asanaTaskGid, filename, blob);
+    }
+  }
 
   const id = await insertSupportTicket({ userId, email, name, anydesk, description, asanaTaskGid, photos: photoLinks });
 
