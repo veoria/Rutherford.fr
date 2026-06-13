@@ -13916,3 +13916,36 @@ textarea.cv-input { resize: vertical; min-height: 74px; }
 .admin-btn-danger-ghost:hover {
   background: #fbe9e7;
 }
+
+/* account hub — invite a team member */
+.ah-invite-form {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+}
+.ah-invite-input {
+  flex: 1;
+  min-width: 0;
+  padding: 9px 12px;
+  border: 1px solid #d9d4cc;
+  border-radius: 9px;
+  font-size: 0.9rem;
+}
+.ah-invite-input.err {
+  border-color: #c4332b;
+}
+.ah-invite-send {
+  flex: 0 0 auto;
+  border: 0;
+  background: var(--role, #2563eb);
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.88rem;
+  padding: 9px 16px;
+  border-radius: 9px;
+  cursor: pointer;
+}
+.ah-invite-send:disabled {
+  opacity: 0.6;
+  cursor: default;
+}

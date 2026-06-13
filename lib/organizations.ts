@@ -122,19 +122,23 @@ export async function createInvitation(opts: {
   }
 }
 
-/** Returns the org id where the user is owner/admin (for invite authorization). */
-export async function getManageableOrg(userId: string): Promise<{ orgId: string; role: MemberRole } | null> {
+/** Returns the org where the user is owner/admin (for invite authorization). */
+export async function getManageableOrg(
+  userId: string
+): Promise<{ orgId: string; role: MemberRole; orgName: string | null } | null> {
   const supabase = admin();
   if (!supabase) return null;
   try {
     const { data } = await supabase
       .from('organization_members')
-      .select('org_id, role')
+      .select('org_id, role, organizations(name)')
       .eq('user_id', userId)
       .eq('status', 'active')
       .in('role', ['owner', 'admin'])
       .maybeSingle();
-    return data ? { orgId: data.org_id as string, role: data.role as MemberRole } : null;
+    if (!data) return null;
+    const orgName = ((data as { organizations?: { name?: string } | null }).organizations?.name) ?? null;
+    return { orgId: data.org_id as string, role: data.role as MemberRole, orgName };
   } catch {
     return null;
   }

@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { createSupabaseServerClient, createSupabaseAdminClient } from '@/lib/supabase/server';
 import { accountTypeFromDomain } from '@/lib/account-type';
+import { acceptPendingInvitations } from '@/lib/organizations';
 
 export const dynamic = 'force-dynamic';
 
@@ -23,15 +24,19 @@ export async function GET(request: NextRequest) {
       const {
         data: { user },
       } = await supabase.auth.getUser();
-      const byDomain = user?.email ? accountTypeFromDomain(user.email) : null;
-      if (user && byDomain && process.env.SUPABASE_SERVICE_ROLE_KEY) {
-        await createSupabaseAdminClient()
-          .from('profiles')
-          .update({ account_type: byDomain })
-          .eq('id', user.id);
+      if (user) {
+        const byDomain = user.email ? accountTypeFromDomain(user.email) : null;
+        if (byDomain && process.env.SUPABASE_SERVICE_ROLE_KEY) {
+          await createSupabaseAdminClient()
+            .from('profiles')
+            .update({ account_type: byDomain })
+            .eq('id', user.id);
+        }
+        // Turn any pending team invitations for this email into memberships.
+        if (user.email) await acceptPendingInvitations(user.id, user.email);
       }
     } catch {
-      // Best-effort — never block sign-in on classification.
+      // Best-effort — never block sign-in on classification / invitations.
     }
   }
 
