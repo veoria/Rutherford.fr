@@ -273,7 +273,7 @@ async function personLabelNames(): Promise<Map<number, string>> {
  */
 export async function getPersonLabelByEmail(
   email: string
-): Promise<'distributor' | 'reseller' | 'client' | null> {
+): Promise<'reseller' | 'client' | null> {
   if (!TOKEN || !email) return null;
   try {
     const search = await pd(
@@ -293,10 +293,19 @@ export async function getPersonLabelByEmail(
 
     const names = await personLabelNames();
     const labels = labelIds.map((id) => (names.get(id) ?? '').toLowerCase());
-    // Precedence: a partner relationship (distributor > reseller) outranks a
-    // plain customer when a person carries several labels.
-    if (labels.some((l) => l.includes('distributor') || l.includes('distributeur'))) return 'distributor';
-    if (labels.some((l) => l.includes('reseller') || l.includes('revendeur') || l.includes('oem')))
+    // Pipedrive only decides reseller vs client — the 'distributor' type is
+    // reserved for X-Rite (matched by email domain). Reseller / OEM / Distributor
+    // labels are all partner (reseller) relationships; Customer is a direct client.
+    if (
+      labels.some(
+        (l) =>
+          l.includes('reseller') ||
+          l.includes('revendeur') ||
+          l.includes('oem') ||
+          l.includes('distributor') ||
+          l.includes('distributeur')
+      )
+    )
       return 'reseller';
     if (labels.some((l) => l.includes('customer') || l.includes('client'))) return 'client';
     return null;
