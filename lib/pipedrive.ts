@@ -246,3 +246,55 @@ export async function syncConsoleValidationToPipedrive(lead: ConsoleValidationLe
     console.error('PipeDrive console-validation sync failed:', error);
   }
 }
+
+// Person "label" field options (id → name), cached for the process lifetime.
+let _labelNames: Map<number, string> | null = null;
+async function personLabelNames(): Promise<Map<number, string>> {
+  if (_labelNames) return _labelNames;
+  const map = new Map<number, string>();
+  try {
+    const res = await pd('/personFields');
+    const fields = Array.isArray(res?.data) ? res.data : [];
+    const labelField = fields.find((f: any) => f?.key === 'label');
+    for (const opt of labelField?.options ?? []) {
+      if (typeof opt?.id === 'number') map.set(opt.id, String(opt.label ?? ''));
+    }
+  } catch {
+    /* leave empty → undecidable */
+  }
+  _labelNames = map;
+  return map;
+}
+
+/**
+ * Best-effort: read a person's CRM label by email and map it to an account
+ * type. Returns 'reseller' | 'client' | null (null = not found / undecidable).
+ * Never throws; no-op (null) when PipeDrive isn't configured.
+ */
+export async function getPersonLabelByEmail(email: string): Promise<'reseller' | 'client' | null> {
+  if (!TOKEN || !email) return null;
+  try {
+    const search = await pd(
+      `/persons/search?term=${encodeURIComponent(email)}&fields=email&exact_match=true&limit=1`
+    );
+    const person = search?.data?.items?.[0]?.item;
+    if (!person?.id) return null;
+
+    let labelIds: number[] = Array.isArray(person.label_ids) ? person.label_ids : [];
+    if (!labelIds.length) {
+      const full = await pd(`/persons/${person.id}`);
+      const data = full?.data ?? {};
+      if (Array.isArray(data.label_ids)) labelIds = data.label_ids;
+      else if (typeof data.label === 'number') labelIds = [data.label];
+    }
+    if (!labelIds.length) return null;
+
+    const names = await personLabelNames();
+    const labels = labelIds.map((id) => (names.get(id) ?? '').toLowerCase());
+    if (labels.some((l) => l.includes('reseller') || l.includes('revendeur'))) return 'reseller';
+    if (labels.some((l) => l.includes('customer') || l.includes('client'))) return 'client';
+    return null;
+  } catch {
+    return null;
+  }
+}

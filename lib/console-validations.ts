@@ -109,3 +109,42 @@ export async function updateConsoleValidationStatusByAsanaTask(
     console.error('console_validations status update threw:', error);
   }
 }
+
+/** The address transactional emails should go to: the account's notification
+ * email when set, else the fallback (submission / login email). */
+export async function getNotificationEmail(userId: string | null, fallback: string): Promise<string> {
+  if (!userId) return fallback;
+  const supabase = adminClient();
+  if (!supabase) return fallback;
+  try {
+    const { data } = await supabase
+      .from('profiles')
+      .select('notification_email')
+      .eq('id', userId)
+      .maybeSingle();
+    const notif = (data?.notification_email as string | null)?.trim();
+    return notif || fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+/** Same, resolved from the request's Asana task (used by the verdict webhook,
+ * which only knows the task). Falls back to the submission email. */
+export async function getNotificationEmailByAsanaTask(
+  asanaTaskGid: string,
+  fallback: string
+): Promise<string> {
+  const supabase = adminClient();
+  if (!supabase) return fallback;
+  try {
+    const { data } = await supabase
+      .from('console_validations')
+      .select('user_id')
+      .eq('asana_task_gid', asanaTaskGid)
+      .maybeSingle();
+    return getNotificationEmail((data?.user_id as string | null) ?? null, fallback);
+  } catch {
+    return fallback;
+  }
+}

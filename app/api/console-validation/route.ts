@@ -4,7 +4,7 @@ import { addDealNote, createConsoleValidationDeal } from '@/lib/pipedrive';
 import { createConsoleValidationTask } from '@/lib/asana';
 import { sendMail } from '@/lib/msgraph';
 import { acknowledgementEmail } from '@/lib/console-validation-emails';
-import { insertConsoleValidation } from '@/lib/console-validations';
+import { getNotificationEmail, insertConsoleValidation } from '@/lib/console-validations';
 
 export const dynamic = 'force-dynamic';
 
@@ -122,7 +122,7 @@ export async function POST(request: NextRequest) {
   const asanaTaskGid = await createConsoleValidationTask({ title, email, notes, photoLinks, folderLink: null });
 
   const ack = acknowledgementEmail({ company: companyName, country, machine: machineName, dealId });
-  await sendMail({ to: email, subject: ack.subject, html: ack.html });
+  await sendMail({ to: await getNotificationEmail(userId, email), subject: ack.subject, html: ack.html });
 
   await addDealNote(
     dealId,

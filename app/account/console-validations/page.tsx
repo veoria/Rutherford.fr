@@ -25,6 +25,16 @@ export default async function ConsoleValidationsRoute() {
     redirect('/account/sign-in?next=/account/console-validations');
   }
 
+  // Drives the non-blocking "complete your profile" prompt.
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('full_name, country, company, job_title')
+    .eq('id', user.id)
+    .maybeSingle();
+  const profileComplete = Boolean(
+    profile?.full_name && profile?.country && profile?.company && profile?.job_title
+  );
+
   // RLS scopes this to the visitor's own requests (by account or by email).
   const { data } = await supabase
     .from('console_validations')
@@ -46,5 +56,5 @@ export default async function ConsoleValidationsRoute() {
     customerReplyAt: (row.customer_reply_at as string | null) ?? null,
   }));
 
-  return <ConsoleValidationsPortal rows={rows} />;
+  return <ConsoleValidationsPortal rows={rows} profileComplete={profileComplete} />;
 }

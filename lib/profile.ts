@@ -1,4 +1,5 @@
 import type { User } from '@supabase/supabase-js';
+import type { AccountType } from '@/data/account-types';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 
 export type Profile = {
@@ -9,6 +10,8 @@ export type Profile = {
   company: string | null;
   job_title: string | null;
   onboarded_at: string | null;
+  account_type: AccountType;
+  notification_email: string | null;
 };
 
 type OnboardingFields = Pick<Profile, 'country' | 'company' | 'job_title' | 'onboarded_at'>;
@@ -21,7 +24,8 @@ export function isOnboarded(profile: OnboardingFields | null | undefined): boole
   return Boolean(profile?.onboarded_at && profile.country && profile.company && profile.job_title);
 }
 
-const PROFILE_COLUMNS = 'id, full_name, avatar_url, country, company, job_title, onboarded_at';
+const PROFILE_COLUMNS =
+  'id, full_name, avatar_url, country, company, job_title, onboarded_at, account_type, notification_email';
 
 /**
  * Fetch the signed-in user and their profile in one place. Returns nulls when
