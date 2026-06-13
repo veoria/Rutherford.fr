@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { LanguageProvider } from '@/components/language-provider';
 import { GoogleAnalytics } from '@/components/google-analytics';
+import { CookieConsent } from '@/components/cookie-consent';
 import './globals.css';
 // import './brutalism.css'; // disabled, v1 design
 
@@ -58,6 +59,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ORG_JSON_LD) }} />
         <LanguageProvider>
           {children}
+          <CookieConsent />
         </LanguageProvider>
         <GoogleAnalytics />
       </body>

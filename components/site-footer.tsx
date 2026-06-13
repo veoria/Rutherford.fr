@@ -176,6 +176,10 @@ export function SiteFooter() {
             <p className="footer-bottom-text">
               © {year} Rutherford.fr. {t.rights}
             </p>
+            <p className="footer-legal-links">
+              <a href="/confidentialite">Confidentialité</a>
+              <a href="/mentions-legales">Mentions légales</a>
+            </p>
           </div>
         </div>
       </div>

@@ -14058,3 +14058,170 @@ textarea.cv-input { resize: vertical; min-height: 74px; }
 .ah-media-fallback {
   line-height: 1;
 }
+
+/* ---- GDPR: cookie banner, consent, legal pages, account RGPD ---- */
+.cookie-banner {
+  position: fixed;
+  left: 16px;
+  right: 16px;
+  bottom: 16px;
+  z-index: 1200;
+  max-width: 760px;
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 18px;
+  background: #fff;
+  border: 1px solid #e7e3db;
+  border-radius: 14px;
+  padding: 16px 18px;
+  box-shadow: 0 16px 40px rgba(20, 16, 12, 0.18);
+}
+.cookie-banner-text {
+  flex: 1;
+  min-width: 240px;
+  margin: 0;
+  font-size: 0.9rem;
+  color: #3b3733;
+}
+.cookie-banner-text a {
+  color: var(--accent);
+  text-decoration: underline;
+}
+.cookie-banner-actions {
+  display: flex;
+  gap: 10px;
+  flex: 0 0 auto;
+}
+.cookie-btn {
+  border-radius: 999px;
+  padding: 9px 18px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.cookie-btn-ghost {
+  border: 1px solid #d9d4cc;
+  background: #fff;
+  color: #3b3733;
+}
+.cookie-btn-accent {
+  border: 0;
+  background: var(--accent);
+  color: #fff;
+}
+
+/* onboarding / profile marketing-consent checkbox */
+.signin-consent {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  margin: 4px 0 14px;
+  font-size: 0.88rem;
+  color: #544c46;
+  line-height: 1.45;
+}
+.signin-consent input {
+  margin-top: 2px;
+  flex: 0 0 auto;
+}
+
+/* account profile — RGPD section */
+.account-profile-rgpd {
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+.account-profile-rgpd-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+.account-profile-del-confirm {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.9rem;
+  color: #b0322a;
+}
+.account-btn-danger {
+  border: 0;
+  background: #c4332b;
+  color: #fff;
+  border-radius: 999px;
+  padding: 9px 16px;
+  font-weight: 600;
+  font-size: 0.88rem;
+  cursor: pointer;
+}
+.account-btn-danger:hover {
+  background: #a82a23;
+}
+.account-btn-danger-ghost {
+  border: 1px solid #e7bdb8;
+  background: #fff;
+  color: #c4332b;
+  border-radius: 999px;
+  padding: 9px 16px;
+  font-weight: 600;
+  font-size: 0.88rem;
+  cursor: pointer;
+}
+.account-btn-danger-ghost:hover {
+  background: #fbeae8;
+}
+
+/* footer legal links */
+.footer-legal-links {
+  display: flex;
+  gap: 16px;
+  margin: 8px 0 0;
+  font-size: 0.82rem;
+}
+.footer-legal-links a {
+  color: inherit;
+  opacity: 0.8;
+  text-decoration: none;
+}
+.footer-legal-links a:hover {
+  opacity: 1;
+  text-decoration: underline;
+}
+
+/* legal pages */
+.legal-page {
+  background: #fff;
+}
+.legal-prose {
+  max-width: 760px;
+}
+.legal-prose h1 {
+  font-size: 2rem;
+  letter-spacing: -0.02em;
+  margin: 6px 0 4px;
+}
+.legal-prose h2 {
+  font-size: 1.15rem;
+  margin: 28px 0 8px;
+  color: #16130f;
+}
+.legal-prose p,
+.legal-prose li {
+  color: #544c46;
+  line-height: 1.7;
+}
+.legal-prose ul {
+  padding-left: 20px;
+}
+.legal-prose a {
+  color: var(--accent);
+  text-decoration: underline;
+}
+.legal-updated {
+  color: #9a8e82;
+  font-size: 0.85rem;
+}

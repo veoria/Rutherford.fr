@@ -529,7 +529,6 @@ function SettingsCard({ t, locale, profile, email }: { t: Copy; locale: Locale; 
     [t.rowCompany, profile.company || '—'],
     [t.rowCountry, profile.country || '—'],
     [t.rowLang, LANG_NAME[locale]],
-    [t.rowPwd, '••••••••••'],
   ];
   return (
     <div className="ah-card">

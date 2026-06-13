@@ -31,6 +31,14 @@ type Copy = {
   errorGeneric: string;
   roles: Record<JobTitleKey, string>;
   types: Record<AccountType, string>;
+  rgpdTitle: string;
+  rgpdDesc: string;
+  exportBtn: string;
+  deleteBtn: string;
+  deleteConfirm: string;
+  deleteYes: string;
+  deleteCancel: string;
+  deleting: string;
 };
 
 const COPY: Record<Locale, Copy> = {
@@ -56,6 +64,14 @@ const COPY: Record<Locale, Copy> = {
     saved: 'Profile saved.',
     errorRequired: 'Please fill in name, country, company and role.',
     errorGeneric: 'Something went wrong. Please try again.',
+    rgpdTitle: 'Your data',
+    rgpdDesc: 'Download everything we hold about you, or permanently delete your account.',
+    exportBtn: 'Export my data',
+    deleteBtn: 'Delete my account',
+    deleteConfirm: 'Permanently delete your account and data?',
+    deleteYes: 'Yes, delete',
+    deleteCancel: 'Cancel',
+    deleting: 'Deleting…',
     roles: {
       operator: 'Press operator',
       prepress: 'Prepress / Repro',
@@ -96,6 +112,14 @@ const COPY: Record<Locale, Copy> = {
     saved: 'Profil enregistré.',
     errorRequired: 'Veuillez renseigner le nom, le pays, la société et le poste.',
     errorGeneric: 'Une erreur est survenue. Veuillez réessayer.',
+    rgpdTitle: 'Vos données',
+    rgpdDesc: 'Téléchargez toutes les données que nous détenons sur vous, ou supprimez définitivement votre compte.',
+    exportBtn: 'Exporter mes données',
+    deleteBtn: 'Supprimer mon compte',
+    deleteConfirm: 'Supprimer définitivement votre compte et vos données ?',
+    deleteYes: 'Oui, supprimer',
+    deleteCancel: 'Annuler',
+    deleting: 'Suppression…',
     roles: {
       operator: 'Conducteur de presse',
       prepress: 'Prépresse / Photogravure',
@@ -136,6 +160,14 @@ const COPY: Record<Locale, Copy> = {
     saved: 'Profil gespeichert.',
     errorRequired: 'Bitte Name, Land, Unternehmen und Rolle ausfüllen.',
     errorGeneric: 'Etwas ist schiefgelaufen. Bitte erneut versuchen.',
+    rgpdTitle: 'Ihre Daten',
+    rgpdDesc: 'Laden Sie alle Daten herunter, die wir über Sie speichern, oder löschen Sie Ihr Konto endgültig.',
+    exportBtn: 'Meine Daten exportieren',
+    deleteBtn: 'Mein Konto löschen',
+    deleteConfirm: 'Konto und Daten endgültig löschen?',
+    deleteYes: 'Ja, löschen',
+    deleteCancel: 'Abbrechen',
+    deleting: 'Wird gelöscht…',
     roles: {
       operator: 'Maschinenführer',
       prepress: 'Druckvorstufe / Repro',
@@ -176,6 +208,14 @@ const COPY: Record<Locale, Copy> = {
     saved: 'Profilo salvato.',
     errorRequired: 'Compili nome, paese, azienda e ruolo.',
     errorGeneric: 'Si è verificato un errore. Riprovi.',
+    rgpdTitle: 'I suoi dati',
+    rgpdDesc: 'Scarichi tutti i dati che conserviamo su di lei, o elimini definitivamente il suo account.',
+    exportBtn: 'Esporta i miei dati',
+    deleteBtn: 'Elimina il mio account',
+    deleteConfirm: 'Eliminare definitivamente account e dati?',
+    deleteYes: 'Sì, elimina',
+    deleteCancel: 'Annulla',
+    deleting: 'Eliminazione…',
     roles: {
       operator: 'Conduttore di stampa',
       prepress: 'Prestampa / Fotolito',
@@ -216,6 +256,14 @@ const COPY: Record<Locale, Copy> = {
     saved: 'Perfil guardado.',
     errorRequired: 'Complete nombre, país, empresa y puesto.',
     errorGeneric: 'Algo salió mal. Inténtelo de nuevo.',
+    rgpdTitle: 'Sus datos',
+    rgpdDesc: 'Descargue todos los datos que tenemos sobre usted, o elimine su cuenta permanentemente.',
+    exportBtn: 'Exportar mis datos',
+    deleteBtn: 'Eliminar mi cuenta',
+    deleteConfirm: '¿Eliminar permanentemente su cuenta y datos?',
+    deleteYes: 'Sí, eliminar',
+    deleteCancel: 'Cancelar',
+    deleting: 'Eliminando…',
     roles: {
       operator: 'Operador de prensa',
       prepress: 'Preimpresión / Fotomecánica',
@@ -258,6 +306,22 @@ export function AccountProfile({ email, accountType, defaults }: Props) {
   const [notif, setNotif] = useState(defaults.notificationEmail);
   const [status, setStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
+  const handleDelete = async () => {
+    setDeleting(true);
+    try {
+      const res = await fetch('/api/account/data', { method: 'DELETE' });
+      if (res.ok) {
+        window.location.href = '/';
+        return;
+      }
+    } catch {
+      /* ignore */
+    }
+    setDeleting(false);
+  };
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -423,6 +487,29 @@ export function AccountProfile({ email, accountType, defaults }: Props) {
                   </span>
                 </span>
                 <span className="signin-fine signin-fine-tight">{t.typeHint}</span>
+              </div>
+            </div>
+
+            <div className="account-profile-rgpd">
+              <div className="account-profile-meta-k">{t.rgpdTitle}</div>
+              <p className="signin-fine signin-fine-tight">{t.rgpdDesc}</p>
+              <div className="account-profile-rgpd-actions">
+                <a className="button button-light" href="/api/account/data">{t.exportBtn}</a>
+                {confirmDelete ? (
+                  <span className="account-profile-del-confirm">
+                    <span>{t.deleteConfirm}</span>
+                    <button type="button" className="button button-light" onClick={() => setConfirmDelete(false)} disabled={deleting}>
+                      {t.deleteCancel}
+                    </button>
+                    <button type="button" className="account-btn-danger" onClick={handleDelete} disabled={deleting}>
+                      {deleting ? t.deleting : t.deleteYes}
+                    </button>
+                  </span>
+                ) : (
+                  <button type="button" className="account-btn-danger-ghost" onClick={() => setConfirmDelete(true)}>
+                    {t.deleteBtn}
+                  </button>
+                )}
               </div>
             </div>
           </div>
