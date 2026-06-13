@@ -147,7 +147,48 @@ export async function getConsoleValidationTaskState(taskGid: string): Promise<As
 
 const SUPPORT_PROJECT = process.env.ASANA_SUPPORT_PROJECT;
 
-export type SupportTask = { email: string; anydesk: string; description: string };
+// Custom fields on the Support Ticket project that we populate from intake.
+const SUPPORT_FIELD_EMAIL = '1208065131606487'; // text
+const SUPPORT_FIELD_COUNTRY = '1208065359722148'; // enum
+// Country enum option gids — must match the project's "Country" field options
+// (and the names in lib/support-countries.ts).
+const SUPPORT_COUNTRY_OPTIONS: Record<string, string> = {
+  Mexico: '1208065359722149',
+  Chile: '1208065359722150',
+  India: '1208065359722151',
+  China: '1208065359722152',
+  France: '1208065359722153',
+  UK: '1208065359722154',
+  USA: '1208065359722155',
+  Italy: '1208065359722156',
+  Spain: '1208065359722157',
+  Russia: '1208065359722158',
+  Thailand: '1208065359722159',
+  Japan: '1208065359722160',
+  Germany: '1208065359722161',
+  Uruguay: '1208065359722162',
+  'South Africa': '1208065359722163',
+  'Saudi Arabia': '1208065359722164',
+  UAE: '1208065359722165',
+  Indonesia: '1208065359722166',
+  Nouméa: '1208065359722167',
+  Other: '1208065359722168',
+};
+
+const supportSummary = (description: string) => {
+  const first = (description.split('\n')[0] ?? '').trim();
+  return first.length > 60 ? `${first.slice(0, 60)}…` : first;
+};
+
+export type SupportTask = {
+  email: string;
+  anydesk: string;
+  description: string;
+  company?: string;
+  subject?: string;
+  // Must match a SUPPORT_COUNTRY_OPTIONS key to set the Asana Country field.
+  country?: string;
+};
 
 /** Create a support ticket task in the Asana Support project. Returns its gid.
  * No-op (null) without a token or ASANA_SUPPORT_PROJECT; never throws. */
@@ -158,10 +199,21 @@ export async function createSupportTask(task: SupportTask): Promise<string | nul
     if (task.anydesk) lines.push(`AnyDesk : ${task.anydesk}`);
     if (task.description) lines.push('', task.description);
     lines.push('', 'Source : rutherford.fr/support');
+
+    // Task name: "[Company] – short summary" (subject if given, else 1st line).
+    const summary = (task.subject?.trim() || supportSummary(task.description)) || 'Support';
+    const company = task.company?.trim();
+    const name = company ? `[${company}] – ${summary}` : summary;
+
+    const customFields: Record<string, string> = { [SUPPORT_FIELD_EMAIL]: task.email };
+    const countryGid = task.country ? SUPPORT_COUNTRY_OPTIONS[task.country] : undefined;
+    if (countryGid) customFields[SUPPORT_FIELD_COUNTRY] = countryGid;
+
     const created = await asana('POST', '/tasks', {
-      name: `Support — ${task.email}${task.anydesk ? ` · AnyDesk ${task.anydesk}` : ''}`,
+      name,
       notes: lines.join('\n'),
       projects: [SUPPORT_PROJECT],
+      custom_fields: customFields,
       ...(ASSIGNEE ? { assignee: ASSIGNEE } : {}),
       ...(FOLLOWER ? { followers: [FOLLOWER] } : {}),
     });
@@ -214,6 +266,27 @@ export async function addSupportTaskAttachment(
   } catch (error) {
     console.error('Asana support attachment threw:', error);
     return false;
+  }
+}
+
+export type AsanaStory = { text: string; isComment: boolean; createdByName: string | null };
+
+/** Read a story (comment / activity) by gid. Used by the webhook to relay a
+ * team comment tagged for the customer. Null when not configured / on failure. */
+export async function getStory(storyGid: string): Promise<AsanaStory | null> {
+  if (!TOKEN) return null;
+  try {
+    const res = await asana('GET', `/stories/${storyGid}?opt_fields=text,type,resource_subtype,created_by.name`);
+    const d = res?.data;
+    if (!d) return null;
+    return {
+      text: d.text ?? '',
+      isComment: d.type === 'comment' || d.resource_subtype === 'comment_added',
+      createdByName: d.created_by?.name ?? null,
+    };
+  } catch (error) {
+    console.error('Asana story fetch failed:', error);
+    return null;
   }
 }
 

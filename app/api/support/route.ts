@@ -5,6 +5,7 @@ import { sendMail } from '@/lib/msgraph';
 import { supportAckEmail } from '@/lib/support-emails';
 import { insertSupportTicket } from '@/lib/support-tickets';
 import { getNotificationEmail } from '@/lib/console-validations';
+import { SUPPORT_COUNTRIES } from '@/lib/support-countries';
 
 export const dynamic = 'force-dynamic';
 
@@ -27,6 +28,10 @@ export async function POST(request: NextRequest) {
   const name = String(body.name ?? '').trim().slice(0, 200) || null;
   const anydesk = String(body.anydesk ?? '').trim().slice(0, 60) || null;
   const description = String(body.description ?? '').trim();
+  const company = String(body.company ?? '').trim().slice(0, 200) || null;
+  const subject = String(body.subject ?? '').trim().slice(0, 200) || null;
+  const countryRaw = String(body.country ?? '').trim();
+  const country = (SUPPORT_COUNTRIES as readonly string[]).includes(countryRaw) ? countryRaw : null;
 
   if (!email || !EMAIL_RE.test(email) || email.length > 200) {
     return NextResponse.json({ error: 'A valid email address is required' }, { status: 400 });
@@ -67,7 +72,14 @@ export async function POST(request: NextRequest) {
     }
   }
 
-  const asanaTaskGid = await createSupportTask({ email, anydesk: anydesk ?? '', description });
+  const asanaTaskGid = await createSupportTask({
+    email,
+    anydesk: anydesk ?? '',
+    description,
+    company: company ?? undefined,
+    subject: subject ?? undefined,
+    country: country ?? undefined,
+  });
 
   // Attach the real image files to the Asana task (downloaded server-side, so
   // not bound by the request body limit). Best-effort — a failure won't break
@@ -79,7 +91,17 @@ export async function POST(request: NextRequest) {
     }
   }
 
-  const id = await insertSupportTicket({ userId, email, name, anydesk, description, asanaTaskGid, photos: photoLinks });
+  const id = await insertSupportTicket({
+    userId,
+    email,
+    name,
+    company,
+    subject,
+    anydesk,
+    description,
+    asanaTaskGid,
+    photos: photoLinks,
+  });
 
   const ref = id ? id.slice(0, 8) : null;
   const ack = supportAckEmail(ref ? `#${ref}` : null);

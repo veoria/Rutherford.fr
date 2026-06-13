@@ -9,6 +9,8 @@ export type SupportTicketRecord = {
   userId: string | null;
   email: string;
   name: string | null;
+  company: string | null;
+  subject: string | null;
   anydesk: string | null;
   description: string;
   asanaTaskGid: string | null;
@@ -30,6 +32,8 @@ export async function insertSupportTicket(record: SupportTicketRecord): Promise<
         user_id: record.userId,
         email: record.email,
         name: record.name,
+        company: record.company,
+        subject: record.subject,
         anydesk: record.anydesk,
         description: record.description,
         asana_task_gid: record.asanaTaskGid,
@@ -60,18 +64,46 @@ export function supportStatusFromSection(section: string | null, completed: bool
 
 export async function getSupportTicketByAsanaTask(
   gid: string
-): Promise<{ id: string; email: string; status: SupportStatus } | null> {
+): Promise<{ id: string; email: string; status: SupportStatus; lastAgentStoryGid: string | null } | null> {
   const supabase = adminClient();
   if (!supabase) return null;
   try {
     const { data } = await supabase
       .from('support_tickets')
-      .select('id, email, status')
+      .select('id, email, status, last_agent_story_gid')
       .eq('asana_task_gid', gid)
       .maybeSingle();
-    return data ? { id: data.id as string, email: data.email as string, status: data.status as SupportStatus } : null;
+    return data
+      ? {
+          id: data.id as string,
+          email: data.email as string,
+          status: data.status as SupportStatus,
+          lastAgentStoryGid: (data.last_agent_story_gid as string | null) ?? null,
+        }
+      : null;
   } catch {
     return null;
+  }
+}
+
+/** Relay a team comment tagged for the customer: store it (for the tracker) and
+ * remember the story gid so a webhook re-delivery doesn't email twice. */
+export async function setAgentMessageByAsanaTask(
+  gid: string,
+  storyGid: string,
+  message: string
+): Promise<void> {
+  const supabase = adminClient();
+  if (!supabase) return;
+  try {
+    const now = new Date().toISOString();
+    const { error } = await supabase
+      .from('support_tickets')
+      .update({ agent_message: message, agent_message_at: now, last_agent_story_gid: storyGid, updated_at: now })
+      .eq('asana_task_gid', gid);
+    if (error) console.error('support agent-message update failed:', error.message);
+  } catch (error) {
+    console.error('support agent-message update threw:', error);
   }
 }
 

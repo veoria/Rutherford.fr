@@ -12660,6 +12660,9 @@ a.blog-card-image:hover img {
 .sup-photos { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 26px; }
 .sup-photo { display: block; width: 96px; height: 96px; border-radius: 10px; overflow: hidden; border: 1px solid var(--cvp-line); background: #fafafa; }
 .sup-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.sup-agent-msg { margin: 16px 0 0; padding: 14px 16px; border: 1px solid #cfe0fa; background: #eef4ff; border-radius: 12px; }
+.sup-agent-h { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #1f57c4; margin-bottom: 6px; }
+.sup-agent-msg p { margin: 0; font-size: 14.5px; line-height: 1.55; color: var(--cvp-ink); white-space: pre-wrap; }
 
 /* ---- /roi dedicated page ---- */
 .roi-page-hero {

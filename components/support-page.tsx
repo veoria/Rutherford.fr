@@ -5,6 +5,7 @@ import { SiteFooter } from '@/components/site-footer';
 import { SiteNav } from '@/components/site-nav';
 import { type Locale, useLanguage } from '@/components/language-provider';
 import { createSupabaseBrowserClient } from '@/lib/supabase/client';
+import { SUPPORT_COUNTRIES } from '@/lib/support-countries';
 
 type SupportUploadId = 'support1' | 'support2' | 'support3';
 type FileMap = Record<SupportUploadId, File | null>;
@@ -12,6 +13,44 @@ type PreviewMap = Record<SupportUploadId, string>;
 
 const emptyFiles: FileMap = { support1: null, support2: null, support3: null };
 const emptyPreviews: PreviewMap = { support1: '', support2: '', support3: '' };
+
+// Map a free-form country (IP geo / profile) onto the Asana Country options.
+const COUNTRY_ALIASES: Record<string, string> = {
+  'united states': 'USA',
+  'united states of america': 'USA',
+  us: 'USA',
+  usa: 'USA',
+  'united kingdom': 'UK',
+  'great britain': 'UK',
+  england: 'UK',
+  gb: 'UK',
+  uk: 'UK',
+  deutschland: 'Germany',
+  allemagne: 'Germany',
+  germany: 'Germany',
+  espagne: 'Spain',
+  'españa': 'Spain',
+  italie: 'Italy',
+  italia: 'Italy',
+  japon: 'Japan',
+  chine: 'China',
+  inde: 'India',
+  mexique: 'Mexico',
+  russie: 'Russia',
+  'arabie saoudite': 'Saudi Arabia',
+  'afrique du sud': 'South Africa',
+  emirats: 'UAE',
+  'united arab emirates': 'UAE',
+};
+
+function mapCountry(raw?: string | null): string | null {
+  if (!raw) return null;
+  const v = raw.trim();
+  if (!v) return null;
+  const exact = (SUPPORT_COUNTRIES as readonly string[]).find((c) => c.toLowerCase() === v.toLowerCase());
+  if (exact) return exact;
+  return COUNTRY_ALIASES[v.toLowerCase()] ?? null;
+}
 
 type PhotoCard = { title: string; desc: string };
 type FaqItem = { q: string; a: string };
@@ -24,16 +63,27 @@ type Copy = {
   ctaPrimary: string;
   ctaSecondary: string;
   reassure: string[];
+  formTitle: string;
+  signedInPrefix: string;
+  loginPrompt: string;
   emailLabel: string;
   emailPh: string;
+  companyLabel: string;
+  companyPh: string;
   anydeskLabel: string;
   anydeskPh: string;
+  countryLabel: string;
+  countryPlaceholder: string;
+  subjectLabel: string;
+  subjectPh: string;
   anydeskHelpTitle: string;
   anydeskHelp: string;
   problemLabel: string;
   problemPh: string;
-  uploadCta: string;
-  uploadHint: string;
+  photosTitle: string;
+  dropHint: string;
+  photoAdded: string;
+  replace: string;
   photoCards: [PhotoCard, PhotoCard, PhotoCard];
   submit: string;
   sending: string;
@@ -47,6 +97,8 @@ type Copy = {
   successTitle: string;
   successRefPre: string;
   successBody: string;
+  copyLabel: string;
+  copiedLabel: string;
   trackCta: string;
   backHome: string;
 };
@@ -60,18 +112,29 @@ const COPY: Record<Locale, Copy> = {
     ctaPrimary: 'Open a ticket',
     ctaSecondary: 'Talk to an expert',
     reassure: ['Free', 'Reply within 1 business day', 'We connect only with your permission', 'No commitment'],
-    emailLabel: 'Email *',
+    formTitle: 'How can we help?',
+    signedInPrefix: 'Signed in as',
+    loginPrompt: 'Have a Rutherford account? Log in to prefill your details.',
+    emailLabel: 'Email',
     emailPh: 'name@example.com',
+    companyLabel: 'Company',
+    companyPh: 'Your company',
     anydeskLabel: 'AnyDesk support number',
     anydeskPh: 'e.g. 123 456 789',
+    countryLabel: 'Country',
+    countryPlaceholder: 'Select your country',
+    subjectLabel: 'Subject',
+    subjectPh: 'Short summary of the problem',
     anydeskHelpTitle: 'What is AnyDesk?',
     anydeskHelp:
       'AnyDesk lets our team see your screen to help faster. Download it free from anydesk.com, open it, and copy the 9-digit address shown under “Your Desk”. We connect only when you accept the request on your machine.',
-    problemLabel: 'Explain your problem *',
+    problemLabel: 'Explain your problem',
     problemPh:
       'What happens, on which press / software, and since when? You can write in your own language — English helps us answer faster.',
-    uploadCta: 'Upload image',
-    uploadHint: 'Tap to use the camera or choose a file',
+    photosTitle: 'Add photos (optional)',
+    dropHint: 'Take a photo or drag & drop',
+    photoAdded: 'Photo added',
+    replace: 'Replace',
     photoCards: [
       { title: 'Full screen', desc: 'One picture of the whole screen, not just a detail.' },
       { title: 'Error message', desc: 'If you see a red error box, tap it and capture the message.' },
@@ -80,7 +143,7 @@ const COPY: Record<Locale, Copy> = {
     submit: 'Send support request',
     sending: 'Sending…',
     submitHint: 'Mobile friendly — take and upload photos straight from your phone.',
-    errFields: 'Please enter your email and describe the problem.',
+    errFields: 'Please fill in the required fields (email, subject and description).',
     errGeneric: 'Something went wrong, please retry.',
     nextTitle: 'What happens next',
     nextSteps: [
@@ -108,8 +171,10 @@ const COPY: Record<Locale, Copy> = {
       },
     ],
     successTitle: 'Thank you for your request.',
-    successRefPre: 'Your ticket reference is',
+    successRefPre: 'Your ticket reference',
     successBody: 'We’ve emailed you a confirmation. Our team will get back to you as quickly as possible.',
+    copyLabel: 'Copy',
+    copiedLabel: 'Copied',
     trackCta: 'Track my ticket',
     backHome: 'Back to rutherford.fr',
   },
@@ -121,18 +186,29 @@ const COPY: Record<Locale, Copy> = {
     ctaPrimary: 'Ouvrir un ticket',
     ctaSecondary: 'Parlez à un expert',
     reassure: ['Gratuit', 'Réponse sous 1 jour ouvré', 'Connexion uniquement avec votre accord', 'Sans engagement'],
-    emailLabel: 'E-mail *',
+    formTitle: 'Comment pouvons-nous vous aider ?',
+    signedInPrefix: 'Connecté en tant que',
+    loginPrompt: 'Vous avez un compte Rutherford ? Connectez-vous pour pré-remplir vos informations.',
+    emailLabel: 'E-mail',
     emailPh: 'nom@exemple.com',
+    companyLabel: 'Société',
+    companyPh: 'Votre société',
     anydeskLabel: 'Numéro de support AnyDesk',
     anydeskPh: 'ex. 123 456 789',
+    countryLabel: 'Pays',
+    countryPlaceholder: 'Sélectionnez votre pays',
+    subjectLabel: 'Objet',
+    subjectPh: 'Résumé court du problème',
     anydeskHelpTitle: 'Qu’est-ce qu’AnyDesk ?',
     anydeskHelp:
       'AnyDesk permet à notre équipe de voir votre écran pour vous aider plus vite. Téléchargez-le gratuitement sur anydesk.com, ouvrez-le et copiez l’adresse à 9 chiffres affichée sous « Votre poste ». La connexion ne démarre que lorsque vous l’acceptez sur votre machine.',
-    problemLabel: 'Expliquez votre problème *',
+    problemLabel: 'Expliquez votre problème',
     problemPh:
       'Que se passe-t-il, sur quelle presse / quel logiciel, et depuis quand ? Vous pouvez écrire dans votre langue — l’anglais nous aide à répondre plus vite.',
-    uploadCta: 'Charger une image',
-    uploadHint: 'Touchez pour utiliser l’appareil photo ou choisir un fichier',
+    photosTitle: 'Ajoutez des photos (facultatif)',
+    dropHint: 'Prenez une photo ou glissez-déposez',
+    photoAdded: 'Photo ajoutée',
+    replace: 'Remplacer',
     photoCards: [
       { title: 'Écran complet', desc: 'Une photo de tout l’écran, pas seulement d’un détail.' },
       { title: 'Message d’erreur', desc: 'Si une fenêtre d’erreur rouge s’affiche, touchez-la et capturez le message.' },
@@ -141,7 +217,7 @@ const COPY: Record<Locale, Copy> = {
     submit: 'Envoyer la demande',
     sending: 'Envoi…',
     submitHint: 'Compatible mobile — prenez et envoyez les photos directement depuis votre téléphone.',
-    errFields: 'Veuillez indiquer votre e-mail et décrire le problème.',
+    errFields: 'Veuillez remplir les champs obligatoires (e-mail, objet et description).',
     errGeneric: 'Une erreur est survenue, veuillez réessayer.',
     nextTitle: 'Et après ?',
     nextSteps: [
@@ -169,8 +245,10 @@ const COPY: Record<Locale, Copy> = {
       },
     ],
     successTitle: 'Merci pour votre demande.',
-    successRefPre: 'La référence de votre ticket est',
+    successRefPre: 'Référence de votre ticket',
     successBody: 'Nous vous avons envoyé une confirmation par e-mail. Notre équipe vous répondra dans les plus brefs délais.',
+    copyLabel: 'Copier',
+    copiedLabel: 'Copié',
     trackCta: 'Suivre mon ticket',
     backHome: 'Retour à rutherford.fr',
   },
@@ -182,18 +260,29 @@ const COPY: Record<Locale, Copy> = {
     ctaPrimary: 'Ticket öffnen',
     ctaSecondary: 'Sprechen Sie mit einem Experten',
     reassure: ['Kostenlos', 'Antwort < 1 Werktag', 'Verbindung nur mit Ihrer Zustimmung', 'Unverbindlich'],
-    emailLabel: 'E-Mail *',
+    formTitle: 'Wie können wir helfen?',
+    signedInPrefix: 'Angemeldet als',
+    loginPrompt: 'Haben Sie ein Rutherford-Konto? Melden Sie sich an, um Ihre Angaben vorauszufüllen.',
+    emailLabel: 'E-Mail',
     emailPh: 'name@beispiel.com',
+    companyLabel: 'Unternehmen',
+    companyPh: 'Ihr Unternehmen',
     anydeskLabel: 'AnyDesk-Supportnummer',
     anydeskPh: 'z. B. 123 456 789',
+    countryLabel: 'Land',
+    countryPlaceholder: 'Land auswählen',
+    subjectLabel: 'Betreff',
+    subjectPh: 'Kurze Zusammenfassung des Problems',
     anydeskHelpTitle: 'Was ist AnyDesk?',
     anydeskHelp:
       'Mit AnyDesk kann unser Team Ihren Bildschirm sehen, um schneller zu helfen. Laden Sie es kostenlos unter anydesk.com herunter, öffnen Sie es und kopieren Sie die 9-stellige Adresse unter „Dieser Arbeitsplatz“. Die Verbindung startet erst, wenn Sie sie an Ihrer Maschine bestätigen.',
-    problemLabel: 'Erklären Sie Ihr Problem *',
+    problemLabel: 'Erklären Sie Ihr Problem',
     problemPh:
       'Was passiert, an welcher Druckmaschine / Software und seit wann? Sie können in Ihrer Sprache schreiben — Englisch hilft uns, schneller zu antworten.',
-    uploadCta: 'Bild hochladen',
-    uploadHint: 'Tippen, um die Kamera zu nutzen oder eine Datei zu wählen',
+    photosTitle: 'Fotos hinzufügen (optional)',
+    dropHint: 'Foto aufnehmen oder hierher ziehen',
+    photoAdded: 'Foto hinzugefügt',
+    replace: 'Ersetzen',
     photoCards: [
       { title: 'Ganzer Bildschirm', desc: 'Ein Foto des gesamten Bildschirms, nicht nur eines Details.' },
       { title: 'Fehlermeldung', desc: 'Wenn ein rotes Fehlerfenster erscheint, tippen Sie darauf und erfassen Sie die Meldung.' },
@@ -202,7 +291,7 @@ const COPY: Record<Locale, Copy> = {
     submit: 'Anfrage senden',
     sending: 'Senden…',
     submitHint: 'Mobilfreundlich — Fotos direkt vom Smartphone aufnehmen und senden.',
-    errFields: 'Bitte geben Sie Ihre E-Mail an und beschreiben Sie das Problem.',
+    errFields: 'Bitte füllen Sie die Pflichtfelder aus (E-Mail, Betreff und Beschreibung).',
     errGeneric: 'Etwas ist schiefgelaufen, bitte erneut versuchen.',
     nextTitle: 'Wie geht es weiter?',
     nextSteps: [
@@ -230,8 +319,10 @@ const COPY: Record<Locale, Copy> = {
       },
     ],
     successTitle: 'Vielen Dank für Ihre Anfrage.',
-    successRefPre: 'Ihre Ticket-Referenz lautet',
+    successRefPre: 'Ihre Ticket-Referenz',
     successBody: 'Wir haben Ihnen eine Bestätigung per E-Mail gesendet. Unser Team meldet sich schnellstmöglich.',
+    copyLabel: 'Kopieren',
+    copiedLabel: 'Kopiert',
     trackCta: 'Mein Ticket verfolgen',
     backHome: 'Zurück zu rutherford.fr',
   },
@@ -243,18 +334,29 @@ const COPY: Record<Locale, Copy> = {
     ctaPrimary: 'Apri un ticket',
     ctaSecondary: 'Parla con un esperto',
     reassure: ['Gratuito', 'Risposta entro 1 giorno lavorativo', 'Connessione solo con il suo consenso', 'Senza impegno'],
-    emailLabel: 'E-mail *',
+    formTitle: 'Come possiamo aiutarla?',
+    signedInPrefix: 'Accesso come',
+    loginPrompt: 'Ha un account Rutherford? Acceda per precompilare i suoi dati.',
+    emailLabel: 'E-mail',
     emailPh: 'nome@esempio.com',
+    companyLabel: 'Azienda',
+    companyPh: 'La sua azienda',
     anydeskLabel: 'Numero di supporto AnyDesk',
     anydeskPh: 'es. 123 456 789',
+    countryLabel: 'Paese',
+    countryPlaceholder: 'Selezioni il suo paese',
+    subjectLabel: 'Oggetto',
+    subjectPh: 'Breve riassunto del problema',
     anydeskHelpTitle: 'Cos’è AnyDesk?',
     anydeskHelp:
       'AnyDesk permette al nostro team di vedere il suo schermo per aiutarla più velocemente. Lo scarichi gratuitamente su anydesk.com, lo apra e copi l’indirizzo a 9 cifre mostrato sotto « Questa postazione ». La connessione si avvia solo quando la accetta sulla sua macchina.',
-    problemLabel: 'Spieghi il suo problema *',
+    problemLabel: 'Spieghi il suo problema',
     problemPh:
       'Cosa succede, su quale macchina da stampa / software e da quando? Può scrivere nella sua lingua — l’inglese ci aiuta a rispondere più in fretta.',
-    uploadCta: 'Carica immagine',
-    uploadHint: 'Tocchi per usare la fotocamera o scegliere un file',
+    photosTitle: 'Aggiunga foto (facoltativo)',
+    dropHint: 'Scatti una foto o trascini qui',
+    photoAdded: 'Foto aggiunta',
+    replace: 'Sostituisci',
     photoCards: [
       { title: 'Schermo intero', desc: 'Una foto di tutto lo schermo, non solo di un dettaglio.' },
       { title: 'Messaggio di errore', desc: 'Se compare un riquadro di errore rosso, lo tocchi e catturi il messaggio.' },
@@ -263,7 +365,7 @@ const COPY: Record<Locale, Copy> = {
     submit: 'Invia la richiesta',
     sending: 'Invio…',
     submitHint: 'Ottimizzato per mobile — scatti e invii le foto direttamente dal telefono.',
-    errFields: 'Inserisca la sua e-mail e descriva il problema.',
+    errFields: 'Compili i campi obbligatori (e-mail, oggetto e descrizione).',
     errGeneric: 'Qualcosa è andato storto, riprovi.',
     nextTitle: 'E poi?',
     nextSteps: [
@@ -291,8 +393,10 @@ const COPY: Record<Locale, Copy> = {
       },
     ],
     successTitle: 'Grazie per la sua richiesta.',
-    successRefPre: 'Il riferimento del suo ticket è',
+    successRefPre: 'Riferimento del suo ticket',
     successBody: 'Le abbiamo inviato una conferma via e-mail. Il nostro team le risponderà il prima possibile.',
+    copyLabel: 'Copia',
+    copiedLabel: 'Copiato',
     trackCta: 'Segui il mio ticket',
     backHome: 'Torna a rutherford.fr',
   },
@@ -304,18 +408,29 @@ const COPY: Record<Locale, Copy> = {
     ctaPrimary: 'Abrir un ticket',
     ctaSecondary: 'Hable con un experto',
     reassure: ['Gratis', 'Respuesta en menos de 1 día hábil', 'Conexión solo con su permiso', 'Sin compromiso'],
-    emailLabel: 'Correo electrónico *',
+    formTitle: '¿Cómo podemos ayudarle?',
+    signedInPrefix: 'Sesión iniciada como',
+    loginPrompt: '¿Tiene una cuenta Rutherford? Inicie sesión para rellenar sus datos.',
+    emailLabel: 'Correo electrónico',
     emailPh: 'nombre@ejemplo.com',
+    companyLabel: 'Empresa',
+    companyPh: 'Su empresa',
     anydeskLabel: 'Número de soporte AnyDesk',
     anydeskPh: 'ej. 123 456 789',
+    countryLabel: 'País',
+    countryPlaceholder: 'Seleccione su país',
+    subjectLabel: 'Asunto',
+    subjectPh: 'Resumen breve del problema',
     anydeskHelpTitle: '¿Qué es AnyDesk?',
     anydeskHelp:
       'AnyDesk permite a nuestro equipo ver su pantalla para ayudarle más rápido. Descárguelo gratis en anydesk.com, ábralo y copie la dirección de 9 cifras que aparece bajo « Este escritorio ». La conexión solo se inicia cuando usted la acepta en su máquina.',
-    problemLabel: 'Explique su problema *',
+    problemLabel: 'Explique su problema',
     problemPh:
       '¿Qué ocurre, en qué prensa / software y desde cuándo? Puede escribir en su idioma — el inglés nos ayuda a responder más rápido.',
-    uploadCta: 'Subir imagen',
-    uploadHint: 'Toque para usar la cámara o elegir un archivo',
+    photosTitle: 'Añada fotos (opcional)',
+    dropHint: 'Haga una foto o arrastre aquí',
+    photoAdded: 'Foto añadida',
+    replace: 'Reemplazar',
     photoCards: [
       { title: 'Pantalla completa', desc: 'Una foto de toda la pantalla, no solo de un detalle.' },
       { title: 'Mensaje de error', desc: 'Si aparece un recuadro de error rojo, tóquelo y capture el mensaje.' },
@@ -324,7 +439,7 @@ const COPY: Record<Locale, Copy> = {
     submit: 'Enviar la solicitud',
     sending: 'Enviando…',
     submitHint: 'Compatible con móvil — haga y envíe las fotos directamente desde su teléfono.',
-    errFields: 'Indique su correo y describa el problema.',
+    errFields: 'Complete los campos obligatorios (correo, asunto y descripción).',
     errGeneric: 'Algo salió mal, vuelva a intentarlo.',
     nextTitle: '¿Y después?',
     nextSteps: [
@@ -352,19 +467,28 @@ const COPY: Record<Locale, Copy> = {
       },
     ],
     successTitle: 'Gracias por su solicitud.',
-    successRefPre: 'La referencia de su ticket es',
+    successRefPre: 'Referencia de su ticket',
     successBody: 'Le hemos enviado una confirmación por correo. Nuestro equipo le responderá lo antes posible.',
+    copyLabel: 'Copiar',
+    copiedLabel: 'Copiado',
     trackCta: 'Seguir mi ticket',
     backHome: 'Volver a rutherford.fr',
   },
 };
 
-function UploadIcon() {
+function Caret() {
   return (
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M7 18a4 4 0 0 1-.24-7.99A5.5 5.5 0 0 1 17.3 8.1 3.8 3.8 0 1 1 18 18H7Z" />
-      <path d="M12 8.5v8" />
-      <path d="m8.75 11.75 3.25-3.25 3.25 3.25" />
+    <svg className="cv-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function CameraIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M4 8.5h3l1.2-2h7.6L17 8.5h3v10H4v-10z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+      <circle cx="12" cy="13" r="3" stroke="currentColor" strokeWidth="1.6" />
     </svg>
   );
 }
@@ -389,18 +513,18 @@ function CheckIcon() {
 function SupportUploadField({
   id,
   card,
-  uploadCta,
-  uploadHint,
+  dropHint,
+  photoAdded,
+  replace,
   preview,
-  file,
   onChange,
 }: {
   id: SupportUploadId;
   card: PhotoCard;
-  uploadCta: string;
-  uploadHint: string;
+  dropHint: string;
+  photoAdded: string;
+  replace: string;
   preview: string;
-  file: File | null;
   onChange: (field: SupportUploadId, file: File | null) => void;
 }) {
   const [dragging, setDragging] = useState(false);
@@ -413,43 +537,46 @@ function SupportUploadField({
         <h3>{card.title}</h3>
         <p>{card.desc}</p>
       </div>
-      <label
-        className={`console-simple-upload ${preview ? 'has-preview' : ''}${dragging ? ' is-dragging' : ''}`}
-        onDragOver={(e: DragEvent<HTMLLabelElement>) => {
+      <div
+        className={`cv-drop${dragging ? ' is-dragging' : ''}`}
+        onDragOver={(e: DragEvent<HTMLDivElement>) => {
           e.preventDefault();
           if (!dragging) setDragging(true);
         }}
-        onDragLeave={(e: DragEvent<HTMLLabelElement>) => {
+        onDragLeave={(e: DragEvent<HTMLDivElement>) => {
           if (e.currentTarget.contains(e.relatedTarget as Node | null)) return;
           setDragging(false);
         }}
-        onDrop={(e: DragEvent<HTMLLabelElement>) => {
+        onDrop={(e: DragEvent<HTMLDivElement>) => {
           e.preventDefault();
           setDragging(false);
           accept(e.dataTransfer.files?.[0] ?? null);
         }}
       >
         <input
-          className="console-simple-upload-input"
+          className="cv-drop-input"
           type="file"
           accept="image/*"
           aria-label={card.title}
-          onChange={(event: ChangeEvent<HTMLInputElement>) => accept(event.target.files?.[0] ?? null)}
+          onChange={(e: ChangeEvent<HTMLInputElement>) => {
+            accept(e.target.files?.[0] ?? null);
+            e.currentTarget.value = '';
+          }}
         />
         {preview ? (
-          <div className="console-simple-upload-preview">
+          <>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={preview} alt="" />
-            <strong>{file?.name}</strong>
-          </div>
+            <img className="cv-drop-thumb" src={preview} alt="" />
+            <b>{photoAdded}</b>
+            <span className="cv-drop-replace">{replace}</span>
+          </>
         ) : (
-          <div className="console-simple-upload-empty">
-            <UploadIcon />
-            <strong>{uploadCta}</strong>
-            <span>{uploadHint}</span>
-          </div>
+          <>
+            <CameraIcon />
+            {dropHint}
+          </>
         )}
-      </label>
+      </div>
     </div>
   );
 }
@@ -462,31 +589,66 @@ export function SupportPage() {
   const [previews, setPreviews] = useState<PreviewMap>(emptyPreviews);
   const [email, setEmail] = useState('');
   const [signedIn, setSignedIn] = useState(false);
+  const [company, setCompany] = useState('');
   const [anydesk, setAnydesk] = useState('');
+  const [country, setCountry] = useState('');
+  const [subject, setSubject] = useState('');
   const [problem, setProblem] = useState('');
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
   const [reference, setReference] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
 
   const authConfigured = Boolean(
     process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
   );
 
+  // Prefill from the signed-in profile, then fall back to IP geo for the country.
   useEffect(() => {
-    if (!authConfigured) return;
     let active = true;
     (async () => {
-      try {
-        const {
-          data: { user },
-        } = await createSupabaseBrowserClient().auth.getUser();
-        if (user?.email && active) {
-          setEmail(user.email);
-          setSignedIn(true);
+      let countryResolved = false;
+      if (authConfigured) {
+        try {
+          const supabase = createSupabaseBrowserClient();
+          const {
+            data: { user },
+          } = await supabase.auth.getUser();
+          if (user?.email && active) {
+            setEmail(user.email);
+            setSignedIn(true);
+          }
+          if (user) {
+            const { data: profile } = await supabase
+              .from('profiles')
+              .select('company, country')
+              .eq('id', user.id)
+              .maybeSingle();
+            if (profile && active) {
+              if (profile.company) setCompany((v) => v || (profile.company as string));
+              const pc = mapCountry(profile.country as string | null);
+              if (pc) {
+                setCountry((v) => v || pc);
+                countryResolved = true;
+              }
+            }
+          }
+        } catch {
+          /* anonymous */
         }
-      } catch {
-        /* anonymous */
+      }
+      if (!countryResolved && active) {
+        try {
+          const res = await fetch('/api/geo');
+          if (res.ok) {
+            const { country: geoCountry } = await res.json();
+            const gc = mapCountry(geoCountry);
+            if (gc && active) setCountry((v) => v || gc);
+          }
+        } catch {
+          /* no geo */
+        }
       }
     })();
     return () => {
@@ -510,7 +672,7 @@ export function SupportPage() {
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!email.trim() || !problem.trim()) {
+    if (!email.trim() || !subject.trim() || !problem.trim()) {
       setError(t.errFields);
       return;
     }
@@ -546,7 +708,15 @@ export function SupportPage() {
       const res = await fetch('/api/support', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: email.trim(), anydesk: anydesk.trim(), description: problem.trim(), photos }),
+        body: JSON.stringify({
+          email: email.trim(),
+          company: company.trim(),
+          anydesk: anydesk.trim(),
+          country,
+          subject: subject.trim(),
+          description: problem.trim(),
+          photos,
+        }),
       });
       if (!res.ok) {
         const b = await res.json().catch(() => null);
@@ -585,30 +755,51 @@ export function SupportPage() {
       <section className="section console-simple-section">
         <div className="container console-simple-shell">
           {submitted ? (
-            <div className="console-simple-thankyou">
-              <p className="section-kicker">{t.kicker}</p>
-              <h1>{t.successTitle}</h1>
-              <p>
-                {reference ? (
-                  <>
-                    {t.successRefPre} <strong>#{reference}</strong>.{' '}
-                  </>
-                ) : null}
-                {t.successBody}
-              </p>
-
-              {NextBlock}
-
-              <div className="console-simple-cta-row">
-                <a
-                  className="button button-accent"
-                  href={signedIn ? '/account/support' : '/account/sign-in?next=/account/support'}
-                >
-                  {t.trackCta} →
-                </a>
-                <a className="button button-light" href="/">
-                  {t.backHome}
-                </a>
+            <div className="cv-page">
+              <div className="cv-wrap">
+                <div className="cv-success">
+                  <div className="cv-seal-wrap">
+                    <span className="cv-seal-burst" />
+                    <div className="cv-seal">
+                      <svg width="34" height="34" viewBox="0 0 24 24" fill="none">
+                        <path d="M4 12.5l5 5L20 6.5" stroke="#fff" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    </div>
+                  </div>
+                  <div className="cv-suc-eyebrow">{t.kicker}</div>
+                  <h1 className="cv-suc-title">{t.successTitle}</h1>
+                  <p className="cv-suc-p">{t.successBody}</p>
+                  {reference ? (
+                    <div className="cv-refbox">
+                      <div className="cv-ref-k">{t.successRefPre}</div>
+                      <div className="cv-ref-v">#{reference}</div>
+                      <button
+                        type="button"
+                        className="cv-ref-copy"
+                        onClick={() => {
+                          navigator.clipboard?.writeText(`#${reference}`).then(
+                            () => {
+                              setCopied(true);
+                              setTimeout(() => setCopied(false), 1800);
+                            },
+                            () => {}
+                          );
+                        }}
+                      >
+                        {copied ? t.copiedLabel : t.copyLabel}
+                      </button>
+                    </div>
+                  ) : null}
+                  {NextBlock}
+                  <div className="cv-suc-actions">
+                    <a className="cv-btn-primary" href={signedIn ? '/account/support' : '/account/sign-in?next=/account/support'}>
+                      {t.trackCta} →
+                    </a>
+                    <a className="cv-btn-ghost" href="/">
+                      {t.backHome}
+                    </a>
+                  </div>
+                </div>
               </div>
             </div>
           ) : (
@@ -636,77 +827,160 @@ export function SupportPage() {
                 </div>
               </div>
 
-              <form id="support-form" className="console-simple-form" onSubmit={handleSubmit}>
-                <label className="console-simple-field">
-                  <span>{t.emailLabel}</span>
-                  <input
-                    type="email"
-                    name="email"
-                    placeholder={t.emailPh}
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                    disabled={sending || signedIn}
-                  />
-                </label>
+              <div className="cv-page" id="support-form">
+                <div className="cv-wrap">
+                  <form className="cv-stepcard" onSubmit={handleSubmit}>
+                    <div className="cv-step-h">{t.formTitle}</div>
 
-                <label className="console-simple-field">
-                  <span>{t.anydeskLabel}</span>
-                  <input
-                    type="text"
-                    name="anydesk"
-                    inputMode="numeric"
-                    placeholder={t.anydeskPh}
-                    value={anydesk}
-                    onChange={(e) => setAnydesk(e.target.value)}
-                    disabled={sending}
-                  />
-                </label>
+                    {authConfigured ? (
+                      signedIn ? (
+                        <div className="cv-login is-signed">
+                          <span className="cv-login-ic">
+                            <CheckIcon />
+                          </span>
+                          <span>
+                            {t.signedInPrefix} <strong>{email}</strong>
+                          </span>
+                        </div>
+                      ) : (
+                        <a className="cv-login" href="/account/sign-in?next=/support">
+                          <span className="cv-login-ic">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                              <circle cx="12" cy="8" r="3.2" stroke="currentColor" strokeWidth="1.7" />
+                              <path d="M5 19c0-3.3 3.1-5.5 7-5.5s7 2.2 7 5.5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+                            </svg>
+                          </span>
+                          <span>{t.loginPrompt}</span>
+                          <span className="cv-login-arrow">→</span>
+                        </a>
+                      )
+                    ) : null}
 
-                <div className="cv-hint">
-                  <InfoIcon />
-                  <span>
-                    <b>{t.anydeskHelpTitle}</b> {t.anydeskHelp}
-                  </span>
+                    <div className="cv-grid2">
+                      <label className="cv-field">
+                        <span className="cv-label">
+                          {t.emailLabel} <em>*</em>
+                        </span>
+                        <input
+                          className="cv-input"
+                          type="email"
+                          placeholder={t.emailPh}
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          disabled={sending || signedIn}
+                        />
+                      </label>
+                      <label className="cv-field">
+                        <span className="cv-label">{t.companyLabel}</span>
+                        <input
+                          className="cv-input"
+                          type="text"
+                          placeholder={t.companyPh}
+                          value={company}
+                          onChange={(e) => setCompany(e.target.value)}
+                          disabled={sending}
+                        />
+                      </label>
+                      <label className="cv-field">
+                        <span className="cv-label">{t.anydeskLabel}</span>
+                        <input
+                          className="cv-input"
+                          type="text"
+                          inputMode="numeric"
+                          placeholder={t.anydeskPh}
+                          value={anydesk}
+                          onChange={(e) => setAnydesk(e.target.value)}
+                          disabled={sending}
+                        />
+                      </label>
+                      <label className="cv-field">
+                        <span className="cv-label">{t.countryLabel}</span>
+                        <span className="cv-selwrap">
+                          <select
+                            className="cv-input cv-select"
+                            value={country}
+                            onChange={(e) => setCountry(e.target.value)}
+                            disabled={sending}
+                          >
+                            <option value="">{t.countryPlaceholder}</option>
+                            {SUPPORT_COUNTRIES.map((c) => (
+                              <option key={c} value={c}>
+                                {c}
+                              </option>
+                            ))}
+                          </select>
+                          <Caret />
+                        </span>
+                      </label>
+                      <label className="cv-field cv-field-full">
+                        <span className="cv-label">
+                          {t.subjectLabel} <em>*</em>
+                        </span>
+                        <input
+                          className="cv-input"
+                          type="text"
+                          maxLength={200}
+                          placeholder={t.subjectPh}
+                          value={subject}
+                          onChange={(e) => setSubject(e.target.value)}
+                          disabled={sending}
+                        />
+                      </label>
+                    </div>
+
+                    <div className="cv-hint">
+                      <InfoIcon />
+                      <span>
+                        <b>{t.anydeskHelpTitle}</b> {t.anydeskHelp}
+                      </span>
+                    </div>
+
+                    <label className="cv-field cv-field-full cv-notes">
+                      <span className="cv-label">
+                        {t.problemLabel} <em>*</em>
+                      </span>
+                      <textarea
+                        className="cv-input"
+                        rows={6}
+                        placeholder={t.problemPh}
+                        value={problem}
+                        onChange={(e) => setProblem(e.target.value)}
+                        disabled={sending}
+                      />
+                    </label>
+
+                    <div className="cv-step-p">{t.photosTitle}</div>
+                    <div className="console-simple-uploads">
+                      {(Object.keys(emptyFiles) as SupportUploadId[]).map((id, i) => (
+                        <SupportUploadField
+                          key={id}
+                          id={id}
+                          card={t.photoCards[i]}
+                          dropHint={t.dropHint}
+                          photoAdded={t.photoAdded}
+                          replace={t.replace}
+                          preview={previews[id]}
+                          onChange={handleFileChange}
+                        />
+                      ))}
+                    </div>
+
+                    {error ? (
+                      <p className="cv-error" role="alert">
+                        {error}
+                      </p>
+                    ) : null}
+
+                    <div className="cv-stepnav">
+                      <span />
+                      <button type="submit" className="cv-btn-primary" disabled={sending}>
+                        {sending ? t.sending : `${t.submit} →`}
+                      </button>
+                    </div>
+                    <div className="cv-stepnote">{t.submitHint}</div>
+                  </form>
                 </div>
-
-                <label className="console-simple-field console-simple-field-full">
-                  <span>{t.problemLabel}</span>
-                  <textarea
-                    name="problem"
-                    rows={6}
-                    placeholder={t.problemPh}
-                    value={problem}
-                    onChange={(e) => setProblem(e.target.value)}
-                    required
-                    disabled={sending}
-                  />
-                </label>
-
-                <div className="console-simple-uploads">
-                  {(Object.keys(emptyFiles) as SupportUploadId[]).map((id, i) => (
-                    <SupportUploadField
-                      key={id}
-                      id={id}
-                      card={t.photoCards[i]}
-                      uploadCta={t.uploadCta}
-                      uploadHint={t.uploadHint}
-                      preview={previews[id]}
-                      file={files[id]}
-                      onChange={handleFileChange}
-                    />
-                  ))}
-                </div>
-
-                {error ? <p className="signin-message signin-message-error">{error}</p> : null}
-
-                <div className="console-simple-submit">
-                  <button className="button button-dark" type="submit" disabled={sending}>
-                    {sending ? t.sending : t.submit}
-                  </button>
-                  <p>{t.submitHint}</p>
-                </div>
-              </form>
+              </div>
 
               {NextBlock}
             </>
