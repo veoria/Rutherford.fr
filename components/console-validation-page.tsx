@@ -249,12 +249,11 @@ export function ConsoleValidationPage({
     if (window.location.hash === '#submit') setStarted(true);
   }, []);
 
-  // Click "Submit your information ↓": fold the hero visuals away and reveal the form.
+  // Click "Submit your information ↓": fold the hero visuals away and reveal the
+  // form in their place. No scroll — the form takes the visuals' spot, so the
+  // page shouldn't jump (and must never land on the FAQ below).
   const startForm = () => {
     setStarted(true);
-    setTimeout(() => {
-      document.getElementById('submit')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 60);
   };
 
   // Prefill from the signed-in profile, then IP geo for the country.
