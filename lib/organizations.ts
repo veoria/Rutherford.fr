@@ -160,16 +160,18 @@ export async function acceptPendingInvitations(userId: string, email: string): P
         await supabase
           .from('organization_members')
           .upsert({ org_id: inv.org_id, user_id: userId, role: inv.role, status: 'active' }, { onConflict: 'org_id,user_id' });
-      } else if (inv.kind === 'client') {
-        // Link the accepting user's own org to the inviting reseller org.
+      } else if (inv.kind === 'client' || inv.kind === 'reseller') {
+        // Link the accepting user's own org up the chain: a client links to the
+        // inviting reseller, a reseller to the inviting distributor.
         const { data: prof } = await supabase
           .from('profiles')
           .select('organization_id')
           .eq('id', userId)
           .maybeSingle();
-        const clientOrg = (prof?.organization_id as string | null) ?? null;
-        if (clientOrg) {
-          await supabase.from('organizations').update({ reseller_org_id: inv.org_id }).eq('id', clientOrg);
+        const myOrg = (prof?.organization_id as string | null) ?? null;
+        if (myOrg) {
+          const column = inv.kind === 'client' ? 'reseller_org_id' : 'distributor_org_id';
+          await supabase.from('organizations').update({ [column]: inv.org_id }).eq('id', myOrg);
         }
       } else {
         continue;
@@ -218,5 +220,170 @@ export async function getResellerClients(userId: string): Promise<ResellerClient
     return list.map((c) => ({ orgId: c.id, name: c.name, country: c.country, memberCount: counts.get(c.id) ?? 0 }));
   } catch {
     return [];
+  }
+}
+
+/** Reseller orgs in this distributor's network (distributor_org_id = my org). */
+export async function getDistributorResellers(userId: string): Promise<ResellerClientOrg[]> {
+  const supabase = admin();
+  if (!supabase) return [];
+  try {
+    const { data: prof } = await supabase.from('profiles').select('organization_id').eq('id', userId).maybeSingle();
+    const myOrg = (prof?.organization_id as string | null) ?? null;
+    if (!myOrg) return [];
+    const { data: resellers } = await supabase
+      .from('organizations')
+      .select('id, name, country')
+      .eq('distributor_org_id', myOrg);
+    const list = (resellers ?? []) as { id: string; name: string; country: string | null }[];
+    const counts = new Map<string, number>();
+    if (list.length) {
+      const { data: clients } = await supabase
+        .from('organizations')
+        .select('reseller_org_id')
+        .in(
+          'reseller_org_id',
+          list.map((r) => r.id)
+        );
+      for (const c of (clients ?? []) as { reseller_org_id: string | null }[]) {
+        if (c.reseller_org_id) counts.set(c.reseller_org_id, (counts.get(c.reseller_org_id) ?? 0) + 1);
+      }
+    }
+    return list.map((r) => ({ orgId: r.id, name: r.name, country: r.country, memberCount: counts.get(r.id) ?? 0 }));
+  } catch {
+    return [];
+  }
+}
+
+async function actorManages(
+  supabase: NonNullable<ReturnType<typeof admin>>,
+  actorUserId: string,
+  orgId: string
+): Promise<boolean> {
+  const { data } = await supabase
+    .from('organization_members')
+    .select('role')
+    .eq('org_id', orgId)
+    .eq('user_id', actorUserId)
+    .eq('status', 'active')
+    .maybeSingle();
+  const role = (data?.role as MemberRole | undefined) ?? null;
+  return role === 'owner' || role === 'admin';
+}
+
+/** Change a member's role (owner/admin only; never the owner or yourself). */
+export async function updateMemberRole(
+  actorUserId: string,
+  orgId: string,
+  memberUserId: string,
+  role: 'admin' | 'member'
+): Promise<boolean> {
+  const supabase = admin();
+  if (!supabase || memberUserId === actorUserId) return false;
+  try {
+    if (!(await actorManages(supabase, actorUserId, orgId))) return false;
+    const { data: target } = await supabase
+      .from('organization_members')
+      .select('role')
+      .eq('org_id', orgId)
+      .eq('user_id', memberUserId)
+      .maybeSingle();
+    if (!target || target.role === 'owner') return false;
+    const { error } = await supabase
+      .from('organization_members')
+      .update({ role })
+      .eq('org_id', orgId)
+      .eq('user_id', memberUserId);
+    return !error;
+  } catch {
+    return false;
+  }
+}
+
+/** Remove a member (owner/admin only; never the owner or yourself). */
+export async function removeMember(actorUserId: string, orgId: string, memberUserId: string): Promise<boolean> {
+  const supabase = admin();
+  if (!supabase || memberUserId === actorUserId) return false;
+  try {
+    if (!(await actorManages(supabase, actorUserId, orgId))) return false;
+    const { data: target } = await supabase
+      .from('organization_members')
+      .select('role')
+      .eq('org_id', orgId)
+      .eq('user_id', memberUserId)
+      .maybeSingle();
+    if (!target || target.role === 'owner') return false;
+    const { error } = await supabase
+      .from('organization_members')
+      .delete()
+      .eq('org_id', orgId)
+      .eq('user_id', memberUserId);
+    return !error;
+  } catch {
+    return false;
+  }
+}
+
+/** Revoke a pending invitation (owner/admin of its org only). */
+export async function revokeInvitation(actorUserId: string, invitationId: string): Promise<boolean> {
+  const supabase = admin();
+  if (!supabase) return false;
+  try {
+    const { data: inv } = await supabase
+      .from('invitations')
+      .select('org_id, status')
+      .eq('id', invitationId)
+      .maybeSingle();
+    if (!inv || inv.status !== 'pending') return false;
+    if (!(await actorManages(supabase, actorUserId, inv.org_id as string))) return false;
+    const { error } = await supabase.from('invitations').update({ status: 'revoked' }).eq('id', invitationId);
+    return !error;
+  } catch {
+    return false;
+  }
+}
+
+export type AdminOrg = {
+  id: string;
+  name: string;
+  resellerOrgId: string | null;
+  resellerName: string | null;
+};
+
+/** Client orgs + the reseller-org options, for the admin attribution view. */
+export async function getOrgsForAdmin(): Promise<{ clients: AdminOrg[]; resellers: { id: string; name: string }[] }> {
+  const supabase = admin();
+  if (!supabase) return { clients: [], resellers: [] };
+  try {
+    const { data: orgs } = await supabase.from('organizations').select('id, name, type, reseller_org_id');
+    const all = (orgs ?? []) as { id: string; name: string; type: string; reseller_org_id: string | null }[];
+    const nameById = new Map(all.map((o) => [o.id, o.name]));
+    const resellers = all.filter((o) => o.type === 'reseller').map((o) => ({ id: o.id, name: o.name }));
+    const clients = all
+      .filter((o) => o.type === 'client')
+      .map((o) => ({
+        id: o.id,
+        name: o.name,
+        resellerOrgId: o.reseller_org_id,
+        resellerName: o.reseller_org_id ? nameById.get(o.reseller_org_id) ?? null : null,
+      }));
+    return { clients, resellers };
+  } catch {
+    return { clients: [], resellers: [] };
+  }
+}
+
+/** Admin: set (or clear) a client org's managing reseller. */
+export async function setClientReseller(clientOrgId: string, resellerOrgId: string | null): Promise<boolean> {
+  const supabase = admin();
+  if (!supabase) return false;
+  try {
+    const { error } = await supabase
+      .from('organizations')
+      .update({ reseller_org_id: resellerOrgId })
+      .eq('id', clientOrgId);
+    return !error;
+  } catch {
+    return false;
   }
 }

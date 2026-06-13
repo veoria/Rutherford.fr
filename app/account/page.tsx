@@ -7,7 +7,7 @@ import { ALL_COURSES } from '@/data/academy-courses';
 import { courseHasQuiz } from '@/data/academy-quizzes';
 import { getLessonsForCourse } from '@/data/academy-lessons';
 import { overallStats, type CourseStat } from '@/lib/gamification';
-import { getResellerClients, getTeamForUser } from '@/lib/organizations';
+import { getDistributorResellers, getResellerClients, getTeamForUser } from '@/lib/organizations';
 import type { AccountType } from '@/data/account-types';
 
 export const metadata: Metadata = {
@@ -136,11 +136,14 @@ export default async function AccountHubRoute() {
   }
 
   const team = await getTeamForUser(user.id);
+  const networkResellers = accountType === 'distributor' ? await getDistributorResellers(user.id) : [];
 
   return (
     <AccountHub
       accountType={accountType}
       team={team}
+      selfId={user.id}
+      networkResellers={networkResellers}
       email={user.email ?? ''}
       memberSince={(user.created_at as string) ?? null}
       profile={{

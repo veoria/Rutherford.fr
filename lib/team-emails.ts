@@ -5,19 +5,30 @@
 const SITE = 'https://rutherford.fr';
 
 export function teamInviteEmail(
-  kind: 'member' | 'client',
+  kind: 'member' | 'client' | 'reseller',
   orgName: string | null,
   inviter: string
 ): { subject: string; html: string } {
   const team = orgName || 'Rutherford';
   const signInUrl = `${SITE}/account/sign-in?next=/account`;
   const isClient = kind === 'client';
-  const subject = isClient ? `${team} vous invite sur Rutherford` : `Invitation à rejoindre ${team} sur Rutherford`;
-  const headline = isClient ? `${team} vous invite sur Rutherford` : `Vous êtes invité·e à rejoindre ${team}`;
-  const intro = isClient
-    ? `${inviter} (${team}) vous invite à suivre vos validations de presse et votre compte sur <strong>Rutherford</strong>.`
-    : `${inviter} vous a invité·e à rejoindre son compte <strong>Rutherford</strong> — accès à l'espace équipe, aux validations de presse et à l'Academy.`;
-  const cta = isClient ? 'Activer mon compte' : 'Rejoindre l’équipe';
+  const isReseller = kind === 'reseller';
+  const subject = isReseller
+    ? `${team} vous invite dans son réseau Rutherford`
+    : isClient
+      ? `${team} vous invite sur Rutherford`
+      : `Invitation à rejoindre ${team} sur Rutherford`;
+  const headline = isReseller
+    ? `Rejoignez le réseau ${team}`
+    : isClient
+      ? `${team} vous invite sur Rutherford`
+      : `Vous êtes invité·e à rejoindre ${team}`;
+  const intro = isReseller
+    ? `${inviter} (${team}) vous invite à rejoindre son réseau de revendeurs sur <strong>Rutherford</strong>.`
+    : isClient
+      ? `${inviter} (${team}) vous invite à suivre vos validations de presse et votre compte sur <strong>Rutherford</strong>.`
+      : `${inviter} vous a invité·e à rejoindre son compte <strong>Rutherford</strong> — accès à l'espace équipe, aux validations de presse et à l'Academy.`;
+  const cta = isReseller ? 'Rejoindre le réseau' : isClient ? 'Activer mon compte' : 'Rejoindre l’équipe';
   return {
     subject,
     html: `<!doctype html><html><body style="margin:0;background:#ECEBE8;font-family:Arial,Helvetica,sans-serif;">
