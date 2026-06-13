@@ -32,5 +32,5 @@ export default async function AdminRoute() {
   }
 
   const overview = await getAdminOverview();
-  return <AdminDashboard overview={overview} />;
+  return <AdminDashboard overview={overview} selfId={user.id} />;
 }

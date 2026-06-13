@@ -19,6 +19,11 @@ const ASSIGNEE = process.env.ASANA_FX_GID || '21871830348447';
 const FOLLOWER = process.env.ASANA_FOLLOWER_GID;
 
 const BASE = 'https://app.asana.com/api/1.0';
+
+/** Task UI URL for the admin back-office. */
+export function asanaTaskUrl(gid: string | null): string | null {
+  return gid ? `https://app.asana.com/0/0/${gid}` : null;
+}
 const TIMEOUT_MS = 10000;
 
 const PHOTO_LABELS: [field: string, label: string][] = [
