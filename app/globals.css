@@ -14010,3 +14010,51 @@ textarea.cv-input { resize: vertical; min-height: 74px; }
   background: #fff;
   min-width: 180px;
 }
+
+/* account hub — avatar / logo upload slots */
+.ah-media {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex: 0 0 auto;
+  font-weight: 700;
+}
+.ah-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.ah-media-circle {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  font-size: 1.35rem;
+}
+.ah-media-square {
+  width: 38px;
+  height: 38px;
+  border-radius: 9px;
+  font-size: 0.8rem;
+}
+.ah-media.is-editable {
+  cursor: pointer;
+}
+.ah-media-cam {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(20, 16, 12, 0.4);
+  color: #fff;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.ah-media.is-editable:hover .ah-media-cam {
+  opacity: 1;
+}
+.ah-media-fallback {
+  line-height: 1;
+}

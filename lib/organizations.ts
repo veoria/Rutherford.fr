@@ -23,7 +23,7 @@ export type PendingInvite = {
 };
 
 export type Team = {
-  org: { id: string; name: string; type: string } | null;
+  org: { id: string; name: string; type: string; logoUrl: string | null } | null;
   members: OrgMember[];
   pending: PendingInvite[];
   myRole: MemberRole | null;
@@ -51,7 +51,7 @@ export async function getTeamForUser(userId: string): Promise<Team> {
     if (!orgId) return EMPTY;
 
     const [{ data: org }, { data: memberRows }, { data: invites }] = await Promise.all([
-      supabase.from('organizations').select('id, name, type').eq('id', orgId).maybeSingle(),
+      supabase.from('organizations').select('id, name, type, logo_url').eq('id', orgId).maybeSingle(),
       supabase.from('organization_members').select('user_id, role').eq('org_id', orgId).eq('status', 'active'),
       supabase.from('invitations').select('id, email, role, created_at').eq('org_id', orgId).eq('status', 'pending'),
     ]);
@@ -78,7 +78,14 @@ export async function getTeamForUser(userId: string): Promise<Team> {
     const myRole = (rows.find((m) => m.user_id === userId)?.role as MemberRole | undefined) ?? null;
 
     return {
-      org: (org as Team['org']) ?? null,
+      org: org
+        ? {
+            id: (org as { id: string }).id,
+            name: (org as { name: string }).name,
+            type: (org as { type: string }).type,
+            logoUrl: ((org as { logo_url: string | null }).logo_url) ?? null,
+          }
+        : null,
       members,
       pending: ((invites ?? []) as { id: string; email: string; role: MemberRole; created_at: string }[]).map((i) => ({
         id: i.id,
