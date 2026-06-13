@@ -1,15 +1,21 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { createHmac, timingSafeEqual } from 'crypto';
-import { getConsoleValidationTaskState } from '@/lib/asana';
+import { getConsoleValidationTaskState, getSupportTaskState } from '@/lib/asana';
 import { addDealNote } from '@/lib/pipedrive';
 import { sendMail } from '@/lib/msgraph';
 import { canConnectEmail, cannotConnectEmail, moreInfoEmail } from '@/lib/console-validation-emails';
+import { supportStatusEmail } from '@/lib/support-emails';
 import {
   getConsoleValidationStatusByAsanaTask,
   getNotificationEmailByAsanaTask,
   updateConsoleValidationStatusByAsanaTask,
   type ConsoleValidationStatus,
 } from '@/lib/console-validations';
+import {
+  getSupportTicketByAsanaTask,
+  supportStatusFromSection,
+  updateSupportStatusByAsanaTask,
+} from '@/lib/support-tickets';
 
 export const dynamic = 'force-dynamic';
 
@@ -69,6 +75,21 @@ export async function POST(request: NextRequest) {
   }
 
   for (const gid of taskGids) {
+    // Support ticket? Its status is the Asana column (section) it sits in.
+    const ticket = await getSupportTicketByAsanaTask(gid);
+    if (ticket) {
+      const sstate = await getSupportTaskState(gid);
+      if (sstate) {
+        const next = supportStatusFromSection(sstate.sectionName, sstate.completed);
+        if (next !== ticket.status) {
+          await updateSupportStatusByAsanaTask(gid, next);
+          const mail = supportStatusEmail(next, `#${ticket.id.slice(0, 8)}`);
+          if (mail) await sendMail({ to: ticket.email, subject: mail.subject, html: mail.html });
+        }
+      }
+      continue;
+    }
+
     const state = await getConsoleValidationTaskState(gid);
     if (!state) continue;
     const status = APPROVAL_STATUS[state.approvalStatus ?? ''];

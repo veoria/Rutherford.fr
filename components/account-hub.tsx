@@ -385,7 +385,7 @@ export function AccountHub(props: Props) {
 
   const academyTile: Tile = { ic: 'acad', cls: 'blue', t: t.tiles.academyT, s: t.tiles.academyS, href: '/account/academy', statDot: 'blue', statV: academyStat, statM: `${academy.xp} ${t.xpUnit}` };
   const consoleTile: Tile = { ic: 'console', cls: 'ink', t: t.tiles.consoleT, s: t.tiles.consoleS, href: '/account/console-validations', statDot: consoleStat.eligible > 0 ? 'green' : 'amber', statV: consoleStatV, statM: consoleStatM };
-  const supportTile: Tile = { ic: 'support', cls: 'ink', t: t.tiles.supportT, s: t.tiles.supportS, href: 'mailto:contact@rutherford.fr', statV: t.stat.supportReply };
+  const supportTile: Tile = { ic: 'support', cls: 'ink', t: t.tiles.supportT, s: t.tiles.supportS, href: '/account/support', statV: t.stat.supportReply };
 
   let roleTile: Tile;
   if (accountType === 'reseller') {
@@ -928,7 +928,7 @@ function AcademyMini({ t, academy, rank, nextRank }: { t: Copy; academy: Props['
 
 function SupportMini({ t }: { t: Copy }) {
   const rows: [ReactNode, string, string, string][] = [
-    [ICON.chat, t.supportChat, t.supportChatS, 'mailto:contact@rutherford.fr'],
+    [ICON.chat, t.supportChat, t.supportChatS, '/support'],
     [ICON.doc, t.supportHelp, t.supportHelpS, '/blog'],
     [ICON.mail, t.supportMail, t.supportMailS, 'mailto:contact@rutherford.fr'],
   ];

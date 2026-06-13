@@ -144,3 +144,69 @@ export async function getConsoleValidationTaskState(taskGid: string): Promise<As
     return null;
   }
 }
+
+const SUPPORT_PROJECT = process.env.ASANA_SUPPORT_PROJECT;
+
+export type SupportTask = { email: string; anydesk: string; description: string; photoLinks: string[] };
+
+/** Create a support ticket task in the Asana Support project. Returns its gid.
+ * No-op (null) without a token or ASANA_SUPPORT_PROJECT; never throws. */
+export async function createSupportTask(task: SupportTask): Promise<string | null> {
+  if (!TOKEN || !SUPPORT_PROJECT) return null;
+  try {
+    const lines = [`e-mail : ${task.email}`];
+    if (task.anydesk) lines.push(`AnyDesk : ${task.anydesk}`);
+    if (task.description) lines.push('', task.description);
+    task.photoLinks.forEach((l, i) => lines.push(`Photo ${i + 1} : ${l}`));
+    lines.push('', 'Source : rutherford.fr/support');
+    const created = await asana('POST', '/tasks', {
+      name: `Support — ${task.email}${task.anydesk ? ` · AnyDesk ${task.anydesk}` : ''}`,
+      notes: lines.join('\n'),
+      projects: [SUPPORT_PROJECT],
+      ...(ASSIGNEE ? { assignee: ASSIGNEE } : {}),
+      ...(FOLLOWER ? { followers: [FOLLOWER] } : {}),
+    });
+    return (created?.data?.gid as string) ?? null;
+  } catch (error) {
+    console.error('Asana support task create failed:', error);
+    return null;
+  }
+}
+
+/** Post a comment on a support task — used to relay a customer's reply so the
+ * assignee/followers are notified. No-op without a token; never throws. */
+export async function addSupportTaskComment(taskGid: string, text: string): Promise<boolean> {
+  if (!TOKEN || !taskGid || !text.trim()) return false;
+  try {
+    await asana('POST', `/tasks/${taskGid}/stories`, { text });
+    return true;
+  } catch (error) {
+    console.error('Asana support add-comment failed:', error);
+    return false;
+  }
+}
+
+export type SupportTaskState = { name: string; sectionName: string | null; completed: boolean };
+
+/** Read a support task's column (section = status) and completion, for the
+ * webhook. Null when not configured / on failure. */
+export async function getSupportTaskState(taskGid: string): Promise<SupportTaskState | null> {
+  if (!TOKEN || !SUPPORT_PROJECT) return null;
+  try {
+    const res = await asana(
+      'GET',
+      `/tasks/${taskGid}?opt_fields=name,completed,memberships.section.name,memberships.project.gid`
+    );
+    const data = res?.data;
+    if (!data) return null;
+    const membership = (data.memberships ?? []).find((m: any) => m?.project?.gid === SUPPORT_PROJECT);
+    return {
+      name: data.name ?? '',
+      sectionName: membership?.section?.name ?? null,
+      completed: Boolean(data.completed),
+    };
+  } catch (error) {
+    console.error('Asana support task fetch failed:', error);
+    return null;
+  }
+}

@@ -12642,6 +12642,25 @@ a.blog-card-image:hover img {
 .cvp-reply-error { margin: 10px 0 0; color: var(--cvp-red); font-size: 13px; }
 .cvp-reply-msg { margin: 14px 0 0; padding: 12px 14px; border: 1px solid #c7e6d3; background: #e7f4ec; border-radius: 10px; color: #1b7a45; font-size: 13.5px; }
 
+/* Neutral tone (used by the support portal for "Closed") — mirrors the grey
+   pill so closed tickets read as settled rather than alarming. */
+.cvp-sum-cell.cvp-t-neutral { border-color: #e4e3e0; background: #f6f6f4; }
+.cvp-sum-cell.cvp-t-neutral .cvp-sum-n { color: #6a6a6a; }
+.cvp-sum-cell.cvp-t-neutral.is-on { background: #6a6a6a; border-color: #5a5a5a; }
+.cvp-cghead.cvp-t-neutral { background: #f2f2f0; color: #6a6a6a; }
+.cvp-cghead.cvp-t-neutral .cvp-cgdot { background: #9a9a96; }
+.cvp-item.cvp-t-neutral::before { background: #9a9a96; }
+.cvp-item.is-active.cvp-t-neutral { background: #6a6a6a; border-color: #5a5a5a; }
+.cvp-banner.cvp-t-neutral { background: #f2f2f0; }
+.cvp-banner.cvp-t-neutral .cvp-bsq { background: #9a9a96; }
+.cvp-banner.cvp-t-neutral .cvp-blabel { color: #555; }
+
+/* Support portal — request body + attachment thumbnails */
+.sup-desc { white-space: pre-wrap; font-size: 14.5px; line-height: 1.6; color: var(--cvp-ink2); margin: 0 0 24px; }
+.sup-photos { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 26px; }
+.sup-photo { display: block; width: 96px; height: 96px; border-radius: 10px; overflow: hidden; border: 1px solid var(--cvp-line); background: #fafafa; }
+.sup-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
 /* ---- /roi dedicated page ---- */
 .roi-page-hero {
   text-align: center;
