@@ -595,7 +595,7 @@ export function AcademyCoursePage({
               <>
                 <h3>You&rsquo;re enrolled</h3>
                 <p>Full access to every module below, lifetime updates, and your certificate on completion.</p>
-                <a className="button button-dark academy-course-cta-button" href="/account">
+                <a className="button button-dark academy-course-cta-button" href="/account/academy">
                   Go to your account <span aria-hidden="true">→</span>
                 </a>
               </>
@@ -889,7 +889,7 @@ export function AcademyCoursePage({
                     ) : null}
                   </div>
                   <div className="academy-assessment-passed-actions">
-                    <a className="button button-light" href="/account">
+                    <a className="button button-light" href="/account/academy">
                       {tq.viewCertificate}
                     </a>
                     <button type="button" className="button button-light" onClick={startQuizRetake}>
@@ -992,7 +992,7 @@ export function AcademyCoursePage({
                     </p>
                     <div className="academy-assessment-actions">
                       {quizResult.passed ? (
-                        <a className="button button-accent" href="/account">
+                        <a className="button button-accent" href="/account/academy">
                           {tq.viewCertificate}
                         </a>
                       ) : null}
