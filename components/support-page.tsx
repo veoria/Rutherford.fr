@@ -430,8 +430,10 @@ function SupportUploadField({
         }}
       >
         <input
+          className="console-simple-upload-input"
           type="file"
           accept="image/*"
+          aria-label={card.title}
           onChange={(event: ChangeEvent<HTMLInputElement>) => accept(event.target.files?.[0] ?? null)}
         />
         {preview ? (
