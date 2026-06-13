@@ -494,7 +494,7 @@ export function ConsoleValidationPage({
             </div>
           ) : (
             <>
-              <div className="console-simple-intro">
+              <div className={`console-simple-intro${started ? ' is-started' : ''}`}>
                 <p className="section-kicker">
                   {brand ? `Free eligibility check · ${brand.name}` : 'Free eligibility check'}
                 </p>

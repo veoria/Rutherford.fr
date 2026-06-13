@@ -13051,3 +13051,32 @@ textarea.cv-input { resize: vertical; min-height: 74px; }
   .cv-hero-extra { transition: none; }
   .cv-stage-form { animation: none; }
 }
+
+/* When the form is open, keep the "Console Validation" heading but make it discreet. */
+.console-simple-intro h1 { transition: font-size 0.45s ease, line-height 0.45s ease, margin 0.45s ease; }
+.console-simple-intro .console-simple-tagline,
+.console-simple-intro .console-simple-phone,
+.console-simple-intro .console-simple-brand-line {
+  transition: max-height 0.45s ease, opacity 0.35s ease, margin 0.45s ease, padding 0.45s ease;
+  max-height: 120px;
+  overflow: hidden;
+}
+.console-simple-intro.is-started h1 { font-size: clamp(1.6rem, 3.6vw, 2.4rem); line-height: 1.04; }
+.console-simple-intro.is-started .console-simple-tagline,
+.console-simple-intro.is-started .console-simple-phone,
+.console-simple-intro.is-started .console-simple-brand-line {
+  max-height: 0;
+  opacity: 0;
+  margin-top: 0;
+  margin-bottom: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+@media (prefers-reduced-motion: reduce) {
+  .console-simple-intro h1,
+  .console-simple-intro .console-simple-tagline,
+  .console-simple-intro .console-simple-phone,
+  .console-simple-intro .console-simple-brand-line {
+    transition: none;
+  }
+}
