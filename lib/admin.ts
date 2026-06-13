@@ -1,8 +1,11 @@
 import { createSupabaseAdminClient } from '@/lib/supabase/server';
+import type { AccountType } from '@/data/account-types';
 import { ALL_COURSES } from '@/data/academy-courses';
 import { courseHasQuiz } from '@/data/academy-quizzes';
 import { currentStreakFromDays, type ProgressRow } from '@/lib/progress';
 import { levelForXp, XP_PER_MODULE, XP_PER_COURSE, XP_PER_CERTIFICATE } from '@/lib/gamification';
+import { pipedriveDealUrl } from '@/lib/pipedrive';
+import { asanaTaskUrl } from '@/lib/asana';
 
 export type AdminUser = {
   id: string;
@@ -12,6 +15,7 @@ export type AdminUser = {
   country: string | null;
   jobTitle: string | null;
   isAdmin: boolean;
+  accountType: AccountType;
   onboarded: boolean;
   signupAt: string | null;
   lastActiveAt: string | null;
@@ -35,14 +39,33 @@ export type AdminCourseStat = {
   avgQuizPct: number | null; // average best score among users who attempted
 };
 
+export type AdminConsoleValidation = {
+  id: string;
+  createdAt: string;
+  company: string | null;
+  country: string | null;
+  machine: string | null;
+  status: string;
+  email: string;
+  refCode: string | null;
+  pipedriveDealId: number | null;
+  pipedriveUrl: string | null;
+  asanaUrl: string | null;
+  reviewedBy: string | null;
+  reviewedAt: string | null;
+  userEmail: string | null;
+};
+
 export type AdminOverview = {
   users: AdminUser[];
   courses: AdminCourseStat[];
+  consoleValidations: AdminConsoleValidation[];
   totals: {
     users: number;
     onboarded: number;
     certificates: number;
     activePass: number;
+    consoleOpen: number;
   };
 };
 
@@ -53,13 +76,19 @@ const moduleCountBySlug = new Map(ALL_COURSES.map((c) => [c.id, c.modules] as co
 export async function getAdminOverview(): Promise<AdminOverview> {
   const admin = createSupabaseAdminClient();
 
-  const [authRes, profilesRes, progressRes, quizRes, enrollRes, passRes] = await Promise.all([
+  const [authRes, profilesRes, progressRes, quizRes, enrollRes, passRes, cvRes] = await Promise.all([
     admin.auth.admin.listUsers({ perPage: 1000 }),
-    admin.from('profiles').select('id, full_name, company, country, job_title, onboarded_at, is_admin'),
+    admin.from('profiles').select('id, full_name, company, country, job_title, onboarded_at, is_admin, account_type'),
     admin.from('course_progress').select('user_id, course_slug, lesson_index, completed_at'),
     admin.from('quiz_attempts').select('user_id, course_slug, passed, score, total, created_at'),
     admin.from('enrollments').select('user_id, course_slug, source'),
     admin.from('pass_subscriptions').select('user_id, status'),
+    admin
+      .from('console_validations')
+      .select(
+        'id, created_at, company, country, machine, status, email, ref_code, pipedrive_deal_id, asana_task_gid, reviewed_by, reviewed_at, user_id'
+      )
+      .order('created_at', { ascending: false }),
   ]);
 
   type AuthUser = { id: string; email?: string | null; created_at?: string; last_sign_in_at?: string | null };
@@ -72,6 +101,7 @@ export async function getAdminOverview(): Promise<AdminOverview> {
     job_title: string | null;
     onboarded_at: string | null;
     is_admin: boolean;
+    account_type: string;
   }[];
   const progress = (progressRes.data ?? []) as (ProgressRow & { user_id: string })[];
   const quiz = (quizRes.data ?? []) as {
@@ -156,6 +186,7 @@ export async function getAdminOverview(): Promise<AdminOverview> {
       country: p?.country ?? null,
       jobTitle: p?.job_title ?? null,
       isAdmin: Boolean(p?.is_admin),
+      accountType: (p?.account_type as AccountType) ?? 'client',
       onboarded: Boolean(p?.onboarded_at),
       signupAt: u.created_at ?? null,
       lastActiveAt,
@@ -193,14 +224,52 @@ export async function getAdminOverview(): Promise<AdminOverview> {
     };
   });
 
+  const emailByUserId = new Map(authUsers.map((u) => [u.id, u.email ?? null] as const));
+  const cvRows = (cvRes.data ?? []) as {
+    id: string;
+    created_at: string;
+    company: string | null;
+    country: string | null;
+    machine: string | null;
+    status: string;
+    email: string;
+    ref_code: string | null;
+    pipedrive_deal_id: number | null;
+    asana_task_gid: string | null;
+    reviewed_by: string | null;
+    reviewed_at: string | null;
+    user_id: string | null;
+  }[];
+  const consoleValidations: AdminConsoleValidation[] = cvRows.map((r) => ({
+    id: r.id,
+    createdAt: r.created_at,
+    company: r.company,
+    country: r.country,
+    machine: r.machine,
+    status: r.status,
+    email: r.email,
+    refCode: r.ref_code,
+    pipedriveDealId: r.pipedrive_deal_id,
+    pipedriveUrl: pipedriveDealUrl(r.pipedrive_deal_id),
+    asanaUrl: asanaTaskUrl(r.asana_task_gid),
+    reviewedBy: r.reviewed_by,
+    reviewedAt: r.reviewed_at,
+    userEmail: r.user_id ? emailByUserId.get(r.user_id) ?? null : null,
+  }));
+  const consoleOpen = consoleValidations.filter((c) =>
+    ['submitted', 'in_review', 'changes_requested'].includes(c.status)
+  ).length;
+
   return {
     users,
     courses,
+    consoleValidations,
     totals: {
       users: authUsers.length,
       onboarded: users.filter((u) => u.onboarded).length,
       certificates: users.reduce((s, u) => s + u.certificates, 0),
       activePass: users.filter((u) => u.activePass).length,
+      consoleOpen,
     },
   };
 }
