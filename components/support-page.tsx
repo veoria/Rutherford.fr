@@ -1,6 +1,6 @@
 'use client';
 
-import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
+import { ChangeEvent, DragEvent, FormEvent, useEffect, useState } from 'react';
 import { SiteFooter } from '@/components/site-footer';
 import { SiteNav } from '@/components/site-nav';
 import { type Locale, useLanguage } from '@/components/language-provider';
@@ -403,17 +403,36 @@ function SupportUploadField({
   file: File | null;
   onChange: (field: SupportUploadId, file: File | null) => void;
 }) {
+  const [dragging, setDragging] = useState(false);
+  const accept = (f: File | null | undefined) => {
+    if (f && f.type.startsWith('image/')) onChange(id, f);
+  };
   return (
     <div className="console-simple-upload-card">
       <div className="console-simple-upload-copy">
         <h3>{card.title}</h3>
         <p>{card.desc}</p>
       </div>
-      <label className={`console-simple-upload ${preview ? 'has-preview' : ''}`}>
+      <label
+        className={`console-simple-upload ${preview ? 'has-preview' : ''}${dragging ? ' is-dragging' : ''}`}
+        onDragOver={(e: DragEvent<HTMLLabelElement>) => {
+          e.preventDefault();
+          if (!dragging) setDragging(true);
+        }}
+        onDragLeave={(e: DragEvent<HTMLLabelElement>) => {
+          if (e.currentTarget.contains(e.relatedTarget as Node | null)) return;
+          setDragging(false);
+        }}
+        onDrop={(e: DragEvent<HTMLLabelElement>) => {
+          e.preventDefault();
+          setDragging(false);
+          accept(e.dataTransfer.files?.[0] ?? null);
+        }}
+      >
         <input
           type="file"
           accept="image/*"
-          onChange={(event: ChangeEvent<HTMLInputElement>) => onChange(id, event.target.files?.[0] ?? null)}
+          onChange={(event: ChangeEvent<HTMLInputElement>) => accept(event.target.files?.[0] ?? null)}
         />
         {preview ? (
           <div className="console-simple-upload-preview">
