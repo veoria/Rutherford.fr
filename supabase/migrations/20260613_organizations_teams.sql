@@ -48,7 +48,7 @@ create table if not exists public.invitations (
   email text not null,
   role text not null default 'member' check (role in ('owner', 'admin', 'member')),
   kind text not null default 'member' check (kind in ('member', 'client', 'reseller')),
-  token text not null unique default encode(gen_random_bytes(18), 'hex'),
+  token text not null unique default (replace(gen_random_uuid()::text, '-', '') || replace(gen_random_uuid()::text, '-', '')),
   invited_by uuid references auth.users (id) on delete set null,
   status text not null default 'pending' check (status in ('pending', 'accepted', 'revoked')),
   created_at timestamptz not null default now(),
