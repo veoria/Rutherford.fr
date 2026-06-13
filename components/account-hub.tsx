@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, type ReactNode } from 'react';
+import { useRouter } from 'next/navigation';
+import type { MemberRole, Team } from '@/lib/organizations';
 import { SiteFooter } from '@/components/site-footer';
 import { SiteNav } from '@/components/site-nav';
 import { type Locale, useLanguage } from '@/components/language-provider';
@@ -16,6 +18,7 @@ export type ResellerClient = {
 
 type Props = {
   accountType: AccountType;
+  team: Team;
   email: string;
   memberSince: string | null;
   profile: {
@@ -107,6 +110,7 @@ type Copy = {
     eligibleShort: (n: number) => string;
     openShort: (n: number) => string;
     adminTitle: string; adminSub: string; adminCta: string;
+    adminTag: string; memberTag: string; invitedTag: string; invitePending: string; inviteSend: string; inviteEmailPh: string;
   };
   academyH: string;
   levelWord: string;
@@ -152,6 +156,7 @@ const COPY: Record<Locale, Copy> = {
       soonTeam: 'Team invitations are coming soon.', soonNetwork: 'Your network will appear here.', clientsEmpty: 'No client validations yet.',
       pressUnit: (n) => `${n} press${n === 1 ? '' : 'es'}`, eligibleShort: (n) => `${n} eligible`, openShort: (n) => `${n} open`,
       adminTitle: 'Back-office', adminSub: 'Rutherford team tools', adminCta: 'Open admin',
+      adminTag: 'Admin', memberTag: 'Member', invitedTag: 'Invited', invitePending: 'Invitation sent', inviteSend: 'Send invite', inviteEmailPh: 'name@company.com',
     },
     academyH: 'Academy', levelWord: 'Level', xpUnit: 'XP',
     xpToNext: (n, rank) => `${n} XP to ${rank}`, maxLevel: 'Top rank reached',
@@ -191,6 +196,7 @@ const COPY: Record<Locale, Copy> = {
       soonTeam: 'Les invitations d’équipe arrivent bientôt.', soonNetwork: 'Votre réseau apparaîtra ici.', clientsEmpty: 'Aucune validation client pour l’instant.',
       pressUnit: (n) => `${n} presse${n === 1 ? '' : 's'}`, eligibleShort: (n) => `${n} éligible${n === 1 ? '' : 's'}`, openShort: (n) => `${n} en cours`,
       adminTitle: 'Back-office', adminSub: 'Outils de l’équipe Rutherford', adminCta: 'Ouvrir l’admin',
+      adminTag: 'Admin', memberTag: 'Membre', invitedTag: 'Invité', invitePending: 'Invitation envoyée', inviteSend: 'Envoyer l’invitation', inviteEmailPh: 'nom@entreprise.com',
     },
     academyH: 'Academy', levelWord: 'Niveau', xpUnit: 'XP',
     xpToNext: (n, rank) => `${n} XP avant ${rank}`, maxLevel: 'Rang maximum atteint',
@@ -230,6 +236,7 @@ const COPY: Record<Locale, Copy> = {
       soonTeam: 'Team-Einladungen folgen in Kürze.', soonNetwork: 'Ihr Netzwerk erscheint hier.', clientsEmpty: 'Noch keine Kunden-Validierungen.',
       pressUnit: (n) => `${n} Maschine${n === 1 ? '' : 'n'}`, eligibleShort: (n) => `${n} geeignet`, openShort: (n) => `${n} offen`,
       adminTitle: 'Back-office', adminSub: 'Werkzeuge des Rutherford-Teams', adminCta: 'Admin öffnen',
+      adminTag: 'Admin', memberTag: 'Mitglied', invitedTag: 'Eingeladen', invitePending: 'Einladung gesendet', inviteSend: 'Einladung senden', inviteEmailPh: 'name@firma.com',
     },
     academyH: 'Academy', levelWord: 'Level', xpUnit: 'XP',
     xpToNext: (n, rank) => `${n} XP bis ${rank}`, maxLevel: 'Höchster Rang erreicht',
@@ -269,6 +276,7 @@ const COPY: Record<Locale, Copy> = {
       soonTeam: 'Gli inviti al team arrivano presto.', soonNetwork: 'La sua rete apparirà qui.', clientsEmpty: 'Nessuna validazione cliente per ora.',
       pressUnit: (n) => `${n} macchin${n === 1 ? 'a' : 'e'}`, eligibleShort: (n) => `${n} idonee`, openShort: (n) => `${n} in corso`,
       adminTitle: 'Back-office', adminSub: 'Strumenti del team Rutherford', adminCta: 'Apri admin',
+      adminTag: 'Admin', memberTag: 'Membro', invitedTag: 'Invitato', invitePending: 'Invito inviato', inviteSend: 'Invia invito', inviteEmailPh: 'nome@azienda.com',
     },
     academyH: 'Academy', levelWord: 'Livello', xpUnit: 'XP',
     xpToNext: (n, rank) => `${n} XP a ${rank}`, maxLevel: 'Rango massimo raggiunto',
@@ -308,6 +316,7 @@ const COPY: Record<Locale, Copy> = {
       soonTeam: 'Las invitaciones de equipo llegan pronto.', soonNetwork: 'Su red aparecerá aquí.', clientsEmpty: 'Aún no hay validaciones de clientes.',
       pressUnit: (n) => `${n} prensa${n === 1 ? '' : 's'}`, eligibleShort: (n) => `${n} aptas`, openShort: (n) => `${n} en curso`,
       adminTitle: 'Back-office', adminSub: 'Herramientas del equipo Rutherford', adminCta: 'Abrir admin',
+      adminTag: 'Admin', memberTag: 'Miembro', invitedTag: 'Invitado', invitePending: 'Invitación enviada', inviteSend: 'Enviar invitación', inviteEmailPh: 'nombre@empresa.com',
     },
     academyH: 'Academy', levelWord: 'Nivel', xpUnit: 'XP',
     xpToNext: (n, rank) => `${n} XP para ${rank}`, maxLevel: 'Rango máximo alcanzado',
@@ -355,7 +364,7 @@ function fmtMonth(iso: string | null, locale: Locale): string {
 type Tile = { ic: string; cls: string; t: string; s: string; href: string; statDot?: string; statV: string; statM?: string };
 
 export function AccountHub(props: Props) {
-  const { accountType, email, memberSince, profile, academy, consoleStat, resume, resellerClients } = props;
+  const { accountType, team, email, memberSince, profile, academy, consoleStat, resume, resellerClients } = props;
   const { locale } = useLanguage();
   const t = COPY[locale];
   const accent = TONE[accountType];
@@ -461,7 +470,7 @@ export function AccountHub(props: Props) {
             <div className="ah-stack">
               <SettingsCard t={t} locale={locale} profile={profile} email={email} />
               {accountType !== 'team' ? (
-                <ManagePanel t={t} accountType={accountType} name={profile.fullName || email} email={email} clients={resellerClients} />
+                <ManagePanel t={t} accountType={accountType} team={team} clients={resellerClients} />
               ) : (
                 <div className="ah-card" id="account-manage">
                   <div className="ah-card-h">
@@ -525,11 +534,80 @@ function PersonRow({ av, accent, name, sub, tag, square }: { av: string; accent:
   );
 }
 
-function ManagePanel({ t, accountType, name, email, clients }: { t: Copy; accountType: AccountType; name: string; email: string; clients: ResellerClient[] }) {
+function roleTag(t: Copy, role: MemberRole): string {
+  return role === 'owner' ? t.manage.owner : role === 'admin' ? t.manage.adminTag : t.manage.memberTag;
+}
+
+function InviteForm({ t }: { t: Copy }) {
+  const router = useRouter();
+  const [email, setEmail] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState(false);
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email.trim()) return;
+    setBusy(true);
+    setError(false);
+    try {
+      const res = await fetch('/api/account/team/invite', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email.trim(), role: 'member' }),
+      });
+      if (res.ok) {
+        setEmail('');
+        router.refresh();
+      } else {
+        setError(true);
+      }
+    } catch {
+      setError(true);
+    }
+    setBusy(false);
+  };
+
+  return (
+    <form className="ah-invite-form" onSubmit={submit}>
+      <input
+        type="email"
+        className={`ah-invite-input${error ? ' err' : ''}`}
+        placeholder={t.manage.inviteEmailPh}
+        value={email}
+        onChange={(e) => {
+          setEmail(e.target.value);
+          setError(false);
+        }}
+        disabled={busy}
+        required
+      />
+      <button type="submit" className="ah-invite-send" disabled={busy}>
+        {busy ? '…' : t.manage.inviteSend}
+      </button>
+    </form>
+  );
+}
+
+function ManagePanel({ t, accountType, team, clients }: { t: Copy; accountType: AccountType; team: Team; clients: ResellerClient[] }) {
   const [tab, setTab] = useState<'clients' | 'team'>(accountType === 'reseller' ? 'clients' : 'team');
   const accent = TONE[accountType];
   const title = accountType === 'distributor' ? t.manage.networkTitle : accountType === 'reseller' ? t.manage.clientsTitle : t.manage.teamTitle;
   const sub = accountType === 'distributor' ? t.manage.networkSub : accountType === 'reseller' ? t.manage.clientsSub : t.manage.teamSub;
+  const canInvite = team.myRole === 'owner' || team.myRole === 'admin';
+
+  const teamView = (
+    <>
+      <div className="ah-people">
+        {team.members.map((m) => (
+          <PersonRow key={m.userId} av={initials(m.name, m.email)} accent={accent} name={m.name || m.email} sub={m.email} tag={roleTag(t, m.role)} />
+        ))}
+        {team.pending.map((p) => (
+          <PersonRow key={p.id} av={initials(null, p.email)} accent={accent} name={p.email} sub={t.manage.invitePending} tag={t.manage.invitedTag} />
+        ))}
+      </div>
+      {canInvite ? <InviteForm t={t} /> : null}
+    </>
+  );
 
   return (
     <div className="ah-card" id="account-manage">
@@ -565,18 +643,8 @@ function ManagePanel({ t, accountType, name, email, clients }: { t: Copy; accoun
             <p className="ah-empty">{t.manage.clientsEmpty}</p>
           )
         ) : (
-          <>
-            <div className="ah-people">
-              <PersonRow av={initials(name, email)} accent={accent} name={name} sub={email} tag={t.manage.owner} />
-            </div>
-            <p className="ah-empty-note">{t.manage.soonTeam}</p>
-          </>
+          teamView
         )}
-
-        <button className="ah-invite" type="button" disabled>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
-          {accountType === 'distributor' ? t.manage.addReseller : accountType === 'reseller' && tab === 'clients' ? t.manage.inviteClient : t.manage.inviteMember}
-        </button>
       </div>
     </div>
   );
