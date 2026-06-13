@@ -5,6 +5,8 @@ import { createConsoleValidationTask } from '@/lib/asana';
 import { sendMail } from '@/lib/msgraph';
 import { acknowledgementEmail } from '@/lib/console-validation-emails';
 import { getNotificationEmail, insertConsoleValidation } from '@/lib/console-validations';
+import { createInvitation } from '@/lib/organizations';
+import { teamInviteEmail } from '@/lib/team-emails';
 
 export const dynamic = 'force-dynamic';
 
@@ -61,14 +63,58 @@ export async function POST(request: NextRequest) {
 
   // Link the request to the visitor's account when they happen to be signed in.
   let userId: string | null = null;
+  let submitterEmail: string | null = null;
   try {
     if (process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
       const { data } = await createSupabaseServerClient().auth.getUser();
       userId = data.user?.id ?? null;
+      submitterEmail = data.user?.email ?? null;
     }
   } catch {
     // Anonymous submission — fine.
   }
+
+  // A signed-in reseller / distributor is submitting on behalf of a CLIENT: the
+  // company + email are the client's. Attribute the request to the reseller,
+  // keep it off their personal tracker (user_id null), and invite the client to
+  // claim their account (they link to the reseller's org on sign-in).
+  let resellerId: string | null = null;
+  let resellerOrgId: string | null = null;
+  let resellerOrgName: string | null = null;
+  let onBehalf = false;
+  if (userId && process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    try {
+      const admin = createSupabaseAdminClient();
+      const { data: prof } = await admin
+        .from('profiles')
+        .select('account_type, organization_id')
+        .eq('id', userId)
+        .maybeSingle();
+      const at = prof?.account_type as string | undefined;
+      if (at === 'reseller' || at === 'distributor') {
+        onBehalf = true;
+        resellerId = userId;
+        resellerOrgId = (prof?.organization_id as string | null) ?? null;
+        if (resellerOrgId) {
+          const { data: org } = await admin
+            .from('organizations')
+            .select('name')
+            .eq('id', resellerOrgId)
+            .maybeSingle();
+          resellerOrgName = (org?.name as string | null) ?? null;
+        }
+      }
+    } catch {
+      /* treat as a normal submission */
+    }
+  }
+  // If the reseller entered their OWN email, it's a normal submission for their
+  // own press — not on behalf of a client.
+  if (onBehalf && submitterEmail && email.toLowerCase() === submitterEmail.toLowerCase()) {
+    onBehalf = false;
+    resellerId = null;
+  }
+  const recordUserId = onBehalf ? null : userId;
 
   // 1) Pipedrive Deal first: its id stamps the title that everything else reuses.
   const deal = await createConsoleValidationDeal({ company: companyName, country, machine: machineName });
@@ -122,7 +168,11 @@ export async function POST(request: NextRequest) {
   const asanaTaskGid = await createConsoleValidationTask({ title, email, notes, photoLinks, folderLink: null });
 
   const ack = acknowledgementEmail({ company: companyName, country, machine: machineName, dealId });
-  await sendMail({ to: await getNotificationEmail(userId, email), subject: ack.subject, html: ack.html });
+  await sendMail({
+    to: await getNotificationEmail(userId, onBehalf ? submitterEmail ?? email : email),
+    subject: ack.subject,
+    html: ack.html,
+  });
 
   await addDealNote(
     dealId,
@@ -134,7 +184,8 @@ export async function POST(request: NextRequest) {
   );
 
   await insertConsoleValidation({
-    userId,
+    userId: recordUserId,
+    resellerId,
     refCode,
     email,
     company: companyName,
@@ -147,6 +198,21 @@ export async function POST(request: NextRequest) {
     asanaTaskGid,
     photos: photoLinks,
   });
+
+  // On-behalf submissions: invite the client to claim their account.
+  if (onBehalf && resellerOrgId && resellerId) {
+    const invite = await createInvitation({
+      orgId: resellerOrgId,
+      email,
+      role: 'member',
+      kind: 'client',
+      invitedBy: resellerId,
+    });
+    if (invite) {
+      const cmail = teamInviteEmail('client', resellerOrgName, submitterEmail ?? 'Votre revendeur');
+      await sendMail({ to: email, subject: cmail.subject, html: cmail.html });
+    }
+  }
 
   return NextResponse.json({ ok: true, reference: dealId ? `ID ${dealId}` : null });
 }

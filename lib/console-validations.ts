@@ -18,6 +18,7 @@ export type ConsoleValidationStatus =
 
 export type ConsoleValidationRecord = {
   userId: string | null;
+  resellerId: string | null;
   refCode: string | null;
   email: string;
   company: string;
@@ -46,6 +47,7 @@ export async function insertConsoleValidation(record: ConsoleValidationRecord): 
       .from('console_validations')
       .insert({
         user_id: record.userId,
+        reseller_id: record.resellerId,
         ref_code: record.refCode,
         email: record.email,
         company: record.company,
