@@ -413,14 +413,15 @@ export function AccountHub(props: Props) {
         <div className="container ah-wrap" style={{ ['--role' as string]: accent }}>
           {/* Profile band */}
           <div className="ah-profile">
-            <div className="ah-avatar" style={{ background: accent }}>
-              {profile.avatarUrl ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={profile.avatarUrl} alt="" />
-              ) : (
-                <span>{initials(profile.fullName, email)}</span>
-              )}
-            </div>
+            <MediaUpload
+              kind="avatar"
+              currentUrl={profile.avatarUrl}
+              fallback={initials(profile.fullName, email)}
+              shape="circle"
+              editable
+              bg={accent}
+              fg="#ffffff"
+            />
             <div className="ah-id">
               <div className="ah-eyebrow">{t.eyebrow}</div>
               <div className="ah-name-row">
@@ -428,6 +429,17 @@ export function AccountHub(props: Props) {
                 <span className="ah-role"><span className="ah-role-dot" />{t.roles[accountType]}</span>
               </div>
               <div className="ah-co">
+                {profile.company || team.org?.logoUrl || team.myRole === 'owner' || team.myRole === 'admin' ? (
+                  <MediaUpload
+                    kind="logo"
+                    currentUrl={team.org?.logoUrl ?? null}
+                    fallback={initials(profile.company, profile.company || 'CO')}
+                    shape="square"
+                    editable={team.myRole === 'owner' || team.myRole === 'admin'}
+                    bg="#f1efec"
+                    fg="#16130f"
+                  />
+                ) : null}
                 {profile.company ? <span className="ah-co-name">{profile.company}</span> : null}
                 <span className="ah-meta">
                   {email}
@@ -641,6 +653,84 @@ function RevokeButton({ t, invitationId }: { t: Copy; invitationId: string }) {
     >
       {t.manage.revoke}
     </button>
+  );
+}
+
+function MediaUpload({
+  kind,
+  currentUrl,
+  fallback,
+  shape,
+  editable,
+  bg,
+  fg,
+}: {
+  kind: 'avatar' | 'logo';
+  currentUrl: string | null;
+  fallback: ReactNode;
+  shape: 'circle' | 'square';
+  editable: boolean;
+  bg: string;
+  fg: string;
+}) {
+  const router = useRouter();
+  const [busy, setBusy] = useState(false);
+  const cls = `ah-media ah-media-${shape}${editable ? ' is-editable' : ''}`;
+  const inner = (
+    <>
+      {currentUrl ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={currentUrl} alt="" />
+      ) : (
+        <span className="ah-media-fallback" style={{ color: fg }}>{fallback}</span>
+      )}
+      {editable ? (
+        <span className="ah-media-cam">
+          {busy ? (
+            '…'
+          ) : (
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+              <path d="M4 8.5h3l1.2-2h7.6L17 8.5h3v10H4v-10z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
+              <circle cx="12" cy="13" r="3" stroke="currentColor" strokeWidth="1.7" />
+            </svg>
+          )}
+        </span>
+      ) : null}
+    </>
+  );
+  if (!editable) {
+    return (
+      <span className={cls} style={{ background: bg }}>
+        {inner}
+      </span>
+    );
+  }
+  return (
+    <label className={cls} style={{ background: bg }}>
+      {inner}
+      <input
+        type="file"
+        accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml"
+        hidden
+        disabled={busy}
+        onChange={async (e) => {
+          const file = e.target.files?.[0];
+          if (!file) return;
+          setBusy(true);
+          const fd = new FormData();
+          fd.append('file', file);
+          fd.append('kind', kind);
+          try {
+            const res = await fetch('/api/account/media', { method: 'POST', body: fd });
+            if (res.ok) router.refresh();
+          } catch {
+            /* ignore */
+          }
+          setBusy(false);
+          e.target.value = '';
+        }}
+      />
+    </label>
   );
 }
 
