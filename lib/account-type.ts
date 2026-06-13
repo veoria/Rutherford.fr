@@ -3,8 +3,9 @@
 // Rules (in order):
 //   1. Email domain rutherford.fr / veoria.fr / studiodelaroche.fr → 'team'
 //   2. Email domain xrite.com                                      → 'distributor'
-//   3. Pipedrive person label: Reseller → 'reseller'
-//   4. Default                                                     → 'client'
+//   3. Pipedrive person label: Distributor → 'distributor';
+//      Reseller / OEM → 'reseller'; Customer → 'client'
+//   4. Default (incl. lead / prospect / source labels)            → 'client'
 //
 // account_type is never trusted from the client; it is computed here on sign-in
 // (domain only — free) and when a profile is saved (full, incl. the CRM lookup).
@@ -40,7 +41,8 @@ export async function deriveAccountType(email: string): Promise<AccountType> {
   const byDomain = accountTypeFromDomain(email);
   if (byDomain) return byDomain;
   try {
-    if ((await getPersonLabelByEmail(email)) === 'reseller') return 'reseller';
+    const label = await getPersonLabelByEmail(email);
+    if (label) return label; // 'distributor' | 'reseller' | 'client'
   } catch {
     /* fall through */
   }

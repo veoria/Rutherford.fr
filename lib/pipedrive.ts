@@ -271,7 +271,9 @@ async function personLabelNames(): Promise<Map<number, string>> {
  * type. Returns 'reseller' | 'client' | null (null = not found / undecidable).
  * Never throws; no-op (null) when PipeDrive isn't configured.
  */
-export async function getPersonLabelByEmail(email: string): Promise<'reseller' | 'client' | null> {
+export async function getPersonLabelByEmail(
+  email: string
+): Promise<'distributor' | 'reseller' | 'client' | null> {
   if (!TOKEN || !email) return null;
   try {
     const search = await pd(
@@ -291,7 +293,11 @@ export async function getPersonLabelByEmail(email: string): Promise<'reseller' |
 
     const names = await personLabelNames();
     const labels = labelIds.map((id) => (names.get(id) ?? '').toLowerCase());
-    if (labels.some((l) => l.includes('reseller') || l.includes('revendeur'))) return 'reseller';
+    // Precedence: a partner relationship (distributor > reseller) outranks a
+    // plain customer when a person carries several labels.
+    if (labels.some((l) => l.includes('distributor') || l.includes('distributeur'))) return 'distributor';
+    if (labels.some((l) => l.includes('reseller') || l.includes('revendeur') || l.includes('oem')))
+      return 'reseller';
     if (labels.some((l) => l.includes('customer') || l.includes('client'))) return 'client';
     return null;
   } catch {
