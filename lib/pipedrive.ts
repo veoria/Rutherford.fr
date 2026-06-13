@@ -52,6 +52,13 @@ const HOST = process.env.PIPEDRIVE_DOMAIN
   ? `https://${process.env.PIPEDRIVE_DOMAIN}.pipedrive.com`
   : 'https://api.pipedrive.com';
 
+/** Deal UI URL for the admin back-office — null when no company domain is set
+ * (the generic api.pipedrive.com host isn't a usable UI link). */
+export function pipedriveDealUrl(id: number | null): string | null {
+  if (!id || !process.env.PIPEDRIVE_DOMAIN) return null;
+  return `https://${process.env.PIPEDRIVE_DOMAIN}.pipedrive.com/deal/${id}`;
+}
+
 const PIPELINE_ID = process.env.PIPEDRIVE_PIPELINE_ID ? Number(process.env.PIPEDRIVE_PIPELINE_ID) : undefined;
 const STAGE_ID = process.env.PIPEDRIVE_STAGE_ID ? Number(process.env.PIPEDRIVE_STAGE_ID) : undefined;
 const OWNER_ID = process.env.PIPEDRIVE_OWNER_ID ? Number(process.env.PIPEDRIVE_OWNER_ID) : undefined;
