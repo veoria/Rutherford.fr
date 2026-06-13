@@ -220,7 +220,26 @@ function PageHead() {
   );
 }
 
-export function ConsoleValidationsPortal({ rows }: { rows: ConsoleValidationRow[] }) {
+function ProfilePrompt() {
+  return (
+    <a href="/account/profile" className="cvp-profile-prompt">
+      <span className="cvp-profile-prompt-dot" />
+      <span className="cvp-profile-prompt-text">
+        <strong>Complete your profile</strong> — add your name, company and role so we can tailor your
+        support and reach you faster.
+      </span>
+      <span className="cvp-chev">›</span>
+    </a>
+  );
+}
+
+export function ConsoleValidationsPortal({
+  rows,
+  profileComplete,
+}: {
+  rows: ConsoleValidationRow[];
+  profileComplete: boolean;
+}) {
   const router = useRouter();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [filter, setFilter] = useState<Tone | null>(null);
@@ -319,6 +338,7 @@ export function ConsoleValidationsPortal({ rows }: { rows: ConsoleValidationRow[
         <div className="cvp">
           <div className="cvp-wrap">
             <PageHead />
+            {!profileComplete ? <ProfilePrompt /> : null}
             <div className="cvp-empty">
               <p style={{ margin: 0, color: '#6A6A6A' }}>You have no console validation requests yet.</p>
               <a className="button button-dark" href="/console-validation" style={{ marginTop: 16 }}>
@@ -341,6 +361,7 @@ export function ConsoleValidationsPortal({ rows }: { rows: ConsoleValidationRow[
       <div className="cvp">
         <div className="cvp-wrap">
           <PageHead />
+          {!profileComplete ? <ProfilePrompt /> : null}
 
           <div className="cvp-summary">
             {GROUPS.map((g) => (

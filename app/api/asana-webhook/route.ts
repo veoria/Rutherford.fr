@@ -6,6 +6,7 @@ import { sendMail } from '@/lib/msgraph';
 import { canConnectEmail, cannotConnectEmail, moreInfoEmail } from '@/lib/console-validation-emails';
 import {
   getConsoleValidationStatusByAsanaTask,
+  getNotificationEmailByAsanaTask,
   updateConsoleValidationStatusByAsanaTask,
   type ConsoleValidationStatus,
 } from '@/lib/console-validations';
@@ -84,6 +85,8 @@ export async function POST(request: NextRequest) {
     });
 
     const email = extractEmail(state.notes);
+    // Customer-facing verdict goes to their notification email when set.
+    const notifyTo = email ? await getNotificationEmailByAsanaTask(gid, email) : '';
     const dealId = extractDealId(state.name);
     const name = state.name;
     const by = state.completedByName || 'the team';
@@ -91,7 +94,7 @@ export async function POST(request: NextRequest) {
     if (status === 'can_be_connected') {
       if (email) {
         const mail = canConnectEmail({ name, dealId });
-        await sendMail({ to: email, subject: mail.subject, html: mail.html, bcc: mail.bcc });
+        await sendMail({ to: notifyTo, subject: mail.subject, html: mail.html, bcc: mail.bcc });
       }
       await addDealNote(
         dealId,
@@ -100,7 +103,7 @@ export async function POST(request: NextRequest) {
     } else if (status === 'rejected') {
       if (email) {
         const mail = cannotConnectEmail({ name, dealId });
-        await sendMail({ to: email, subject: mail.subject, html: mail.html });
+        await sendMail({ to: notifyTo, subject: mail.subject, html: mail.html });
       }
       await addDealNote(
         dealId,
@@ -109,7 +112,7 @@ export async function POST(request: NextRequest) {
     } else if (status === 'changes_requested') {
       if (email) {
         const mail = moreInfoEmail({ name, dealId });
-        await sendMail({ to: email, subject: mail.subject, html: mail.html });
+        await sendMail({ to: notifyTo, subject: mail.subject, html: mail.html });
       }
       await addDealNote(
         dealId,
