@@ -12731,6 +12731,7 @@ a.blog-card-image:hover img {
 .acct-subnav-link { font-size: 13.5px; font-weight: 600; color: var(--muted); padding: 6px 12px; border-radius: 999px; white-space: nowrap; text-decoration: none; }
 .acct-subnav-link:hover { color: #16130f; background: rgba(20, 19, 15, 0.05); }
 .acct-subnav-link.is-active { color: #fff; background: #16130f; }
+.ah-team-page { max-width: 760px; }
 @media (max-width: 900px) {
   .sup-2col { grid-template-columns: 1fr; }
   .sup-chat { max-height: none; }

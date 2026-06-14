@@ -15,7 +15,7 @@ const LABELS: Record<Locale, Record<Section, string>> = {
 const SECTIONS: { key: Section; href: string }[] = [
   { key: 'academy', href: '/account/academy' },
   { key: 'console', href: '/account/console-validations' },
-  { key: 'team', href: '/account#account-manage' },
+  { key: 'team', href: '/account/team' },
   { key: 'support', href: '/account/support' },
 ];
 

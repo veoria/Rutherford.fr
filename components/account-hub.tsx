@@ -406,13 +406,13 @@ export function AccountHub(props: Props) {
 
   let roleTile: Tile;
   if (accountType === 'reseller') {
-    roleTile = { ic: 'clients', cls: 'green', t: t.tiles.clientsT, s: t.tiles.clientsS, href: '#account-manage', statDot: 'green', statV: t.stat.clientsCount(resellerClients.length) };
+    roleTile = { ic: 'clients', cls: 'green', t: t.tiles.clientsT, s: t.tiles.clientsS, href: '/account/team', statDot: 'green', statV: t.stat.clientsCount(resellerClients.length) };
   } else if (accountType === 'distributor') {
-    roleTile = { ic: 'network', cls: 'violet', t: t.tiles.networkT, s: t.tiles.networkS, href: '#account-manage', statV: t.stat.networkSoon };
+    roleTile = { ic: 'network', cls: 'violet', t: t.tiles.networkT, s: t.tiles.networkS, href: '/account/team', statV: t.stat.networkSoon };
   } else if (accountType === 'team') {
     roleTile = { ic: 'admin', cls: 'ink', t: t.tiles.adminT, s: t.tiles.adminS, href: '/admin', statV: t.stat.backoffice };
   } else {
-    roleTile = { ic: 'team', cls: 'green', t: t.tiles.teamT, s: t.tiles.teamS, href: '#account-manage', statV: t.stat.youOnly };
+    roleTile = { ic: 'team', cls: 'green', t: t.tiles.teamT, s: t.tiles.teamS, href: '/account/team', statV: t.stat.youOnly };
   }
 
   const tiles: Tile[] =
@@ -506,25 +506,13 @@ export function AccountHub(props: Props) {
           <div className="ah-grid">
             <div className="ah-stack">
               <SettingsCard t={t} locale={locale} profile={profile} email={email} />
-              {accountType !== 'team' ? (
-                <ManagePanel
-                  t={t}
-                  accountType={accountType}
-                  team={team}
-                  selfId={selfId}
-                  networkResellers={networkResellers}
-                  clients={resellerClients}
-                />
-              ) : (
-                <div className="ah-card" id="account-manage">
-                  <div className="ah-card-h">
-                    <div><div className="ah-card-t">{t.manage.adminTitle}</div><div className="ah-card-s">{t.manage.adminSub}</div></div>
-                  </div>
-                  <div className="ah-card-bd">
-                    <a className="button button-dark" href="/admin">{t.manage.adminCta} →</a>
-                  </div>
-                </div>
-              )}
+              <ManagePanel
+                accountType={accountType}
+                team={team}
+                selfId={selfId}
+                networkResellers={networkResellers}
+                clients={resellerClients}
+              />
             </div>
             <aside className="ah-aside">
               <AcademyMini t={t} academy={academy} rank={rank} nextRank={nextRank} />
@@ -800,26 +788,43 @@ function InviteForm({ t, kind = 'member' }: { t: Copy; kind?: 'member' | 'client
   );
 }
 
-function ManagePanel({
-  t,
+export function ManagePanel({
   accountType,
   team,
   selfId,
   networkResellers,
   clients,
 }: {
-  t: Copy;
   accountType: AccountType;
   team: Team;
   selfId: string;
   networkResellers: ResellerClientOrg[];
   clients: ResellerClient[];
 }) {
+  const { locale } = useLanguage();
+  const t = COPY[locale];
   const [tab, setTab] = useState<'clients' | 'team'>(accountType === 'reseller' ? 'clients' : 'team');
   const accent = TONE[accountType];
   const title = accountType === 'distributor' ? t.manage.networkTitle : accountType === 'reseller' ? t.manage.clientsTitle : t.manage.teamTitle;
   const sub = accountType === 'distributor' ? t.manage.networkSub : accountType === 'reseller' ? t.manage.clientsSub : t.manage.teamSub;
   const canManage = team.myRole === 'owner' || team.myRole === 'admin';
+
+  // Rutherford staff manage everything from the back-office.
+  if (accountType === 'team') {
+    return (
+      <div className="ah-card" id="account-manage">
+        <div className="ah-card-h">
+          <div>
+            <div className="ah-card-t">{t.manage.adminTitle}</div>
+            <div className="ah-card-s">{t.manage.adminSub}</div>
+          </div>
+        </div>
+        <div className="ah-card-bd">
+          <a className="button button-dark" href="/admin">{t.manage.adminCta} →</a>
+        </div>
+      </div>
+    );
+  }
 
   const teamView = (
     <>
