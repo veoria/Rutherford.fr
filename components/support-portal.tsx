@@ -158,8 +158,7 @@ export function SupportPortal({ rows }: { rows: SupportRow[] }) {
   const searchParams = useSearchParams();
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
-  // Reply form state.
-  const [showReply, setShowReply] = useState(false);
+  // Chat composer state.
   const [replyFiles, setReplyFiles] = useState<File[]>([]);
   const [replyComment, setReplyComment] = useState('');
   const [sending, setSending] = useState(false);
@@ -179,7 +178,6 @@ export function SupportPortal({ rows }: { rows: SupportRow[] }) {
   const selected = rows.find((r) => r.id === (selectedId ?? deepLinkId)) ?? defaultSel;
 
   useEffect(() => {
-    setShowReply(false);
     setReplied(false);
     setReplyFiles([]);
     setReplyComment('');
@@ -233,7 +231,6 @@ export function SupportPortal({ rows }: { rows: SupportRow[] }) {
         throw new Error(b?.error ?? 'Something went wrong, please retry.');
       }
       setReplied(true);
-      setShowReply(false);
       setReplyFiles([]);
       setReplyComment('');
       router.refresh();
@@ -291,7 +288,8 @@ export function SupportPortal({ rows }: { rows: SupportRow[] }) {
             </div>
           ) : null}
 
-          <section className="cvp-detail cvp-detail-solo">
+          <section className="cvp-detail cvp-detail-solo sup-2col">
+            <div className="sup-col-info">
               <div className="cvp-dhead">
                 <div>
                   <div className="cvp-dtitle">{fullTitle(selected)}</div>
@@ -345,33 +343,6 @@ export function SupportPortal({ rows }: { rows: SupportRow[] }) {
                 </div>
               ) : null}
 
-              {selected.messages.length > 0 ? (
-                <>
-                  <div className="cvp-tlhead">Conversation</div>
-                  <div className="sup-thread">
-                    {selected.messages.map((msg, i) => (
-                      <div key={i} className={`sup-msg sup-msg-${msg.author}`}>
-                        <div className="sup-msg-h">
-                          {msg.author === 'team' ? 'Our team' : 'You'}
-                          <span className="cvp-mono"> · {formatDate(msg.createdAt)}</span>
-                        </div>
-                        {msg.body ? <p>{msg.body}</p> : null}
-                        {msg.photos.length > 0 ? (
-                          <div className="sup-msg-photos">
-                            {msg.photos.map((url, j) => (
-                              <a key={j} href={url} target="_blank" rel="noreferrer">
-                                {/* eslint-disable-next-line @next/next/no-img-element */}
-                                <img src={url} alt="" />
-                              </a>
-                            ))}
-                          </div>
-                        ) : null}
-                      </div>
-                    ))}
-                  </div>
-                </>
-              ) : null}
-
               <div className="cvp-tlhead">Activity</div>
               <ol className="cvp-tline">
                 {timelineFor(selected).map((e, i) => (
@@ -388,68 +359,56 @@ export function SupportPortal({ rows }: { rows: SupportRow[] }) {
                 ))}
               </ol>
 
-              <div className="cvp-actions">
-                {CAN_REPLY.includes(selected.status) ? (
-                  <button
-                    type="button"
-                    className={`cvp-btn${selected.status === 'waiting_customer' ? ' is-amber' : ''}`}
-                    onClick={() => {
-                      setReplied(false);
-                      setShowReply((v) => !v);
-                    }}
-                  >
-                    {showReply ? 'Close' : m.action} →
-                  </button>
+            </div>
+
+            <aside className="sup-chat">
+              <div className="sup-chat-h">Conversation</div>
+              <div className="sup-chat-body">
+                {selected.messages.length > 0 ? (
+                  selected.messages.map((msg, i) => (
+                    <div key={i} className={`sup-msg sup-msg-${msg.author}`}>
+                      <div className="sup-msg-h">
+                        {msg.author === 'team' ? 'Our team' : 'You'}
+                        <span className="cvp-mono"> · {formatDate(msg.createdAt)}</span>
+                      </div>
+                      {msg.body ? <p>{msg.body}</p> : null}
+                      {msg.photos.length > 0 ? (
+                        <div className="sup-msg-photos">
+                          {msg.photos.map((url, j) => (
+                            <a key={j} href={url} target="_blank" rel="noreferrer">
+                              {/* eslint-disable-next-line @next/next/no-img-element */}
+                              <img src={url} alt="" />
+                            </a>
+                          ))}
+                        </div>
+                      ) : null}
+                    </div>
+                  ))
                 ) : (
-                  <a className="cvp-btn" href="/support">
-                    {m.action} →
-                  </a>
+                  <p className="sup-chat-empty">No messages yet — write below and our team will get it.</p>
                 )}
               </div>
 
-              {replied ? (
-                <p className="cvp-reply-msg">
-                  Thank you — your details were sent to our team and added to this ticket.
-                </p>
-              ) : null}
-
-              {showReply ? (
-                <div className="cvp-reply">
-                  <div
-                    className={`cvp-reply-drop${dragging ? ' is-dragging' : ''}`}
-                    onDragOver={(e: DragEvent<HTMLDivElement>) => {
-                      e.preventDefault();
-                      if (!dragging) setDragging(true);
-                    }}
-                    onDragLeave={(e: DragEvent<HTMLDivElement>) => {
-                      if (e.currentTarget.contains(e.relatedTarget as Node | null)) return;
-                      setDragging(false);
-                    }}
-                    onDrop={(e: DragEvent<HTMLDivElement>) => {
-                      e.preventDefault();
-                      setDragging(false);
-                      addReplyFiles(e.dataTransfer.files);
-                    }}
-                  >
-                    <input
-                      id="sup-reply-input"
-                      className="cvp-reply-input"
-                      type="file"
-                      accept="image/*"
-                      multiple
-                      onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                        addReplyFiles(e.target.files);
-                        e.currentTarget.value = '';
-                      }}
-                    />
-                    <label htmlFor="sup-reply-input" className="cvp-reply-droplabel">
-                      <strong>Drag &amp; drop or click to add photos</strong>
-                      <span>Up to 9 images — drop here or tap to use the camera</span>
-                    </label>
-                  </div>
-
+              {CAN_REPLY.includes(selected.status) ? (
+                <div
+                  className={`sup-compose${dragging ? ' is-dragging' : ''}`}
+                  onDragOver={(e: DragEvent<HTMLDivElement>) => {
+                    e.preventDefault();
+                    if (!dragging) setDragging(true);
+                  }}
+                  onDragLeave={(e: DragEvent<HTMLDivElement>) => {
+                    if (e.currentTarget.contains(e.relatedTarget as Node | null)) return;
+                    setDragging(false);
+                  }}
+                  onDrop={(e: DragEvent<HTMLDivElement>) => {
+                    e.preventDefault();
+                    setDragging(false);
+                    addReplyFiles(e.dataTransfer.files);
+                  }}
+                >
+                  {replied ? <p className="sup-compose-sent">Sent — our team has it ✓</p> : null}
                   {replyFiles.length > 0 ? (
-                    <div className="cvp-reply-files">
+                    <div className="sup-compose-files">
                       {replyFiles.map((f, i) => (
                         <span key={i} className="cvp-file-chip">
                           {f.name}
@@ -464,32 +423,53 @@ export function SupportPortal({ rows }: { rows: SupportRow[] }) {
                       ))}
                     </div>
                   ) : null}
-
-                  <textarea
-                    className="cvp-reply-text"
-                    rows={4}
-                    placeholder="Add details for our team — what changed, answers to their questions, extra context…"
-                    value={replyComment}
-                    onChange={(e) => setReplyComment(e.target.value)}
-                  />
-
                   {replyError ? (
                     <p className="cvp-reply-error" role="alert">
                       {replyError}
                     </p>
                   ) : null}
-
-                  <div className="cvp-reply-actions">
-                    <button type="button" className="cvp-btn" disabled={sending} onClick={handleReply}>
-                      {sending ? 'Sending…' : 'Send to our team'}
-                    </button>
-                    <button type="button" className="cvp-ghost" onClick={() => setShowReply(false)}>
-                      Cancel
+                  <div className="sup-compose-row">
+                    <label className="sup-compose-attach" title="Add an image">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        hidden
+                        onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                          addReplyFiles(e.target.files);
+                          e.currentTarget.value = '';
+                        }}
+                      />
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <path d="M21 11.5l-8.5 8.5a5 5 0 0 1-7-7l8.5-8.5a3.3 3.3 0 0 1 4.7 4.7l-8.5 8.5a1.6 1.6 0 0 1-2.3-2.3l7.8-7.8" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    </label>
+                    <textarea
+                      className="sup-compose-text"
+                      rows={1}
+                      placeholder="Write a message…"
+                      value={replyComment}
+                      onChange={(e) => setReplyComment(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                          e.preventDefault();
+                          handleReply();
+                        }
+                      }}
+                      disabled={sending}
+                    />
+                    <button type="button" className="sup-compose-send" disabled={sending} onClick={handleReply}>
+                      {sending ? '…' : 'Send'}
                     </button>
                   </div>
                 </div>
-              ) : null}
-            </section>
+              ) : (
+                <div className="sup-chat-closed">
+                  This ticket is closed. <a href="/support">Open a new request →</a>
+                </div>
+              )}
+            </aside>
+          </section>
         </div>
       </div>
       <SiteFooter />
