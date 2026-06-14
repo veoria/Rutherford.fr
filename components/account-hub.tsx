@@ -54,6 +54,15 @@ const TONE: Record<AccountType, string> = {
   team: '#16130F',
 };
 
+// Co-brand badge for the X-Rite distributor space.
+const PARTNER_BADGE: Record<Locale, string> = {
+  en: 'Official X-Rite PANTONE partner',
+  fr: 'Partenaire officiel X-Rite PANTONE',
+  de: 'Offizieller X-Rite PANTONE Partner',
+  it: 'Partner ufficiale X-Rite PANTONE',
+  es: 'Partner oficial X-Rite PANTONE',
+};
+
 const LANG_NAME: Record<Locale, string> = {
   en: 'English',
   fr: 'Français',
@@ -428,6 +437,13 @@ export function AccountHub(props: Props) {
 
       <section className="ah-section section">
         <div className="container ah-wrap" style={{ ['--role' as string]: accent }}>
+          {accountType === 'distributor' ? (
+            <div className="ah-cobrand">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img className="ah-cobrand-logo" src="/images/xrite-logo-black.png" alt="X-Rite PANTONE" />
+              <span className="ah-cobrand-badge">{PARTNER_BADGE[locale]}</span>
+            </div>
+          ) : null}
           {/* Profile band */}
           <div className="ah-profile">
             <MediaUpload
