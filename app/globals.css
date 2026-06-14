@@ -12720,6 +12720,17 @@ a.blog-card-image:hover img {
 .sup-compose-send { flex: 0 0 auto; height: 38px; padding: 0 16px; border: 0; border-radius: 10px; background: #111; color: #fff; font-weight: 600; font-size: 14px; cursor: pointer; }
 .sup-compose-send:disabled { opacity: 0.6; cursor: default; }
 .sup-chat-closed { padding: 14px 15px; border-top: 1px solid var(--cvp-line); background: #fff; font-size: 13.5px; color: var(--cvp-grey2); }
+
+/* Light account sub-navigation (My account + section tabs) */
+.acct-subnav { border-bottom: 1px solid var(--line); background: #fff; }
+.acct-subnav-inner { display: flex; align-items: center; gap: 10px; padding: 9px 0; overflow-x: auto; }
+.acct-subnav-home { display: inline-flex; align-items: center; gap: 5px; font-size: 13.5px; font-weight: 700; color: #16130f; text-decoration: none; white-space: nowrap; flex: 0 0 auto; }
+.acct-subnav-home:hover { opacity: 0.7; }
+.acct-subnav-sep { width: 1px; height: 18px; background: var(--line); flex: 0 0 auto; }
+.acct-subnav-links { display: flex; gap: 4px; align-items: center; }
+.acct-subnav-link { font-size: 13.5px; font-weight: 600; color: var(--muted); padding: 6px 12px; border-radius: 999px; white-space: nowrap; text-decoration: none; }
+.acct-subnav-link:hover { color: #16130f; background: rgba(20, 19, 15, 0.05); }
+.acct-subnav-link.is-active { color: #fff; background: #16130f; }
 @media (max-width: 900px) {
   .sup-2col { grid-template-columns: 1fr; }
   .sup-chat { max-height: none; }

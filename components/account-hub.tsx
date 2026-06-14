@@ -41,6 +41,7 @@ type Props = {
     certificates: number;
   };
   consoleStat: { eligible: number; open: number };
+  supportStat: { status: string | null; newMessage: boolean };
   resume: { slug: string; title: string; moduleIndex: number; moduleTitle: string } | null;
   resellerClients: ResellerClient[];
 };
@@ -88,6 +89,9 @@ type Copy = {
     eligible: (n: number) => string;
     open: (n: number) => string;
     supportReply: string;
+    supportOpen: string;
+    supportAction: string;
+    supportNewMsg: string;
     youOnly: string;
     clientsCount: (n: number) => string;
     networkSoon: string;
@@ -144,7 +148,7 @@ const COPY: Record<Locale, Copy> = {
     },
     stat: {
       eligible: (n) => `${n} eligible`, open: (n) => `${n} in progress`,
-      supportReply: 'Reply within 1 business day', youOnly: 'Just you',
+      supportReply: 'Reply within 1 business day', supportOpen: 'Ticket in progress', supportAction: 'Action needed', supportNewMsg: 'New message', youOnly: 'Just you',
       clientsCount: (n) => `${n} client${n === 1 ? '' : 's'}`, networkSoon: 'Coming soon', backoffice: 'Back-office',
     },
     resumeKicker: 'Pick up where you left off', resumeCta: 'Continue', moduleWord: 'Module',
@@ -185,7 +189,7 @@ const COPY: Record<Locale, Copy> = {
     },
     stat: {
       eligible: (n) => `${n} éligible${n === 1 ? '' : 's'}`, open: (n) => `${n} en cours`,
-      supportReply: 'Réponse < 1 j ouvré', youOnly: 'Vous uniquement',
+      supportReply: 'Réponse < 1 j ouvré', supportOpen: 'Ticket en cours', supportAction: 'Action requise', supportNewMsg: 'Nouveau message', youOnly: 'Vous uniquement',
       clientsCount: (n) => `${n} client${n === 1 ? '' : 's'}`, networkSoon: 'Bientôt', backoffice: 'Back-office',
     },
     resumeKicker: 'Reprenez où vous en étiez', resumeCta: 'Continuer', moduleWord: 'Module',
@@ -226,7 +230,7 @@ const COPY: Record<Locale, Copy> = {
     },
     stat: {
       eligible: (n) => `${n} geeignet`, open: (n) => `${n} laufend`,
-      supportReply: 'Antwort < 1 Werktag', youOnly: 'Nur Sie',
+      supportReply: 'Antwort < 1 Werktag', supportOpen: 'Ticket in Bearbeitung', supportAction: 'Aktion erforderlich', supportNewMsg: 'Neue Nachricht', youOnly: 'Nur Sie',
       clientsCount: (n) => `${n} Kunde${n === 1 ? '' : 'n'}`, networkSoon: 'Demnächst', backoffice: 'Back-office',
     },
     resumeKicker: 'Weitermachen, wo Sie aufgehört haben', resumeCta: 'Fortsetzen', moduleWord: 'Modul',
@@ -267,7 +271,7 @@ const COPY: Record<Locale, Copy> = {
     },
     stat: {
       eligible: (n) => `${n} idonee`, open: (n) => `${n} in corso`,
-      supportReply: 'Risposta < 1 g lavorativo', youOnly: 'Solo lei',
+      supportReply: 'Risposta < 1 g lavorativo', supportOpen: 'Ticket in corso', supportAction: 'Azione richiesta', supportNewMsg: 'Nuovo messaggio', youOnly: 'Solo lei',
       clientsCount: (n) => `${n} client${n === 1 ? 'e' : 'i'}`, networkSoon: 'Presto', backoffice: 'Back-office',
     },
     resumeKicker: 'Riprenda da dove era rimasto', resumeCta: 'Continua', moduleWord: 'Modulo',
@@ -308,7 +312,7 @@ const COPY: Record<Locale, Copy> = {
     },
     stat: {
       eligible: (n) => `${n} aptas`, open: (n) => `${n} en curso`,
-      supportReply: 'Respuesta < 1 día hábil', youOnly: 'Solo usted',
+      supportReply: 'Respuesta < 1 día hábil', supportOpen: 'Ticket en curso', supportAction: 'Acción requerida', supportNewMsg: 'Nuevo mensaje', youOnly: 'Solo usted',
       clientsCount: (n) => `${n} cliente${n === 1 ? '' : 's'}`, networkSoon: 'Pronto', backoffice: 'Back-office',
     },
     resumeKicker: 'Retome donde lo dejó', resumeCta: 'Continuar', moduleWord: 'Módulo',
@@ -372,7 +376,7 @@ function fmtMonth(iso: string | null, locale: Locale): string {
 type Tile = { ic: string; cls: string; t: string; s: string; href: string; statDot?: string; statV: string; statM?: string };
 
 export function AccountHub(props: Props) {
-  const { accountType, team, selfId, networkResellers, email, memberSince, profile, academy, consoleStat, resume, resellerClients } = props;
+  const { accountType, team, selfId, networkResellers, email, memberSince, profile, academy, consoleStat, supportStat, resume, resellerClients } = props;
   const { locale } = useLanguage();
   const t = COPY[locale];
   const accent = TONE[accountType];
@@ -385,7 +389,20 @@ export function AccountHub(props: Props) {
 
   const academyTile: Tile = { ic: 'acad', cls: 'blue', t: t.tiles.academyT, s: t.tiles.academyS, href: '/account/academy', statDot: 'blue', statV: academyStat, statM: `${academy.xp} ${t.xpUnit}` };
   const consoleTile: Tile = { ic: 'console', cls: 'ink', t: t.tiles.consoleT, s: t.tiles.consoleS, href: '/account/console-validations', statDot: consoleStat.eligible > 0 ? 'green' : 'amber', statV: consoleStatV, statM: consoleStatM };
-  const supportTile: Tile = { ic: 'support', cls: 'ink', t: t.tiles.supportT, s: t.tiles.supportS, href: '/account/support', statV: t.stat.supportReply };
+  const supportStatV = supportStat.newMessage
+    ? t.stat.supportNewMsg
+    : supportStat.status === 'waiting_customer'
+      ? t.stat.supportAction
+      : supportStat.status
+        ? t.stat.supportOpen
+        : t.stat.supportReply;
+  const supportDot =
+    supportStat.newMessage || supportStat.status === 'waiting_customer'
+      ? 'amber'
+      : supportStat.status
+        ? 'blue'
+        : undefined;
+  const supportTile: Tile = { ic: 'support', cls: 'ink', t: t.tiles.supportT, s: t.tiles.supportS, href: '/account/support', statDot: supportDot, statV: supportStatV };
 
   let roleTile: Tile;
   if (accountType === 'reseller') {

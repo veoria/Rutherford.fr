@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { SiteFooter } from '@/components/site-footer';
 import { SiteNav } from '@/components/site-nav';
+import { AccountSubnav } from '@/components/account-subnav';
 import { type Locale, useLanguage } from '@/components/language-provider';
 import { Celebration, type CelebrationContent } from '@/components/academy-celebration';
 import { coursePercent, isCourseComplete, overallStats } from '@/lib/gamification';
@@ -711,6 +712,7 @@ export function AccountPage({
   return (
     <main className="page-shell account-shell" id="top">
       <SiteNav />
+      <AccountSubnav current="academy" />
 
       <section className="account-hero section">
         <div className="container account-hero-shell">

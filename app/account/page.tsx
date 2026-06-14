@@ -89,6 +89,39 @@ export default async function AccountHubRoute() {
   const cvEligible = ownStatuses.filter((s) => s === 'can_be_connected').length;
   const cvOpen = ownStatuses.filter((s) => OPEN_CV.includes(s)).length;
 
+  // Support tile: surface an open ticket's status, and a "new message" badge
+  // when the latest message on an open ticket came from our team.
+  let supportStatus: string | null = null;
+  let supportNewMessage = false;
+  try {
+    const { data: stRows } = await supabase
+      .from('support_tickets')
+      .select('id, status, updated_at')
+      .order('updated_at', { ascending: false });
+    const openTickets = ((stRows ?? []) as { id: string; status: string }[]).filter((r) =>
+      ['new', 'in_progress', 'waiting_customer'].includes(r.status)
+    );
+    if (openTickets.length) {
+      supportStatus = openTickets.find((r) => r.status === 'waiting_customer')?.status ?? openTickets[0].status;
+      const { data: msgRows } = await supabase
+        .from('support_messages')
+        .select('ticket_id, author, created_at')
+        .in(
+          'ticket_id',
+          openTickets.map((r) => r.id)
+        )
+        .order('created_at', { ascending: false });
+      const seen = new Set<string>();
+      for (const msg of (msgRows ?? []) as { ticket_id: string; author: string }[]) {
+        if (seen.has(msg.ticket_id)) continue;
+        seen.add(msg.ticket_id);
+        if (msg.author === 'team') supportNewMessage = true;
+      }
+    }
+  } catch {
+    /* support tables optional — leave defaults */
+  }
+
   // Reseller → clients (real, from console_validations.reseller_id). Privileged
   // read scoped to this reseller; the user RLS policy doesn't cover it.
   let resellerClients: ResellerClient[] = [];
@@ -164,6 +197,7 @@ export default async function AccountHubRoute() {
         certificates: stats.certifiedCount,
       }}
       consoleStat={{ eligible: cvEligible, open: cvOpen }}
+      supportStat={{ status: supportStatus, newMessage: supportNewMessage }}
       resume={resume}
       resellerClients={resellerClients}
     />

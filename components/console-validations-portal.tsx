@@ -4,6 +4,7 @@ import { ChangeEvent, DragEvent, Fragment, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { SiteFooter } from '@/components/site-footer';
 import { SiteNav } from '@/components/site-nav';
+import { AccountSubnav } from '@/components/account-subnav';
 import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 
 export type ConsoleValidationStatus =
@@ -335,6 +336,7 @@ export function ConsoleValidationsPortal({
     return (
       <main className="page-shell">
         <SiteNav current="account" />
+          <AccountSubnav current="console" />
         <div className="cvp">
           <div className="cvp-wrap">
             <PageHead />
@@ -358,6 +360,7 @@ export function ConsoleValidationsPortal({
   return (
     <main className="page-shell">
       <SiteNav current="account" />
+          <AccountSubnav current="console" />
       <div className="cvp">
         <div className="cvp-wrap">
           <PageHead />
