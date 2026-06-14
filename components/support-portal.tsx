@@ -11,6 +11,8 @@ export type SupportStatus = 'new' | 'in_progress' | 'waiting_customer' | 'resolv
 export type SupportRow = {
   id: string;
   reference: string;
+  company: string | null;
+  subject: string | null;
   anydesk: string | null;
   description: string;
   status: SupportStatus;
@@ -18,6 +20,8 @@ export type SupportRow = {
   updatedAt: string;
   photos: string[];
   customerReplyAt: string | null;
+  agentMessage: string | null;
+  agentMessageAt: string | null;
 };
 
 // Tickets where the customer can still add details (anything but a closed one).
@@ -88,10 +92,11 @@ function formatDate(iso: string): string {
   }
 }
 
-const listTitle = (r: SupportRow) => {
-  const first = r.description.split('\n')[0]?.trim() ?? '';
-  return first ? (first.length > 48 ? `${first.slice(0, 48)}…` : first) : 'Support ticket';
-};
+const truncate = (s: string, n: number) => (s.length > n ? `${s.slice(0, n)}…` : s);
+const baseTitle = (r: SupportRow) =>
+  (r.subject?.trim() || r.description.split('\n')[0]?.trim() || 'Support ticket') as string;
+const listTitle = (r: SupportRow) => truncate(baseTitle(r), 48);
+const fullTitle = (r: SupportRow) => truncate(baseTitle(r), 80);
 
 function StatusPill({ status }: { status: SupportStatus }) {
   const m = META[status];
@@ -112,6 +117,9 @@ function timelineFor(r: SupportRow): TimelineItem[] {
   ];
   if (r.customerReplyAt) {
     ev.push({ label: 'You added details', date: formatDate(r.customerReplyAt), state: 'done' });
+  }
+  if (r.agentMessageAt) {
+    ev.push({ label: 'Message from our team', date: formatDate(r.agentMessageAt), state: 'done', tone: 'blue' });
   }
   if (r.status === 'new') {
     ev.push({ label: 'Awaiting a support agent', state: 'current', tone: 'blue' });
@@ -314,11 +322,12 @@ export function SupportPortal({ rows }: { rows: SupportRow[] }) {
             <section className="cvp-detail">
               <div className="cvp-dhead">
                 <div>
-                  <div className="cvp-dtitle">{listTitle(selected)}</div>
+                  <div className="cvp-dtitle">{fullTitle(selected)}</div>
                   <div className="cvp-dsub">
                     <span className="cvp-mono">{selected.reference}</span>
                     {' · '}
                     Opened {formatDate(selected.createdAt)}
+                    {selected.company ? ` · ${selected.company}` : ''}
                   </div>
                 </div>
                 <StatusPill status={selected.status} />
@@ -330,9 +339,21 @@ export function SupportPortal({ rows }: { rows: SupportRow[] }) {
                 <span className="cvp-bdesc">{m.desc}</span>
               </div>
 
+              {selected.agentMessage ? (
+                <div className="sup-agent-msg">
+                  <div className="sup-agent-h">
+                    Message from our team
+                    {selected.agentMessageAt ? (
+                      <span className="cvp-mono"> · {formatDate(selected.agentMessageAt)}</span>
+                    ) : null}
+                  </div>
+                  <p>{selected.agentMessage}</p>
+                </div>
+              ) : null}
+
               <div className="cvp-sumbox">
                 {[
-                  ['Reference', selected.reference],
+                  ['Company', selected.company || '—'],
                   ['AnyDesk', selected.anydesk || '—'],
                   ['Last update', formatDate(selected.updatedAt)],
                 ].map(([k, v]) => (

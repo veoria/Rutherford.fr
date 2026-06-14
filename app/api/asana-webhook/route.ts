@@ -1,10 +1,10 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { createHmac, timingSafeEqual } from 'crypto';
-import { getConsoleValidationTaskState, getSupportTaskState } from '@/lib/asana';
+import { getConsoleValidationTaskState, getStory, getSupportTaskState } from '@/lib/asana';
 import { addDealNote } from '@/lib/pipedrive';
 import { sendMail } from '@/lib/msgraph';
 import { canConnectEmail, cannotConnectEmail, moreInfoEmail } from '@/lib/console-validation-emails';
-import { supportStatusEmail } from '@/lib/support-emails';
+import { supportAgentMessageEmail, supportStatusEmail } from '@/lib/support-emails';
 import {
   getConsoleValidationStatusByAsanaTask,
   getNotificationEmailByAsanaTask,
@@ -13,6 +13,7 @@ import {
 } from '@/lib/console-validations';
 import {
   getSupportTicketByAsanaTask,
+  setAgentMessageByAsanaTask,
   supportStatusFromSection,
   updateSupportStatusByAsanaTask,
 } from '@/lib/support-tickets';
@@ -77,10 +78,17 @@ export async function POST(request: NextRequest) {
   // Events are diffs; collect the task gids that changed, then re-fetch each to
   // learn its live approval state.
   const taskGids = new Set<string>();
+  // Comments arrive as "story" events; keep each with its parent task so we can
+  // relay the ones tagged for the customer.
+  const storyEvents: { storyGid: string; taskGid: string }[] = [];
   for (const event of events) {
     if (event?.resource?.resource_type === 'task' && (event.action === 'changed' || event.action === 'added')) {
       const gid = event.resource.gid;
       if (gid) taskGids.add(String(gid));
+    } else if (event?.resource?.resource_type === 'story' && event.action === 'added') {
+      const storyGid = event.resource?.gid;
+      const taskGid = event.parent?.gid;
+      if (storyGid && taskGid) storyEvents.push({ storyGid: String(storyGid), taskGid: String(taskGid) });
     }
   }
 
@@ -150,6 +158,23 @@ export async function POST(request: NextRequest) {
         `Changes requested by ${by} — Console Validation ID ${dealId ?? ''}: more information/pictures needed. ${email ?? ''}`
       );
     }
+  }
+
+  // Relay support comments a team member tagged for the customer ("[client] …").
+  // Other comments stay internal. Dedupe on the story gid so a re-delivery
+  // doesn't email twice.
+  for (const { storyGid, taskGid } of storyEvents) {
+    const ticket = await getSupportTicketByAsanaTask(taskGid);
+    if (!ticket || ticket.lastAgentStoryGid === storyGid) continue;
+    const story = await getStory(storyGid);
+    if (!story || !story.isComment) continue;
+    const m = story.text.match(/^\s*\[client\]\s*:?\s*([\s\S]+)/i);
+    if (!m) continue;
+    const message = m[1].trim();
+    if (!message) continue;
+    await setAgentMessageByAsanaTask(taskGid, storyGid, message);
+    const mail = supportAgentMessageEmail(message, `#${ticket.id.slice(0, 8)}`);
+    await sendMail({ to: ticket.email, subject: mail.subject, html: mail.html });
   }
 
   return NextResponse.json({ ok: true });

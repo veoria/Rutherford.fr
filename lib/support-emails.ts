@@ -53,3 +53,15 @@ export function supportStatusEmail(status: string, ref: string | null): { subjec
     html: shell(`Your ticket is ${s.label}`, [s.line], 'Open my ticket'),
   };
 }
+
+const escapeHtml = (s: string) =>
+  s.replace(/[<>&]/g, (c) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' }[c] as string));
+
+/** Sent when a team member posts a "[client] …" comment on the Asana task —
+ * relays that message to the customer. The message is free text, so escape it. */
+export function supportAgentMessageEmail(message: string, ref: string | null): { subject: string; html: string } {
+  return {
+    subject: `A message about your support ticket${REF(ref)}`,
+    html: shell('A message from our team', [escapeHtml(message).replace(/\n/g, '<br>')], 'Open my ticket'),
+  };
+}

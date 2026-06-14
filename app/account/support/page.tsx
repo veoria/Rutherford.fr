@@ -21,7 +21,9 @@ export default async function AccountSupportRoute() {
   // RLS scopes this to the visitor's own tickets (by account or by email).
   const { data } = await supabase
     .from('support_tickets')
-    .select('id, anydesk, description, status, created_at, updated_at, photos, customer_reply_at')
+    .select(
+      'id, company, subject, anydesk, description, status, created_at, updated_at, photos, customer_reply_at, agent_message, agent_message_at'
+    )
     .order('created_at', { ascending: false });
 
   const rows: SupportRow[] = (data ?? []).map((row) => {
@@ -29,6 +31,8 @@ export default async function AccountSupportRoute() {
     return {
       id: row.id as string,
       reference: `#${String(row.id).slice(0, 8)}`,
+      company: (row.company as string | null) ?? null,
+      subject: (row.subject as string | null) ?? null,
       anydesk: (row.anydesk as string | null) ?? null,
       description: (row.description as string | null) ?? '',
       status: row.status as SupportRow['status'],
@@ -36,6 +40,8 @@ export default async function AccountSupportRoute() {
       updatedAt: (row.updated_at as string | null) ?? (row.created_at as string),
       photos: Object.values(photos).filter((v): v is string => typeof v === 'string'),
       customerReplyAt: (row.customer_reply_at as string | null) ?? null,
+      agentMessage: (row.agent_message as string | null) ?? null,
+      agentMessageAt: (row.agent_message_at as string | null) ?? null,
     };
   });
 
