@@ -532,27 +532,27 @@ function SupportUploadField({
     if (f && f.type.startsWith('image/')) onChange(id, f);
   };
   return (
-    <div className="console-simple-upload-card">
+    <div
+      className={`console-simple-upload-card${dragging ? ' is-dragging' : ''}`}
+      onDragOver={(e: DragEvent<HTMLDivElement>) => {
+        e.preventDefault();
+        if (!dragging) setDragging(true);
+      }}
+      onDragLeave={(e: DragEvent<HTMLDivElement>) => {
+        if (e.currentTarget.contains(e.relatedTarget as Node | null)) return;
+        setDragging(false);
+      }}
+      onDrop={(e: DragEvent<HTMLDivElement>) => {
+        e.preventDefault();
+        setDragging(false);
+        accept(e.dataTransfer.files?.[0] ?? null);
+      }}
+    >
       <div className="console-simple-upload-copy">
         <h3>{card.title}</h3>
         <p>{card.desc}</p>
       </div>
-      <div
-        className={`cv-drop${dragging ? ' is-dragging' : ''}`}
-        onDragOver={(e: DragEvent<HTMLDivElement>) => {
-          e.preventDefault();
-          if (!dragging) setDragging(true);
-        }}
-        onDragLeave={(e: DragEvent<HTMLDivElement>) => {
-          if (e.currentTarget.contains(e.relatedTarget as Node | null)) return;
-          setDragging(false);
-        }}
-        onDrop={(e: DragEvent<HTMLDivElement>) => {
-          e.preventDefault();
-          setDragging(false);
-          accept(e.dataTransfer.files?.[0] ?? null);
-        }}
-      >
+      <div className="cv-drop">
         <input
           className="cv-drop-input"
           type="file"
