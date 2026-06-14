@@ -12622,6 +12622,8 @@ a.blog-card-image:hover img {
 @media (max-width: 900px) {
   .cvp-main { grid-template-columns: 1fr; }
   .cvp-summary { grid-template-columns: repeat(2, 1fr); }
+  /* On mobile, lead with the open ticket's detail; the list follows below. */
+  .cvp-detail { order: -1; }
 }
 @media (max-width: 560px) {
   .cvp-wrap { padding: 36px 20px 64px; }

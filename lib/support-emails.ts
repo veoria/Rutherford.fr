@@ -5,7 +5,9 @@ const SITE = 'https://rutherford.fr';
 const TRACK = `${SITE}/account/support`;
 const BLUE = '#2433C9';
 
-function shell(headline: string, paragraphs: string[], ctaLabel: string): string {
+function shell(headline: string, paragraphs: string[], ctaLabel: string, ref?: string | null): string {
+  // Deep-link the CTA to the exact ticket (?t=<8-char ref>) when known.
+  const href = ref ? `${TRACK}?t=${encodeURIComponent(ref.replace(/^#/, ''))}` : TRACK;
   const body = paragraphs
     .map((p) => `<p style="margin:0 0 14px;font-size:15px;line-height:1.6;color:#544C46;">${p}</p>`)
     .join('');
@@ -16,7 +18,7 @@ function shell(headline: string, paragraphs: string[], ctaLabel: string): string
       <tr><td style="padding:30px 34px;">
         <h1 style="margin:0 0 14px;font-size:22px;color:#181410;">${headline}</h1>
         ${body}
-        <a href="${TRACK}" style="display:inline-block;background:${BLUE};color:#fff;font-weight:600;font-size:14.5px;padding:13px 24px;border-radius:999px;text-decoration:none;">${ctaLabel} &rarr;</a>
+        <a href="${href}" style="display:inline-block;background:${BLUE};color:#fff;font-weight:600;font-size:14.5px;padding:13px 24px;border-radius:999px;text-decoration:none;">${ctaLabel} &rarr;</a>
         <p style="margin:22px 0 0;font-size:12px;color:#9A8E82;">Rutherford.fr — closed-loop color for offset &amp; flexo printing.</p>
       </td></tr>
     </table>
@@ -33,7 +35,7 @@ export function supportAckEmail(ref: string | null): { subject: string; html: st
     html: shell('Support request received', [
       'Thank you — our team has your request and will get back to you shortly.',
       'You can follow your ticket and add details anytime from your account.',
-    ], 'Track your ticket'),
+    ], 'Track your ticket', ref),
   };
 }
 
@@ -50,7 +52,7 @@ export function supportStatusEmail(status: string, ref: string | null): { subjec
   if (!s) return null; // 'new' or unknown — no email
   return {
     subject: `Your support ticket is ${s.label}${REF(ref)}`,
-    html: shell(`Your ticket is ${s.label}`, [s.line], 'Open my ticket'),
+    html: shell(`Your ticket is ${s.label}`, [s.line], 'Open my ticket', ref),
   };
 }
 
@@ -62,6 +64,6 @@ const escapeHtml = (s: string) =>
 export function supportAgentMessageEmail(message: string, ref: string | null): { subject: string; html: string } {
   return {
     subject: `A message about your support ticket${REF(ref)}`,
-    html: shell('A message from our team', [escapeHtml(message).replace(/\n/g, '<br>')], 'Open my ticket'),
+    html: shell('A message from our team', [escapeHtml(message).replace(/\n/g, '<br>')], 'Open my ticket', ref),
   };
 }
