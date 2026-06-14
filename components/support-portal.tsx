@@ -8,6 +8,13 @@ import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 
 export type SupportStatus = 'new' | 'in_progress' | 'waiting_customer' | 'resolved' | 'closed';
 
+export type SupportMessage = {
+  author: 'team' | 'customer';
+  body: string | null;
+  photos: string[];
+  createdAt: string;
+};
+
 export type SupportRow = {
   id: string;
   reference: string;
@@ -22,6 +29,7 @@ export type SupportRow = {
   customerReplyAt: string | null;
   agentMessage: string | null;
   agentMessageAt: string | null;
+  messages: SupportMessage[];
 };
 
 // Tickets where the customer can still add details (anything but a closed one).
@@ -339,18 +347,6 @@ export function SupportPortal({ rows }: { rows: SupportRow[] }) {
                 <span className="cvp-bdesc">{m.desc}</span>
               </div>
 
-              {selected.agentMessage ? (
-                <div className="sup-agent-msg">
-                  <div className="sup-agent-h">
-                    Message from our team
-                    {selected.agentMessageAt ? (
-                      <span className="cvp-mono"> · {formatDate(selected.agentMessageAt)}</span>
-                    ) : null}
-                  </div>
-                  <p>{selected.agentMessage}</p>
-                </div>
-              ) : null}
-
               <div className="cvp-sumbox">
                 {[
                   ['Company', selected.company || '—'],
@@ -376,6 +372,33 @@ export function SupportPortal({ rows }: { rows: SupportRow[] }) {
                     </a>
                   ))}
                 </div>
+              ) : null}
+
+              {selected.messages.length > 0 ? (
+                <>
+                  <div className="cvp-tlhead">Conversation</div>
+                  <div className="sup-thread">
+                    {selected.messages.map((msg, i) => (
+                      <div key={i} className={`sup-msg sup-msg-${msg.author}`}>
+                        <div className="sup-msg-h">
+                          {msg.author === 'team' ? 'Our team' : 'You'}
+                          <span className="cvp-mono"> · {formatDate(msg.createdAt)}</span>
+                        </div>
+                        {msg.body ? <p>{msg.body}</p> : null}
+                        {msg.photos.length > 0 ? (
+                          <div className="sup-msg-photos">
+                            {msg.photos.map((url, j) => (
+                              <a key={j} href={url} target="_blank" rel="noreferrer">
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img src={url} alt="" />
+                              </a>
+                            ))}
+                          </div>
+                        ) : null}
+                      </div>
+                    ))}
+                  </div>
+                </>
               ) : null}
 
               <div className="cvp-tlhead">Activity</div>
