@@ -86,13 +86,6 @@ const META: Record<SupportStatus, Meta> = {
   },
 };
 
-const GROUPS: { key: Tone; title: string }[] = [
-  { key: 'action', title: 'Action needed' },
-  { key: 'review', title: 'In progress' },
-  { key: 'green', title: 'Resolved' },
-  { key: 'neutral', title: 'Closed' },
-];
-
 function formatDate(iso: string): string {
   try {
     return new Date(iso).toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: 'numeric' });
@@ -164,7 +157,6 @@ export function SupportPortal({ rows }: { rows: SupportRow[] }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [filter, setFilter] = useState<Tone | null>(null);
 
   // Reply form state.
   const [showReply, setShowReply] = useState(false);
@@ -174,11 +166,6 @@ export function SupportPortal({ rows }: { rows: SupportRow[] }) {
   const [replyError, setReplyError] = useState<string | null>(null);
   const [replied, setReplied] = useState(false);
   const [dragging, setDragging] = useState(false);
-
-  const counts: Record<Tone, number> = { action: 0, review: 0, green: 0, neutral: 0 };
-  rows.forEach((r) => {
-    counts[GROUP_OF[r.status]] += 1;
-  });
 
   // Default selection = first "Action needed", else the most recent.
   // Deep-link: /account/support?t=<id or 8-char reference> opens that ticket.
@@ -190,8 +177,6 @@ export function SupportPortal({ rows }: { rows: SupportRow[] }) {
 
   const defaultSel = rows.find((r) => GROUP_OF[r.status] === 'action') ?? rows[0];
   const selected = rows.find((r) => r.id === (selectedId ?? deepLinkId)) ?? defaultSel;
-
-  const shownGroups = GROUPS.filter((g) => counts[g.key] && (!filter || filter === g.key));
 
   useEffect(() => {
     setShowReply(false);
@@ -289,54 +274,24 @@ export function SupportPortal({ rows }: { rows: SupportRow[] }) {
         <div className="cvp-wrap">
           <PageHead />
 
-          <div className="cvp-summary">
-            {GROUPS.map((g) => (
-              <button
-                key={g.key}
-                type="button"
-                className={`cvp-sum-cell cvp-t-${g.key}${filter === g.key ? ' is-on' : ''}`}
-                onClick={() => setFilter(filter === g.key ? null : g.key)}
-              >
-                <div className="cvp-sum-n">{counts[g.key]}</div>
-                <div className="cvp-sum-l">{g.title}</div>
-              </button>
-            ))}
-          </div>
-
-          <div className="cvp-main">
-            <aside className="cvp-col">
-              {shownGroups.map((g) => (
-                <div key={g.key} className="cvp-group">
-                  <div className={`cvp-cghead cvp-t-${g.key}`}>
-                    <span className="cvp-cgdot" />
-                    {g.title}
-                    <span className="cvp-cgcount">{counts[g.key]}</span>
-                  </div>
-                  {rows
-                    .filter((r) => GROUP_OF[r.status] === g.key)
-                    .map((r) => (
-                      <button
-                        key={r.id}
-                        type="button"
-                        className={`cvp-item cvp-t-${g.key}${r.id === selected.id ? ' is-active' : ''}`}
-                        onClick={() => setSelectedId(r.id)}
-                      >
-                        <span className="cvp-itbody">
-                          <span className="cvp-ittitle">{listTitle(r)}</span>
-                          <span className="cvp-itmeta">
-                            <span className="cvp-mono">{r.reference}</span>
-                            {' · '}
-                            {formatDate(r.createdAt)}
-                          </span>
-                        </span>
-                        <span className="cvp-chev">›</span>
-                      </button>
-                    ))}
-                </div>
+          {rows.length > 1 ? (
+            <div className="sup-switch">
+              {rows.map((r) => (
+                <button
+                  key={r.id}
+                  type="button"
+                  className={`sup-switch-item${r.id === selected.id ? ' is-active' : ''}`}
+                  onClick={() => setSelectedId(r.id)}
+                >
+                  <span className="cvp-mono">{r.reference}</span>
+                  <span className="sup-switch-title">{listTitle(r)}</span>
+                  <StatusPill status={r.status} />
+                </button>
               ))}
-            </aside>
+            </div>
+          ) : null}
 
-            <section className="cvp-detail">
+          <section className="cvp-detail cvp-detail-solo">
               <div className="cvp-dhead">
                 <div>
                   <div className="cvp-dtitle">{fullTitle(selected)}</div>
@@ -535,7 +490,6 @@ export function SupportPortal({ rows }: { rows: SupportRow[] }) {
                 </div>
               ) : null}
             </section>
-          </div>
         </div>
       </div>
       <SiteFooter />
