@@ -57,9 +57,23 @@ export function supportStatusFromSection(section: string | null, completed: bool
   const s = (section ?? '').toLowerCase();
   if (/(clos|closed|fermé|ferme|archiv)/.test(s)) return 'closed';
   if (completed || /(résolu|resolu|resolved|done|terminé|termine)/.test(s)) return 'resolved';
-  if (/(attente|waiting|client|customer|hold|pending|relance)/.test(s)) return 'waiting_customer';
+  if (/(attente|waiting|client|customer|hold|pending|relance|action)/.test(s)) return 'waiting_customer';
   if (/(cours|progress|doing|traitement|wip|assign|prise en charge)/.test(s)) return 'in_progress';
   return 'new';
+}
+
+/** Map the Asana "Progress" field value (Received / In progress / Action needed
+ * / Resolved / Closed) to a client-facing status. Null when unset/unknown so the
+ * caller can fall back to the column. */
+export function statusFromProgress(value: string | null): SupportStatus | null {
+  const s = (value ?? '').toLowerCase();
+  if (!s) return null;
+  if (s.includes('clos')) return 'closed';
+  if (s.includes('resolved') || s.includes('résolu') || s.includes('resolu')) return 'resolved';
+  if (s.includes('action') || s.includes('waiting') || s.includes('attente')) return 'waiting_customer';
+  if (s.includes('progress') || s.includes('cours')) return 'in_progress';
+  if (s.includes('received') || s.includes('reçu') || s.includes('recu') || s.includes('new')) return 'new';
+  return null;
 }
 
 export async function getSupportTicketByAsanaTask(

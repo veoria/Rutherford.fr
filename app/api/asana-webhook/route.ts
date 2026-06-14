@@ -16,6 +16,7 @@ import {
   insertSupportMessage,
   setAgentMessageByAsanaTask,
   setSupportAssigneeByAsanaTask,
+  statusFromProgress,
   supportStatusFromSection,
   updateSupportStatusByAsanaTask,
 } from '@/lib/support-tickets';
@@ -101,7 +102,8 @@ export async function POST(request: NextRequest) {
       const sstate = await getSupportTaskState(gid);
       if (sstate) {
         await setSupportAssigneeByAsanaTask(gid, sstate.assigneeName);
-        const next = supportStatusFromSection(sstate.sectionName, sstate.completed);
+        // Prefer the team-driven "Progress" field; fall back to the column.
+        const next = statusFromProgress(sstate.progress) ?? supportStatusFromSection(sstate.sectionName, sstate.completed);
         if (next !== ticket.status) {
           await updateSupportStatusByAsanaTask(gid, next);
           const mail = supportStatusEmail(next, `#${ticket.id.slice(0, 8)}`);

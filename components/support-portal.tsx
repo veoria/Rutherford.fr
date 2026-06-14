@@ -1,7 +1,7 @@
 'use client';
 
-import { ChangeEvent, DragEvent, useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { ChangeEvent, DragEvent, useEffect, useMemo, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { SiteFooter } from '@/components/site-footer';
 import { SiteNav } from '@/components/site-nav';
 import { createSupabaseBrowserClient } from '@/lib/supabase/client';
@@ -162,6 +162,7 @@ function PageHead() {
 
 export function SupportPortal({ rows }: { rows: SupportRow[] }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [filter, setFilter] = useState<Tone | null>(null);
 
@@ -180,8 +181,15 @@ export function SupportPortal({ rows }: { rows: SupportRow[] }) {
   });
 
   // Default selection = first "Action needed", else the most recent.
+  // Deep-link: /account/support?t=<id or 8-char reference> opens that ticket.
+  const deepLinkId = useMemo(() => {
+    const t = searchParams.get('t');
+    if (!t) return null;
+    return rows.find((r) => r.id === t || r.id.startsWith(t) || r.reference.replace(/^#/, '') === t)?.id ?? null;
+  }, [searchParams, rows]);
+
   const defaultSel = rows.find((r) => GROUP_OF[r.status] === 'action') ?? rows[0];
-  const selected = rows.find((r) => r.id === selectedId) ?? defaultSel;
+  const selected = rows.find((r) => r.id === (selectedId ?? deepLinkId)) ?? defaultSel;
 
   const shownGroups = GROUPS.filter((g) => counts[g.key] && (!filter || filter === g.key));
 

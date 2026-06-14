@@ -150,6 +150,11 @@ const SUPPORT_PROJECT = process.env.ASANA_SUPPORT_PROJECT;
 // Custom fields on the Support Ticket project that we populate from intake.
 const SUPPORT_FIELD_EMAIL = '1208065131606487'; // text
 const SUPPORT_FIELD_COUNTRY = '1208065359722148'; // enum
+// "Progress" enum field — the team drives the ticket status here, and a new
+// ticket is created as "Received". The webhook maps this value to the
+// client-facing status. (Field gid is stable across label renames.)
+const SUPPORT_FIELD_PROGRESS = '1215692125740415';
+const SUPPORT_PROGRESS_RECEIVED = '1215692125740416';
 // Country enum option gids — must match the project's "Country" field options
 // (and the names in lib/support-countries.ts).
 const SUPPORT_COUNTRY_OPTIONS: Record<string, string> = {
@@ -205,7 +210,10 @@ export async function createSupportTask(task: SupportTask): Promise<string | nul
     const company = task.company?.trim();
     const name = company ? `[${company}] – ${summary}` : summary;
 
-    const customFields: Record<string, string> = { [SUPPORT_FIELD_EMAIL]: task.email };
+    const customFields: Record<string, string> = {
+      [SUPPORT_FIELD_EMAIL]: task.email,
+      [SUPPORT_FIELD_PROGRESS]: SUPPORT_PROGRESS_RECEIVED,
+    };
     const countryGid = task.country ? SUPPORT_COUNTRY_OPTIONS[task.country] : undefined;
     if (countryGid) customFields[SUPPORT_FIELD_COUNTRY] = countryGid;
 
@@ -295,25 +303,28 @@ export type SupportTaskState = {
   sectionName: string | null;
   completed: boolean;
   assigneeName: string | null;
+  progress: string | null;
 };
 
-/** Read a support task's column (section = status), completion and assignee, for
+/** Read a support task's "Progress" field, column, completion and assignee, for
  * the webhook. Null when not configured / on failure. */
 export async function getSupportTaskState(taskGid: string): Promise<SupportTaskState | null> {
   if (!TOKEN || !SUPPORT_PROJECT) return null;
   try {
     const res = await asana(
       'GET',
-      `/tasks/${taskGid}?opt_fields=name,completed,assignee.name,memberships.section.name,memberships.project.gid`
+      `/tasks/${taskGid}?opt_fields=name,completed,assignee.name,memberships.section.name,memberships.project.gid,custom_fields.gid,custom_fields.enum_value.name`
     );
     const data = res?.data;
     if (!data) return null;
     const membership = (data.memberships ?? []).find((m: any) => m?.project?.gid === SUPPORT_PROJECT);
+    const progressField = (data.custom_fields ?? []).find((c: any) => c?.gid === SUPPORT_FIELD_PROGRESS);
     return {
       name: data.name ?? '',
       sectionName: membership?.section?.name ?? null,
       completed: Boolean(data.completed),
       assigneeName: data.assignee?.name ?? null,
+      progress: progressField?.enum_value?.name ?? null,
     };
   } catch (error) {
     console.error('Asana support task fetch failed:', error);
