@@ -2719,6 +2719,14 @@ svg {
   border: 1px solid var(--line);
   border-radius: 22px;
   background: #fbfbfb;
+  transition: border-color 160ms ease, background 160ms ease, box-shadow 160ms ease;
+}
+
+/* The whole card is a drop target — highlight it while dragging over it. */
+.console-simple-upload-card.is-dragging {
+  border-color: var(--accent);
+  background: rgba(0, 113, 227, 0.06);
+  box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.12);
 }
 
 .console-simple-upload-copy p,
