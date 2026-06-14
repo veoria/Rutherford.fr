@@ -599,6 +599,7 @@ export function SupportPage() {
   const [submitted, setSubmitted] = useState(false);
   const [reference, setReference] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [started, setStarted] = useState(false);
 
   const authConfigured = Boolean(
     process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
@@ -661,6 +662,11 @@ export function SupportPage() {
       Object.values(previews).forEach((value) => value && URL.revokeObjectURL(value));
     };
   }, [previews]);
+
+  // Deep-link straight to the open form (e.g. /support#support-form).
+  useEffect(() => {
+    if (window.location.hash === '#support-form') setStarted(true);
+  }, []);
 
   const handleFileChange = (field: SupportUploadId, file: File | null) => {
     setFiles((current) => ({ ...current, [field]: file }));
@@ -804,30 +810,36 @@ export function SupportPage() {
             </div>
           ) : (
             <>
-              <div className="console-simple-intro">
+              <div className={`console-simple-intro${started ? ' is-started' : ''}`}>
                 <p className="section-kicker">{t.kicker}</p>
                 <h1>{t.title}</h1>
                 <p className="console-simple-tagline">{t.tagline}</p>
                 <p className="console-simple-phone">{t.phoneLine}</p>
-                <div className="console-simple-cta-row">
-                  <a className="button button-accent" href="#support-form">
-                    {t.ctaPrimary} ↓
-                  </a>
-                  <a className="button button-light" href="mailto:contact@rutherford.fr">
-                    {t.ctaSecondary}
-                  </a>
-                </div>
-                <div className="cv-reassure">
-                  {t.reassure.map((item) => (
-                    <span key={item} className="cv-rea">
-                      <CheckIcon />
-                      {item}
-                    </span>
-                  ))}
-                </div>
+                {!started ? (
+                  <>
+                    <div className="console-simple-cta-row">
+                      <button type="button" className="button button-accent" onClick={() => setStarted(true)}>
+                        {t.ctaPrimary} ↓
+                      </button>
+                      <a className="button button-light" href="mailto:contact@rutherford.fr">
+                        {t.ctaSecondary}
+                      </a>
+                    </div>
+                    <div className="cv-reassure">
+                      {t.reassure.map((item) => (
+                        <span key={item} className="cv-rea">
+                          <CheckIcon />
+                          {item}
+                        </span>
+                      ))}
+                    </div>
+                  </>
+                ) : null}
               </div>
 
-              <div className="cv-page" id="support-form">
+              {started ? (
+                <>
+                  <div className="cv-page cv-stage-form" id="support-form">
                 <div className="cv-wrap">
                   <form className="cv-stepcard" onSubmit={handleSubmit}>
                     <div className="cv-step-h">{t.formTitle}</div>
@@ -980,9 +992,11 @@ export function SupportPage() {
                     <div className="cv-stepnote">{t.submitHint}</div>
                   </form>
                 </div>
-              </div>
+                  </div>
 
-              {NextBlock}
+                  {NextBlock}
+                </>
+              ) : null}
             </>
           )}
         </div>
