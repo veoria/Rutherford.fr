@@ -290,16 +290,21 @@ export async function getStory(storyGid: string): Promise<AsanaStory | null> {
   }
 }
 
-export type SupportTaskState = { name: string; sectionName: string | null; completed: boolean };
+export type SupportTaskState = {
+  name: string;
+  sectionName: string | null;
+  completed: boolean;
+  assigneeName: string | null;
+};
 
-/** Read a support task's column (section = status) and completion, for the
- * webhook. Null when not configured / on failure. */
+/** Read a support task's column (section = status), completion and assignee, for
+ * the webhook. Null when not configured / on failure. */
 export async function getSupportTaskState(taskGid: string): Promise<SupportTaskState | null> {
   if (!TOKEN || !SUPPORT_PROJECT) return null;
   try {
     const res = await asana(
       'GET',
-      `/tasks/${taskGid}?opt_fields=name,completed,memberships.section.name,memberships.project.gid`
+      `/tasks/${taskGid}?opt_fields=name,completed,assignee.name,memberships.section.name,memberships.project.gid`
     );
     const data = res?.data;
     if (!data) return null;
@@ -308,6 +313,7 @@ export async function getSupportTaskState(taskGid: string): Promise<SupportTaskS
       name: data.name ?? '',
       sectionName: membership?.section?.name ?? null,
       completed: Boolean(data.completed),
+      assigneeName: data.assignee?.name ?? null,
     };
   } catch (error) {
     console.error('Asana support task fetch failed:', error);

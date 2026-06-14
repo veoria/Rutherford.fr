@@ -22,7 +22,7 @@ export default async function AccountSupportRoute() {
   const { data } = await supabase
     .from('support_tickets')
     .select(
-      'id, company, subject, anydesk, description, status, created_at, updated_at, photos, customer_reply_at, agent_message, agent_message_at'
+      'id, company, subject, anydesk, description, status, created_at, updated_at, photos, customer_reply_at, agent_message, agent_message_at, assignee_name'
     )
     .order('created_at', { ascending: false });
 
@@ -69,6 +69,7 @@ export default async function AccountSupportRoute() {
       customerReplyAt: (row.customer_reply_at as string | null) ?? null,
       agentMessage: (row.agent_message as string | null) ?? null,
       agentMessageAt: (row.agent_message_at as string | null) ?? null,
+      assigneeName: (row.assignee_name as string | null) ?? null,
       messages: byTicket.get(row.id as string) ?? [],
     };
   });
