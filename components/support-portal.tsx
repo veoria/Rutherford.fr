@@ -4,6 +4,7 @@ import { ChangeEvent, DragEvent, useEffect, useMemo, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { SiteFooter } from '@/components/site-footer';
 import { SiteNav } from '@/components/site-nav';
+import { AccountSubnav } from '@/components/account-subnav';
 import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 
 export type SupportStatus = 'new' | 'in_progress' | 'waiting_customer' | 'resolved' | 'closed';
@@ -245,6 +246,7 @@ export function SupportPortal({ rows }: { rows: SupportRow[] }) {
     return (
       <main className="page-shell">
         <SiteNav current="account" />
+          <AccountSubnav current="support" />
         <div className="cvp">
           <div className="cvp-wrap">
             <PageHead />
@@ -267,6 +269,7 @@ export function SupportPortal({ rows }: { rows: SupportRow[] }) {
   return (
     <main className="page-shell">
       <SiteNav current="account" />
+          <AccountSubnav current="support" />
       <div className="cvp">
         <div className="cvp-wrap">
           <PageHead />
