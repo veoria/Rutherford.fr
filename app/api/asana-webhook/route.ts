@@ -15,6 +15,7 @@ import {
   getSupportTicketByAsanaTask,
   insertSupportMessage,
   setAgentMessageByAsanaTask,
+  setSupportAssigneeByAsanaTask,
   supportStatusFromSection,
   updateSupportStatusByAsanaTask,
 } from '@/lib/support-tickets';
@@ -99,6 +100,7 @@ export async function POST(request: NextRequest) {
     if (ticket) {
       const sstate = await getSupportTaskState(gid);
       if (sstate) {
+        await setSupportAssigneeByAsanaTask(gid, sstate.assigneeName);
         const next = supportStatusFromSection(sstate.sectionName, sstate.completed);
         if (next !== ticket.status) {
           await updateSupportStatusByAsanaTask(gid, next);

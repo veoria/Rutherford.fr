@@ -121,6 +121,22 @@ export async function updateSupportStatusByAsanaTask(gid: string, status: Suppor
   }
 }
 
+/** Store the Asana assignee's name so the client sees who is handling the
+ * ticket. Best-effort. */
+export async function setSupportAssigneeByAsanaTask(gid: string, assigneeName: string | null): Promise<void> {
+  const supabase = adminClient();
+  if (!supabase) return;
+  try {
+    const { error } = await supabase
+      .from('support_tickets')
+      .update({ assignee_name: assigneeName })
+      .eq('asana_task_gid', gid);
+    if (error) console.error('support assignee update failed:', error.message);
+  } catch (error) {
+    console.error('support assignee update threw:', error);
+  }
+}
+
 /** Append a message to a ticket's conversation thread. Best-effort. */
 export async function insertSupportMessage(m: {
   ticketId: string;

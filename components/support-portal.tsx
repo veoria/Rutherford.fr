@@ -29,6 +29,7 @@ export type SupportRow = {
   customerReplyAt: string | null;
   agentMessage: string | null;
   agentMessageAt: string | null;
+  assigneeName: string | null;
   messages: SupportMessage[];
 };
 
@@ -346,6 +347,13 @@ export function SupportPortal({ rows }: { rows: SupportRow[] }) {
                 <span className="cvp-blabel">{m.label}</span>
                 <span className="cvp-bdesc">{m.desc}</span>
               </div>
+
+              {selected.assigneeName ? (
+                <div className="sup-handled">
+                  <span className="sup-handled-av">{selected.assigneeName.slice(0, 1).toUpperCase()}</span>
+                  Handled by <strong>{selected.assigneeName}</strong>
+                </div>
+              ) : null}
 
               <div className="cvp-sumbox">
                 {[

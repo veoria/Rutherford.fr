@@ -12684,6 +12684,11 @@ a.blog-card-image:hover img {
 .sup-msg-photos a { display: block; width: 64px; height: 64px; border-radius: 8px; overflow: hidden; border: 1px solid var(--cvp-line); }
 .sup-msg-photos img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
+/* "Handled by …" — who on the team is on the ticket */
+.sup-handled { display: inline-flex; align-items: center; gap: 9px; margin-top: 14px; font-size: 13.5px; color: var(--cvp-ink2); }
+.sup-handled strong { color: var(--cvp-ink); font-weight: 700; }
+.sup-handled-av { display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 50%; background: #eef4ff; color: #1f57c4; font-size: 12px; font-weight: 700; }
+
 /* ---- /roi dedicated page ---- */
 .roi-page-hero {
   text-align: center;
