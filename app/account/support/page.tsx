@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
-import { SupportPortal, type SupportRow } from '@/components/support-portal';
+import { SupportPortal, type SupportMessage, type SupportRow } from '@/components/support-portal';
 
 export const metadata: Metadata = {
   title: 'Your support tickets | Rutherford',
@@ -26,7 +26,34 @@ export default async function AccountSupportRoute() {
     )
     .order('created_at', { ascending: false });
 
-  const rows: SupportRow[] = (data ?? []).map((row) => {
+  const ticketRows = data ?? [];
+
+  // Conversation thread for these tickets (RLS also scopes this to the user).
+  const ids = ticketRows.map((r) => r.id as string);
+  const byTicket = new Map<string, SupportMessage[]>();
+  if (ids.length) {
+    const { data: msgs } = await supabase
+      .from('support_messages')
+      .select('ticket_id, author, body, photos, created_at')
+      .in('ticket_id', ids)
+      .order('created_at', { ascending: true });
+    for (const msg of msgs ?? []) {
+      const tid = msg.ticket_id as string;
+      const arr = byTicket.get(tid) ?? [];
+      const photos = Array.isArray(msg.photos)
+        ? (msg.photos as unknown[]).filter((v): v is string => typeof v === 'string')
+        : [];
+      arr.push({
+        author: msg.author === 'team' ? 'team' : 'customer',
+        body: (msg.body as string | null) ?? null,
+        photos,
+        createdAt: msg.created_at as string,
+      });
+      byTicket.set(tid, arr);
+    }
+  }
+
+  const rows: SupportRow[] = ticketRows.map((row) => {
     const photos = row.photos && typeof row.photos === 'object' ? (row.photos as Record<string, string>) : {};
     return {
       id: row.id as string,
@@ -42,6 +69,7 @@ export default async function AccountSupportRoute() {
       customerReplyAt: (row.customer_reply_at as string | null) ?? null,
       agentMessage: (row.agent_message as string | null) ?? null,
       agentMessageAt: (row.agent_message_at as string | null) ?? null,
+      messages: byTicket.get(row.id as string) ?? [],
     };
   });
 

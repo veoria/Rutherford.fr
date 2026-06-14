@@ -13,6 +13,7 @@ import {
 } from '@/lib/console-validations';
 import {
   getSupportTicketByAsanaTask,
+  insertSupportMessage,
   setAgentMessageByAsanaTask,
   supportStatusFromSection,
   updateSupportStatusByAsanaTask,
@@ -173,6 +174,7 @@ export async function POST(request: NextRequest) {
     const message = m[1].trim();
     if (!message) continue;
     await setAgentMessageByAsanaTask(taskGid, storyGid, message);
+    await insertSupportMessage({ ticketId: ticket.id, author: 'team', body: message, asanaStoryGid: storyGid });
     const mail = supportAgentMessageEmail(message, `#${ticket.id.slice(0, 8)}`);
     await sendMail({ to: ticket.email, subject: mail.subject, html: mail.html });
   }

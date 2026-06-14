@@ -12672,6 +12672,18 @@ a.blog-card-image:hover img {
 .sup-agent-h { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #1f57c4; margin-bottom: 6px; }
 .sup-agent-msg p { margin: 0; font-size: 14.5px; line-height: 1.55; color: var(--cvp-ink); white-space: pre-wrap; }
 
+/* Support conversation thread (team ↔ customer) */
+.sup-thread { display: flex; flex-direction: column; gap: 10px; margin: 0 0 26px; }
+.sup-msg { max-width: 90%; padding: 11px 14px; border-radius: 12px; border: 1px solid var(--cvp-line); }
+.sup-msg-team { align-self: flex-start; background: #eef4ff; border-color: #cfe0fa; }
+.sup-msg-customer { align-self: flex-end; background: #f4f4f2; }
+.sup-msg-h { font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--cvp-grey); margin-bottom: 5px; }
+.sup-msg-team .sup-msg-h { color: #1f57c4; }
+.sup-msg p { margin: 0; font-size: 14px; line-height: 1.5; color: var(--cvp-ink); white-space: pre-wrap; }
+.sup-msg-photos { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.sup-msg-photos a { display: block; width: 64px; height: 64px; border-radius: 8px; overflow: hidden; border: 1px solid var(--cvp-line); }
+.sup-msg-photos img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
 /* ---- /roi dedicated page ---- */
 .roi-page-hero {
   text-align: center;

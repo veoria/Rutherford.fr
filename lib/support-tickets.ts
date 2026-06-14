@@ -120,3 +120,27 @@ export async function updateSupportStatusByAsanaTask(gid: string, status: Suppor
     console.error('support status update threw:', error);
   }
 }
+
+/** Append a message to a ticket's conversation thread. Best-effort. */
+export async function insertSupportMessage(m: {
+  ticketId: string;
+  author: 'team' | 'customer';
+  body: string | null;
+  photos?: string[];
+  asanaStoryGid?: string | null;
+}): Promise<void> {
+  const supabase = adminClient();
+  if (!supabase) return;
+  try {
+    const { error } = await supabase.from('support_messages').insert({
+      ticket_id: m.ticketId,
+      author: m.author,
+      body: m.body,
+      photos: m.photos ?? [],
+      asana_story_gid: m.asanaStoryGid ?? null,
+    });
+    if (error) console.error('support_messages insert failed:', error.message);
+  } catch (error) {
+    console.error('support_messages insert threw:', error);
+  }
+}
