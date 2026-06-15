@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { width:1000px; height:560px; overflow:hidden;
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue",Arial,sans-serif;
+    -webkit-font-smoothing:antialiased; }
+  .slide { position:absolute; inset:0; width:1000px; height:560px; display:none;
+    flex-direction:column; justify-content:center; padding:72px; }
+  .slide.on { display:flex; }
+  .kick { font-size:18px; font-weight:700; letter-spacing:3px; text-transform:uppercase; margin-bottom:20px; }
+  .h { font-size:62px; font-weight:800; letter-spacing:-2.5px; line-height:1.02; }
+  .sub { font-size:24px; line-height:1.45; margin-top:22px; max-width:760px; }
+  .pill { display:inline-block; margin-top:34px; font-size:20px; font-weight:700;
+    padding:15px 30px; border-radius:999px; }
+  .logo { position:absolute; top:48px; left:72px; height:40px; }
+  .badge { position:absolute; top:52px; right:72px; font-size:16px; font-weight:700;
+    letter-spacing:2px; text-transform:uppercase; }
+  .row { display:flex; gap:18px; margin-top:30px; }
+  .chip { font-size:17px; font-weight:600; padding:10px 18px; border-radius:999px; }
+
+  /* themes */
+  .light { background:#ffffff; }
+  .light .kick { color:#0071e3; }
+  .light .h { color:#1d1d1f; }
+  .light .sub { color:#5f5f5f; }
+  .light .pill { background:#0071e3; color:#fff; }
+  .light .badge { color:#0071e3; }
+  .light .chip { background:#f1f1ee; color:#1d1d1f; }
+
+  .blue { background:linear-gradient(160deg,#0071e3,#0056b3); }
+  .blue .kick { color:#bcdcff; }
+  .blue .h, .blue .sub { color:#fff; }
+  .blue .sub { color:#dceafe; }
+  .blue .pill { background:#fff; color:#0071e3; }
+  .blue .badge { color:#bcdcff; }
+  .blue .chip { background:rgba(255,255,255,.16); color:#fff; }
+
+  .dark { background:linear-gradient(160deg,#1d1d1f,#2d2d30); }
+  .dark .kick { color:#7fb2ff; }
+  .dark .h, .dark .sub { color:#fff; }
+  .dark .sub { color:#c7c7cc; }
+  .dark .pill { background:#0071e3; color:#fff; }
+  .dark .badge { color:#7fb2ff; }
+</style>
+</head>
+<body>
+
+  <section class="slide light on" data-f="1">
+    <img class="logo" src="https://rutherford.fr/images/rutherford-logo-black.png" alt="">
+    <span class="badge">New</span>
+    <p class="kick">Closed-loop color control</p>
+    <h1 class="h">The new<br>Rutherford.fr<br>is live.</h1>
+    <p class="sub">Academy, member area, console validation and simplified support, all in one place.</p>
+  </section>
+
+  <section class="slide blue" data-f="2">
+    <img class="logo" src="https://rutherford.fr/images/rutherford-logo-white.png" alt="">
+    <span class="badge">Rutherford Academy</span>
+    <p class="kick">Learn</p>
+    <h1 class="h">Offset color,<br>taught by experts.</h1>
+    <p class="sub">Online courses and masterclasses on closed-loop color, MeasureColor, IntelliTrax2 and ColorLoop.</p>
+    <div class="row">
+      <span class="chip">Free intro courses</span>
+      <span class="chip">Certified masterclasses</span>
+    </div>
+  </section>
+
+  <section class="slide light" data-f="3">
+    <img class="logo" src="https://rutherford.fr/images/rutherford-logo-black.png" alt="">
+    <span class="badge">Your account</span>
+    <p class="kick">Track everything</p>
+    <h1 class="h">Create your<br>account.</h1>
+    <p class="sub">Sign in with Google, Apple or email. Follow your courses, certificates and Rutherford products from one dashboard.</p>
+  </section>
+
+  <section class="slide dark" data-f="4">
+    <img class="logo" src="https://rutherford.fr/images/rutherford-logo-white.png" alt="">
+    <span class="badge">Console validation</span>
+    <p class="kick">Free eligibility check</p>
+    <h1 class="h">Is your press<br>eligible?</h1>
+    <p class="sub">A few photos, two minutes, an answer within one business day. Heidelberg, Komori, Koenig &amp; Bauer, Manroland and more.</p>
+  </section>
+
+  <section class="slide blue" data-f="5">
+    <img class="logo" src="https://rutherford.fr/images/rutherford-logo-white.png" alt="">
+    <span class="badge">Stop losing money</span>
+    <p class="kick">The system that pays for itself</p>
+    <h1 class="h">Stop losing money<br>on every makeready.</h1>
+    <span class="pill">rutherford.fr &nbsp;&rarr;</span>
+  </section>
+
+<script>
+  const f = new URLSearchParams(location.search).get('f');
+  if (f) {
+    document.querySelectorAll('.slide').forEach(s => s.classList.remove('on'));
+    const el = document.querySelector('.slide[data-f="'+f+'"]');
+    if (el) el.classList.add('on');
+  }
+</script>
+</body>
+</html>
