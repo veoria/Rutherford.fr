@@ -151,22 +151,31 @@ export async function getNotificationEmailByAsanaTask(
   }
 }
 
-/** Resolve a validation from its Asana task, for the comment-relay webhook. */
-export async function getConsoleValidationByAsanaTask(
-  gid: string
-): Promise<{ id: string; email: string; lastAgentStoryGid: string | null } | null> {
+/** Resolve a validation from its Asana task, for the comment-relay webhook and
+ * the verdict emails (which need the client's company / country / press). */
+export async function getConsoleValidationByAsanaTask(gid: string): Promise<{
+  id: string;
+  email: string;
+  company: string | null;
+  country: string | null;
+  machine: string | null;
+  lastAgentStoryGid: string | null;
+} | null> {
   const supabase = adminClient();
   if (!supabase) return null;
   try {
     const { data } = await supabase
       .from('console_validations')
-      .select('id, email, last_agent_story_gid')
+      .select('id, email, company, country, machine, last_agent_story_gid')
       .eq('asana_task_gid', gid)
       .maybeSingle();
     return data
       ? {
           id: data.id as string,
           email: data.email as string,
+          company: (data.company as string | null) ?? null,
+          country: (data.country as string | null) ?? null,
+          machine: (data.machine as string | null) ?? null,
           lastAgentStoryGid: (data.last_agent_story_gid as string | null) ?? null,
         }
       : null;
