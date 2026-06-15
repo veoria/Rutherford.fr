@@ -27,7 +27,7 @@ export default async function AccountTeamRoute() {
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('full_name, country, company, job_title, onboarded_at, account_type')
+    .select('full_name, country, company, job_title, onboarded_at, account_type, is_admin')
     .eq('id', user.id)
     .maybeSingle();
   if (!isOnboarded(profile)) {
@@ -35,6 +35,7 @@ export default async function AccountTeamRoute() {
   }
 
   const accountType = ((profile?.account_type as AccountType) ?? 'client') as AccountType;
+  const isAdmin = Boolean(profile?.is_admin);
 
   // Reseller → clients (from console_validations.reseller_id), merged with the
   // org-linked clients. Mirrors the hub.
@@ -85,6 +86,7 @@ export default async function AccountTeamRoute() {
       accountType={accountType}
       team={team}
       selfId={user.id}
+      isAdmin={isAdmin}
       networkResellers={networkResellers}
       clients={resellerClients}
     />

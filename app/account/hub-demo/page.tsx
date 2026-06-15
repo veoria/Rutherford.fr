@@ -58,6 +58,7 @@ export default function AccountHubDemoRoute({ searchParams }: { searchParams: { 
       accountType={accountType}
       team={team}
       selfId="demo"
+      isAdmin={accountType === 'team'}
       networkResellers={networkResellers}
       email={isXrite ? 'demo@xrite.com' : 'demo@acme.com'}
       memberSince="2026-02-01"

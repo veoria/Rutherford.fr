@@ -13,6 +13,7 @@ export function AccountTeam(props: {
   accountType: AccountType;
   team: Team;
   selfId: string;
+  isAdmin: boolean;
   networkResellers: ResellerClientOrg[];
   clients: ResellerClient[];
 }) {
