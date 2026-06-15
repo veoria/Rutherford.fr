@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { SiteFooter } from '@/components/site-footer';
 import { SiteNav } from '@/components/site-nav';
+import { AuthSteps } from '@/components/auth-steps';
 import { type Locale, useLanguage } from '@/components/language-provider';
 import { COUNTRIES, JOB_TITLE_KEYS, type JobTitleKey } from '@/data/onboarding-options';
 
@@ -278,6 +279,7 @@ export function OnboardingForm({ next, needsName, defaultName, defaultCompany }:
           </header>
 
           <div className="signin-card">
+            <AuthSteps active={3} />
             <form className="signin-form" onSubmit={handleSubmit}>
               {needsName ? (
                 <>

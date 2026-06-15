@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { SiteFooter } from '@/components/site-footer';
 import { SiteNav } from '@/components/site-nav';
+import { AuthSteps } from '@/components/auth-steps';
 import { type Locale, useLanguage } from '@/components/language-provider';
 import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 
@@ -43,11 +44,21 @@ type SignInCopy = {
   verify: string;
   errGeneric: string;
   fine: string;
+  // Mode-aware heading + create-account helpers + "check your email" panels.
+  titleSignup: string;
+  subtitleSignup: string;
+  pwHint: string;
+  confirmTitle: string;
+  confirmBefore: string;
+  confirmAfter: string;
+  linkTitle: string;
+  resetTitle: string;
+  back: string;
 };
 
 const COPY: Record<Locale, SignInCopy> = {
   en: {
-    title: 'Sign in or create an account',
+    title: 'Sign in to your account',
     subtitle:
       'Sign in to track your progress, access your enrolled masterclasses, and manage your Academy Pass subscription.',
     google: 'Continue with Google',
@@ -76,9 +87,18 @@ const COPY: Record<Locale, SignInCopy> = {
     verify: 'Verify',
     errGeneric: 'Something went wrong. Please try again.',
     fine: 'By continuing you agree to our terms. We use your email only to sign you in and to send course-related notifications.',
+    titleSignup: 'Create your account',
+    subtitleSignup: 'A free account to follow your console validations, courses and support — all in one place.',
+    pwHint: 'At least 8 characters.',
+    confirmTitle: 'Check your email',
+    confirmBefore: 'We sent a confirmation link to ',
+    confirmAfter: '. Click it to activate your account — then we’ll help you complete your profile.',
+    linkTitle: 'Sign-in link sent',
+    resetTitle: 'Reset link sent',
+    back: '← Back',
   },
   fr: {
-    title: 'Connectez-vous ou créez un compte',
+    title: 'Connectez-vous à votre compte',
     subtitle:
       'Connectez-vous pour suivre votre progression, accéder à vos masterclasses et gérer votre abonnement Academy Pass.',
     google: 'Continuer avec Google',
@@ -107,9 +127,18 @@ const COPY: Record<Locale, SignInCopy> = {
     verify: 'Vérifier',
     errGeneric: 'Une erreur est survenue. Veuillez réessayer.',
     fine: 'En continuant, vous acceptez nos conditions. Nous utilisons votre e-mail uniquement pour vous connecter et vous envoyer des notifications liées aux cours.',
+    titleSignup: 'Créez votre compte',
+    subtitleSignup: 'Un compte gratuit pour suivre vos validations console, vos formations et votre support au même endroit.',
+    pwHint: 'Au moins 8 caractères.',
+    confirmTitle: 'Vérifiez vos e-mails',
+    confirmBefore: 'Nous avons envoyé un lien de confirmation à ',
+    confirmAfter: '. Cliquez dessus pour activer votre compte — nous vous aiderons ensuite à compléter votre profil.',
+    linkTitle: 'Lien de connexion envoyé',
+    resetTitle: 'Lien de réinitialisation envoyé',
+    back: '← Retour',
   },
   de: {
-    title: 'Anmelden oder Konto erstellen',
+    title: 'Bei Ihrem Konto anmelden',
     subtitle:
       'Melden Sie sich an, um Ihren Fortschritt zu verfolgen, auf Ihre gebuchten Masterclasses zuzugreifen und Ihr Academy-Pass-Abonnement zu verwalten.',
     google: 'Weiter mit Google',
@@ -138,9 +167,18 @@ const COPY: Record<Locale, SignInCopy> = {
     verify: 'Prüfen',
     errGeneric: 'Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut.',
     fine: 'Mit der Fortsetzung akzeptieren Sie unsere Bedingungen. Wir verwenden Ihre E-Mail-Adresse ausschließlich, um Sie anzumelden und Ihnen kursbezogene Benachrichtigungen zu senden.',
+    titleSignup: 'Konto erstellen',
+    subtitleSignup: 'Ein kostenloses Konto, um Konsolenvalidierungen, Kurse und Support an einem Ort zu verfolgen.',
+    pwHint: 'Mindestens 8 Zeichen.',
+    confirmTitle: 'Prüfen Sie Ihre E-Mails',
+    confirmBefore: 'Wir haben einen Bestätigungslink an ',
+    confirmAfter: ' gesendet. Klicken Sie darauf, um Ihr Konto zu aktivieren — danach helfen wir Ihnen, Ihr Profil zu vervollständigen.',
+    linkTitle: 'Anmeldelink gesendet',
+    resetTitle: 'Link zum Zurücksetzen gesendet',
+    back: '← Zurück',
   },
   it: {
-    title: 'Accedi o crea un account',
+    title: 'Acceda al suo account',
     subtitle:
       'Acceda per seguire i suoi progressi, consultare le sue masterclass e gestire il suo abbonamento Academy Pass.',
     google: 'Continua con Google',
@@ -169,9 +207,18 @@ const COPY: Record<Locale, SignInCopy> = {
     verify: 'Verifica',
     errGeneric: 'Si è verificato un errore. Riprovi.',
     fine: 'Continuando, accetta le nostre condizioni. Utilizziamo la sua e-mail esclusivamente per l’accesso e per inviarle notifiche relative ai corsi.',
+    titleSignup: 'Crei il suo account',
+    subtitleSignup: 'Un account gratuito per seguire le validazioni console, i corsi e il supporto in un unico posto.',
+    pwHint: 'Almeno 8 caratteri.',
+    confirmTitle: 'Controlli la sua e-mail',
+    confirmBefore: 'Abbiamo inviato un link di conferma a ',
+    confirmAfter: '. Clicchi sul link per attivare il suo account — poi la aiuteremo a completare il suo profilo.',
+    linkTitle: 'Link di accesso inviato',
+    resetTitle: 'Link di reimpostazione inviato',
+    back: '← Indietro',
   },
   es: {
-    title: 'Inicie sesión o cree una cuenta',
+    title: 'Inicie sesión en su cuenta',
     subtitle:
       'Inicie sesión para seguir su progreso, acceder a sus masterclasses y gestionar su suscripción Academy Pass.',
     google: 'Continuar con Google',
@@ -200,6 +247,15 @@ const COPY: Record<Locale, SignInCopy> = {
     verify: 'Verificar',
     errGeneric: 'Algo salió mal. Inténtelo de nuevo.',
     fine: 'Al continuar, acepta nuestras condiciones. Utilizamos su correo únicamente para iniciar su sesión y enviarle notificaciones relacionadas con los cursos.',
+    titleSignup: 'Cree su cuenta',
+    subtitleSignup: 'Una cuenta gratuita para seguir sus validaciones de consola, sus cursos y el soporte en un solo lugar.',
+    pwHint: 'Al menos 8 caracteres.',
+    confirmTitle: 'Revise su correo',
+    confirmBefore: 'Hemos enviado un enlace de confirmación a ',
+    confirmAfter: '. Haga clic en él para activar su cuenta; después le ayudaremos a completar su perfil.',
+    linkTitle: 'Enlace de acceso enviado',
+    resetTitle: 'Enlace de restablecimiento enviado',
+    back: '← Volver',
   },
 };
 
@@ -374,6 +430,44 @@ export function SignInPage() {
   };
 
   const working = status === 'working';
+  const isSignup = mode === 'signup';
+
+  const switchMode = (m: 'signin' | 'signup') => {
+    setMode(m);
+    setStatus('idle');
+    setErrorMsg(null);
+  };
+
+  // Terminal "check your email" states get a dedicated panel that replaces the
+  // form, so the next step (open your inbox) is unmistakable.
+  const sent: { title: string; body: React.ReactNode; steps: boolean } | null =
+    status === 'confirmSent'
+      ? {
+          title: t.confirmTitle,
+          body: (
+            <>
+              {t.confirmBefore}
+              <strong>{email || t.inboxFallback}</strong>
+              {t.confirmAfter}
+            </>
+          ),
+          steps: true,
+        }
+      : status === 'linkSent'
+        ? {
+            title: t.linkTitle,
+            body: (
+              <>
+                {t.inboxBefore}
+                <strong>{email || t.inboxFallback}</strong>
+                {t.inboxAfter}
+              </>
+            ),
+            steps: false,
+          }
+        : status === 'resetSent'
+          ? { title: t.resetTitle, body: t.resetSent, steps: false }
+          : null;
 
   return (
     <main className="page-shell" id="top">
@@ -383,8 +477,8 @@ export function SignInPage() {
         <div className="container signin-shell">
           <header className="signin-head">
             <p className="section-kicker">Rutherford Academy</p>
-            <h1>{t.title}</h1>
-            <p>{t.subtitle}</p>
+            <h1>{isSignup ? t.titleSignup : t.title}</h1>
+            <p>{isSignup ? t.subtitleSignup : t.subtitle}</p>
           </header>
 
           <div className="signin-card">
@@ -419,8 +513,53 @@ export function SignInPage() {
                   <p className="signin-message signin-message-error">{errorMsg}</p>
                 ) : null}
               </form>
+            ) : sent ? (
+              <div className="signin-confirm">
+                {sent.steps ? <AuthSteps active={2} /> : null}
+                <span className="signin-confirm-icon" aria-hidden="true">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" strokeWidth="1.7" />
+                    <path d="m4 7 8 6 8-6" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </span>
+                <h2>{sent.title}</h2>
+                <p>{sent.body}</p>
+                <button
+                  type="button"
+                  className="signin-link"
+                  onClick={() => {
+                    setStatus('idle');
+                    setErrorMsg(null);
+                  }}
+                >
+                  {t.back}
+                </button>
+              </div>
             ) : (
               <>
+                <div className="signin-tabs" role="tablist">
+                  <button
+                    type="button"
+                    role="tab"
+                    aria-selected={!isSignup}
+                    className={`signin-tab${!isSignup ? ' is-active' : ''}`}
+                    onClick={() => switchMode('signin')}
+                    disabled={working}
+                  >
+                    {t.signIn}
+                  </button>
+                  <button
+                    type="button"
+                    role="tab"
+                    aria-selected={isSignup}
+                    className={`signin-tab${isSignup ? ' is-active' : ''}`}
+                    onClick={() => switchMode('signup')}
+                    disabled={working}
+                  >
+                    {t.createAccount}
+                  </button>
+                </div>
+
                 <button
                   type="button"
                   className="signin-provider signin-provider-google"
@@ -480,63 +619,39 @@ export function SignInPage() {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                     minLength={MIN_PASSWORD}
-                    autoComplete={mode === 'signin' ? 'current-password' : 'new-password'}
+                    autoComplete={isSignup ? 'new-password' : 'current-password'}
                     disabled={working}
                   />
+                  {isSignup ? <p className="signin-hint">{t.pwHint}</p> : null}
 
                   <button
                     type="submit"
                     className="button button-accent signin-submit"
                     disabled={working || !email || !password}
                   >
-                    {working ? t.working : mode === 'signin' ? t.signIn : t.createAccount}
+                    {working ? t.working : isSignup ? t.createAccount : t.signIn}
                   </button>
 
-                  <div className="signin-row">
-                    {mode === 'signin' ? (
+                  {!isSignup ? (
+                    <div className="signin-row">
                       <button type="button" className="signin-link" onClick={handleReset} disabled={working}>
                         {t.forgot}
                       </button>
-                    ) : (
-                      <span />
-                    )}
-                    <button
-                      type="button"
-                      className="signin-link"
-                      onClick={() => {
-                        setMode(mode === 'signin' ? 'signup' : 'signin');
-                        setStatus('idle');
-                        setErrorMsg(null);
-                      }}
-                      disabled={working}
-                    >
-                      {mode === 'signin' ? t.toSignup : t.toSignin}
-                    </button>
-                  </div>
+                    </div>
+                  ) : null}
                 </form>
 
-                <button
-                  type="button"
-                  className="signin-secondary"
-                  onClick={handleMagicLink}
-                  disabled={working || !email}
-                >
-                  {t.magicInstead}
-                </button>
+                {!isSignup ? (
+                  <button
+                    type="button"
+                    className="signin-secondary"
+                    onClick={handleMagicLink}
+                    disabled={working || !email}
+                  >
+                    {t.magicInstead}
+                  </button>
+                ) : null}
 
-                {status === 'linkSent' ? (
-                  <p className="signin-message signin-message-success">
-                    {t.inboxBefore}
-                    <strong>{email || t.inboxFallback}</strong>
-                    {t.inboxAfter}
-                  </p>
-                ) : null}
-                {status === 'resetSent' ? (
-                  <p className="signin-message signin-message-success">{t.resetSent}</p>
-                ) : null}
-                {status === 'confirmSent' ? (
-                  <p className="signin-message signin-message-success">{t.confirmSent}</p>
-                ) : null}
                 {status === 'error' && errorMsg ? (
                   <p className="signin-message signin-message-error">{errorMsg}</p>
                 ) : null}
