@@ -183,14 +183,15 @@ type Props = {
   next: string;
   needsName: boolean;
   defaultName: string;
+  defaultCompany?: string;
 };
 
-export function OnboardingForm({ next, needsName, defaultName }: Props) {
+export function OnboardingForm({ next, needsName, defaultName, defaultCompany }: Props) {
   const { locale } = useLanguage();
   const t = COPY[locale];
   const [fullName, setFullName] = useState(defaultName);
   const [country, setCountry] = useState('');
-  const [company, setCompany] = useState('');
+  const [company, setCompany] = useState(defaultCompany ?? '');
   const [jobTitle, setJobTitle] = useState('');
   const [consent, setConsent] = useState(false);
   const [status, setStatus] = useState<'idle' | 'saving' | 'error'>('idle');

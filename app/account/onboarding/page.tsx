@@ -39,5 +39,10 @@ export default async function OnboardingRoute({
     '';
   const defaultName = profile?.full_name || metaName || '';
 
-  return <OnboardingForm next={next} needsName={!defaultName} defaultName={defaultName} />;
+  // Pre-fill the company for X-Rite staff (the only domain we co-brand).
+  const defaultCompany = (user.email ?? '').toLowerCase().endsWith('@xrite.com') ? 'X-Rite PANTONE' : '';
+
+  return (
+    <OnboardingForm next={next} needsName={!defaultName} defaultName={defaultName} defaultCompany={defaultCompany} />
+  );
 }
