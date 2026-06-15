@@ -43,7 +43,7 @@ const F_BODY = "'Manrope',Arial,Helvetica,sans-serif";
 const F_MONO = "'JetBrains Mono','Courier New',monospace";
 
 const FOOTLINE = 'Rutherford.fr — closed-loop color management for offset &amp; flexo printing.';
-const FOOTMETA = '25+ years · 30+ countries · 1,000+ systems deployed · Made in France';
+const FOOTMETA = '25+ years · 30+ countries · 1,000+ systems deployed';
 
 type Tone = 'info' | 'ok' | 'warn' | 'no';
 type Row = { k: string; v: string; mono?: boolean };
@@ -203,7 +203,7 @@ function render(spec: EmailSpec): string {
         <tr><td class="rf-foot" style="padding:4px 34px 24px;">
           <div style="margin-bottom:14px;font-size:0;line-height:0;">${spectrumRail(3)}</div>
           <div style="font-family:${F_BODY};font-size:12px;color:${FOOT_BRAND};margin-bottom:5px;">${FOOTLINE}</div>
-          <div style="font-family:${F_MONO};font-size:10px;color:${MUTED};line-height:1.7;letter-spacing:.02em;">${FOOTMETA} · Data stays in the EU</div>
+          <div style="font-family:${F_MONO};font-size:10px;color:${MUTED};line-height:1.7;letter-spacing:.02em;">${FOOTMETA}</div>
           <div style="font-family:${F_MONO};font-size:10px;color:${MUTED};line-height:1.7;letter-spacing:.02em;"><a href="mailto:${SUPPORT}?subject=Email%20preferences" style="color:${BLUE};text-decoration:none;">Manage emails</a> · <a href="mailto:${SUPPORT}?subject=Unsubscribe" style="color:${BLUE};text-decoration:none;">Unsubscribe</a></div>
         </td></tr>
       </table>
