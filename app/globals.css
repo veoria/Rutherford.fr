@@ -13279,6 +13279,10 @@ textarea.cv-input { resize: vertical; min-height: 74px; }
 
 /* ===== account hub (/account) ===== */
 .ah-section {
+  /* Dashboard, not a marketing section: tighten the top so the profile band
+     sits close under the header (and the X-Rite co-brand strip when present)
+     instead of inheriting the tall .section padding. */
+  padding-top: clamp(28px, 3.4vw, 44px);
   background:
     radial-gradient(#e7e7e4 1.1px, transparent 1.1px) 0 0 / 23px 23px,
     #ffffff;
