@@ -1,5 +1,10 @@
+import type { Metadata } from 'next';
 import { ConsoleValidationPage } from '@/components/console-validation-page';
 import { getCvInvitationByToken } from '@/lib/console-invitations';
+
+export const metadata: Metadata = {
+  alternates: { canonical: '/console-validation' },
+};
 
 export const dynamic = 'force-dynamic';
 

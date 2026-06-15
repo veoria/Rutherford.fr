@@ -5,6 +5,7 @@ import { getAllArticles } from '@/lib/blog';
 export const metadata: Metadata = {
   title: 'Blog | Rutherford.fr',
   description: 'All Rutherford blog articles in a clean, searchable index.',
+  alternates: { canonical: '/blog' },
 };
 
 export default function BlogPage() {
