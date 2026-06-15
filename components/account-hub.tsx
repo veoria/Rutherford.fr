@@ -50,7 +50,7 @@ type Props = {
 const TONE: Record<AccountType, string> = {
   client: '#1B6FF3',
   reseller: '#1E874B',
-  distributor: '#6D28D9',
+  distributor: '#F28B1F',
   team: '#16130F',
 };
 
@@ -116,6 +116,7 @@ type Copy = {
     teamTitle: string; teamSub: string;
     clientsTitle: string; clientsSub: string;
     networkTitle: string; networkSub: string;
+    tabNetwork: (n: number) => string;
     tabClients: (n: number) => string;
     tabTeam: string;
     owner: string;
@@ -167,7 +168,7 @@ const COPY: Record<Locale, Copy> = {
       teamTitle: 'My team', teamSub: 'Who can access this account',
       clientsTitle: 'Clients & team', clientsSub: 'Your clients and your team',
       networkTitle: 'Reseller network', networkSub: 'The resellers in your network',
-      tabClients: (n) => `Clients (${n})`, tabTeam: 'Team', owner: 'Owner',
+      tabNetwork: (n) => `Network (${n})`, tabClients: (n) => `Clients (${n})`, tabTeam: 'Team', owner: 'Owner',
       inviteMember: 'Invite a member', inviteClient: 'Invite a client', addReseller: 'Add a reseller',
       soonTeam: 'Team invitations are coming soon.', soonNetwork: 'Your network will appear here.', clientsEmpty: 'No client validations yet.',
       pressUnit: (n) => `${n} press${n === 1 ? '' : 'es'}`, eligibleShort: (n) => `${n} eligible`, openShort: (n) => `${n} open`,
@@ -208,7 +209,7 @@ const COPY: Record<Locale, Copy> = {
       teamTitle: 'Mon équipe', teamSub: 'Qui peut accéder à ce compte',
       clientsTitle: 'Clients & équipe', clientsSub: 'Vos clients et votre équipe',
       networkTitle: 'Réseau revendeurs', networkSub: 'Les revendeurs de votre réseau',
-      tabClients: (n) => `Clients (${n})`, tabTeam: 'Équipe', owner: 'Propriétaire',
+      tabNetwork: (n) => `Réseau (${n})`, tabClients: (n) => `Clients (${n})`, tabTeam: 'Équipe', owner: 'Propriétaire',
       inviteMember: 'Inviter un membre', inviteClient: 'Inviter un client', addReseller: 'Ajouter un revendeur',
       soonTeam: 'Les invitations d’équipe arrivent bientôt.', soonNetwork: 'Votre réseau apparaîtra ici.', clientsEmpty: 'Aucune validation client pour l’instant.',
       pressUnit: (n) => `${n} presse${n === 1 ? '' : 's'}`, eligibleShort: (n) => `${n} éligible${n === 1 ? '' : 's'}`, openShort: (n) => `${n} en cours`,
@@ -249,7 +250,7 @@ const COPY: Record<Locale, Copy> = {
       teamTitle: 'Mein Team', teamSub: 'Wer auf dieses Konto zugreifen kann',
       clientsTitle: 'Kunden & Team', clientsSub: 'Ihre Kunden und Ihr Team',
       networkTitle: 'Wiederverkäufer-Netzwerk', networkSub: 'Die Wiederverkäufer in Ihrem Netzwerk',
-      tabClients: (n) => `Kunden (${n})`, tabTeam: 'Team', owner: 'Inhaber',
+      tabNetwork: (n) => `Netzwerk (${n})`, tabClients: (n) => `Kunden (${n})`, tabTeam: 'Team', owner: 'Inhaber',
       inviteMember: 'Mitglied einladen', inviteClient: 'Kunde einladen', addReseller: 'Wiederverkäufer hinzufügen',
       soonTeam: 'Team-Einladungen folgen in Kürze.', soonNetwork: 'Ihr Netzwerk erscheint hier.', clientsEmpty: 'Noch keine Kunden-Validierungen.',
       pressUnit: (n) => `${n} Maschine${n === 1 ? '' : 'n'}`, eligibleShort: (n) => `${n} geeignet`, openShort: (n) => `${n} offen`,
@@ -290,7 +291,7 @@ const COPY: Record<Locale, Copy> = {
       teamTitle: 'Il mio team', teamSub: 'Chi può accedere a questo account',
       clientsTitle: 'Clienti & team', clientsSub: 'I suoi clienti e il suo team',
       networkTitle: 'Rete rivenditori', networkSub: 'I rivenditori della sua rete',
-      tabClients: (n) => `Clienti (${n})`, tabTeam: 'Team', owner: 'Proprietario',
+      tabNetwork: (n) => `Rete (${n})`, tabClients: (n) => `Clienti (${n})`, tabTeam: 'Team', owner: 'Proprietario',
       inviteMember: 'Invita un membro', inviteClient: 'Invita un cliente', addReseller: 'Aggiungi un rivenditore',
       soonTeam: 'Gli inviti al team arrivano presto.', soonNetwork: 'La sua rete apparirà qui.', clientsEmpty: 'Nessuna validazione cliente per ora.',
       pressUnit: (n) => `${n} macchin${n === 1 ? 'a' : 'e'}`, eligibleShort: (n) => `${n} idonee`, openShort: (n) => `${n} in corso`,
@@ -331,7 +332,7 @@ const COPY: Record<Locale, Copy> = {
       teamTitle: 'Mi equipo', teamSub: 'Quién puede acceder a esta cuenta',
       clientsTitle: 'Clientes & equipo', clientsSub: 'Sus clientes y su equipo',
       networkTitle: 'Red de revendedores', networkSub: 'Los revendedores de su red',
-      tabClients: (n) => `Clientes (${n})`, tabTeam: 'Equipo', owner: 'Propietario',
+      tabNetwork: (n) => `Red (${n})`, tabClients: (n) => `Clientes (${n})`, tabTeam: 'Equipo', owner: 'Propietario',
       inviteMember: 'Invitar a un miembro', inviteClient: 'Invitar a un cliente', addReseller: 'Añadir un revendedor',
       soonTeam: 'Las invitaciones de equipo llegan pronto.', soonNetwork: 'Su red aparecerá aquí.', clientsEmpty: 'Aún no hay validaciones de clientes.',
       pressUnit: (n) => `${n} prensa${n === 1 ? '' : 's'}`, eligibleShort: (n) => `${n} aptas`, openShort: (n) => `${n} en curso`,
@@ -434,16 +435,18 @@ export function AccountHub(props: Props) {
   return (
     <main className="page-shell" id="top">
       <SiteNav current="account" />
+      {accountType === 'distributor' ? (
+        <div className="ah-cobrand-strip">
+          <div className="container ah-cobrand">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img className="ah-cobrand-logo" src="/images/xrite-logo-black.png" alt="X-Rite PANTONE" />
+            <span className="ah-cobrand-badge">{PARTNER_BADGE[locale]}</span>
+          </div>
+        </div>
+      ) : null}
 
       <section className="ah-section section">
         <div className="container ah-wrap" style={{ ['--role' as string]: accent }}>
-          {accountType === 'distributor' ? (
-            <div className="ah-cobrand">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img className="ah-cobrand-logo" src="/images/xrite-logo-black.png" alt="X-Rite PANTONE" />
-              <span className="ah-cobrand-badge">{PARTNER_BADGE[locale]}</span>
-            </div>
-          ) : null}
           {/* Profile band */}
           <div className="ah-profile">
             <MediaUpload
@@ -819,7 +822,9 @@ export function ManagePanel({
 }) {
   const { locale } = useLanguage();
   const t = COPY[locale];
-  const [tab, setTab] = useState<'clients' | 'team'>(accountType === 'reseller' ? 'clients' : 'team');
+  const [tab, setTab] = useState<'network' | 'clients' | 'team'>(
+    accountType === 'distributor' ? 'network' : accountType === 'reseller' ? 'clients' : 'team'
+  );
   const accent = TONE[accountType];
   const title = accountType === 'distributor' ? t.manage.networkTitle : accountType === 'reseller' ? t.manage.clientsTitle : t.manage.teamTitle;
   const sub = accountType === 'distributor' ? t.manage.networkSub : accountType === 'reseller' ? t.manage.clientsSub : t.manage.teamSub;
@@ -878,15 +883,18 @@ export function ManagePanel({
         <div><div className="ah-card-t">{title}</div><div className="ah-card-s">{sub}</div></div>
       </div>
 
-      {accountType === 'reseller' ? (
+      {accountType === 'distributor' || accountType === 'reseller' ? (
         <div className="ah-tabs">
+          {accountType === 'distributor' ? (
+            <button className={`ah-tab${tab === 'network' ? ' on' : ''}`} onClick={() => setTab('network')}>{t.manage.tabNetwork(networkResellers.length)}</button>
+          ) : null}
           <button className={`ah-tab${tab === 'clients' ? ' on' : ''}`} onClick={() => setTab('clients')}>{t.manage.tabClients(clients.length)}</button>
           <button className={`ah-tab${tab === 'team' ? ' on' : ''}`} onClick={() => setTab('team')}>{t.manage.tabTeam}</button>
         </div>
       ) : null}
 
       <div className="ah-card-bd">
-        {accountType === 'distributor' ? (
+        {tab === 'network' ? (
           <>
             {networkResellers.length ? (
               <div className="ah-people">
@@ -906,7 +914,7 @@ export function ManagePanel({
             )}
             {canManage ? <InviteForm t={t} kind="reseller" /> : null}
           </>
-        ) : accountType === 'reseller' && tab === 'clients' ? (
+        ) : tab === 'clients' ? (
           <>
             {clients.length ? (
               <div className="ah-people">

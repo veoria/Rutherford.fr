@@ -39,7 +39,7 @@ export default async function AccountTeamRoute() {
   // Reseller → clients (from console_validations.reseller_id), merged with the
   // org-linked clients. Mirrors the hub.
   let resellerClients: ResellerClient[] = [];
-  if (accountType === 'reseller' && HAS_ADMIN) {
+  if ((accountType === 'reseller' || accountType === 'distributor') && HAS_ADMIN) {
     try {
       const { data } = await createSupabaseAdminClient()
         .from('console_validations')
@@ -67,7 +67,7 @@ export default async function AccountTeamRoute() {
       resellerClients = [];
     }
   }
-  if (accountType === 'reseller') {
+  if (accountType === 'reseller' || accountType === 'distributor') {
     const linked = await getResellerClients(user.id);
     const byName = new Map(resellerClients.map((c) => [c.name.toLowerCase(), c] as const));
     for (const l of linked) {
