@@ -1,4 +1,7 @@
 import { ConsoleValidationPage } from '@/components/console-validation-page';
+import { getCvInvitationByToken } from '@/lib/console-invitations';
+
+export const dynamic = 'force-dynamic';
 
 const FAQ = [
   {
@@ -29,11 +32,20 @@ const FAQ_JSON_LD = {
   })),
 };
 
-export default function ConsoleValidationRoute() {
+export default async function ConsoleValidationRoute({
+  searchParams,
+}: {
+  searchParams: { invite?: string };
+}) {
+  const token = typeof searchParams.invite === 'string' ? searchParams.invite : '';
+  const inv = token ? await getCvInvitationByToken(token) : null;
+  const invite = inv
+    ? { token: inv.token, clientEmail: inv.clientEmail, company: inv.company, inviterCompany: inv.inviterCompany }
+    : undefined;
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(FAQ_JSON_LD) }} />
-      <ConsoleValidationPage faq={FAQ} />
+      <ConsoleValidationPage faq={FAQ} invite={invite} />
     </>
   );
 }
