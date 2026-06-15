@@ -12672,6 +12672,9 @@ a.blog-card-image:hover img {
 .cvp-ghost { font-weight: 600; font-size: 14px; color: var(--cvp-ink2); text-decoration: none; }
 .cvp-empty { margin-top: 32px; padding: 40px 28px; border: 1px solid var(--cvp-line); border-radius: 16px; text-align: center; background: #fff; }
 
+/* Conversation thread inside the validation detail (reuses .sup-* chat styles) */
+.cvp-chat { margin-top: 24px; }
+
 /* Invite a client (reseller / distributor / team) */
 .cvi-card { margin-top: 28px; padding: 22px 24px; border: 1px solid var(--cvp-line); border-radius: 16px; background: #fff; }
 .cvi-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap; }

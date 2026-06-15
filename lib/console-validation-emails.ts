@@ -430,6 +430,23 @@ export function consoleInviteEmail(opts: {
   };
 }
 
+/** Sent when a team member posts a "[client] …" comment on the validation's
+ * Asana task — relays that message into the tracker thread. Free text → escape. */
+export function consoleAgentMessageEmail(message: string): { subject: string; html: string } {
+  return {
+    subject: 'A message about your console validation',
+    html: render({
+      subject: 'A message about your console validation',
+      preheader: 'Your reviewer sent you a message.',
+      eyebrow: 'NEW MESSAGE',
+      tone: 'info',
+      headline: { pre: 'A message from ', accent: 'our team', post: '.' },
+      body: [esc(message).replace(/\n/g, '<br>')],
+      cta: TRACK_CTA,
+    }),
+  };
+}
+
 /** 04 · More info needed — review started, the team needs extra details. */
 export function moreInfoEmail(lead: ResultLead): { subject: string; html: string } {
   const ref = reference(lead.dealId);
