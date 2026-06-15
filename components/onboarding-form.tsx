@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { SiteFooter } from '@/components/site-footer';
 import { SiteNav } from '@/components/site-nav';
 import { type Locale, useLanguage } from '@/components/language-provider';
@@ -179,6 +179,16 @@ const COPY: Record<Locale, OnboardingCopy> = {
   },
 };
 
+// Match an IP-geo country name (from /api/geo, an ISO short name) against our
+// onboarding list so the dropdown can be pre-selected. Case-insensitive exact
+// match; returns null when the visitor's country isn't one we list.
+function matchCountry(raw?: string | null): string | null {
+  if (!raw) return null;
+  const v = raw.trim().toLowerCase();
+  if (!v) return null;
+  return COUNTRIES.find((c) => c.toLowerCase() === v) ?? null;
+}
+
 type Props = {
   next: string;
   needsName: boolean;
@@ -196,6 +206,26 @@ export function OnboardingForm({ next, needsName, defaultName, defaultCompany }:
   const [consent, setConsent] = useState(false);
   const [status, setStatus] = useState<'idle' | 'saving' | 'error'>('idle');
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  // Pre-select the visitor's country from IP geo (Vercel edge header). Only
+  // fills when the field is still empty, so a manual choice is never overridden.
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      try {
+        const res = await fetch('/api/geo');
+        if (!res.ok) return;
+        const { country: geoCountry } = await res.json();
+        const matched = matchCountry(geoCountry);
+        if (matched && active) setCountry((v) => v || matched);
+      } catch {
+        /* no geo (local dev / non-Vercel) — leave the field empty */
+      }
+    })();
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
