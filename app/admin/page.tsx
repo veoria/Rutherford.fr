@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { notFound, redirect } from 'next/navigation';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { getAdminOverview } from '@/lib/admin';
+import { getOrgsForAdmin } from '@/lib/organizations';
 import { AdminDashboard } from '@/components/admin-dashboard';
 
 export const metadata: Metadata = {
@@ -31,6 +32,6 @@ export default async function AdminRoute() {
     notFound();
   }
 
-  const overview = await getAdminOverview();
-  return <AdminDashboard overview={overview} />;
+  const [overview, orgs] = await Promise.all([getAdminOverview(), getOrgsForAdmin()]);
+  return <AdminDashboard overview={overview} orgs={orgs} selfId={user.id} />;
 }

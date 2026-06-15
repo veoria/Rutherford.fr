@@ -1,8 +1,9 @@
 'use client';
 
-import { Suspense, useEffect } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import Script from 'next/script';
 import { usePathname, useSearchParams } from 'next/navigation';
+import { CONSENT_KEY } from '@/components/cookie-consent';
 
 declare global {
   interface Window {
@@ -27,8 +28,23 @@ function PageviewTracker({ measurementId }: { measurementId: string }) {
 
 export function GoogleAnalytics() {
   const measurementId = process.env.NEXT_PUBLIC_GA_ID;
+  const [granted, setGranted] = useState(false);
 
-  if (!measurementId) return null;
+  // Only load gtag once analytics consent is granted (see CookieConsent).
+  useEffect(() => {
+    const read = () => {
+      try {
+        setGranted(localStorage.getItem(CONSENT_KEY) === 'granted');
+      } catch {
+        setGranted(false);
+      }
+    };
+    read();
+    window.addEventListener('rf-consent', read);
+    return () => window.removeEventListener('rf-consent', read);
+  }, []);
+
+  if (!measurementId || !granted) return null;
 
   return (
     <>

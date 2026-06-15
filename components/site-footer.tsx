@@ -92,7 +92,7 @@ export function SiteFooter() {
 
   const resourceLinks: { key: ResourceKey; href: string }[] = [
     { key: 'blog', href: '/blog' },
-    { key: 'support', href: 'https://form.typeform.com/to/LZtPUH' },
+    { key: 'support', href: '/support' },
     { key: 'console', href: '/console-validation' },
     { key: 'contact', href: 'mailto:contact@rutherford.fr' },
   ];
@@ -175,6 +175,10 @@ export function SiteFooter() {
           <div className="footer-bottom">
             <p className="footer-bottom-text">
               © {year} Rutherford.fr. {t.rights}
+            </p>
+            <p className="footer-legal-links">
+              <a href="/confidentialite">Confidentialité</a>
+              <a href="/mentions-legales">Mentions légales</a>
             </p>
           </div>
         </div>
