@@ -142,10 +142,20 @@ export async function POST(request: NextRequest) {
     const dealId = extractDealId(state.name);
     const name = state.name;
     const by = state.completedByName || 'the team';
+    // The submission row carries the client's company / country / press, which
+    // the verdict emails surface alongside the status.
+    const cv = await getConsoleValidationByAsanaTask(gid);
+    const lead = {
+      name,
+      dealId,
+      company: cv?.company ?? null,
+      country: cv?.country ?? null,
+      machine: cv?.machine ?? null,
+    };
 
     if (status === 'can_be_connected') {
       if (email) {
-        const mail = canConnectEmail({ name, dealId });
+        const mail = canConnectEmail(lead);
         await sendMail({ to: notifyTo, subject: mail.subject, html: mail.html, bcc: mail.bcc });
       }
       await addDealNote(
@@ -154,7 +164,7 @@ export async function POST(request: NextRequest) {
       );
     } else if (status === 'rejected') {
       if (email) {
-        const mail = cannotConnectEmail({ name, dealId });
+        const mail = cannotConnectEmail(lead);
         await sendMail({ to: notifyTo, subject: mail.subject, html: mail.html });
       }
       await addDealNote(
@@ -163,7 +173,7 @@ export async function POST(request: NextRequest) {
       );
     } else if (status === 'changes_requested') {
       if (email) {
-        const mail = moreInfoEmail({ name, dealId });
+        const mail = moreInfoEmail(lead);
         await sendMail({ to: notifyTo, subject: mail.subject, html: mail.html });
       }
       await addDealNote(

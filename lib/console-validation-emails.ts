@@ -34,8 +34,6 @@ const SWATCH = ['#29ABE2', '#2E9E47', '#F7941D', '#EC0E8C', '#ED1C24', '#2E2BB8'
 
 const DOT: Record<Tone, string> = { info: '#2E9E47', ok: '#2E9E47', warn: '#E5A100', no: '#D33A2C' };
 const VALUE_TONE: Record<string, string> = { ok: '#1F8A4C', warn: '#B07D12', no: '#C4332B' };
-// Soft background tint for a toned cell, so the Status box reads its state at a glance.
-const FILL_TONE: Record<string, string> = { ok: '#E5F4EB', warn: '#FAF1E0', no: '#FBE9E7' };
 
 // Font stacks — web font first, then the fallback the design is built to hold on.
 const F_SANS = "'Geist',Arial,Helvetica,sans-serif";
@@ -46,8 +44,7 @@ const FOOTLINE = 'Rutherford.fr — closed-loop color management for offset &amp
 const FOOTMETA = '25+ years · 30+ countries · 1,000+ systems deployed · Made in France';
 
 type Tone = 'info' | 'ok' | 'warn' | 'no';
-type Row = { k: string; v: string; mono?: boolean };
-type Cell = { k: string; v: string; tone?: 'ok' | 'warn' | 'no' };
+type Row = { k: string; v: string; mono?: boolean; tone?: 'ok' | 'warn' | 'no' };
 
 const esc = (value: string) =>
   value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -67,30 +64,15 @@ function tableBlock(rows: Row[]): string {
     .map((r, i) => {
       const bb = i < rows.length - 1 ? `border-bottom:1px solid ${DIVIDER};` : '';
       const valueFont = r.mono ? F_MONO : F_BODY;
+      const valueColor = r.tone ? VALUE_TONE[r.tone] : INK;
       return `<tr>
         <td width="12" valign="middle" style="padding:12px 0 12px 16px;${bb}"><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:${SWATCH[i % SWATCH.length]};">&nbsp;</span></td>
         <td valign="middle" style="padding:12px 12px;font-family:${F_MONO};font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:${MUTED};${bb}">${esc(r.k)}</td>
-        <td valign="middle" style="padding:12px 16px 12px 0;font-family:${valueFont};font-size:14.5px;font-weight:600;color:${INK};${bb}">${esc(r.v)}</td>
+        <td valign="middle" style="padding:12px 16px 12px 0;font-family:${valueFont};font-size:14.5px;font-weight:600;color:${valueColor};${bb}">${esc(r.v)}</td>
       </tr>`;
     })
     .join('');
   return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border:1px solid ${DATA_BORDER};border-radius:10px;border-collapse:separate;margin:20px 0 22px;">${body}</table>`;
-}
-
-function stripBlock(cells: Cell[]): string {
-  const width = Math.round(100 / cells.length);
-  const tds = cells
-    .map((s, i) => {
-      const br = i < cells.length - 1 ? `border-right:1px solid ${DIVIDER};` : '';
-      const color = s.tone ? VALUE_TONE[s.tone] : INK;
-      const bg = s.tone ? `background:${FILL_TONE[s.tone]};` : '';
-      return `<td width="${width}%" valign="top" style="padding:14px 16px;${bg}${br}">
-        <div style="font-family:${F_MONO};font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:${MUTED};">${esc(s.k)}</div>
-        <div style="font-family:${F_BODY};font-size:15px;font-weight:600;color:${color};margin-top:5px;">${esc(s.v)}</div>
-      </td>`;
-    })
-    .join('');
-  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border:1px solid ${DATA_BORDER};border-radius:10px;border-collapse:separate;margin:20px 0 22px;"><tr>${tds}</tr></table>`;
 }
 
 function cta(label: string, href: string): string {
@@ -265,14 +247,28 @@ export function acknowledgementEmail(lead: AckLead): { subject: string; html: st
   };
 }
 
-export type ResultLead = { name: string; dealId: number | null };
+export type ResultLead = {
+  name: string;
+  dealId: number | null;
+  company?: string | null;
+  country?: string | null;
+  machine?: string | null;
+};
+
+// Press label: prefer the structured machine field, fall back to parsing the
+// deal title. Country / Company come straight from the submission.
+const leadPress = (lead: ResultLead) => (lead.machine && lead.machine.trim()) || derivePress(lead.name);
+const trimmed = (s: string | null | undefined) => (s && s.trim() ? s.trim() : '');
 
 /** 05 · Approved — press is eligible. */
 export function canConnectEmail(lead: ResultLead): { subject: string; html: string; bcc: string[] } {
   const ref = reference(lead.dealId);
-  const press = derivePress(lead.name);
-  const cells: Cell[] = [{ k: 'Status', v: 'Eligible', tone: 'ok' }, { k: 'Press', v: press }];
-  if (ref) cells.push({ k: 'Reference', v: ref });
+  const press = leadPress(lead);
+  const rows: Row[] = [{ k: 'Status', v: 'Eligible', tone: 'ok' }];
+  if (trimmed(lead.company)) rows.push({ k: 'Company', v: trimmed(lead.company) });
+  if (trimmed(lead.country)) rows.push({ k: 'Country', v: trimmed(lead.country) });
+  rows.push({ k: 'Press', v: press });
+  if (ref) rows.push({ k: 'Reference', v: ref, mono: true });
 
   return {
     subject: 'Good news — your press is eligible for closed-loop color',
@@ -290,7 +286,7 @@ export function canConnectEmail(lead: ResultLead): { subject: string; html: stri
         )}</strong> is compatible with Rutherford closed-loop color.`,
         "The next step is to schedule installation with our team. We'll align on timing, on-site requirements, and your first calibration run.",
       ],
-      dataBlock: stripBlock(cells),
+      dataBlock: tableBlock(rows),
       cta: TRACK_CTA,
     }),
   };
@@ -299,12 +295,13 @@ export function canConnectEmail(lead: ResultLead): { subject: string; html: stri
 /** 06 · Not eligible — press isn't currently supported. */
 export function cannotConnectEmail(lead: ResultLead): { subject: string; html: string } {
   const ref = reference(lead.dealId);
-  const press = derivePress(lead.name);
-  const cells: Cell[] = [
-    { k: 'Status', v: 'Not eligible', tone: 'no' },
-    { k: 'Press', v: press },
-    { k: 'Reviewed', v: reviewedDate() },
-  ];
+  const press = leadPress(lead);
+  const rows: Row[] = [{ k: 'Status', v: 'Not eligible', tone: 'no' }];
+  if (trimmed(lead.company)) rows.push({ k: 'Company', v: trimmed(lead.company) });
+  if (trimmed(lead.country)) rows.push({ k: 'Country', v: trimmed(lead.country) });
+  rows.push({ k: 'Press', v: press });
+  if (ref) rows.push({ k: 'Reference', v: ref, mono: true });
+  rows.push({ k: 'Reviewed', v: reviewedDate(), mono: true });
 
   return {
     subject: `Your console review is complete${ref ? ` — ref ${ref}` : ''}`,
@@ -320,7 +317,7 @@ export function cannotConnectEmail(lead: ResultLead): { subject: string; html: s
         )}</strong> console isn't currently supported for Rutherford closed-loop color.`,
         "This isn't always final — we add support for new consoles regularly, and in some cases a press becomes eligible after a hardware or software update. Our team can walk you through the specifics and any options for your setup.",
       ],
-      dataBlock: stripBlock(cells),
+      dataBlock: tableBlock(rows),
       cta: TRACK_CTA,
     }),
   };
@@ -450,7 +447,12 @@ export function consoleAgentMessageEmail(message: string): { subject: string; ht
 /** 04 · More info needed — review started, the team needs extra details. */
 export function moreInfoEmail(lead: ResultLead): { subject: string; html: string } {
   const ref = reference(lead.dealId);
-  const press = derivePress(lead.name);
+  const press = leadPress(lead);
+  const rows: Row[] = [{ k: 'Status', v: 'More info needed', tone: 'warn' }];
+  if (trimmed(lead.company)) rows.push({ k: 'Company', v: trimmed(lead.company) });
+  if (trimmed(lead.country)) rows.push({ k: 'Country', v: trimmed(lead.country) });
+  if (press) rows.push({ k: 'Press', v: press });
+  if (ref) rows.push({ k: 'Reference', v: ref, mono: true });
   return {
     subject: `We need a little more to finish your review${ref ? ` — ref ${ref}` : ''}`,
     html: render({
@@ -463,6 +465,7 @@ export function moreInfoEmail(lead: ResultLead): { subject: string; html: string
         `Your submission${press ? ` for <strong>${esc(press)}</strong>` : ''} is almost there. Before we can confirm eligibility, our team needs a few additional details about your press and console.`,
         'Open your request to add the details — a comment and any extra photos. Your request stays open and we resume the review as soon as they arrive.',
       ],
+      dataBlock: tableBlock(rows),
       cta: TRACK_CTA,
     }),
   };
