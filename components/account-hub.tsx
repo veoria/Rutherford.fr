@@ -112,7 +112,7 @@ type Copy = {
   moduleWord: string;
   settingsT: string;
   settingsS: string;
-  rowName: string; rowEmail: string; rowCompany: string; rowCountry: string; rowLang: string; rowPwd: string;
+  rowName: string; rowEmail: string; rowCompany: string; rowCountry: string; rowLang: string; rowPwd: string; security: string;
   manage: {
     teamTitle: string; teamSub: string;
     clientsTitle: string; clientsSub: string;
@@ -164,7 +164,7 @@ const COPY: Record<Locale, Copy> = {
     },
     resumeKicker: 'Pick up where you left off', resumeCta: 'Continue', moduleWord: 'Module',
     settingsT: 'Account information', settingsS: 'Manage your profile and preferences',
-    rowName: 'Full name', rowEmail: 'Email address', rowCompany: 'Company', rowCountry: 'Country', rowLang: 'Language', rowPwd: 'Password',
+    rowName: 'Full name', rowEmail: 'Email address', rowCompany: 'Company', rowCountry: 'Country', rowLang: 'Language', rowPwd: 'Password', security: 'Password & two-factor',
     manage: {
       teamTitle: 'My team', teamSub: 'Who can access this account',
       clientsTitle: 'Clients & team', clientsSub: 'Your clients and your team',
@@ -205,7 +205,7 @@ const COPY: Record<Locale, Copy> = {
     },
     resumeKicker: 'Reprenez où vous en étiez', resumeCta: 'Continuer', moduleWord: 'Module',
     settingsT: 'Informations du compte', settingsS: 'Gérez votre profil et vos préférences',
-    rowName: 'Nom complet', rowEmail: 'Adresse email', rowCompany: 'Société', rowCountry: 'Pays', rowLang: 'Langue', rowPwd: 'Mot de passe',
+    rowName: 'Nom complet', rowEmail: 'Adresse email', rowCompany: 'Société', rowCountry: 'Pays', rowLang: 'Langue', rowPwd: 'Mot de passe', security: 'Mot de passe et 2FA',
     manage: {
       teamTitle: 'Mon équipe', teamSub: 'Qui peut accéder à ce compte',
       clientsTitle: 'Clients & équipe', clientsSub: 'Vos clients et votre équipe',
@@ -246,7 +246,7 @@ const COPY: Record<Locale, Copy> = {
     },
     resumeKicker: 'Weitermachen, wo Sie aufgehört haben', resumeCta: 'Fortsetzen', moduleWord: 'Modul',
     settingsT: 'Kontoinformationen', settingsS: 'Profil und Einstellungen verwalten',
-    rowName: 'Vollständiger Name', rowEmail: 'E-Mail-Adresse', rowCompany: 'Unternehmen', rowCountry: 'Land', rowLang: 'Sprache', rowPwd: 'Passwort',
+    rowName: 'Vollständiger Name', rowEmail: 'E-Mail-Adresse', rowCompany: 'Unternehmen', rowCountry: 'Land', rowLang: 'Sprache', rowPwd: 'Passwort', security: 'Passwort & Zwei-Faktor',
     manage: {
       teamTitle: 'Mein Team', teamSub: 'Wer auf dieses Konto zugreifen kann',
       clientsTitle: 'Kunden & Team', clientsSub: 'Ihre Kunden und Ihr Team',
@@ -287,7 +287,7 @@ const COPY: Record<Locale, Copy> = {
     },
     resumeKicker: 'Riprenda da dove era rimasto', resumeCta: 'Continua', moduleWord: 'Modulo',
     settingsT: 'Informazioni dell’account', settingsS: 'Gestisci profilo e preferenze',
-    rowName: 'Nome completo', rowEmail: 'Indirizzo email', rowCompany: 'Azienda', rowCountry: 'Paese', rowLang: 'Lingua', rowPwd: 'Password',
+    rowName: 'Nome completo', rowEmail: 'Indirizzo email', rowCompany: 'Azienda', rowCountry: 'Paese', rowLang: 'Lingua', rowPwd: 'Password', security: 'Password e 2FA',
     manage: {
       teamTitle: 'Il mio team', teamSub: 'Chi può accedere a questo account',
       clientsTitle: 'Clienti & team', clientsSub: 'I suoi clienti e il suo team',
@@ -328,7 +328,7 @@ const COPY: Record<Locale, Copy> = {
     },
     resumeKicker: 'Retome donde lo dejó', resumeCta: 'Continuar', moduleWord: 'Módulo',
     settingsT: 'Información de la cuenta', settingsS: 'Gestione su perfil y preferencias',
-    rowName: 'Nombre completo', rowEmail: 'Correo electrónico', rowCompany: 'Empresa', rowCountry: 'País', rowLang: 'Idioma', rowPwd: 'Contraseña',
+    rowName: 'Nombre completo', rowEmail: 'Correo electrónico', rowCompany: 'Empresa', rowCountry: 'País', rowLang: 'Idioma', rowPwd: 'Contraseña', security: 'Contraseña y doble factor',
     manage: {
       teamTitle: 'Mi equipo', teamSub: 'Quién puede acceder a esta cuenta',
       clientsTitle: 'Clientes & equipo', clientsSub: 'Sus clientes y su equipo',
@@ -571,6 +571,10 @@ function SettingsCard({ t, locale, profile, email }: { t: Copy; locale: Locale; 
             <span className="ah-row-v">{v}</span>
           </div>
         ))}
+        <a className="ah-row ah-row-link" href="/account/security">
+          <span className="ah-row-k">{t.security}</span>
+          <span className="ah-row-v">→</span>
+        </a>
       </div>
     </div>
   );
