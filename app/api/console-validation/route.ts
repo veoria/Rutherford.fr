@@ -91,17 +91,22 @@ export async function POST(request: NextRequest) {
         .eq('id', userId)
         .maybeSingle();
       const at = prof?.account_type as string | undefined;
-      if (at === 'reseller' || at === 'distributor') {
+      if (at === 'reseller' || at === 'distributor' || at === 'team') {
         onBehalf = true;
         resellerId = userId;
-        resellerOrgId = (prof?.organization_id as string | null) ?? null;
-        if (resellerOrgId) {
-          const { data: org } = await admin
-            .from('organizations')
-            .select('name')
-            .eq('id', resellerOrgId)
-            .maybeSingle();
-          resellerOrgName = (org?.name as string | null) ?? null;
+        // Linking the client into the inviter's org applies to resellers /
+        // distributors only — an internal team member's client must not be
+        // added to Rutherford's own organization.
+        if (at === 'reseller' || at === 'distributor') {
+          resellerOrgId = (prof?.organization_id as string | null) ?? null;
+          if (resellerOrgId) {
+            const { data: org } = await admin
+              .from('organizations')
+              .select('name')
+              .eq('id', resellerOrgId)
+              .maybeSingle();
+            resellerOrgName = (org?.name as string | null) ?? null;
+          }
         }
       }
     } catch {
