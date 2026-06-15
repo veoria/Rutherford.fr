@@ -9461,6 +9461,59 @@ a.blog-card-image:hover img {
   cursor: not-allowed;
 }
 
+/* Row of small text actions under the password form (forgot / toggle mode) */
+.signin-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 2px;
+}
+
+.signin-link {
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  font-size: 0.85rem;
+  color: var(--accent);
+  cursor: pointer;
+  text-align: left;
+}
+
+.signin-link:hover {
+  text-decoration: underline;
+}
+
+.signin-link:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* Secondary, low-emphasis action — the magic-link fallback under the divider */
+.signin-secondary {
+  align-self: stretch;
+  justify-content: center;
+  text-align: center;
+  background: none;
+  border: 1px solid rgba(0, 0, 0, 0.14);
+  border-radius: 12px;
+  padding: 11px 14px;
+  font: inherit;
+  font-size: 0.92rem;
+  color: #1d1d1f;
+  cursor: pointer;
+}
+
+.signin-secondary:hover {
+  border-color: rgba(0, 0, 0, 0.3);
+}
+
+.signin-secondary:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
 .signin-message {
   margin: 0;
   font-size: 0.92rem;
