@@ -257,11 +257,14 @@ export function ConsoleValidationPage({
     setStarted(true);
   };
 
-  // Prefill from the signed-in profile, then IP geo for the country.
+  // Prefill from the signed-in profile, then IP geo for the country. Resellers /
+  // distributors / team submit FOR a client, so none of THEIR details (email,
+  // company, country, geo) are prefilled — those fields belong to the client.
   useEffect(() => {
     let active = true;
     (async () => {
       let countryResolved = false;
+      let isReseller = false;
       if (authConfigured) {
         try {
           const supabase = createSupabaseBrowserClient();
@@ -275,14 +278,15 @@ export function ConsoleValidationPage({
               .select('company, country, account_type')
               .eq('id', user.id)
               .maybeSingle();
-            // A reseller / distributor submits FOR a client: the email + company
-            // are the client's, so don't prefill the submitter's own.
-            const reseller = profile?.account_type === 'reseller' || profile?.account_type === 'distributor';
-            if (active) setOnBehalf(reseller);
-            if (!reseller && user.email) setEmail((v) => v || user.email!);
-            if (profile && active) {
-              if (!reseller && profile.company) setCompanyName((v) => v || (profile.company as string));
-              if (profile.country && isKnownCountry(profile.country as string)) {
+            isReseller =
+              profile?.account_type === 'reseller' ||
+              profile?.account_type === 'distributor' ||
+              profile?.account_type === 'team';
+            if (active) setOnBehalf(isReseller);
+            if (!isReseller) {
+              if (user.email) setEmail((v) => v || user.email!);
+              if (profile?.company) setCompanyName((v) => v || (profile.company as string));
+              if (profile?.country && isKnownCountry(profile.country as string)) {
                 setCountry((v) => v || (profile.country as string));
                 countryResolved = true;
               }
@@ -292,7 +296,8 @@ export function ConsoleValidationPage({
           /* anonymous */
         }
       }
-      if (!countryResolved && active) {
+      // Geo fallback — skip for resellers / team (their location ≠ the client's).
+      if (!countryResolved && !isReseller && active) {
         try {
           const res = await fetch('/api/geo');
           if (res.ok) {
