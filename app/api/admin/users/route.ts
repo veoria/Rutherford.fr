@@ -5,7 +5,8 @@ import { isJobTitleKey, isKnownCountry } from '@/data/onboarding-options';
 
 export const dynamic = 'force-dynamic';
 
-// Verify the caller is a signed-in admin. RLS lets a user self-read is_admin.
+// Verify the caller is a signed-in admin with 2FA this session. RLS lets a user
+// self-read is_admin; the AAL2 check matches the /admin access policy.
 async function requireAdmin() {
   const supabase = createSupabaseServerClient();
   const {
@@ -14,6 +15,8 @@ async function requireAdmin() {
   if (!user) return { user: null, error: 'unauthorized', status: 401 } as const;
   const { data } = await supabase.from('profiles').select('is_admin').eq('id', user.id).maybeSingle();
   if (!data?.is_admin) return { user: null, error: 'forbidden', status: 403 } as const;
+  const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+  if (aal?.currentLevel !== 'aal2') return { user: null, error: 'mfa_required', status: 403 } as const;
   return { user, error: null, status: 200 } as const;
 }
 

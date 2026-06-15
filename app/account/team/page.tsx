@@ -35,7 +35,6 @@ export default async function AccountTeamRoute() {
   }
 
   const accountType = ((profile?.account_type as AccountType) ?? 'client') as AccountType;
-  const isAdmin = Boolean(profile?.is_admin);
 
   // Reseller → clients (from console_validations.reseller_id), merged with the
   // org-linked clients. Mirrors the hub.
@@ -86,7 +85,6 @@ export default async function AccountTeamRoute() {
       accountType={accountType}
       team={team}
       selfId={user.id}
-      isAdmin={isAdmin}
       networkResellers={networkResellers}
       clients={resellerClients}
     />

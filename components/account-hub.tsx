@@ -20,7 +20,6 @@ type Props = {
   accountType: AccountType;
   team: Team;
   selfId: string;
-  isAdmin: boolean;
   networkResellers: ResellerClientOrg[];
   email: string;
   memberSince: string | null;
@@ -387,7 +386,7 @@ function fmtMonth(iso: string | null, locale: Locale): string {
 type Tile = { ic: string; cls: string; t: string; s: string; href: string; statDot?: string; statV: string; statM?: string };
 
 export function AccountHub(props: Props) {
-  const { accountType, team, selfId, isAdmin, networkResellers, email, memberSince, profile, academy, consoleStat, supportStat, resume, resellerClients } = props;
+  const { accountType, team, selfId, networkResellers, email, memberSince, profile, academy, consoleStat, supportStat, resume, resellerClients } = props;
   const { locale } = useLanguage();
   const t = COPY[locale];
   const accent = TONE[accountType];
@@ -420,9 +419,9 @@ export function AccountHub(props: Props) {
     roleTile = { ic: 'clients', cls: 'green', t: t.tiles.clientsT, s: t.tiles.clientsS, href: '/account/team', statDot: 'green', statV: t.stat.clientsCount(resellerClients.length) };
   } else if (accountType === 'distributor') {
     roleTile = { ic: 'network', cls: 'violet', t: t.tiles.networkT, s: t.tiles.networkS, href: '/account/team', statV: t.stat.networkSoon };
-  } else if (accountType === 'team' && isAdmin) {
-    // Back-office shortcut only for staff actually flagged is_admin — others
-    // would hit the /admin role gate (404). The page itself stays the boundary.
+  } else if (accountType === 'team') {
+    // Back-office entry for all staff. /admin enforces the real gate (team
+    // domain + 2FA); non-admins land in a read-only view there.
     roleTile = { ic: 'admin', cls: 'ink', t: t.tiles.adminT, s: t.tiles.adminS, href: '/admin', statV: t.stat.backoffice };
   } else {
     roleTile = { ic: 'team', cls: 'green', t: t.tiles.teamT, s: t.tiles.teamS, href: '/account/team', statV: t.stat.youOnly };
@@ -532,7 +531,6 @@ export function AccountHub(props: Props) {
                 accountType={accountType}
                 team={team}
                 selfId={selfId}
-                isAdmin={isAdmin}
                 networkResellers={networkResellers}
                 clients={resellerClients}
               />
@@ -819,14 +817,12 @@ export function ManagePanel({
   accountType,
   team,
   selfId,
-  isAdmin,
   networkResellers,
   clients,
 }: {
   accountType: AccountType;
   team: Team;
   selfId: string;
-  isAdmin: boolean;
   networkResellers: ResellerClientOrg[];
   clients: ResellerClient[];
 }) {
@@ -840,10 +836,9 @@ export function ManagePanel({
   const sub = accountType === 'distributor' ? t.manage.networkSub : accountType === 'reseller' ? t.manage.clientsSub : t.manage.teamSub;
   const canManage = team.myRole === 'owner' || team.myRole === 'admin';
 
-  // Rutherford staff flagged is_admin manage everything from the back-office.
-  // Team members without the flag fall through to the read-only team view —
-  // they never see the (gated) /admin link.
-  if (accountType === 'team' && isAdmin) {
+  // Rutherford staff reach the back-office from here. /admin enforces the real
+  // gate (team domain + 2FA) and shows non-admins a read-only view.
+  if (accountType === 'team') {
     return (
       <div className="ah-card" id="account-manage">
         <div className="ah-card-h">

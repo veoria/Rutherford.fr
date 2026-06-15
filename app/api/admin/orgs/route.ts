@@ -12,6 +12,8 @@ async function requireAdmin() {
   if (!user) return { error: 'unauthorized', status: 401 } as const;
   const { data } = await supabase.from('profiles').select('is_admin').eq('id', user.id).maybeSingle();
   if (!data?.is_admin) return { error: 'forbidden', status: 403 } as const;
+  const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+  if (aal?.currentLevel !== 'aal2') return { error: 'mfa_required', status: 403 } as const;
   return { error: null, status: 200 } as const;
 }
 
