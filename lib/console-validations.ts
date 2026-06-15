@@ -150,3 +150,65 @@ export async function getNotificationEmailByAsanaTask(
     return fallback;
   }
 }
+
+/** Resolve a validation from its Asana task, for the comment-relay webhook. */
+export async function getConsoleValidationByAsanaTask(
+  gid: string
+): Promise<{ id: string; email: string; lastAgentStoryGid: string | null } | null> {
+  const supabase = adminClient();
+  if (!supabase) return null;
+  try {
+    const { data } = await supabase
+      .from('console_validations')
+      .select('id, email, last_agent_story_gid')
+      .eq('asana_task_gid', gid)
+      .maybeSingle();
+    return data
+      ? {
+          id: data.id as string,
+          email: data.email as string,
+          lastAgentStoryGid: (data.last_agent_story_gid as string | null) ?? null,
+        }
+      : null;
+  } catch {
+    return null;
+  }
+}
+
+/** Remember the last relayed team-comment story gid (email dedup). Best-effort. */
+export async function setConsoleValidationAgentStory(gid: string, storyGid: string): Promise<void> {
+  const supabase = adminClient();
+  if (!supabase) return;
+  try {
+    await supabase
+      .from('console_validations')
+      .update({ last_agent_story_gid: storyGid, updated_at: new Date().toISOString() })
+      .eq('asana_task_gid', gid);
+  } catch {
+    /* best-effort */
+  }
+}
+
+/** Append a message to a validation's conversation thread. Best-effort. */
+export async function insertConsoleValidationMessage(m: {
+  validationId: string;
+  author: 'team' | 'customer';
+  body: string | null;
+  photos?: string[];
+  asanaStoryGid?: string | null;
+}): Promise<void> {
+  const supabase = adminClient();
+  if (!supabase) return;
+  try {
+    const { error } = await supabase.from('console_validation_messages').insert({
+      validation_id: m.validationId,
+      author: m.author,
+      body: m.body,
+      photos: m.photos ?? [],
+      asana_story_gid: m.asanaStoryGid ?? null,
+    });
+    if (error) console.error('console_validation_messages insert failed:', error.message);
+  } catch (error) {
+    console.error('console_validation_messages insert threw:', error);
+  }
+}

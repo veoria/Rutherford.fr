@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { createSupabaseAdminClient, createSupabaseServerClient } from '@/lib/supabase/server';
 import { addConsoleValidationTaskComment } from '@/lib/asana';
 import { addDealNote } from '@/lib/pipedrive';
+import { insertConsoleValidationMessage } from '@/lib/console-validations';
 
 // Customer reply to a console validation (used by the in-account "provide more
 // details" form). Verifies ownership via RLS, relays the comment + photos to the
@@ -87,6 +88,14 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
     .from('console_validations')
     .update({ status: 'in_review', customer_reply: comment || null, customer_reply_at: new Date().toISOString() })
     .eq('id', row.id);
+
+  // Append to the conversation thread shown in the tracker.
+  await insertConsoleValidationMessage({
+    validationId: String(row.id),
+    author: 'customer',
+    body: comment || null,
+    photos: links,
+  });
 
   return NextResponse.json({ ok: true });
 }

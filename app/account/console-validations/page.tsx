@@ -4,6 +4,7 @@ import { createSupabaseServerClient } from '@/lib/supabase/server';
 import {
   ConsoleValidationsPortal,
   type ConsoleValidationRow,
+  type CvMessage,
 } from '@/components/console-validations-portal';
 import type { CvInviteItem } from '@/components/cv-invite';
 import { listCvInvitations } from '@/lib/console-invitations';
@@ -71,12 +72,39 @@ export default async function ConsoleValidationsRoute() {
     customerReplyAt: (row.customer_reply_at as string | null) ?? null,
   }));
 
+  // Conversation threads for the visitor's validations (RLS-scoped).
+  let messages: CvMessage[] = [];
+  if (rows.length) {
+    const { data: msgRows } = await supabase
+      .from('console_validation_messages')
+      .select('validation_id, author, body, photos, created_at')
+      .in(
+        'validation_id',
+        rows.map((r) => r.id)
+      )
+      .order('created_at', { ascending: true });
+    messages = ((msgRows ?? []) as {
+      validation_id: string;
+      author: string;
+      body: string | null;
+      photos: unknown;
+      created_at: string;
+    }[]).map((m) => ({
+      validationId: m.validation_id,
+      author: m.author === 'team' ? 'team' : 'customer',
+      body: m.body,
+      photos: Array.isArray(m.photos) ? (m.photos as string[]) : [],
+      createdAt: m.created_at,
+    }));
+  }
+
   return (
     <ConsoleValidationsPortal
       rows={rows}
       profileComplete={profileComplete}
       canInvite={canInvite}
       invitations={invitations}
+      messages={messages}
     />
   );
 }
