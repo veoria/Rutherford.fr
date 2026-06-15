@@ -49,6 +49,7 @@ const ERROR_LABELS: Record<string, string> = {
   cannot_delete_self: 'Vous ne pouvez pas supprimer votre propre compte.',
   forbidden: 'Action réservée aux admins.',
   unauthorized: 'Session expirée — reconnectez-vous.',
+  mfa_required: 'Activez la double authentification pour gérer les comptes.',
 };
 const errorLabel = (code: unknown) =>
   (typeof code === 'string' && ERROR_LABELS[code]) || 'Une erreur est survenue.';
@@ -254,9 +255,26 @@ function UserDrawer({ user, isSelf, onClose }: { user: AdminUser; isSelf: boolea
   );
 }
 
-function OrgRow({ client, resellers }: { client: AdminOrg; resellers: { id: string; name: string }[] }) {
+function OrgRow({
+  client,
+  resellers,
+  canManage,
+}: {
+  client: AdminOrg;
+  resellers: { id: string; name: string }[];
+  canManage: boolean;
+}) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
+  if (!canManage) {
+    const current = resellers.find((r) => r.id === client.resellerOrgId);
+    return (
+      <tr>
+        <td>{client.name}</td>
+        <td>{current?.name ?? '— Aucun —'}</td>
+      </tr>
+    );
+  }
   return (
     <tr>
       <td>{client.name}</td>
@@ -296,10 +314,12 @@ export function AdminDashboard({
   overview,
   orgs,
   selfId,
+  canManage,
 }: {
   overview: AdminOverview;
   orgs: { clients: AdminOrg[]; resellers: { id: string; name: string }[] };
   selfId: string;
+  canManage: boolean;
 }) {
   const { users, courses, consoleValidations, totals } = overview;
   const [query, setQuery] = useState('');
@@ -340,7 +360,9 @@ export function AdminDashboard({
           <header className="admin-head">
             <div>
               <p className="section-kicker">Admin · Rutherford Academy</p>
-              <h1 className="admin-title">Tableau de bord</h1>
+              <h1 className="admin-title">
+                Tableau de bord{!canManage ? <span className="admin-badge">Lecture seule</span> : null}
+              </h1>
             </div>
             <button type="button" className="button button-light" onClick={downloadCsv}>
               Exporter en CSV
@@ -425,9 +447,11 @@ export function AdminDashboard({
                         {u.activePass ? 'Pass' : u.purchases > 0 ? `${u.purchases} achat(s)` : u.onboarded ? 'Gratuit' : '—'}
                       </td>
                       <td>
-                        <button type="button" className="admin-link-btn" onClick={() => setEditing(u)}>
-                          Gérer
-                        </button>
+                        {canManage ? (
+                          <button type="button" className="admin-link-btn" onClick={() => setEditing(u)}>
+                            Gérer
+                          </button>
+                        ) : null}
                       </td>
                     </tr>
                   ))}
@@ -533,7 +557,7 @@ export function AdminDashboard({
                 </thead>
                 <tbody>
                   {orgs.clients.map((c) => (
-                    <OrgRow key={c.id} client={c} resellers={orgs.resellers} />
+                    <OrgRow key={c.id} client={c} resellers={orgs.resellers} canManage={canManage} />
                   ))}
                   {orgs.clients.length === 0 ? (
                     <tr>
