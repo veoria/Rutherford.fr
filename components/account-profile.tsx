@@ -4,7 +4,8 @@ import { useState } from 'react';
 import { SiteFooter } from '@/components/site-footer';
 import { SiteNav } from '@/components/site-nav';
 import { type Locale, useLanguage } from '@/components/language-provider';
-import { COUNTRIES, JOB_TITLE_KEYS, type JobTitleKey } from '@/data/onboarding-options';
+import { COUNTRIES, JOB_TITLE_KEYS, TEAM_ROLE_KEYS, type JobTitleKey } from '@/data/onboarding-options';
+import { TEAM_ROLE_LABELS } from '@/data/team-role-labels';
 import type { AccountType } from '@/data/account-types';
 
 type Copy = {
@@ -299,6 +300,10 @@ type Props = {
 export function AccountProfile({ email, accountType, defaults }: Props) {
   const { locale } = useLanguage();
   const t = COPY[locale];
+  // Internal team: company + country are fixed by the domain, so we hide those
+  // fields and offer the internal role taxonomy instead of the printing roles.
+  const isTeam = accountType === 'team';
+  const teamRoles = TEAM_ROLE_LABELS[locale];
   const [fullName, setFullName] = useState(defaults.fullName);
   const [country, setCountry] = useState(defaults.country);
   const [company, setCompany] = useState(defaults.company);
@@ -325,7 +330,7 @@ export function AccountProfile({ email, accountType, defaults }: Props) {
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    if (!fullName.trim() || !country || !company.trim() || !jobTitle) {
+    if (!fullName.trim() || !jobTitle || (!isTeam && (!country || !company.trim()))) {
       setStatus('error');
       setErrorMsg(t.errorRequired);
       return;
@@ -388,40 +393,44 @@ export function AccountProfile({ email, accountType, defaults }: Props) {
                 disabled={status === 'saving'}
               />
 
-              <label htmlFor="pf-country" className="signin-label">
-                {t.countryLabel}
-              </label>
-              <select
-                id="pf-country"
-                className="signin-input"
-                value={country}
-                onChange={(e) => setCountry(e.target.value)}
-                required
-                disabled={status === 'saving'}
-              >
-                <option value="" disabled>
-                  {t.selectCountry}
-                </option>
-                {COUNTRIES.map((c) => (
-                  <option key={c} value={c}>
-                    {c}
-                  </option>
-                ))}
-              </select>
+              {!isTeam ? (
+                <>
+                  <label htmlFor="pf-country" className="signin-label">
+                    {t.countryLabel}
+                  </label>
+                  <select
+                    id="pf-country"
+                    className="signin-input"
+                    value={country}
+                    onChange={(e) => setCountry(e.target.value)}
+                    required
+                    disabled={status === 'saving'}
+                  >
+                    <option value="" disabled>
+                      {t.selectCountry}
+                    </option>
+                    {COUNTRIES.map((c) => (
+                      <option key={c} value={c}>
+                        {c}
+                      </option>
+                    ))}
+                  </select>
 
-              <label htmlFor="pf-company" className="signin-label">
-                {t.companyLabel}
-              </label>
-              <input
-                id="pf-company"
-                type="text"
-                className="signin-input"
-                placeholder={t.companyPlaceholder}
-                value={company}
-                onChange={(e) => setCompany(e.target.value)}
-                required
-                disabled={status === 'saving'}
-              />
+                  <label htmlFor="pf-company" className="signin-label">
+                    {t.companyLabel}
+                  </label>
+                  <input
+                    id="pf-company"
+                    type="text"
+                    className="signin-input"
+                    placeholder={t.companyPlaceholder}
+                    value={company}
+                    onChange={(e) => setCompany(e.target.value)}
+                    required
+                    disabled={status === 'saving'}
+                  />
+                </>
+              ) : null}
 
               <label htmlFor="pf-role" className="signin-label">
                 {t.roleLabel}
@@ -437,11 +446,17 @@ export function AccountProfile({ email, accountType, defaults }: Props) {
                 <option value="" disabled>
                   {t.selectRole}
                 </option>
-                {JOB_TITLE_KEYS.map((key) => (
-                  <option key={key} value={key}>
-                    {t.roles[key]}
-                  </option>
-                ))}
+                {isTeam
+                  ? TEAM_ROLE_KEYS.map((key) => (
+                      <option key={key} value={key}>
+                        {teamRoles[key]}
+                      </option>
+                    ))
+                  : JOB_TITLE_KEYS.map((key) => (
+                      <option key={key} value={key}>
+                        {t.roles[key]}
+                      </option>
+                    ))}
               </select>
 
               <label htmlFor="pf-notif" className="signin-label">

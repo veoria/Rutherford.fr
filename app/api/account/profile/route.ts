@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { createSupabaseServerClient, createSupabaseAdminClient } from '@/lib/supabase/server';
-import { isJobTitleKey, isKnownCountry } from '@/data/onboarding-options';
-import { deriveAccountType } from '@/lib/account-type';
+import { isJobTitleKey, isKnownCountry, isTeamRoleKey } from '@/data/onboarding-options';
+import { deriveAccountType, teamOrgFromEmail } from '@/lib/account-type';
 import { syncLeadToPipedrive } from '@/lib/pipedrive';
 
 export const dynamic = 'force-dynamic';
@@ -45,6 +45,34 @@ export async function POST(request: NextRequest) {
     .maybeSingle();
 
   const fullName = fullNameIn || ((existing?.full_name as string | null) ?? '');
+
+  // Internal team: company + country are fixed by the email domain and the role
+  // uses the internal taxonomy. We ignore any client-sent company/country and
+  // never touch the CRM.
+  const teamOrg = teamOrgFromEmail(user.email ?? '');
+  if (teamOrg) {
+    if (!fullName || fullName.length > 200 || !isTeamRoleKey(jobTitle)) {
+      return NextResponse.json({ error: 'Missing or invalid fields' }, { status: 400 });
+    }
+    if (notif && (!EMAIL_RE.test(notif) || notif.length > 200)) {
+      return NextResponse.json({ error: 'Invalid notification email' }, { status: 400 });
+    }
+    const base = {
+      full_name: fullName.slice(0, 200),
+      country: teamOrg.country,
+      company: teamOrg.company,
+      job_title: jobTitle,
+      notification_email: notif || null,
+      onboarded_at: existing?.onboarded_at ?? new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+    const admin = HAS_ADMIN ? createSupabaseAdminClient() : null;
+    const writer = admin ?? supabase;
+    const update = admin ? { ...base, account_type: 'team' as const } : base;
+    const { error } = await writer.from('profiles').update(update).eq('id', user.id);
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ ok: true, account_type: 'team' });
+  }
 
   if (
     !country ||

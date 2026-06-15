@@ -1,7 +1,9 @@
 import type { Metadata } from 'next';
 import { notFound, redirect } from 'next/navigation';
 import { OnboardingForm } from '@/components/onboarding-form';
+import { TeamOnboardingForm } from '@/components/team-onboarding-form';
 import { getCurrentUserAndProfile, isOnboarded } from '@/lib/profile';
+import { accountTypeFromDomain } from '@/lib/account-type';
 
 export const metadata: Metadata = {
   title: 'Complete your profile — Rutherford Academy',
@@ -38,6 +40,12 @@ export default async function OnboardingRoute({
     (typeof user.user_metadata?.name === 'string' && user.user_metadata.name) ||
     '';
   const defaultName = profile?.full_name || metaName || '';
+
+  // Internal team (rutherford.fr / veoria.fr / studiodelaroche.fr): a dedicated
+  // step — company + country come from the domain, so we only ask name + role.
+  if (accountTypeFromDomain(user.email ?? '') === 'team') {
+    return <TeamOnboardingForm next={next} needsName={!defaultName} defaultName={defaultName} />;
+  }
 
   // Pre-fill the company for X-Rite staff (the only domain we co-brand).
   const defaultCompany = (user.email ?? '').toLowerCase().endsWith('@xrite.com') ? 'X-Rite PANTONE' : '';
