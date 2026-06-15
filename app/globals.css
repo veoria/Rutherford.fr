@@ -13650,6 +13650,78 @@ textarea.cv-input { resize: vertical; min-height: 74px; }
   font-weight: 500;
   word-break: break-word;
 }
+/* clickable row → /account/security */
+.ah-row-link {
+  text-decoration: none;
+  cursor: pointer;
+}
+.ah-row-link:hover .ah-row-k {
+  color: var(--ah-ink);
+}
+.ah-row-link .ah-row-v {
+  text-align: right;
+  font-weight: 700;
+  color: var(--role, var(--accent));
+}
+
+/* account security page (password & two-factor) */
+.sec-back {
+  display: inline-block;
+  margin-bottom: 18px;
+  font-size: 0.9rem;
+  color: var(--accent);
+  text-decoration: none;
+}
+.sec-back:hover {
+  text-decoration: underline;
+}
+.sec-card {
+  margin-bottom: 18px;
+}
+.sec-block-h {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+.sec-h {
+  margin: 0;
+  font-size: 1.05rem;
+}
+.sec-desc {
+  margin-bottom: 14px !important;
+}
+.sec-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #2e7d32;
+  background: rgba(46, 125, 50, 0.1);
+  padding: 3px 9px;
+  border-radius: 999px;
+}
+.sec-qr {
+  display: block;
+  margin: 4px 0 10px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  background: #fff;
+}
+.sec-secret {
+  font-size: 0.85rem;
+  color: rgba(0, 0, 0, 0.6);
+  margin: 0 0 6px;
+}
+.sec-secret code {
+  font-weight: 700;
+  color: #1d1d1f;
+  background: rgba(0, 0, 0, 0.05);
+  padding: 2px 6px;
+  border-radius: 6px;
+  word-break: break-all;
+}
 
 /* tabs */
 .ah-tabs {

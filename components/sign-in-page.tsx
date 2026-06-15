@@ -37,6 +37,11 @@ type SignInCopy = {
   inboxBefore: string;
   inboxFallback: string;
   inboxAfter: string;
+  tfaPrompt: string;
+  codeLabel: string;
+  codePlaceholder: string;
+  verify: string;
+  errGeneric: string;
   fine: string;
 };
 
@@ -65,6 +70,11 @@ const COPY: Record<Locale, SignInCopy> = {
     inboxBefore: 'Check your inbox at ',
     inboxFallback: 'your address',
     inboxAfter: '. The sign-in link expires in 1 hour.',
+    tfaPrompt: 'Enter the 6-digit code from your authenticator app.',
+    codeLabel: '6-digit code',
+    codePlaceholder: '123456',
+    verify: 'Verify',
+    errGeneric: 'Something went wrong. Please try again.',
     fine: 'By continuing you agree to our terms. We use your email only to sign you in and to send course-related notifications.',
   },
   fr: {
@@ -91,6 +101,11 @@ const COPY: Record<Locale, SignInCopy> = {
     inboxBefore: 'Vérifiez votre boîte de réception à l’adresse ',
     inboxFallback: 'indiquée',
     inboxAfter: '. Le lien de connexion expire dans 1 heure.',
+    tfaPrompt: 'Saisissez le code à 6 chiffres de votre application d’authentification.',
+    codeLabel: 'Code à 6 chiffres',
+    codePlaceholder: '123456',
+    verify: 'Vérifier',
+    errGeneric: 'Une erreur est survenue. Veuillez réessayer.',
     fine: 'En continuant, vous acceptez nos conditions. Nous utilisons votre e-mail uniquement pour vous connecter et vous envoyer des notifications liées aux cours.',
   },
   de: {
@@ -117,6 +132,11 @@ const COPY: Record<Locale, SignInCopy> = {
     inboxBefore: 'Prüfen Sie Ihren Posteingang unter ',
     inboxFallback: 'Ihrer Adresse',
     inboxAfter: '. Der Anmeldelink ist 1 Stunde lang gültig.',
+    tfaPrompt: 'Geben Sie den 6-stelligen Code aus Ihrer Authenticator-App ein.',
+    codeLabel: '6-stelliger Code',
+    codePlaceholder: '123456',
+    verify: 'Prüfen',
+    errGeneric: 'Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut.',
     fine: 'Mit der Fortsetzung akzeptieren Sie unsere Bedingungen. Wir verwenden Ihre E-Mail-Adresse ausschließlich, um Sie anzumelden und Ihnen kursbezogene Benachrichtigungen zu senden.',
   },
   it: {
@@ -143,6 +163,11 @@ const COPY: Record<Locale, SignInCopy> = {
     inboxBefore: 'Controlli la sua casella di posta all’indirizzo ',
     inboxFallback: 'indicato',
     inboxAfter: '. Il link di accesso scade tra 1 ora.',
+    tfaPrompt: 'Inserisca il codice a 6 cifre della sua app di autenticazione.',
+    codeLabel: 'Codice a 6 cifre',
+    codePlaceholder: '123456',
+    verify: 'Verifica',
+    errGeneric: 'Si è verificato un errore. Riprovi.',
     fine: 'Continuando, accetta le nostre condizioni. Utilizziamo la sua e-mail esclusivamente per l’accesso e per inviarle notifiche relative ai corsi.',
   },
   es: {
@@ -169,6 +194,11 @@ const COPY: Record<Locale, SignInCopy> = {
     inboxBefore: 'Revise su bandeja de entrada en ',
     inboxFallback: 'su correo electrónico',
     inboxAfter: '. El enlace de acceso caduca en 1 hora.',
+    tfaPrompt: 'Introduzca el código de 6 dígitos de su app de autenticación.',
+    codeLabel: 'Código de 6 dígitos',
+    codePlaceholder: '123456',
+    verify: 'Verificar',
+    errGeneric: 'Algo salió mal. Inténtelo de nuevo.',
     fine: 'Al continuar, acepta nuestras condiciones. Utilizamos su correo únicamente para iniciar su sesión y enviarle notificaciones relacionadas con los cursos.',
   },
 };
@@ -185,6 +215,10 @@ export function SignInPage() {
   const [password, setPassword] = useState('');
   const [status, setStatus] = useState<Status>('idle');
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  // When the account has TOTP 2FA, password sign-in lands at AAL1 and we prompt
+  // for the authenticator code here before completing the redirect.
+  const [mfa, setMfa] = useState<{ factorId: string; challengeId: string } | null>(null);
+  const [mfaCode, setMfaCode] = useState('');
 
   // Reflect redirect-back state: "magic link sent" after the email link, or an
   // error surfaced by the auth callback (?error=…) when code exchange fails.
@@ -235,6 +269,25 @@ export function SignInPage() {
         setErrorMsg(error.message);
         return;
       }
+      // TOTP 2FA: password sign-in lands at AAL1; if the account has a verified
+      // factor it must step up to AAL2 with a code before we let it through.
+      const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+      if (aal && aal.nextLevel === 'aal2' && aal.nextLevel !== aal.currentLevel) {
+        const { data: factors } = await supabase.auth.mfa.listFactors();
+        const totp = factors?.totp?.[0];
+        if (totp) {
+          const { data: ch, error: chErr } = await supabase.auth.mfa.challenge({ factorId: totp.id });
+          if (chErr || !ch) {
+            setStatus('error');
+            setErrorMsg(chErr?.message ?? t.errGeneric);
+            return;
+          }
+          setMfa({ factorId: totp.id, challengeId: ch.id });
+          setMfaCode('');
+          setStatus('idle');
+          return;
+        }
+      }
       window.location.href = next;
     } else {
       const { data, error } = await supabase.auth.signUp({
@@ -254,6 +307,25 @@ export function SignInPage() {
       }
       setStatus('confirmSent');
     }
+  };
+
+  const verifyMfa = async (event: React.FormEvent) => {
+    event.preventDefault();
+    if (!mfa) return;
+    setStatus('working');
+    setErrorMsg(null);
+    const supabase = createSupabaseBrowserClient();
+    const { error } = await supabase.auth.mfa.verify({
+      factorId: mfa.factorId,
+      challengeId: mfa.challengeId,
+      code: mfaCode,
+    });
+    if (error) {
+      setStatus('error');
+      setErrorMsg(error.message);
+      return;
+    }
+    window.location.href = next;
   };
 
   const handleReset = async () => {
@@ -316,127 +388,162 @@ export function SignInPage() {
           </header>
 
           <div className="signin-card">
-            <button
-              type="button"
-              className="signin-provider signin-provider-google"
-              onClick={() => oauth('google')}
-              disabled={working}
-            >
-              <svg width="20" height="20" viewBox="10 10 20 20" aria-hidden="true">
-                <path d="M29.6 20.2273C29.6 19.5182 29.5364 18.8364 29.4182 18.1818H20V22.05H25.3818C25.15 23.3 24.4455 24.3591 23.3864 25.0682V27.5773H26.6182C28.5091 25.8364 29.6 23.2727 29.6 20.2273Z" fill="#4285F4" />
-                <path d="M20 30C22.7 30 24.9636 29.1045 26.6181 27.5773L23.3863 25.0682C22.4909 25.6682 21.3454 26.0227 20 26.0227C17.3954 26.0227 15.1909 24.2636 14.4045 21.9H11.0636V24.4909C12.7091 27.7591 16.0909 30 20 30Z" fill="#34A853" />
-                <path d="M14.4045 21.9C14.2045 21.3 14.0909 20.6591 14.0909 20C14.0909 19.3409 14.2045 18.7 14.4045 18.1V15.5091H11.0636C10.3864 16.8591 10 18.3864 10 20C10 21.6136 10.3864 23.1409 11.0636 24.4909L14.4045 21.9Z" fill="#FBBC04" />
-                <path d="M20 13.9773C21.4681 13.9773 22.7863 14.4818 23.8227 15.4727L26.6909 12.6045C24.9591 10.9909 22.6954 10 20 10C16.0909 10 12.7091 12.2409 11.0636 15.5091L14.4045 18.1C15.1909 15.7364 17.3954 13.9773 20 13.9773Z" fill="#E94235" />
-              </svg>
-              {t.google}
-            </button>
-
-            <button
-              type="button"
-              className="signin-provider signin-provider-apple"
-              onClick={() => oauth('apple')}
-              disabled={working}
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <path d="M16.365 1.43c0 1.14-.493 2.27-1.177 3.08-.744.9-1.99 1.57-2.987 1.57-.12 0-.23-.02-.3-.03-.01-.06-.04-.22-.04-.39 0-1.15.572-2.27 1.206-2.98.804-.94 2.142-1.64 3.248-1.68.03.13.05.28.05.43zm4.565 15.71c-.03.07-.46 1.58-1.5 3.14-.92 1.36-1.88 2.71-3.39 2.74-1.49.03-1.95-.88-3.66-.88-1.71 0-2.22.85-3.63.91-1.45.06-2.55-1.47-3.48-2.83-1.87-2.71-3.32-7.68-1.38-11.05.97-1.66 2.7-2.71 4.57-2.74 1.43-.03 2.78.96 3.66.96.88 0 2.53-1.18 4.27-1.01.73.03 2.77.29 4.08 2.21-.11.07-2.44 1.42-2.41 4.24.03 3.37 2.96 4.49 2.99 4.5z" />
-              </svg>
-              {t.apple}
-            </button>
-
-            <div className="signin-divider">
-              <span>{t.or}</span>
-            </div>
-
-            <form className="signin-form" onSubmit={handlePassword}>
-              <label htmlFor="signin-email" className="signin-label">
-                {t.emailLabel}
-              </label>
-              <input
-                id="signin-email"
-                type="email"
-                className="signin-input"
-                placeholder={t.emailPlaceholder}
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                autoComplete="email"
-                disabled={working}
-              />
-
-              <label htmlFor="signin-password" className="signin-label">
-                {t.passwordLabel}
-              </label>
-              <input
-                id="signin-password"
-                type="password"
-                className="signin-input"
-                placeholder={t.passwordPlaceholder}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                minLength={MIN_PASSWORD}
-                autoComplete={mode === 'signin' ? 'current-password' : 'new-password'}
-                disabled={working}
-              />
-
-              <button
-                type="submit"
-                className="button button-accent signin-submit"
-                disabled={working || !email || !password}
-              >
-                {working ? t.working : mode === 'signin' ? t.signIn : t.createAccount}
-              </button>
-
-              <div className="signin-row">
-                {mode === 'signin' ? (
-                  <button type="button" className="signin-link" onClick={handleReset} disabled={working}>
-                    {t.forgot}
-                  </button>
-                ) : (
-                  <span />
-                )}
+            {mfa ? (
+              <form className="signin-form" onSubmit={verifyMfa}>
+                <p className="signin-fine signin-fine-tight">{t.tfaPrompt}</p>
+                <label htmlFor="signin-tfa" className="signin-label">
+                  {t.codeLabel}
+                </label>
+                <input
+                  id="signin-tfa"
+                  className="signin-input"
+                  inputMode="numeric"
+                  autoComplete="one-time-code"
+                  pattern="[0-9]*"
+                  maxLength={6}
+                  placeholder={t.codePlaceholder}
+                  value={mfaCode}
+                  onChange={(e) => setMfaCode(e.target.value.replace(/\D/g, ''))}
+                  required
+                  autoFocus
+                  disabled={working}
+                />
+                <button
+                  type="submit"
+                  className="button button-accent signin-submit"
+                  disabled={working || mfaCode.length < 6}
+                >
+                  {working ? t.working : t.verify}
+                </button>
+                {status === 'error' && errorMsg ? (
+                  <p className="signin-message signin-message-error">{errorMsg}</p>
+                ) : null}
+              </form>
+            ) : (
+              <>
                 <button
                   type="button"
-                  className="signin-link"
-                  onClick={() => {
-                    setMode(mode === 'signin' ? 'signup' : 'signin');
-                    setStatus('idle');
-                    setErrorMsg(null);
-                  }}
+                  className="signin-provider signin-provider-google"
+                  onClick={() => oauth('google')}
                   disabled={working}
                 >
-                  {mode === 'signin' ? t.toSignup : t.toSignin}
+                  <svg width="20" height="20" viewBox="10 10 20 20" aria-hidden="true">
+                    <path d="M29.6 20.2273C29.6 19.5182 29.5364 18.8364 29.4182 18.1818H20V22.05H25.3818C25.15 23.3 24.4455 24.3591 23.3864 25.0682V27.5773H26.6182C28.5091 25.8364 29.6 23.2727 29.6 20.2273Z" fill="#4285F4" />
+                    <path d="M20 30C22.7 30 24.9636 29.1045 26.6181 27.5773L23.3863 25.0682C22.4909 25.6682 21.3454 26.0227 20 26.0227C17.3954 26.0227 15.1909 24.2636 14.4045 21.9H11.0636V24.4909C12.7091 27.7591 16.0909 30 20 30Z" fill="#34A853" />
+                    <path d="M14.4045 21.9C14.2045 21.3 14.0909 20.6591 14.0909 20C14.0909 19.3409 14.2045 18.7 14.4045 18.1V15.5091H11.0636C10.3864 16.8591 10 18.3864 10 20C10 21.6136 10.3864 23.1409 11.0636 24.4909L14.4045 21.9Z" fill="#FBBC04" />
+                    <path d="M20 13.9773C21.4681 13.9773 22.7863 14.4818 23.8227 15.4727L26.6909 12.6045C24.9591 10.9909 22.6954 10 20 10C16.0909 10 12.7091 12.2409 11.0636 15.5091L14.4045 18.1C15.1909 15.7364 17.3954 13.9773 20 13.9773Z" fill="#E94235" />
+                  </svg>
+                  {t.google}
                 </button>
-              </div>
-            </form>
 
-            <button
-              type="button"
-              className="signin-secondary"
-              onClick={handleMagicLink}
-              disabled={working || !email}
-            >
-              {t.magicInstead}
-            </button>
+                <button
+                  type="button"
+                  className="signin-provider signin-provider-apple"
+                  onClick={() => oauth('apple')}
+                  disabled={working}
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <path d="M16.365 1.43c0 1.14-.493 2.27-1.177 3.08-.744.9-1.99 1.57-2.987 1.57-.12 0-.23-.02-.3-.03-.01-.06-.04-.22-.04-.39 0-1.15.572-2.27 1.206-2.98.804-.94 2.142-1.64 3.248-1.68.03.13.05.28.05.43zm4.565 15.71c-.03.07-.46 1.58-1.5 3.14-.92 1.36-1.88 2.71-3.39 2.74-1.49.03-1.95-.88-3.66-.88-1.71 0-2.22.85-3.63.91-1.45.06-2.55-1.47-3.48-2.83-1.87-2.71-3.32-7.68-1.38-11.05.97-1.66 2.7-2.71 4.57-2.74 1.43-.03 2.78.96 3.66.96.88 0 2.53-1.18 4.27-1.01.73.03 2.77.29 4.08 2.21-.11.07-2.44 1.42-2.41 4.24.03 3.37 2.96 4.49 2.99 4.5z" />
+                  </svg>
+                  {t.apple}
+                </button>
 
-            {status === 'linkSent' ? (
-              <p className="signin-message signin-message-success">
-                {t.inboxBefore}
-                <strong>{email || t.inboxFallback}</strong>
-                {t.inboxAfter}
-              </p>
-            ) : null}
-            {status === 'resetSent' ? (
-              <p className="signin-message signin-message-success">{t.resetSent}</p>
-            ) : null}
-            {status === 'confirmSent' ? (
-              <p className="signin-message signin-message-success">{t.confirmSent}</p>
-            ) : null}
-            {status === 'error' && errorMsg ? (
-              <p className="signin-message signin-message-error">{errorMsg}</p>
-            ) : null}
+                <div className="signin-divider">
+                  <span>{t.or}</span>
+                </div>
 
-            <p className="signin-fine">{t.fine}</p>
+                <form className="signin-form" onSubmit={handlePassword}>
+                  <label htmlFor="signin-email" className="signin-label">
+                    {t.emailLabel}
+                  </label>
+                  <input
+                    id="signin-email"
+                    type="email"
+                    className="signin-input"
+                    placeholder={t.emailPlaceholder}
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    autoComplete="email"
+                    disabled={working}
+                  />
+
+                  <label htmlFor="signin-password" className="signin-label">
+                    {t.passwordLabel}
+                  </label>
+                  <input
+                    id="signin-password"
+                    type="password"
+                    className="signin-input"
+                    placeholder={t.passwordPlaceholder}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    minLength={MIN_PASSWORD}
+                    autoComplete={mode === 'signin' ? 'current-password' : 'new-password'}
+                    disabled={working}
+                  />
+
+                  <button
+                    type="submit"
+                    className="button button-accent signin-submit"
+                    disabled={working || !email || !password}
+                  >
+                    {working ? t.working : mode === 'signin' ? t.signIn : t.createAccount}
+                  </button>
+
+                  <div className="signin-row">
+                    {mode === 'signin' ? (
+                      <button type="button" className="signin-link" onClick={handleReset} disabled={working}>
+                        {t.forgot}
+                      </button>
+                    ) : (
+                      <span />
+                    )}
+                    <button
+                      type="button"
+                      className="signin-link"
+                      onClick={() => {
+                        setMode(mode === 'signin' ? 'signup' : 'signin');
+                        setStatus('idle');
+                        setErrorMsg(null);
+                      }}
+                      disabled={working}
+                    >
+                      {mode === 'signin' ? t.toSignup : t.toSignin}
+                    </button>
+                  </div>
+                </form>
+
+                <button
+                  type="button"
+                  className="signin-secondary"
+                  onClick={handleMagicLink}
+                  disabled={working || !email}
+                >
+                  {t.magicInstead}
+                </button>
+
+                {status === 'linkSent' ? (
+                  <p className="signin-message signin-message-success">
+                    {t.inboxBefore}
+                    <strong>{email || t.inboxFallback}</strong>
+                    {t.inboxAfter}
+                  </p>
+                ) : null}
+                {status === 'resetSent' ? (
+                  <p className="signin-message signin-message-success">{t.resetSent}</p>
+                ) : null}
+                {status === 'confirmSent' ? (
+                  <p className="signin-message signin-message-success">{t.confirmSent}</p>
+                ) : null}
+                {status === 'error' && errorMsg ? (
+                  <p className="signin-message signin-message-error">{errorMsg}</p>
+                ) : null}
+
+                <p className="signin-fine">{t.fine}</p>
+              </>
+            )}
           </div>
         </div>
       </section>
