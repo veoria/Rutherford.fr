@@ -190,6 +190,47 @@ export async function acceptPendingInvitations(userId: string, email: string): P
   }
 }
 
+const XRITE_ORG_NAME = 'X-Rite PANTONE';
+
+/** X-Rite staff (@xrite.com) share one canonical distributor organization so
+ * they see the same reseller network. New members join as 'member' — promote to
+ * admin manually. Best-effort; called on sign-in. */
+export async function ensureSharedXriteOrg(userId: string, email: string): Promise<void> {
+  const supabase = admin();
+  if (!supabase || !email.toLowerCase().endsWith('@xrite.com')) return;
+  try {
+    // Find (or create) the canonical X-Rite distributor org.
+    const { data: existingRows } = await supabase
+      .from('organizations')
+      .select('id')
+      .eq('type', 'distributor')
+      .eq('name', XRITE_ORG_NAME)
+      .limit(1);
+    let orgId = (existingRows?.[0]?.id as string | null) ?? null;
+    if (!orgId) {
+      const { data: created } = await supabase
+        .from('organizations')
+        .insert({ name: XRITE_ORG_NAME, type: 'distributor' })
+        .select('id')
+        .single();
+      orgId = (created?.id as string | null) ?? null;
+    }
+    if (!orgId) return;
+
+    // Point the profile at the shared org and add a membership without
+    // downgrading an existing, manually-set role.
+    await supabase.from('profiles').update({ organization_id: orgId }).eq('id', userId);
+    await supabase
+      .from('organization_members')
+      .upsert(
+        { org_id: orgId, user_id: userId, role: 'member', status: 'active' },
+        { onConflict: 'org_id,user_id', ignoreDuplicates: true }
+      );
+  } catch {
+    /* best-effort */
+  }
+}
+
 export type ResellerClientOrg = {
   orgId: string;
   name: string;

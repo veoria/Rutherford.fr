@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { createSupabaseServerClient, createSupabaseAdminClient } from '@/lib/supabase/server';
 import { accountTypeFromDomain } from '@/lib/account-type';
-import { acceptPendingInvitations } from '@/lib/organizations';
+import { acceptPendingInvitations, ensureSharedXriteOrg } from '@/lib/organizations';
 
 export const dynamic = 'force-dynamic';
 
@@ -34,6 +34,8 @@ export async function GET(request: NextRequest) {
         }
         // Turn any pending team invitations for this email into memberships.
         if (user.email) await acceptPendingInvitations(user.id, user.email);
+        // X-Rite staff share one canonical distributor org.
+        if (user.email) await ensureSharedXriteOrg(user.id, user.email);
       }
     } catch {
       // Best-effort — never block sign-in on classification / invitations.
