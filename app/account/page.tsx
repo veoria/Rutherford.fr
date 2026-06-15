@@ -125,7 +125,7 @@ export default async function AccountHubRoute() {
   // Reseller → clients (real, from console_validations.reseller_id). Privileged
   // read scoped to this reseller; the user RLS policy doesn't cover it.
   let resellerClients: ResellerClient[] = [];
-  if (accountType === 'reseller' && HAS_ADMIN) {
+  if ((accountType === 'reseller' || accountType === 'distributor') && HAS_ADMIN) {
     try {
       const { data } = await createSupabaseAdminClient()
         .from('console_validations')
@@ -158,7 +158,7 @@ export default async function AccountHubRoute() {
 
   // Merge real org-linked clients (organizations.reseller_org_id) with the ones
   // derived from console_validations, so attribution shows whichever exists.
-  if (accountType === 'reseller') {
+  if (accountType === 'reseller' || accountType === 'distributor') {
     const linked = await getResellerClients(user.id);
     const byName = new Map(resellerClients.map((c) => [c.name.toLowerCase(), c] as const));
     for (const l of linked) {

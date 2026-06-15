@@ -46,7 +46,12 @@ export default function AccountHubDemoRoute({ searchParams }: { searchParams: { 
           { name: 'Moderna Printing', country: 'Belgium', presses: 2, eligible: 1, open: 1 },
           { name: 'Viappiani', country: 'Italy', presses: 1, eligible: 0, open: 1 },
         ]
-      : [];
+      : accountType === 'distributor'
+        ? [
+            { name: 'Autajon', country: 'France', presses: 3, eligible: 2, open: 1 },
+            { name: 'WestRock', country: 'USA', presses: 2, eligible: 1, open: 0 },
+          ]
+        : [];
 
   return (
     <AccountHub
