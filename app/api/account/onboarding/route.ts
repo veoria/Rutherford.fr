@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
-import { isJobTitleKey, isKnownCountry } from '@/data/onboarding-options';
+import { isJobTitleKey, isKnownCountry, isTeamRoleKey } from '@/data/onboarding-options';
+import { accountTypeFromDomain, teamOrgFromEmail } from '@/lib/account-type';
 import { syncLeadToPipedrive } from '@/lib/pipedrive';
 
 export const dynamic = 'force-dynamic';
@@ -27,6 +28,30 @@ export async function POST(request: NextRequest) {
   const jobTitle = typeof payload.job_title === 'string' ? payload.job_title.trim() : '';
   const fullName = typeof payload.full_name === 'string' ? payload.full_name.trim() : '';
   const marketingConsent = payload.marketing_consent === true;
+
+  // Internal team (rutherford.fr / veoria.fr / studiodelaroche.fr): company and
+  // country are known from the domain — we only take the name + internal role,
+  // and never push to the CRM.
+  if (accountTypeFromDomain(user.email ?? '') === 'team') {
+    const org = teamOrgFromEmail(user.email ?? '');
+    const teamRole = typeof payload.team_role === 'string' ? payload.team_role.trim() : '';
+    if (!org || !isTeamRoleKey(teamRole)) {
+      return NextResponse.json({ error: 'Missing or invalid fields' }, { status: 400 });
+    }
+    const update: Record<string, unknown> = {
+      country: org.country,
+      company: org.company,
+      job_title: teamRole,
+      onboarded_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+    if (fullName) update.full_name = fullName.slice(0, 200);
+    const { error } = await supabase.from('profiles').update(update).eq('id', user.id);
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+    return NextResponse.json({ ok: true });
+  }
 
   if (
     !country ||

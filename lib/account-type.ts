@@ -16,6 +16,14 @@ import { getPersonLabelByEmail } from '@/lib/pipedrive';
 const TEAM_DOMAINS = ['rutherford.fr', 'veoria.fr', 'studiodelaroche.fr'];
 const DISTRIBUTOR_DOMAINS = ['xrite.com'];
 
+// Company + country for an internal team member, keyed by email domain. Lets the
+// dedicated team onboarding skip the company/country questions we already know.
+const TEAM_ORG: Record<string, { company: string; country: string }> = {
+  'rutherford.fr': { company: 'Rutherford', country: 'France' },
+  'veoria.fr': { company: 'Veoria', country: 'France' },
+  'studiodelaroche.fr': { company: 'Studio de la Roche', country: 'France' },
+};
+
 function domainOf(email: string): string {
   const at = email.lastIndexOf('@');
   return at === -1 ? '' : email.slice(at + 1).trim().toLowerCase();
@@ -31,6 +39,15 @@ export function accountTypeFromDomain(email: string): AccountType | null {
   if (TEAM_DOMAINS.includes(domain)) return 'team';
   if (DISTRIBUTOR_DOMAINS.includes(domain)) return 'distributor';
   return null;
+}
+
+/**
+ * Company + country for an internal team member, derived from their email domain.
+ * Returns null for non-team domains. The team onboarding/profile use this to fill
+ * those fields server-side instead of asking for them.
+ */
+export function teamOrgFromEmail(email: string): { company: string; country: string } | null {
+  return TEAM_ORG[domainOf(email)] ?? null;
 }
 
 /**

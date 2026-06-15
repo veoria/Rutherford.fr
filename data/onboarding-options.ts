@@ -20,6 +20,25 @@ export function isJobTitleKey(value: string): value is JobTitleKey {
   return (JOB_TITLE_KEYS as readonly string[]).includes(value);
 }
 
+// Internal team roles (rutherford.fr / veoria.fr / studiodelaroche.fr). Stored in
+// the same job_title column but kept as a DISTINCT key set so they never mix with
+// the printing-industry roles above. Localized labels live in
+// data/team-role-labels.ts (kept separate so this validator has no client import).
+export const TEAM_ROLE_KEYS = [
+  'sales',
+  'technical_color',
+  'support',
+  'management',
+  'marketing',
+  'operations',
+] as const;
+
+export type TeamRoleKey = (typeof TEAM_ROLE_KEYS)[number];
+
+export function isTeamRoleKey(value: string): value is TeamRoleKey {
+  return (TEAM_ROLE_KEYS as readonly string[]).includes(value);
+}
+
 // Stored as the plain English country name (human-readable in the CRM).
 export const COUNTRIES: string[] = [
   'Afghanistan', 'Albania', 'Algeria', 'Andorra', 'Angola', 'Argentina', 'Armenia', 'Australia',
