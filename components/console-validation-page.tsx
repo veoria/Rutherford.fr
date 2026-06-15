@@ -213,10 +213,22 @@ export type ConsoleValidationBrand = {
 
 export type ConsoleValidationFaqItem = { q: string; a: string };
 
+export type ConsoleValidationInvite = {
+  token: string;
+  clientEmail: string;
+  company: string | null;
+  inviterCompany: string | null;
+};
+
 export function ConsoleValidationPage({
   brand,
   faq,
-}: { brand?: ConsoleValidationBrand; faq?: ConsoleValidationFaqItem[] } = {}) {
+  invite,
+}: {
+  brand?: ConsoleValidationBrand;
+  faq?: ConsoleValidationFaqItem[];
+  invite?: ConsoleValidationInvite;
+} = {}) {
   const [files, setFiles] = useState<FileMap>(emptyFiles);
   const [previews, setPreviews] = useState<PreviewMap>(emptyPreviews);
   const [submitted, setSubmitted] = useState(false);
@@ -265,7 +277,14 @@ export function ConsoleValidationPage({
     (async () => {
       let countryResolved = false;
       let isReseller = false;
-      if (authConfigured) {
+      // Invited client (token link): prefill the CLIENT's details from the
+      // invite and ignore any signed-in profile.
+      if (invite) {
+        if (active) {
+          setEmail((v) => v || invite.clientEmail);
+          if (invite.company) setCompanyName((v) => v || invite.company!);
+        }
+      } else if (authConfigured) {
         try {
           const supabase = createSupabaseBrowserClient();
           const {
@@ -312,7 +331,7 @@ export function ConsoleValidationPage({
     return () => {
       active = false;
     };
-  }, [authConfigured]);
+  }, [authConfigured, invite]);
 
   useEffect(() => {
     return () => {
@@ -396,7 +415,7 @@ export function ConsoleValidationPage({
       const res = await fetch('/api/console-validation', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, companyName, country, machineName, notes, ref: refCode, uploadId, photos }),
+        body: JSON.stringify({ email, companyName, country, machineName, notes, ref: refCode, invite: invite?.token, uploadId, photos }),
       });
       if (!res.ok) {
         const body = await res.json().catch(() => null);
@@ -591,7 +610,25 @@ export function ConsoleValidationPage({
                     {step === 1 ? (
                       <>
                         <div className="cv-step-h">Your details</div>
-                        {authConfigured ? (
+                        {invite ? (
+                          <div className="cv-login is-signed">
+                            <span className="cv-login-ic">
+                              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                                <path d="M5 12.5l4.2 4.2L19 7" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" />
+                              </svg>
+                            </span>
+                            <span>
+                              {invite.inviterCompany ? (
+                                <>
+                                  <strong>{invite.inviterCompany}</strong> invited you to validate your console — your
+                                  details are below.
+                                </>
+                              ) : (
+                                <>You&apos;ve been invited to validate your console — your details are below.</>
+                              )}
+                            </span>
+                          </div>
+                        ) : authConfigured ? (
                           signedInEmail ? (
                             <div className="cv-login is-signed">
                               <span className="cv-login-ic">

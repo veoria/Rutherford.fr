@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { SiteFooter } from '@/components/site-footer';
 import { SiteNav } from '@/components/site-nav';
 import { AccountSubnav } from '@/components/account-subnav';
+import { CvInvite, type CvInviteItem } from '@/components/cv-invite';
 import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 
 export type ConsoleValidationStatus =
@@ -237,9 +238,13 @@ function ProfilePrompt() {
 export function ConsoleValidationsPortal({
   rows,
   profileComplete,
+  canInvite = false,
+  invitations = [],
 }: {
   rows: ConsoleValidationRow[];
   profileComplete: boolean;
+  canInvite?: boolean;
+  invitations?: CvInviteItem[];
 }) {
   const router = useRouter();
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -341,6 +346,7 @@ export function ConsoleValidationsPortal({
           <div className="cvp-wrap">
             <PageHead />
             {!profileComplete ? <ProfilePrompt /> : null}
+            {canInvite ? <CvInvite invitations={invitations} /> : null}
             <div className="cvp-empty">
               <p style={{ margin: 0, color: '#6A6A6A' }}>You have no console validation requests yet.</p>
               <a className="button button-dark" href="/console-validation" style={{ marginTop: 16 }}>
@@ -365,6 +371,7 @@ export function ConsoleValidationsPortal({
         <div className="cvp-wrap">
           <PageHead />
           {!profileComplete ? <ProfilePrompt /> : null}
+          {canInvite ? <CvInvite invitations={invitations} /> : null}
 
           <div className="cvp-summary">
             {GROUPS.map((g) => (

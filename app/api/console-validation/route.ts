@@ -5,6 +5,7 @@ import { createConsoleValidationTask } from '@/lib/asana';
 import { sendMail } from '@/lib/msgraph';
 import { acknowledgementEmail } from '@/lib/console-validation-emails';
 import { getNotificationEmail, insertConsoleValidation } from '@/lib/console-validations';
+import { completeCvInvitation, getCvInvitationByToken } from '@/lib/console-invitations';
 import { createInvitation } from '@/lib/organizations';
 import { teamInviteEmail } from '@/lib/team-emails';
 
@@ -48,6 +49,7 @@ export async function POST(request: NextRequest) {
   const machineName = String(body.machineName ?? '').trim();
   const notes = String(body.notes ?? '').trim();
   const refCode = String(body.ref ?? '').trim().slice(0, 100) || null;
+  const inviteToken = String(body.invite ?? '').trim().slice(0, 200);
 
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 200) {
     return NextResponse.json({ error: 'A valid email address is required' }, { status: 400 });
@@ -78,6 +80,9 @@ export async function POST(request: NextRequest) {
   // company + email are the client's. Attribute the request to the reseller,
   // keep it off their personal tracker (user_id null), and invite the client to
   // claim their account (they link to the reseller's org on sign-in).
+  // An invited client reaches the form via a token link (usually anonymous).
+  const invitation = inviteToken ? await getCvInvitationByToken(inviteToken) : null;
+
   let resellerId: string | null = null;
   let resellerOrgId: string | null = null;
   let resellerOrgName: string | null = null;
@@ -118,6 +123,14 @@ export async function POST(request: NextRequest) {
   if (onBehalf && submitterEmail && email.toLowerCase() === submitterEmail.toLowerCase()) {
     onBehalf = false;
     resellerId = null;
+  }
+  // A valid invitation always attributes the request to the inviter and keeps
+  // it off any personal tracker (the client filled it in on their behalf).
+  if (invitation) {
+    onBehalf = true;
+    resellerId = invitation.inviterId;
+    resellerOrgId = null;
+    resellerOrgName = null;
   }
   const recordUserId = onBehalf ? null : userId;
 
@@ -188,7 +201,7 @@ export async function POST(request: NextRequest) {
     ].join('<br>')
   );
 
-  await insertConsoleValidation({
+  const validationId = await insertConsoleValidation({
     userId: recordUserId,
     resellerId,
     refCode,
@@ -203,6 +216,9 @@ export async function POST(request: NextRequest) {
     asanaTaskGid,
     photos: photoLinks,
   });
+
+  // Mark the invitation completed (and link the record) so the inviter sees it.
+  if (invitation) await completeCvInvitation(inviteToken, validationId);
 
   // On-behalf submissions: invite the client to claim their account.
   if (onBehalf && resellerOrgId && resellerId) {
