@@ -32,7 +32,7 @@ export default async function AccountHubRoute() {
     await Promise.all([
       supabase
         .from('profiles')
-        .select('full_name, avatar_url, country, company, job_title, onboarded_at, account_type')
+        .select('full_name, avatar_url, country, company, job_title, onboarded_at, account_type, is_admin')
         .eq('id', user.id)
         .maybeSingle(),
       supabase.from('course_progress').select('course_slug, lesson_index').eq('user_id', user.id),
@@ -46,6 +46,10 @@ export default async function AccountHubRoute() {
   }
 
   const accountType = ((profile?.account_type as AccountType) ?? 'client') as AccountType;
+  // Back-office access is the is_admin flag (self-read via RLS) — NOT the 'team'
+  // account type. The /admin page enforces it server-side; this only decides
+  // whether to show the entry point.
+  const isAdmin = Boolean(profile?.is_admin);
 
   // ── Academy progress (shown for every role) ──
   const progress = (progressRows ?? []) as { course_slug: string; lesson_index: number }[];
@@ -176,6 +180,7 @@ export default async function AccountHubRoute() {
       accountType={accountType}
       team={team}
       selfId={user.id}
+      isAdmin={isAdmin}
       networkResellers={networkResellers}
       email={user.email ?? ''}
       memberSince={(user.created_at as string) ?? null}
