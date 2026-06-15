@@ -15,6 +15,7 @@ type PhotoConfig = {
   help: string;
   exampleSrc: string;
   conditional?: boolean;
+  optional?: boolean;
 };
 
 const PRESS_BRANDS = [
@@ -28,15 +29,40 @@ const PRESS_BRANDS = [
 ];
 
 // Press brand drives which photos we ask for.
-const BRANDS = ['Heidelberg', 'Komori', 'Koenig & Bauer', 'Manroland', 'Mitsubishi', 'Ryobi', 'Goss', 'Presstek'];
+const BRANDS = [
+  'Heidelberg',
+  'Koenig & Bauer',
+  'KBA',
+  'KBA-Sheetfed',
+  'KBA-Metronic',
+  'Manroland',
+  'Manroland Sheetfed',
+  'Manroland Web',
+  'manroland Goss web systems',
+  'Komori',
+  'Mitsubishi',
+  'Ryobi',
+  'Ryobi MHI',
+  'RMGT',
+  'Goss',
+  'Goss International',
+  'Presstek',
+  'Sakurai',
+  'Shinohara',
+  'Akiyama',
+  'Planeta',
+  'Guanghua',
+];
 const INSIDE_BRANDS = ['Heidelberg', 'Komori', 'Mitsubishi'];
 
+// Required: console, press and number of keys. The inside-console and machine
+// plate photos are optional (and the inside one only applies to some brands).
 const PHOTO_FIELDS: PhotoConfig[] = [
   { id: 'consolePhoto', title: 'Console photo', help: 'One clear picture of the full console in its environment.', exampleSrc: '/images/Console offset.jpg' },
   { id: 'pressPhoto', title: 'Press photo', help: 'The press with brand, type and number of units visible.', exampleSrc: '/images/Brand:Type and numbers of units.png' },
-  { id: 'insideConsolePhoto', title: 'Inside console or computer', help: 'Inside the bottom of the console or computer cabinet.', exampleSrc: '/images/inside the bottom of the console or computer.png', conditional: true },
   { id: 'keysPhoto', title: 'Number of keys', help: 'Close-up of the number of keys on the console.', exampleSrc: '/images/the number of keys.png' },
-  { id: 'platePhoto', title: 'Machine plate number', help: 'The machine plate showing model, year and units.', exampleSrc: '/images/Take a picture of the machine plate number..png' },
+  { id: 'insideConsolePhoto', title: 'Inside console or computer', help: 'Inside the bottom of the console or computer cabinet.', exampleSrc: '/images/inside the bottom of the console or computer.png', conditional: true, optional: true },
+  { id: 'platePhoto', title: 'Machine plate number', help: 'The machine plate showing model, year and units.', exampleSrc: '/images/Take a picture of the machine plate number..png', optional: true },
 ];
 
 const CONFETTI_COLORS = ['#29ABE2', '#2E9E47', '#F7941D', '#EC0E8C', '#ED1C24', '#2E2BB8', '#1B6FF3'];
@@ -80,7 +106,7 @@ function UploadCard({
   onChange: (id: UploadFieldId, file: File | null) => void;
 }) {
   const [dragging, setDragging] = useState(false);
-  const required = !config.conditional || INSIDE_BRANDS.includes(brand);
+  const required = !config.optional && (!config.conditional || INSIDE_BRANDS.includes(brand));
   const accept = (f: File | null | undefined) => {
     if (f && f.type.startsWith('image/')) onChange(config.id, f);
   };
@@ -350,9 +376,12 @@ export function ConsoleValidationPage({
   };
 
   const list = photosFor(pressBrand || 'Heidelberg');
-  const photosLeft = list.filter((p) => !files[p.id]).length;
-  const photosDone = list.length - photosLeft;
-  const pct = list.length ? Math.round((photosDone / list.length) * 100) : 0;
+  // Only the required photos (console, press, number of keys) gate submission
+  // and drive the progress bar; optional ones never block.
+  const requiredList = list.filter((p) => !p.optional);
+  const photosLeft = requiredList.filter((p) => !files[p.id]).length;
+  const photosDone = requiredList.length - photosLeft;
+  const pct = requiredList.length ? Math.round((photosDone / requiredList.length) * 100) : 0;
   const inside = INSIDE_BRANDS.includes(pressBrand);
 
   const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -826,7 +855,7 @@ export function ConsoleValidationPage({
                         Continue →
                       </button>
                     ) : (
-                      <button type="button" className="cv-btn-primary" disabled={sending} onClick={handleSubmit}>
+                      <button type="button" className="cv-btn-primary" disabled={sending || photosLeft > 0} onClick={handleSubmit}>
                         {sending ? 'Sending…' : 'Send →'}
                       </button>
                     )}
