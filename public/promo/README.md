@@ -1,7 +1,14 @@
 # Promo — Reseller account (presentation animation)
 
-`reseller-account.html` is a **standalone animation** that presents three sections of
-the Rutherford customer space through the eyes of a **fictional reseller account**:
+Two standalone variants of the same reel — pick the vibe:
+
+- **`reseller-account.html`** — calm "screencast" feel (cross-fades, simulated cursor).
+- **`reseller-account-motion.html`** — **motion-design** version: boxes pop in with a
+  spring and fly out between scenes (zoom toward camera with blur, off-page slides with
+  rotation, shrink-to-zero).
+
+Both present three sections of the Rutherford customer space through the eyes of a
+**fictional reseller account**:
 
 1. **My account** — the reseller hub "Atlas Graphic Solutions" and its 5 clients
    (Imprimerie Berton, Cartonnages Vasseur, Helvetica Print AG, Grafica Lombarda,
@@ -15,8 +22,8 @@ the Rutherford customer space through the eyes of a **fictional reseller account
 
 ## How to watch it
 
-- **Simplest:** open `reseller-account.html` directly in a browser (double-click). The
-  file is 100% standalone — no dependencies, no server, works offline.
+- **Simplest:** open either `.html` file directly in a browser (double-click). The
+  files are 100% standalone — no dependencies, no server, work offline.
 - It auto-plays on a loop; the dots at the bottom jump to a scene, and "Replay" restarts it.
 - **To turn it into a video** (LinkedIn, sales deck…): open the file full-screen and use a
   screen recorder (QuickTime on Mac, the Xbox Game Bar on Windows, or OBS). Suggested
