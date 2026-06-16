@@ -1,0 +1,804 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Rutherford.fr — Reseller account (presentation animation)</title>
+<meta name="description" content="Presentation animation of the Rutherford.fr reseller account: My account, Console Validation and Support. Simulation with fictional company names." />
+<style>
+  /* ----------------------------------------------------------------------
+     Rutherford.fr — Reseller account · standalone presentation animation
+     Simulation: every company and person below is fictional.
+     No external dependencies — works offline.
+     -------------------------------------------------------------------- */
+  :root{
+    --bg:#ffffff; --bg-soft:#f7f7f3; --ink:#16130f; --text:#111111; --muted:#6a6a6a;
+    --line:#e7e7e0; --accent:#0071e3; --green:#1E874B; --amber:#F28B1F; --red:#d63b3b;
+    --shadow:0 24px 70px rgba(17,17,17,.10); --shadow-soft:0 14px 44px rgba(17,17,17,.07);
+    --font:"SF Pro Display","SF Pro Text",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+    --mono:"SF Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0; font-family:var(--font); color:var(--text);
+    background:#f3f3ee;
+    background-image:radial-gradient(rgba(17,17,17,.06) .9px, transparent 1px);
+    background-size:13px 13px;
+    -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+    display:flex; align-items:center; justify-content:center; overflow:hidden;
+  }
+
+  /* Scaled stage so the layout stays crisp on any screen */
+  .stage-fit{ position:fixed; inset:0; display:flex; align-items:center; justify-content:center; }
+  .stage{ width:1240px; transform-origin:center center; }
+
+  /* ---- Browser chrome ---- */
+  .browser{
+    background:var(--bg); border:1px solid var(--line); border-radius:18px;
+    box-shadow:var(--shadow); overflow:hidden;
+  }
+  .browser-bar{
+    display:flex; align-items:center; gap:14px; padding:13px 18px;
+    background:linear-gradient(#fbfbf9,#f4f4ef); border-bottom:1px solid var(--line);
+  }
+  .traffic{display:flex; gap:8px}
+  .traffic i{width:12px;height:12px;border-radius:50%;display:block}
+  .traffic i:nth-child(1){background:#ff5f57}
+  .traffic i:nth-child(2){background:#febc2e}
+  .traffic i:nth-child(3){background:#28c840}
+  .url{
+    flex:1; max-width:520px; margin:0 auto; height:32px; border-radius:9px;
+    background:#fff; border:1px solid var(--line); color:#444; font-size:13px;
+    display:flex; align-items:center; gap:8px; padding:0 12px;
+  }
+  .url svg{width:13px;height:13px;color:#7a7a7a}
+  .url b{font-weight:600;color:#111}
+  .url .url-tail{color:#9a9a9a}
+  .browser-tools{display:flex;gap:16px;color:#b6b6b6}
+  .browser-tools svg{width:17px;height:17px}
+
+  /* ---- Viewport that holds the scenes ---- */
+  .view{ position:relative; height:760px; background:var(--bg); overflow:hidden; }
+  .view::before{
+    content:""; position:absolute; inset:0; pointer-events:none; z-index:0;
+    background-image:radial-gradient(rgba(17,17,17,.05) .9px, transparent 1px);
+    background-size:13px 13px; opacity:.7;
+  }
+
+  .scene{
+    position:absolute; inset:0; padding:30px 40px; z-index:1;
+    opacity:0; transform:translateY(14px) scale(.992);
+    transition:opacity .7s ease, transform .7s ease; pointer-events:none;
+    overflow:hidden;
+  }
+  .scene.is-on{ opacity:1; transform:none; }
+
+  /* small site nav strip to anchor brand */
+  .topnav{
+    display:flex; align-items:center; justify-content:space-between;
+    padding-bottom:18px; margin-bottom:22px; border-bottom:1px solid var(--line);
+  }
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:19px;letter-spacing:-.01em;color:var(--ink)}
+  .brand .dot{width:11px;height:11px;border-radius:3px;background:var(--ink)}
+  .navlinks{display:flex;gap:26px;color:var(--muted);font-size:14px;font-weight:500}
+  .navlinks .on{color:var(--ink);font-weight:600}
+  .nav-account{
+    display:flex;align-items:center;gap:9px;font-size:13.5px;font-weight:600;color:var(--ink);
+    background:var(--bg-soft);border:1px solid var(--line);padding:7px 13px;border-radius:980px;
+  }
+  .nav-account .ava{width:22px;height:22px;border-radius:50%;background:var(--green);color:#fff;font-size:10px;font-weight:700;display:grid;place-items:center}
+
+  /* ===== generic bits ===== */
+  .eyebrow{font-size:13px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+  h1.title{font-size:34px;line-height:1.08;letter-spacing:-.02em;margin:.25em 0 .35em;color:var(--ink);font-weight:700}
+  .intro{color:var(--muted);font-size:15px;max-width:640px;margin:0}
+  .pulse{width:8px;height:8px;border-radius:50%;display:inline-block;position:relative;flex:0 0 auto}
+  .pulse::after{content:"";position:absolute;inset:-4px;border-radius:50%;border:1.5px solid currentColor;opacity:.45;animation:ring 1.8s ease-out infinite}
+  @keyframes ring{0%{transform:scale(.6);opacity:.5}100%{transform:scale(1.7);opacity:0}}
+  .pulse.green{background:var(--green);color:var(--green)}
+  .pulse.blue{background:var(--accent);color:var(--accent)}
+  .pulse.amber{background:var(--amber);color:var(--amber)}
+
+  .btn{display:inline-flex;align-items:center;gap:7px;border-radius:980px;font-size:13.5px;font-weight:600;padding:9px 16px;border:1px solid transparent;cursor:default}
+  .btn-light{background:var(--bg-soft);border-color:var(--line);color:var(--ink)}
+  .btn-accent{background:var(--accent);color:#fff}
+  .btn-dark{background:var(--ink);color:#fff}
+
+  /* ===== Scene 0 / 4 : title cards ===== */
+  .card-scene{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:0;position:relative;z-index:1}
+  .kicker{display:inline-flex;align-items:center;gap:9px;font-size:14px;font-weight:600;color:var(--ink);background:var(--bg-soft);border:1px solid var(--line);padding:8px 16px;border-radius:980px;opacity:0;transform:translateY(10px)}
+  .is-on .kicker{animation:rise .7s .1s forwards}
+  .hero-h{font-size:62px;line-height:1.02;letter-spacing:-.03em;font-weight:700;color:var(--ink);margin:24px 0 0;max-width:18ch;opacity:0;transform:translateY(16px)}
+  .is-on .hero-h{animation:rise .8s .25s forwards}
+  .hero-sub{font-size:20px;color:var(--muted);margin:20px 0 0;max-width:50ch;opacity:0;transform:translateY(14px)}
+  .is-on .hero-sub{animation:rise .8s .45s forwards}
+  .hero-cta{margin-top:34px;display:flex;gap:14px;opacity:0;transform:translateY(12px)}
+  .is-on .hero-cta{animation:rise .8s .65s forwards}
+  .hero-cta .btn{font-size:15px;padding:13px 24px}
+  .hero-foot{margin-top:30px;font-size:12.5px;color:#a6a6a0;opacity:0}
+  .is-on .hero-foot{animation:fade .8s .9s forwards}
+  .badge-row{display:flex;gap:10px;align-items:center;justify-content:center;margin-top:26px;flex-wrap:wrap;opacity:0}
+  .is-on .badge-row{animation:fade .8s .8s forwards}
+  .chip{font-size:12.5px;font-weight:600;color:#555;background:#fff;border:1px solid var(--line);padding:7px 13px;border-radius:980px}
+  @keyframes rise{to{opacity:1;transform:none}}
+  @keyframes fade{to{opacity:1}}
+
+  /* ===== Profile band (My account) ===== */
+  .profile{display:flex;align-items:center;gap:18px;margin-bottom:26px}
+  .pf-ava{width:66px;height:66px;border-radius:50%;background:var(--green);color:#fff;font-size:23px;font-weight:700;display:grid;place-items:center;flex:0 0 auto;box-shadow:var(--shadow-soft)}
+  .pf-id{flex:1;min-width:0}
+  .pf-eyebrow{font-size:12.5px;font-weight:600;letter-spacing:.03em;text-transform:uppercase;color:var(--muted)}
+  .pf-name-row{display:flex;align-items:center;gap:13px;margin:3px 0 4px}
+  .pf-name{font-size:27px;font-weight:700;letter-spacing:-.02em;color:var(--ink)}
+  .pf-role{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:600;color:var(--green);background:rgba(30,135,75,.10);padding:5px 12px;border-radius:980px}
+  .pf-role .rd{width:7px;height:7px;border-radius:50%;background:var(--green)}
+  .pf-meta{font-size:14px;color:var(--muted)}
+  .pf-meta b{color:#444;font-weight:600}
+  .pf-actions{display:flex;gap:10px}
+
+  .sec-h{font-size:13px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#9a9a93;margin:4px 0 14px}
+
+  /* tiles */
+  .tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:26px}
+  .tile{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px 17px;box-shadow:var(--shadow-soft);position:relative;opacity:0;transform:translateY(12px)}
+  .is-on .tile{animation:rise .6s forwards}
+  .is-on .tile:nth-child(1){animation-delay:.15s}
+  .is-on .tile:nth-child(2){animation-delay:.25s}
+  .is-on .tile:nth-child(3){animation-delay:.35s}
+  .is-on .tile:nth-child(4){animation-delay:.45s}
+  .tile-ic{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;margin-bottom:14px}
+  .tile-ic svg{width:23px;height:23px;stroke-width:1.7}
+  .tile-ic.blue{background:rgba(0,113,227,.10);color:var(--accent)}
+  .tile-ic.green{background:rgba(30,135,75,.12);color:var(--green)}
+  .tile-ic.ink{background:#f1efec;color:var(--ink)}
+  .tile-t{display:flex;align-items:center;gap:6px;font-size:16px;font-weight:700;color:var(--ink);letter-spacing:-.01em}
+  .tile-t svg{width:16px;height:16px;color:#c2c2bb;stroke-width:2}
+  .tile-s{font-size:13px;color:var(--muted);margin:3px 0 14px}
+  .tile-stat{display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:600;color:#444}
+  .tile-stat .mono{color:#9a9a93;font-weight:500}
+
+  /* card / manage panel */
+  .card{background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow-soft);overflow:hidden}
+  .card-h{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid var(--line)}
+  .card-t{font-size:17px;font-weight:700;color:var(--ink);letter-spacing:-.01em}
+  .card-s{font-size:13px;color:var(--muted);margin-top:2px}
+  .tabs{display:flex;gap:8px;padding:14px 22px 0}
+  .tab{font-size:13.5px;font-weight:600;color:var(--muted);background:transparent;border:1px solid transparent;padding:8px 15px;border-radius:980px;cursor:default}
+  .tab.on{color:var(--green);background:rgba(30,135,75,.10)}
+  .card-bd{padding:14px 22px 22px}
+
+  /* person rows */
+  .person{display:flex;align-items:center;gap:13px;padding:13px 4px;border-bottom:1px solid #f1f1ec;opacity:0;transform:translateX(-10px)}
+  .person:last-child{border-bottom:0}
+  .is-on .tab-clients .person{animation:slidein .55s forwards}
+  .is-on .tab-clients .person:nth-child(1){animation-delay:.30s}
+  .is-on .tab-clients .person:nth-child(2){animation-delay:.42s}
+  .is-on .tab-clients .person:nth-child(3){animation-delay:.54s}
+  .is-on .tab-clients .person:nth-child(4){animation-delay:.66s}
+  .is-on .tab-clients .person:nth-child(5){animation-delay:.78s}
+  @keyframes slidein{to{opacity:1;transform:none}}
+  .av-sq{width:42px;height:42px;border-radius:11px;background:rgba(30,135,75,.12);color:var(--green);font-size:14px;font-weight:700;display:grid;place-items:center;flex:0 0 auto}
+  .person-main{flex:1;min-width:0}
+  .person-n{font-size:15px;font-weight:600;color:var(--ink)}
+  .person-sub{font-size:13px;color:var(--muted);margin-top:2px}
+  .person-cta{font-size:12.5px;font-weight:600;color:var(--green)}
+
+  .invite{display:flex;gap:10px;margin-top:16px}
+  .invite input{flex:1;height:42px;border-radius:11px;border:1px solid var(--line);background:var(--bg-soft);padding:0 14px;font-size:14px;color:#555;font-family:inherit}
+  .invite .btn{padding:11px 18px}
+
+  /* two column for account scene */
+  .acct-grid{display:grid;grid-template-columns:1.55fr 1fr;gap:18px}
+  .mini{background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow-soft);padding:18px 20px}
+  .mini-h{font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#9a9a93;margin-bottom:14px}
+  .ring-wrap{display:flex;align-items:center;gap:16px}
+  .ring{position:relative;width:64px;height:64px;flex:0 0 auto}
+  .ring .rn{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1}
+  .ring .rn b{font-size:20px;font-weight:700;color:var(--ink)}
+  .ring .rn span{font-size:10px;color:var(--muted)}
+  .ring-main{flex:1}
+  .ring-rank{font-size:15px;font-weight:700;color:var(--ink)}
+  .ring-xp{font-size:12.5px;color:var(--muted)}
+  .ring-bar{height:6px;border-radius:6px;background:#eeedea;margin:8px 0 6px;overflow:hidden}
+  .ring-bar span{display:block;height:100%;background:var(--green);width:0}
+  .is-on .ring-bar span{animation:grow 1.1s .5s forwards}
+  @keyframes grow{to{width:62%}}
+  .ring-next{font-size:12px;color:var(--muted)}
+  .mini-row{display:flex;align-items:center;gap:12px;padding:12px 2px;border-bottom:1px solid #f1f1ec}
+  .mini-row:last-child{border-bottom:0}
+  .mini-row .mic{width:34px;height:34px;border-radius:10px;background:#f1efec;color:var(--ink);display:grid;place-items:center;flex:0 0 auto}
+  .mini-row .mic svg{width:17px;height:17px}
+  .mini-row .mt{font-size:14px;font-weight:600;color:var(--ink)}
+  .mini-row .ms{font-size:12px;color:var(--muted)}
+
+  /* ===== Console Validation portal ===== */
+  .summary{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:22px 0}
+  .sum{background:#fff;border:1px solid var(--line);border-radius:14px;padding:15px 16px;box-shadow:var(--shadow-soft);position:relative;overflow:hidden;opacity:0;transform:translateY(10px)}
+  .is-on .sum{animation:rise .5s forwards}
+  .is-on .sum:nth-child(1){animation-delay:.1s}
+  .is-on .sum:nth-child(2){animation-delay:.18s}
+  .is-on .sum:nth-child(3){animation-delay:.26s}
+  .is-on .sum:nth-child(4){animation-delay:.34s}
+  .sum::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px}
+  .sum.amber::before{background:var(--amber)} .sum.blue::before{background:var(--accent)}
+  .sum.green::before{background:var(--green)} .sum.red::before{background:var(--red)}
+  .sum-n{font-size:30px;font-weight:700;color:var(--ink);letter-spacing:-.02em}
+  .sum-l{font-size:13px;color:var(--muted);font-weight:500;margin-top:2px}
+
+  .cv-main{display:grid;grid-template-columns:330px 1fr;gap:18px}
+  .cv-list{display:flex;flex-direction:column;gap:16px}
+  .cg-head{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:#8a8a83;margin-bottom:8px}
+  .cg-dot{width:8px;height:8px;border-radius:50%}
+  .cg-dot.amber{background:var(--amber)} .cg-dot.blue{background:var(--accent)} .cg-dot.green{background:var(--green)} .cg-dot.red{background:var(--red)}
+  .cg-count{margin-left:auto;font-size:12px;color:#a6a6a0}
+  .cv-item{display:flex;align-items:center;justify-content:space-between;gap:8px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:8px;box-shadow:0 6px 18px rgba(17,17,17,.04)}
+  .cv-item.active{border-color:#bcd9bf;box-shadow:0 8px 24px rgba(30,135,75,.12)}
+  .cv-it-t{font-size:14px;font-weight:600;color:var(--ink)}
+  .cv-it-m{font-size:12px;color:var(--muted);margin-top:2px}
+  .cv-it-m .mono{font-family:var(--mono);font-size:11px;color:#8a8a83}
+  .cv-chev{color:#cfcfc8;font-size:18px}
+
+  .cv-detail{background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow-soft);padding:22px}
+  .cv-dhead{display:flex;align-items:flex-start;justify-content:space-between;gap:14px}
+  .cv-dtitle{font-size:18px;font-weight:700;color:var(--ink);letter-spacing:-.01em}
+  .cv-dsub{font-size:12.5px;color:var(--muted);margin-top:3px}
+  .cv-dsub .mono{font-family:var(--mono);color:#8a8a83}
+
+  /* status pill with cross-fade between two states */
+  .pill{position:relative;display:inline-grid;align-items:center;height:30px;border-radius:980px;padding:0 14px 0 12px;font-size:13px;font-weight:600;white-space:nowrap}
+  .pill .st{grid-area:1/1;display:inline-flex;align-items:center;gap:7px;transition:opacity .6s ease}
+  .pill .pd{width:8px;height:8px;border-radius:50%}
+  .pill .a{opacity:1}.pill .b{opacity:0}
+  .cv-detail.flip .pill .a{opacity:0}.cv-detail.flip .pill .b{opacity:1}
+  .pill{background:rgba(0,113,227,.10);color:var(--accent)} /* review default */
+  .pill .a .pd{background:var(--accent)}
+  .cv-detail.flip .pill{background:rgba(30,135,75,.12);color:var(--green);transition:background .6s ease}
+  .pill .b .pd{background:var(--green)}
+
+  .banner{position:relative;display:flex;align-items:center;gap:12px;border-radius:13px;padding:14px 16px;margin:18px 0;background:#f3f7ff;overflow:hidden;transition:background .6s ease}
+  .cv-detail.flip .banner{background:#eef8f1}
+  .banner .bsq{width:10px;height:10px;border-radius:3px;background:var(--accent);flex:0 0 auto;transition:background .6s}
+  .cv-detail.flip .banner .bsq{background:var(--green)}
+  .banner .bt{grid-area:1/1}
+  .banner .blabel{font-weight:700;color:var(--ink);font-size:14px}
+  .banner .bdesc{color:var(--muted);font-size:13px;margin-left:8px}
+  .banner .layer{display:flex;align-items:center;transition:opacity .55s ease}
+  .banner .layer.b{position:absolute;left:38px;opacity:0}
+  .cv-detail.flip .banner .layer.a{opacity:0}
+  .cv-detail.flip .banner .layer.b{opacity:1;position:static}
+
+  /* stepper */
+  .steps{display:flex;align-items:center;margin:6px 0 20px}
+  .step{display:flex;flex-direction:column;align-items:center;gap:7px;flex:0 0 auto;width:96px}
+  .snode{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-size:14px;font-weight:700;border:2px solid var(--line);background:#fff;color:#bcbcb5;transition:.5s}
+  .snode.done{background:var(--green);border-color:var(--green);color:#fff}
+  .snode.cur{border-color:var(--accent);color:var(--accent)}
+  .slabel{font-size:12px;color:var(--muted);font-weight:600;text-align:center}
+  .sconn{height:2px;flex:1;background:var(--line);margin:0 -6px;margin-bottom:24px;transition:.5s}
+  .sconn.on{background:var(--green)}
+  .snode .ck{display:none}
+  .cv-detail.flip .snode.s3{background:var(--green);border-color:var(--green);color:#fff}
+  .cv-detail.flip .snode.s3 .x{display:none}
+  .cv-detail.flip .snode.s3 .ck{display:inline}
+  .cv-detail.flip .sconn.c2{background:var(--green)}
+  .cv-detail.flip .slabel.l3 .pending{display:none}
+  .cv-detail.flip .slabel.l3 .ok{display:inline}
+  .slabel.l3 .ok{display:none}
+
+  .sumbox{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--line);border-radius:13px;overflow:hidden;margin-bottom:18px}
+  .sb-cell{padding:13px 16px;border-right:1px solid var(--line)}
+  .sb-cell:last-child{border-right:0}
+  .sb-k{font-size:11.5px;font-weight:600;letter-spacing:.03em;text-transform:uppercase;color:#a0a09a}
+  .sb-v{font-size:14px;font-weight:600;color:var(--ink);margin-top:4px}
+
+  /* conversation */
+  .chat-h{font-size:12.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#9a9a93;margin-bottom:12px}
+  .msg{max-width:78%;padding:12px 15px;border-radius:14px;font-size:13.5px;line-height:1.45;margin-bottom:10px}
+  .msg .mh{font-size:11.5px;font-weight:600;color:#8a8a83;margin-bottom:5px}
+  .msg .mh .mono{font-family:var(--mono);color:#b0b0a8}
+  .msg.team{background:var(--bg-soft);border:1px solid var(--line);color:#333;border-top-left-radius:4px}
+  .msg.you{background:var(--ink);color:#f4f4f2;margin-left:auto;border-top-right-radius:4px}
+  .msg.you .mh{color:#bdbdb6}
+  .msg.reveal{opacity:0;transform:translateY(10px)}
+  .is-on .cv-detail.flip .msg.reveal{animation:rise .6s .15s forwards}
+
+  /* ===== Support portal ===== */
+  .switch{display:flex;gap:10px;margin:20px 0 18px}
+  .sw-item{flex:1;display:flex;flex-direction:column;gap:8px;background:#fff;border:1px solid var(--line);border-radius:13px;padding:13px 15px;box-shadow:0 6px 18px rgba(17,17,17,.04)}
+  .sw-item.active{border-color:#cfe0f7;box-shadow:0 8px 24px rgba(0,113,227,.10)}
+  .sw-ref{font-family:var(--mono);font-size:11.5px;color:#8a8a83}
+  .sw-t{font-size:13.5px;font-weight:600;color:var(--ink)}
+  .pill-sm{display:inline-flex;align-items:center;gap:6px;height:24px;border-radius:980px;padding:0 11px;font-size:11.5px;font-weight:600;width:max-content}
+  .pill-sm .pd{width:7px;height:7px;border-radius:50%}
+  .pill-sm.review{background:rgba(0,113,227,.10);color:var(--accent)} .pill-sm.review .pd{background:var(--accent)}
+  .pill-sm.green{background:rgba(30,135,75,.12);color:var(--green)} .pill-sm.green .pd{background:var(--green)}
+  .pill-sm.amber{background:rgba(242,139,31,.14);color:#c06b12} .pill-sm.amber .pd{background:var(--amber)}
+
+  .sup-2col{display:grid;grid-template-columns:1.05fr 1fr;gap:18px}
+  .sup-info{background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow-soft);padding:22px}
+  .handled{display:flex;align-items:center;gap:9px;font-size:13px;color:#555;background:var(--bg-soft);border:1px solid var(--line);border-radius:11px;padding:9px 13px;margin:16px 0}
+  .handled b{color:var(--ink)}
+  .handled .h-av{width:24px;height:24px;border-radius:50%;background:var(--accent);color:#fff;font-size:11px;font-weight:700;display:grid;place-items:center}
+  .tl-h{font-size:12.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#9a9a93;margin:18px 0 12px}
+  .sup-desc{font-size:14px;color:#444;line-height:1.55;margin:0 0 4px}
+  .tline{list-style:none;margin:0;padding:0}
+  .tlrow{display:flex;gap:13px;padding:0 0 16px;position:relative}
+  .tlrow:not(:last-child)::before{content:"";position:absolute;left:6px;top:16px;bottom:-2px;width:2px;background:var(--line)}
+  .tlnode{width:14px;height:14px;border-radius:50%;border:2px solid var(--line);background:#fff;flex:0 0 auto;margin-top:2px;z-index:1}
+  .tlrow.done .tlnode{background:var(--green);border-color:var(--green)}
+  .tlrow.cur .tlnode{border-color:var(--accent);background:#fff;box-shadow:0 0 0 4px rgba(0,113,227,.12)}
+  .tl-label{font-size:13.5px;font-weight:600;color:var(--ink)}
+  .tlrow.future .tl-label{color:#b4b4ad;font-weight:500}
+  .tl-time{font-family:var(--mono);font-size:11px;color:#a0a09a;margin-top:2px}
+
+  .sup-chat{background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow-soft);padding:0;display:flex;flex-direction:column}
+  .sup-chat .chat-top{padding:16px 20px;border-bottom:1px solid var(--line);font-size:12.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#9a9a93}
+  .sup-chat .chat-body{padding:18px 20px;flex:1;min-height:0}
+  .msg.s2{opacity:0;transform:translateY(10px)}
+  .is-on .sup-chat .msg.r1{animation:rise .6s .9s forwards}
+  .is-on .sup-chat .msg.r2{animation:rise .6s 2.4s forwards}
+  .typing{display:inline-flex;gap:4px;align-items:center;background:var(--ink);border-radius:14px;border-top-right-radius:4px;padding:13px 16px;margin-left:auto;width:max-content;opacity:0}
+  .is-on .sup-chat .typing{animation:fade .3s 3.7s forwards, fadeout .3s 5.0s forwards}
+  @keyframes fadeout{to{opacity:0}}
+  .typing i{width:7px;height:7px;border-radius:50%;background:#cfcfc8;animation:blink 1.1s infinite}
+  .typing i:nth-child(2){animation-delay:.2s}.typing i:nth-child(3){animation-delay:.4s}
+  @keyframes blink{0%,60%,100%{opacity:.3}30%{opacity:1}}
+  .msg.r3{opacity:0;transform:translateY(10px)}
+  .is-on .sup-chat .msg.r3{animation:rise .5s 5.1s forwards}
+  .sent-ok{display:flex;align-items:center;gap:7px;justify-content:flex-end;font-size:12px;font-weight:600;color:var(--green);margin-top:8px;opacity:0}
+  .is-on .sup-chat .sent-ok{animation:fade .5s 5.6s forwards}
+  .composer{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:13px;background:var(--bg-soft);padding:8px 8px 8px 14px;margin:0 20px 20px}
+  .composer .ph{flex:1;font-size:13.5px;color:#a6a6a0}
+  .composer .send{background:var(--ink);color:#fff;border-radius:9px;padding:8px 16px;font-size:13px;font-weight:600}
+  .composer .clip{color:#b6b6b0}
+
+  /* ===== Simulated cursor ===== */
+  .cursor{position:absolute;z-index:40;left:0;top:0;width:24px;height:24px;pointer-events:none;
+    transition:transform 1.0s cubic-bezier(.5,.05,.2,1);will-change:transform;opacity:0}
+  .cursor.show{opacity:1}
+  .cursor svg{width:24px;height:24px;filter:drop-shadow(0 2px 3px rgba(0,0,0,.28))}
+  .cursor .ripple{position:absolute;left:-3px;top:-3px;width:30px;height:30px;border-radius:50%;border:2px solid var(--green);opacity:0}
+  .cursor.click .ripple{animation:rip .5s ease-out}
+  @keyframes rip{0%{transform:scale(.3);opacity:.7}100%{transform:scale(1.6);opacity:0}}
+  .cursor.tap{animation:tap .25s ease}
+  @keyframes tap{50%{transform:translate(var(--cx),var(--cy)) scale(.82)}}
+
+  /* ===== caption + controls ===== */
+  .caption{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-top:18px;padding:0 6px}
+  .dots{display:flex;gap:10px}
+  .dot-btn{display:flex;align-items:center;gap:9px;background:none;border:0;cursor:pointer;color:#9a9a93;font-size:13px;font-weight:600;font-family:inherit;padding:4px 0}
+  .dot-btn .n{width:9px;height:9px;border-radius:50%;background:#d2d2cb;transition:.3s}
+  .dot-btn.on{color:var(--ink)}
+  .dot-btn.on .n{background:var(--green);box-shadow:0 0 0 4px rgba(30,135,75,.15)}
+  .cap-right{display:flex;align-items:center;gap:16px}
+  .progress{width:200px;height:5px;border-radius:5px;background:#e3e3dc;overflow:hidden}
+  .progress span{display:block;height:100%;width:0;background:var(--green);border-radius:5px}
+  .replay{display:inline-flex;align-items:center;gap:7px;background:var(--ink);color:#fff;border:0;border-radius:980px;padding:9px 16px;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer}
+  .replay svg{width:15px;height:15px;stroke:#fff;fill:none;stroke-width:1.8}
+  .sim-note{font-size:11.5px;color:#a6a6a0}
+
+  @media (max-width:520px){ .caption{flex-direction:column;gap:12px} .progress{width:150px} }
+</style>
+</head>
+<body>
+<div class="stage-fit">
+  <div class="stage" id="stage">
+
+    <div class="browser">
+      <div class="browser-bar">
+        <span class="traffic"><i></i><i></i><i></i></span>
+        <span class="url">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+          <b>rutherford.fr</b><span class="url-tail" id="urlpath">/account</span>
+        </span>
+        <span class="browser-tools">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12h16M4 12l5-5M4 12l5 5"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="2"/><circle cx="12" cy="5" r="2"/><circle cx="12" cy="19" r="2"/></svg>
+        </span>
+      </div>
+
+      <div class="view" id="view">
+
+        <!-- ============ SCENE 0 — INTRO ============ -->
+        <section class="scene" data-scene="0">
+          <div class="card-scene">
+            <span class="kicker">🌱 Closed-loop color control</span>
+            <h1 class="hero-h">The Rutherford reseller account</h1>
+            <p class="hero-sub">Track your clients, their press validations and your support — all in one place.</p>
+            <div class="badge-row">
+              <span class="chip">Official X-Rite PANTONE partner</span>
+              <span class="chip">Compatible with MeasureColor</span>
+              <span class="chip">IntelliTrax2</span>
+            </div>
+            <div class="hero-foot">Simulation — fictional companies and people</div>
+          </div>
+        </section>
+
+        <!-- ============ SCENE 1 — MY ACCOUNT (reseller) ============ -->
+        <section class="scene" data-scene="1">
+          <div class="topnav">
+            <div class="brand"><span class="dot"></span>Rutherford.fr</div>
+            <div class="navlinks"><span>ColorLoop</span><span>Console Validation</span><span>Support</span><span class="on">My account</span></div>
+            <div class="nav-account"><span class="ava">AG</span>Atlas Graphic</div>
+          </div>
+
+          <div class="profile">
+            <div class="pf-ava">AG</div>
+            <div class="pf-id">
+              <div class="pf-eyebrow">Your account</div>
+              <div class="pf-name-row">
+                <span class="pf-name">Atlas Graphic Solutions</span>
+                <span class="pf-role"><span class="rd"></span>Reseller</span>
+              </div>
+              <div class="pf-meta"><b>contact@atlas-graphic.com</b> · Lyon, France · Member since February 2024</div>
+            </div>
+            <div class="pf-actions">
+              <span class="btn btn-light">Edit profile</span>
+              <span class="btn btn-light">Sign out</span>
+            </div>
+          </div>
+
+          <div class="sec-h">Quick access</div>
+          <div class="tiles">
+            <div class="tile">
+              <div class="tile-ic blue"><svg viewBox="0 0 24 24" fill="none"><path d="M12 4 2.5 9 12 14l9.5-5L12 4z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M6 11v4.5c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5V11" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></div>
+              <div class="tile-t">Academy <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h13m0 0-5-5m5 5-5 5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              <div class="tile-s">Your color masterclasses</div>
+              <div class="tile-stat"><span class="pulse blue"></span>Level 4 · Color Expert<span class="mono"> · 320 XP</span></div>
+            </div>
+            <div class="tile">
+              <div class="tile-ic green"><svg viewBox="0 0 24 24" fill="none"><path d="M4 20V9l8-5 8 5v11" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M9 20v-5h6v5" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg></div>
+              <div class="tile-t">My clients <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h13m0 0-5-5m5 5-5 5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              <div class="tile-s">Printers you follow</div>
+              <div class="tile-stat"><span class="pulse green"></span>5 clients</div>
+            </div>
+            <div class="tile">
+              <div class="tile-ic ink"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M3 9h18M7 14h5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><circle cx="16.5" cy="14" r="1.3" fill="currentColor"/></svg></div>
+              <div class="tile-t">Console Validation <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h13m0 0-5-5m5 5-5 5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              <div class="tile-s">Your press validations</div>
+              <div class="tile-stat"><span class="pulse green"></span>3 eligible<span class="mono"> · 2 in progress</span></div>
+            </div>
+            <div class="tile">
+              <div class="tile-ic ink"><svg viewBox="0 0 24 24" fill="none"><path d="M5 18l-2 3V8a3 3 0 0 1 3-3h12a3 3 0 0 1 3 3v7a3 3 0 0 1-3 3H5z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M9 10h6M9 13h4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></div>
+              <div class="tile-t">Support <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h13m0 0-5-5m5 5-5 5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              <div class="tile-s">Help & documentation</div>
+              <div class="tile-stat"><span class="pulse amber"></span>Ticket in progress</div>
+            </div>
+          </div>
+
+          <div class="acct-grid">
+            <div class="card">
+              <div class="card-h">
+                <div><div class="card-t">Clients & team</div><div class="card-s">Your clients and your team</div></div>
+              </div>
+              <div class="tabs">
+                <button class="tab on" id="tab-clients-btn">Clients (5)</button>
+                <button class="tab">Team</button>
+              </div>
+              <div class="card-bd tab-clients">
+                <div class="person"><span class="av-sq">IB</span><div class="person-main"><div class="person-n">Imprimerie Berton</div><div class="person-sub">France · 2 presses · 1 eligible · 1 in progress</div></div><span class="person-cta">Open →</span></div>
+                <div class="person"><span class="av-sq">CV</span><div class="person-main"><div class="person-n">Cartonnages Vasseur</div><div class="person-sub">France · 3 presses · 2 eligible</div></div><span class="person-cta">Open →</span></div>
+                <div class="person"><span class="av-sq">HP</span><div class="person-main"><div class="person-n">Helvetica Print AG</div><div class="person-sub">Switzerland · 1 press · 1 in progress</div></div><span class="person-cta">Open →</span></div>
+                <div class="person"><span class="av-sq">GL</span><div class="person-main"><div class="person-n">Grafica Lombarda</div><div class="person-sub">Italy · 2 presses · 1 eligible</div></div><span class="person-cta">Open →</span></div>
+                <div class="person"><span class="av-sq">ND</span><div class="person-main"><div class="person-n">Nordpack Druck</div><div class="person-sub">Germany · 2 presses · 1 in progress</div></div><span class="person-cta">Open →</span></div>
+                <div class="invite"><input value="name@company.com" readonly /><span class="btn btn-dark">Invite a client</span></div>
+              </div>
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:18px">
+              <div class="mini">
+                <div class="mini-h">Academy</div>
+                <div class="ring-wrap">
+                  <div class="ring">
+                    <svg width="64" height="64"><circle cx="32" cy="32" r="28" fill="none" stroke="#EEEDEA" stroke-width="6"/><circle cx="32" cy="32" r="28" fill="none" stroke="#1E874B" stroke-width="6" stroke-linecap="round" stroke-dasharray="176" stroke-dashoffset="67" transform="rotate(-90 32 32)"/></svg>
+                    <div class="rn"><b>4</b><span>Level</span></div>
+                  </div>
+                  <div class="ring-main">
+                    <div class="ring-rank">Color Expert</div>
+                    <div class="ring-xp">320 XP</div>
+                    <div class="ring-bar"><span></span></div>
+                    <div class="ring-next">80 XP to Closed-Loop Master</div>
+                  </div>
+                </div>
+              </div>
+              <div class="mini">
+                <div class="mini-h">Support</div>
+                <div class="mini-row"><span class="mic"><svg viewBox="0 0 24 24" fill="none"><path d="M5 16l-2 3V7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H5z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg></span><div><div class="mt">Chat with support</div><div class="ms">Reply within one business day</div></div></div>
+                <div class="mini-row"><span class="mic"><svg viewBox="0 0 24 24" fill="none"><path d="M6 3h8l4 4v14H6z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M14 3v4h4" stroke="currentColor" stroke-width="1.7"/></svg></span><div><div class="mt">Help centre</div><div class="ms">Product guides & docs</div></div></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============ SCENE 2 — CONSOLE VALIDATION ============ -->
+        <section class="scene" data-scene="2">
+          <div class="topnav">
+            <div class="brand"><span class="dot"></span>Rutherford.fr</div>
+            <div class="navlinks"><span>ColorLoop</span><span class="on">Console Validation</span><span>Support</span><span>My account</span></div>
+            <div class="nav-account"><span class="ava">AG</span>Atlas Graphic</div>
+          </div>
+
+          <div class="eyebrow">Your account</div>
+          <h1 class="title">Your console validations</h1>
+          <p class="intro">Track every console validation you have submitted and its current status. Our team reviews each request and updates the status here as it progresses.</p>
+
+          <div class="summary">
+            <div class="sum amber"><div class="sum-n">1</div><div class="sum-l">Action needed</div></div>
+            <div class="sum blue"><div class="sum-n">2</div><div class="sum-l">In review</div></div>
+            <div class="sum green"><div class="sum-n">3</div><div class="sum-l">Connectable</div></div>
+            <div class="sum red"><div class="sum-n">1</div><div class="sum-l">Not eligible</div></div>
+          </div>
+
+          <div class="cv-main">
+            <aside class="cv-list">
+              <div class="cv-group">
+                <div class="cg-head"><span class="cg-dot amber"></span>Action needed<span class="cg-count">1</span></div>
+                <div class="cv-item"><span><span class="cv-it-t">Helvetica Print AG · KBA Rapida 106</span><span class="cv-it-m"><span class="mono">CV-2026-0214</span> · 9 Jun 2026</span></span><span class="cv-chev">›</span></div>
+              </div>
+              <div class="cv-group">
+                <div class="cg-head"><span class="cg-dot blue"></span>In review<span class="cg-count">2</span></div>
+                <div class="cv-item active" id="cv-berton"><span><span class="cv-it-t">Imprimerie Berton · Speedmaster XL 106</span><span class="cv-it-m"><span class="mono">CV-2026-0190</span> · 6 Jun 2026</span></span><span class="cv-chev">›</span></div>
+                <div class="cv-item"><span><span class="cv-it-t">Nordpack Druck · Heidelberg CX 102</span><span class="cv-it-m"><span class="mono">CV-2026-0238</span> · 11 Jun 2026</span></span><span class="cv-chev">›</span></div>
+              </div>
+              <div class="cv-group">
+                <div class="cg-head"><span class="cg-dot green"></span>Connectable<span class="cg-count">3</span></div>
+                <div class="cv-item"><span><span class="cv-it-t">Grafica Lombarda · Manroland 700</span><span class="cv-it-m"><span class="mono">CV-2026-0205</span> · 7 Jun 2026</span></span><span class="cv-chev">›</span></div>
+              </div>
+            </aside>
+
+            <section class="cv-detail" id="cv-detail">
+              <div class="cv-dhead">
+                <div>
+                  <div class="cv-dtitle">France · Imprimerie Berton · Heidelberg Speedmaster XL 106</div>
+                  <div class="cv-dsub"><span class="mono">CV-2026-0190</span> · Submitted 6 Jun 2026</div>
+                </div>
+                <span class="pill">
+                  <span class="st a"><span class="pd"></span>In review</span>
+                  <span class="st b"><span class="pd"></span>Connectable</span>
+                </span>
+              </div>
+
+              <div class="banner">
+                <span class="bsq"></span>
+                <span class="bt">
+                  <span class="layer a"><span class="blabel">In review</span><span class="bdesc">Our team is reviewing your console.</span></span>
+                  <span class="layer b"><span class="blabel">Connectable</span><span class="bdesc">Your press is eligible — let's talk about the next steps.</span></span>
+                </span>
+              </div>
+
+              <div class="steps">
+                <div class="step"><span class="snode done">✓</span><span class="slabel">Submitted</span></div>
+                <span class="sconn on"></span>
+                <div class="step"><span class="snode done">✓</span><span class="slabel">In review</span></div>
+                <span class="sconn c2"></span>
+                <div class="step"><span class="snode cur s3"><span class="x">3</span><span class="ck">✓</span></span><span class="slabel l3"><span class="pending">Result</span><span class="ok">Connectable</span></span></div>
+              </div>
+
+              <div class="sumbox">
+                <div class="sb-cell"><div class="sb-k">Company</div><div class="sb-v">Imprimerie Berton</div></div>
+                <div class="sb-cell"><div class="sb-k">Country</div><div class="sb-v">France</div></div>
+                <div class="sb-cell"><div class="sb-k">Press</div><div class="sb-v">Speedmaster XL 106</div></div>
+              </div>
+
+              <div class="chat-h">Conversation</div>
+              <div class="msg team"><div class="mh">Our team<span class="mono"> · 7 Jun 2026</span></div>Thanks for the MeasureColor readings. The Speedmaster XL 106 does have the motorized ink keys required.</div>
+              <div class="msg team reveal"><div class="mh">Our team<span class="mono"> · 8 Jun 2026</span></div>Good news: your press is eligible for closed-loop. We can schedule the ColorLoop connection as early as next week.</div>
+            </section>
+          </div>
+        </section>
+
+        <!-- ============ SCENE 3 — SUPPORT ============ -->
+        <section class="scene" data-scene="3">
+          <div class="topnav">
+            <div class="brand"><span class="dot"></span>Rutherford.fr</div>
+            <div class="navlinks"><span>ColorLoop</span><span>Console Validation</span><span class="on">Support</span><span>My account</span></div>
+            <div class="nav-account"><span class="ava">AG</span>Atlas Graphic</div>
+          </div>
+
+          <div class="eyebrow">Your account</div>
+          <h1 class="title">Your support tickets</h1>
+          <p class="intro">Follow every support request you have opened and its current status. Reply to add details or photos — our team is notified straight away.</p>
+
+          <div class="switch">
+            <div class="sw-item active"><span class="sw-ref">RF-2026-0481</span><span class="sw-t">Color drift on Speedmaster XL 106</span><span class="pill-sm review"><span class="pd"></span>In progress</span></div>
+            <div class="sw-item"><span class="sw-ref">RF-2026-0467</span><span class="sw-t">IntelliTrax2 calibration after maintenance</span><span class="pill-sm green"><span class="pd"></span>Resolved</span></div>
+            <div class="sw-item"><span class="sw-ref">RF-2026-0490</span><span class="sw-t">Incomplete CIP3 import in ColorLoop</span><span class="pill-sm amber"><span class="pd"></span>Action needed</span></div>
+          </div>
+
+          <div class="sup-2col">
+            <div class="sup-info">
+              <div class="cv-dhead">
+                <div>
+                  <div class="cv-dtitle">Color drift on Speedmaster XL 106</div>
+                  <div class="cv-dsub"><span class="mono">RF-2026-0481</span> · Opened 12 Jun 2026 · Imprimerie Berton</div>
+                </div>
+                <span class="pill-sm review"><span class="pd"></span>In progress</span>
+              </div>
+
+              <div class="handled"><span class="h-av">J</span>Handled by <b>Julien Mercier</b> — Rutherford team</div>
+
+              <div class="sumbox">
+                <div class="sb-cell"><div class="sb-k">Company</div><div class="sb-v">Imprimerie Berton</div></div>
+                <div class="sb-cell"><div class="sb-k">AnyDesk</div><div class="sb-v">741 209 663</div></div>
+                <div class="sb-cell"><div class="sb-k">Last update</div><div class="sb-v">13 Jun 2026</div></div>
+              </div>
+
+              <div class="tl-h">Your request</div>
+              <p class="sup-desc">Color drift (ΔE ≈ 3.5) during the run on the Speedmaster XL 106, on a Pantone 286 C solid. Makeready waste is rising. We're looking to stabilize color control.</p>
+
+              <div class="tl-h">Activity</div>
+              <ol class="tline">
+                <li class="tlrow done"><span class="tlnode"></span><div><div class="tl-label">Request submitted</div><div class="tl-time">12 Jun 2026</div></div></li>
+                <li class="tlrow done"><span class="tlnode"></span><div><div class="tl-label">Received — reference RF-2026-0481 assigned</div></div></li>
+                <li class="tlrow done"><span class="tlnode"></span><div><div class="tl-label">Message from our team</div><div class="tl-time">13 Jun 2026</div></div></li>
+                <li class="tlrow cur"><span class="tlnode"></span><div><div class="tl-label">Being handled by our team</div></div></li>
+                <li class="tlrow future"><span class="tlnode"></span><div><div class="tl-label">Resolution</div></div></li>
+              </ol>
+            </div>
+
+            <aside class="sup-chat">
+              <div class="chat-top">Conversation</div>
+              <div class="chat-body">
+                <div class="msg you"><div class="mh">You<span class="mono"> · 12 Jun</span></div>Hello, we're seeing color drift (ΔE ≈ 3.5) during the run on the Speedmaster XL 106.</div>
+                <div class="msg team s2 r1"><div class="mh">Our team<span class="mono"> · 13 Jun</span></div>Thanks. Could you share the MeasureColor reading and the state of the ink keys? We're looking into it today.</div>
+                <div class="msg team s2 r2"><div class="mh">Our team<span class="mono"> · 13 Jun</span></div>In the meantime, check the CIP3 preset: an up-to-date ink profile reduces makeready waste.</div>
+                <div class="typing"><i></i><i></i><i></i></div>
+                <div class="msg you r3"><div class="mh">You<span class="mono"> · 13 Jun</span></div>Done. The makeready is stabilized and waste has dropped noticeably. Thanks!</div>
+                <div class="sent-ok">Sent — our team has it ✓</div>
+              </div>
+              <div class="composer"><span class="clip"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5l-8.5 8.5a5 5 0 0 1-7-7l8.5-8.5a3.3 3.3 0 0 1 4.7 4.7l-8.5 8.5a1.6 1.6 0 0 1-2.3-2.3l7.8-7.8"/></svg></span><span class="ph">Write a message…</span><span class="send" id="sup-send">Send</span></div>
+            </aside>
+          </div>
+        </section>
+
+        <!-- ============ SCENE 4 — OUTRO / CTA ============ -->
+        <section class="scene" data-scene="4">
+          <div class="card-scene">
+            <span class="kicker">🌱 Rutherford.fr</span>
+            <h1 class="hero-h">Run your color network</h1>
+            <p class="hero-sub">My account, Console Validation and Support — the reseller account that tracks your clients, their presses and their color stability.</p>
+            <div class="hero-cta">
+              <span class="btn btn-accent">Discover the reseller account</span>
+              <span class="btn btn-light">rutherford.fr/account</span>
+            </div>
+            <div class="badge-row">
+              <span class="chip">Reduce makeready waste</span>
+              <span class="chip">Improve color control</span>
+              <span class="chip">Save ink, paper and energy</span>
+            </div>
+            <div class="hero-foot">Simulation — "Atlas Graphic Solutions" and its clients are fictional names.</div>
+          </div>
+        </section>
+
+        <!-- Simulated cursor -->
+        <div class="cursor" id="cursor">
+          <svg viewBox="0 0 24 24" fill="#16130f" stroke="#fff" stroke-width="1.4"><path d="M5 3l14 7-6 1.6L9.4 18 5 3z"/></svg>
+          <span class="ripple"></span>
+        </div>
+
+      </div><!-- /view -->
+    </div><!-- /browser -->
+
+    <div class="caption">
+      <div class="dots" id="dots">
+        <button class="dot-btn" data-go="0"><span class="n"></span>Intro</button>
+        <button class="dot-btn" data-go="1"><span class="n"></span>My account</button>
+        <button class="dot-btn" data-go="2"><span class="n"></span>Console Validation</button>
+        <button class="dot-btn" data-go="3"><span class="n"></span>Support</button>
+        <button class="dot-btn" data-go="4"><span class="n"></span>Wrap-up</button>
+      </div>
+      <div class="cap-right">
+        <span class="sim-note">Auto-play · fictional names</span>
+        <div class="progress"><span id="bar"></span></div>
+        <button class="replay" id="replay"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7M3 4v4h4"/></svg>Replay</button>
+      </div>
+    </div>
+
+  </div><!-- /stage -->
+</div>
+
+<script>
+(function(){
+  var view = document.getElementById('view');
+  var scenes = Array.prototype.slice.call(view.querySelectorAll('.scene'));
+  var dots = Array.prototype.slice.call(document.querySelectorAll('.dot-btn'));
+  var bar = document.getElementById('bar');
+  var cursor = document.getElementById('cursor');
+  var urlpath = document.getElementById('urlpath');
+  var detail = document.getElementById('cv-detail');
+
+  // Per-scene duration (ms) + the URL shown in the address bar.
+  var PLAN = [
+    {dur:3400, url:'/account'},
+    {dur:9000, url:'/account'},
+    {dur:9500, url:'/account/console-validations'},
+    {dur:9500, url:'/account/support'},
+    {dur:6000, url:'/account'}
+  ];
+
+  var idx = -1, timers = [], barAnim = null, playing = true;
+
+  function clearTimers(){ timers.forEach(clearTimeout); timers = []; if(barAnim){cancelAnimationFrame(barAnim); barAnim=null;} }
+  function later(fn, t){ timers.push(setTimeout(fn, t)); }
+
+  // Move the fake cursor (coords in design px within the view) then optionally click.
+  function moveCursor(x, y){
+    cursor.classList.add('show');
+    cursor.style.setProperty('--cx', x+'px');
+    cursor.style.setProperty('--cy', y+'px');
+    cursor.style.transform = 'translate('+x+'px,'+y+'px)';
+  }
+  function clickCursor(){
+    cursor.classList.remove('click'); void cursor.offsetWidth; cursor.classList.add('click');
+    cursor.classList.add('tap'); later(function(){cursor.classList.remove('tap');}, 260);
+  }
+
+  function runBar(dur){
+    var start = performance.now();
+    bar.style.width = '0%';
+    function step(now){
+      var p = Math.min(1, (now-start)/dur);
+      bar.style.width = (p*100).toFixed(2)+'%';
+      if(p<1 && playing){ barAnim = requestAnimationFrame(step); }
+    }
+    barAnim = requestAnimationFrame(step);
+  }
+
+  function sceneScript(i){
+    // restart the cross-fade state of the Console detail each loop
+    if(detail) detail.classList.remove('flip');
+    cursor.classList.remove('show');
+
+    if(i===1){
+      later(function(){ moveCursor(118, 470); }, 600);   // the "Clients (5)" tab
+      later(function(){ clickCursor(); }, 1650);
+    }
+    if(i===2){
+      later(function(){ moveCursor(150, 488); }, 600);   // hover the Berton dossier
+      later(function(){ clickCursor(); }, 1700);
+      later(function(){ if(detail) detail.classList.add('flip'); }, 3400); // In review -> Connectable
+    }
+    if(i===3){
+      later(function(){ moveCursor(205, 250); }, 600);   // hover the active ticket
+      later(function(){ clickCursor(); }, 1650);
+      later(function(){ moveCursor(1118, 700); }, 5300); // move to "Send"
+      later(function(){ clickCursor(); }, 6100);
+    }
+  }
+
+  function show(i){
+    clearTimers();
+    idx = i;
+    scenes.forEach(function(s){ s.classList.remove('is-on'); });
+    void view.offsetWidth; // reflow so CSS animations restart
+    scenes[i].classList.add('is-on');
+    dots.forEach(function(d,k){ d.classList.toggle('on', k===i); });
+    urlpath.textContent = PLAN[i].url;
+    runBar(PLAN[i].dur);
+    sceneScript(i);
+    if(playing){ later(function(){ show((i+1) % scenes.length); }, PLAN[i].dur); }
+  }
+
+  dots.forEach(function(d){ d.addEventListener('click', function(){ playing=true; show(parseInt(d.dataset.go,10)); }); });
+  document.getElementById('replay').addEventListener('click', function(){ playing=true; show(0); });
+
+  // Fit the fixed-width stage to the viewport.
+  var stage = document.getElementById('stage');
+  function fit(){
+    var pad = 28;
+    var sw = stage.offsetWidth, sh = stage.offsetHeight;
+    var k = Math.min((window.innerWidth-pad)/sw, (window.innerHeight-pad)/sh, 1);
+    stage.style.transform = 'scale('+k+')';
+  }
+  window.addEventListener('resize', fit);
+
+  // Kick off.
+  show(0);
+  // fit needs the stage measured after first layout
+  requestAnimationFrame(function(){ fit(); requestAnimationFrame(fit); });
+})();
+</script>
+</body>
+</html>
