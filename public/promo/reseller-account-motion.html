@@ -9,7 +9,8 @@
 <style>
   /* ----------------------------------------------------------------------
      Rutherford.fr — Reseller account · MOTION-DESIGN presentation
-     Boxes pop in (spring) and fly out (zoom / off-page / shrink).
+     Boxes arrive one by one (or grouped when coherent) and fly out between
+     scenes (zoom / off-page / shrink).
      Simulation: every company and person below is fictional.
      No external dependencies — works offline.
      -------------------------------------------------------------------- */
@@ -184,7 +185,7 @@
   .ring-rank{font-size:15px;font-weight:700;color:var(--ink)} .ring-xp{font-size:12.5px;color:var(--muted)}
   .ring-bar{height:6px;border-radius:6px;background:#eeedea;margin:8px 0 6px;overflow:hidden}
   .ring-bar span{display:block;height:100%;background:var(--green);width:0}
-  .is-on .ring-bar span{animation:grow 1.1s .7s forwards}
+  .is-on .ring-bar span{animation:grow 1.1s 1.9s forwards}
   .ring-next{font-size:12px;color:var(--muted)}
   .mini-row{display:flex;align-items:center;gap:12px;padding:12px 2px;border-bottom:1px solid #f1f1ec}
   .mini-row:last-child{border-bottom:0}
@@ -302,16 +303,16 @@
   .sup-chat .chat-top{padding:16px 20px;border-bottom:1px solid var(--line);font-size:12.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#9a9a93}
   .sup-chat .chat-body{padding:18px 20px;flex:1;min-height:0}
   .msg.s2{opacity:0;transform:translateY(10px)}
-  .is-on .sup-chat .msg.r1{animation:rise .6s 1.0s forwards}
-  .is-on .sup-chat .msg.r2{animation:rise .6s 2.5s forwards}
+  .is-on .sup-chat .msg.r1{animation:rise .6s 2.1s forwards}
+  .is-on .sup-chat .msg.r2{animation:rise .6s 3.4s forwards}
   .typing{display:inline-flex;gap:4px;align-items:center;background:var(--ink);border-radius:14px;border-top-right-radius:4px;padding:13px 16px;margin-left:auto;width:max-content;opacity:0}
-  .is-on .sup-chat .typing{animation:fade .3s 3.8s forwards, fadeout .3s 5.1s forwards}
+  .is-on .sup-chat .typing{animation:fade .3s 4.5s forwards, fadeout .3s 6.0s forwards}
   .typing i{width:7px;height:7px;border-radius:50%;background:#cfcfc8;animation:blink 1.1s infinite}
   .typing i:nth-child(2){animation-delay:.2s}.typing i:nth-child(3){animation-delay:.4s}
   .msg.r3{opacity:0;transform:translateY(10px)}
-  .is-on .sup-chat .msg.r3{animation:rise .5s 5.2s forwards}
+  .is-on .sup-chat .msg.r3{animation:rise .5s 6.2s forwards}
   .sent-ok{display:flex;align-items:center;gap:7px;justify-content:flex-end;font-size:12px;font-weight:600;color:var(--green);margin-top:8px;opacity:0}
-  .is-on .sup-chat .sent-ok{animation:fade .5s 5.7s forwards}
+  .is-on .sup-chat .sent-ok{animation:fade .5s 6.8s forwards}
   .composer{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:13px;background:var(--bg-soft);padding:8px 8px 8px 14px;margin:0 20px 20px}
   .composer .ph{flex:1;font-size:13.5px;color:#a6a6a0}
   .composer .send{background:var(--ink);color:#fff;border-radius:9px;padding:8px 16px;font-size:13px;font-weight:600}
@@ -364,15 +365,15 @@
         <!-- ===== SCENE 0 — INTRO ===== -->
         <section class="scene" data-scene="0">
           <div class="card-scene">
-            <span class="kicker mo x-up" style="--d:.05s;--od:.12s">🌱 Closed-loop color control</span>
-            <h1 class="hero-h mo x-zoom" style="--d:.16s;--od:0s">The Rutherford reseller account</h1>
-            <p class="hero-sub mo soft x-zoom" style="--d:.34s;--od:.05s">Track your clients, their press validations and your support — all in one place.</p>
-            <div class="badge-row mo soft x-down" style="--d:.5s;--od:.1s">
+            <span class="kicker mo x-up" style="--d:.1s;--od:.12s">🌱 Closed-loop color control</span>
+            <h1 class="hero-h mo x-zoom" style="--d:.35s;--od:0s">The Rutherford reseller account</h1>
+            <p class="hero-sub mo soft x-zoom" style="--d:.6s;--od:.05s">Track your clients, their press validations and your support — all in one place.</p>
+            <div class="badge-row mo soft x-down" style="--d:.85s;--od:.1s">
               <span class="chip">Official X-Rite PANTONE partner</span>
               <span class="chip">Compatible with MeasureColor</span>
               <span class="chip">IntelliTrax2</span>
             </div>
-            <div class="hero-foot mo soft x-down" style="--d:.64s;--od:.16s">Simulation — fictional companies and people</div>
+            <div class="hero-foot mo soft x-down" style="--d:1.05s;--od:.16s">Simulation — fictional companies and people</div>
           </div>
         </section>
 
@@ -384,7 +385,7 @@
             <div class="nav-account"><span class="ava">AG</span>Atlas Graphic</div>
           </div>
 
-          <div class="profile mo x-left" style="--d:.06s;--od:.02s">
+          <div class="profile mo x-left" style="--d:.25s;--od:.02s">
             <div class="pf-ava">AG</div>
             <div class="pf-id">
               <div class="pf-eyebrow">Your account</div>
@@ -400,27 +401,27 @@
             </div>
           </div>
 
-          <div class="sec-h mo soft x-up" style="--d:.16s;--od:0s">Quick access</div>
+          <div class="sec-h mo soft x-up" style="--d:.5s;--od:0s">Quick access</div>
           <div class="tiles">
-            <div class="tile mo x-up" style="--d:.22s;--od:0s">
+            <div class="tile mo x-up" style="--d:.7s;--od:0s">
               <div class="tile-ic blue"><svg viewBox="0 0 24 24" fill="none"><path d="M12 4 2.5 9 12 14l9.5-5L12 4z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M6 11v4.5c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5V11" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></div>
               <div class="tile-t">Academy <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h13m0 0-5-5m5 5-5 5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
               <div class="tile-s">Your color masterclasses</div>
               <div class="tile-stat"><span class="pulse blue"></span>Level 4 · Color Expert<span class="mono"> · 320 XP</span></div>
             </div>
-            <div class="tile mo x-down" style="--d:.3s;--od:.06s">
+            <div class="tile mo x-down" style="--d:.88s;--od:.06s">
               <div class="tile-ic green"><svg viewBox="0 0 24 24" fill="none"><path d="M4 20V9l8-5 8 5v11" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M9 20v-5h6v5" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg></div>
               <div class="tile-t">My clients <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h13m0 0-5-5m5 5-5 5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
               <div class="tile-s">Printers you follow</div>
               <div class="tile-stat"><span class="pulse green"></span>5 clients</div>
             </div>
-            <div class="tile mo x-up" style="--d:.38s;--od:.12s">
+            <div class="tile mo x-up" style="--d:1.06s;--od:.12s">
               <div class="tile-ic ink"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M3 9h18M7 14h5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><circle cx="16.5" cy="14" r="1.3" fill="currentColor"/></svg></div>
               <div class="tile-t">Console Validation <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h13m0 0-5-5m5 5-5 5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
               <div class="tile-s">Your press validations</div>
               <div class="tile-stat"><span class="pulse green"></span>3 eligible<span class="mono"> · 2 in progress</span></div>
             </div>
-            <div class="tile mo x-down" style="--d:.46s;--od:.18s">
+            <div class="tile mo x-down" style="--d:1.24s;--od:.18s">
               <div class="tile-ic ink"><svg viewBox="0 0 24 24" fill="none"><path d="M5 18l-2 3V8a3 3 0 0 1 3-3h12a3 3 0 0 1 3 3v7a3 3 0 0 1-3 3H5z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M9 10h6M9 13h4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></div>
               <div class="tile-t">Support <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h13m0 0-5-5m5 5-5 5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
               <div class="tile-s">Help & documentation</div>
@@ -429,7 +430,7 @@
           </div>
 
           <div class="acct-grid">
-            <div class="card mo x-left" style="--d:.34s;--od:.06s">
+            <div class="card mo x-left" style="--d:1.5s;--od:.06s">
               <div class="card-h">
                 <div><div class="card-t">Clients & team</div><div class="card-s">Your clients and your team</div></div>
               </div>
@@ -438,16 +439,16 @@
                 <button class="tab">Team</button>
               </div>
               <div class="card-bd">
-                <div class="person mo soft" style="--d:.5s"><span class="av-sq">IB</span><div class="person-main"><div class="person-n">Imprimerie Berton</div><div class="person-sub">France · 2 presses · 1 eligible · 1 in progress</div></div><span class="person-cta">Open →</span></div>
-                <div class="person mo soft" style="--d:.58s"><span class="av-sq">CV</span><div class="person-main"><div class="person-n">Cartonnages Vasseur</div><div class="person-sub">France · 3 presses · 2 eligible</div></div><span class="person-cta">Open →</span></div>
-                <div class="person mo soft" style="--d:.66s"><span class="av-sq">HP</span><div class="person-main"><div class="person-n">Helvetica Print AG</div><div class="person-sub">Switzerland · 1 press · 1 in progress</div></div><span class="person-cta">Open →</span></div>
-                <div class="person mo soft" style="--d:.74s"><span class="av-sq">GL</span><div class="person-main"><div class="person-n">Grafica Lombarda</div><div class="person-sub">Italy · 2 presses · 1 eligible</div></div><span class="person-cta">Open →</span></div>
-                <div class="person mo soft" style="--d:.82s"><span class="av-sq">ND</span><div class="person-main"><div class="person-n">Nordpack Druck</div><div class="person-sub">Germany · 2 presses · 1 in progress</div></div><span class="person-cta">Open →</span></div>
-                <div class="invite mo soft" style="--d:.9s"><input value="name@company.com" readonly /><span class="btn btn-dark">Invite a client</span></div>
+                <div class="person mo soft" style="--d:1.7s"><span class="av-sq">IB</span><div class="person-main"><div class="person-n">Imprimerie Berton</div><div class="person-sub">France · 2 presses · 1 eligible · 1 in progress</div></div><span class="person-cta">Open →</span></div>
+                <div class="person mo soft" style="--d:1.84s"><span class="av-sq">CV</span><div class="person-main"><div class="person-n">Cartonnages Vasseur</div><div class="person-sub">France · 3 presses · 2 eligible</div></div><span class="person-cta">Open →</span></div>
+                <div class="person mo soft" style="--d:1.98s"><span class="av-sq">HP</span><div class="person-main"><div class="person-n">Helvetica Print AG</div><div class="person-sub">Switzerland · 1 press · 1 in progress</div></div><span class="person-cta">Open →</span></div>
+                <div class="person mo soft" style="--d:2.12s"><span class="av-sq">GL</span><div class="person-main"><div class="person-n">Grafica Lombarda</div><div class="person-sub">Italy · 2 presses · 1 eligible</div></div><span class="person-cta">Open →</span></div>
+                <div class="person mo soft" style="--d:2.26s"><span class="av-sq">ND</span><div class="person-main"><div class="person-n">Nordpack Druck</div><div class="person-sub">Germany · 2 presses · 1 in progress</div></div><span class="person-cta">Open →</span></div>
+                <div class="invite mo soft" style="--d:2.42s"><input value="name@company.com" readonly /><span class="btn btn-dark">Invite a client</span></div>
               </div>
             </div>
 
-            <div class="mo x-right" style="--d:.46s;--od:.12s;display:flex;flex-direction:column;gap:18px">
+            <div class="mo x-right" style="--d:1.55s;--od:.12s;display:flex;flex-direction:column;gap:18px">
               <div class="mini">
                 <div class="mini-h">Academy</div>
                 <div class="ring-wrap">
@@ -480,37 +481,37 @@
             <div class="nav-account"><span class="ava">AG</span>Atlas Graphic</div>
           </div>
 
-          <div class="mo x-up" style="--d:.06s;--od:0s">
+          <div class="mo x-up" style="--d:.25s;--od:0s">
             <div class="eyebrow">Your account</div>
             <h1 class="title">Your console validations</h1>
             <p class="intro">Track every console validation you have submitted and its current status. Our team reviews each request and updates the status here as it progresses.</p>
           </div>
 
           <div class="summary">
-            <div class="sum amber mo x-up" style="--d:.2s;--od:0s"><div class="sum-n">1</div><div class="sum-l">Action needed</div></div>
-            <div class="sum blue mo x-up" style="--d:.28s;--od:.06s"><div class="sum-n">2</div><div class="sum-l">In review</div></div>
-            <div class="sum green mo x-up" style="--d:.36s;--od:.12s"><div class="sum-n">3</div><div class="sum-l">Connectable</div></div>
-            <div class="sum red mo x-up" style="--d:.44s;--od:.18s"><div class="sum-n">1</div><div class="sum-l">Not eligible</div></div>
+            <div class="sum amber mo x-up" style="--d:.55s;--od:0s"><div class="sum-n">1</div><div class="sum-l">Action needed</div></div>
+            <div class="sum blue mo x-up" style="--d:.72s;--od:.06s"><div class="sum-n">2</div><div class="sum-l">In review</div></div>
+            <div class="sum green mo x-up" style="--d:.89s;--od:.12s"><div class="sum-n">3</div><div class="sum-l">Connectable</div></div>
+            <div class="sum red mo x-up" style="--d:1.06s;--od:.18s"><div class="sum-n">1</div><div class="sum-l">Not eligible</div></div>
           </div>
 
           <div class="cv-main">
-            <aside class="cv-list mo x-left" style="--d:.4s;--od:.05s">
-              <div class="cv-group">
+            <aside class="cv-list">
+              <div class="cv-group mo x-left" style="--d:1.35s;--od:0s">
                 <div class="cg-head"><span class="cg-dot amber"></span>Action needed<span class="cg-count">1</span></div>
                 <div class="cv-item"><span><span class="cv-it-t">Helvetica Print AG · KBA Rapida 106</span><span class="cv-it-m"><span class="mono">CV-2026-0214</span> · 9 Jun 2026</span></span><span class="cv-chev">›</span></div>
               </div>
-              <div class="cv-group">
+              <div class="cv-group mo x-left" style="--d:1.55s;--od:.07s">
                 <div class="cg-head"><span class="cg-dot blue"></span>In review<span class="cg-count">2</span></div>
                 <div class="cv-item active"><span><span class="cv-it-t">Imprimerie Berton · Speedmaster XL 106</span><span class="cv-it-m"><span class="mono">CV-2026-0190</span> · 6 Jun 2026</span></span><span class="cv-chev">›</span></div>
                 <div class="cv-item"><span><span class="cv-it-t">Nordpack Druck · Heidelberg CX 102</span><span class="cv-it-m"><span class="mono">CV-2026-0238</span> · 11 Jun 2026</span></span><span class="cv-chev">›</span></div>
               </div>
-              <div class="cv-group">
+              <div class="cv-group mo x-left" style="--d:1.75s;--od:.14s">
                 <div class="cg-head"><span class="cg-dot green"></span>Connectable<span class="cg-count">3</span></div>
                 <div class="cv-item"><span><span class="cv-it-t">Grafica Lombarda · Manroland 700</span><span class="cv-it-m"><span class="mono">CV-2026-0205</span> · 7 Jun 2026</span></span><span class="cv-chev">›</span></div>
               </div>
             </aside>
 
-            <section class="cv-detail mo x-zoom" id="cv-detail" style="--d:.5s;--od:0s">
+            <section class="cv-detail mo x-zoom" id="cv-detail" style="--d:2.0s;--od:0s">
               <div class="cv-dhead">
                 <div>
                   <div class="cv-dtitle">France · Imprimerie Berton · Heidelberg Speedmaster XL 106</div>
@@ -559,20 +560,20 @@
             <div class="nav-account"><span class="ava">AG</span>Atlas Graphic</div>
           </div>
 
-          <div class="mo x-up" style="--d:.06s;--od:0s">
+          <div class="mo x-up" style="--d:.25s;--od:0s">
             <div class="eyebrow">Your account</div>
             <h1 class="title">Your support tickets</h1>
             <p class="intro">Follow every support request you have opened and its current status. Reply to add details or photos — our team is notified straight away.</p>
           </div>
 
           <div class="switch">
-            <div class="sw-item active mo x-up" style="--d:.2s;--od:0s"><span class="sw-ref">RF-2026-0481</span><span class="sw-t">Color drift on Speedmaster XL 106</span><span class="pill-sm review"><span class="pd"></span>In progress</span></div>
-            <div class="sw-item mo x-up" style="--d:.28s;--od:.07s"><span class="sw-ref">RF-2026-0467</span><span class="sw-t">IntelliTrax2 calibration after maintenance</span><span class="pill-sm green"><span class="pd"></span>Resolved</span></div>
-            <div class="sw-item mo x-up" style="--d:.36s;--od:.14s"><span class="sw-ref">RF-2026-0490</span><span class="sw-t">Incomplete CIP3 import in ColorLoop</span><span class="pill-sm amber"><span class="pd"></span>Action needed</span></div>
+            <div class="sw-item active mo x-up" style="--d:.55s;--od:0s"><span class="sw-ref">RF-2026-0481</span><span class="sw-t">Color drift on Speedmaster XL 106</span><span class="pill-sm review"><span class="pd"></span>In progress</span></div>
+            <div class="sw-item mo x-up" style="--d:.72s;--od:.07s"><span class="sw-ref">RF-2026-0467</span><span class="sw-t">IntelliTrax2 calibration after maintenance</span><span class="pill-sm green"><span class="pd"></span>Resolved</span></div>
+            <div class="sw-item mo x-up" style="--d:.89s;--od:.14s"><span class="sw-ref">RF-2026-0490</span><span class="sw-t">Incomplete CIP3 import in ColorLoop</span><span class="pill-sm amber"><span class="pd"></span>Action needed</span></div>
           </div>
 
           <div class="sup-2col">
-            <div class="sup-info mo x-left" style="--d:.38s;--od:.05s">
+            <div class="sup-info mo x-left" style="--d:1.2s;--od:.05s">
               <div class="cv-dhead">
                 <div>
                   <div class="cv-dtitle">Color drift on Speedmaster XL 106</div>
@@ -602,7 +603,7 @@
               </ol>
             </div>
 
-            <aside class="sup-chat mo x-right" style="--d:.48s;--od:.12s">
+            <aside class="sup-chat mo x-right" style="--d:1.45s;--od:.12s">
               <div class="chat-top">Conversation</div>
               <div class="chat-body">
                 <div class="msg you"><div class="mh">You<span class="mono"> · 12 Jun</span></div>Hello, we're seeing color drift (ΔE ≈ 3.5) during the run on the Speedmaster XL 106.</div>
@@ -620,19 +621,19 @@
         <!-- ===== SCENE 4 — OUTRO ===== -->
         <section class="scene" data-scene="4">
           <div class="card-scene">
-            <span class="kicker mo x-up" style="--d:.05s;--od:.12s">🌱 Rutherford.fr</span>
-            <h1 class="hero-h mo x-zoom" style="--d:.16s;--od:0s">Run your color network</h1>
-            <p class="hero-sub mo soft x-zoom" style="--d:.34s;--od:.05s">My account, Console Validation and Support — the reseller account that tracks your clients, their presses and their color stability.</p>
-            <div class="hero-cta mo x-down" style="--d:.5s;--od:.1s">
+            <span class="kicker mo x-up" style="--d:.1s;--od:.12s">🌱 Rutherford.fr</span>
+            <h1 class="hero-h mo x-zoom" style="--d:.35s;--od:0s">Run your color network</h1>
+            <p class="hero-sub mo soft x-zoom" style="--d:.6s;--od:.05s">My account, Console Validation and Support — the reseller account that tracks your clients, their presses and their color stability.</p>
+            <div class="hero-cta mo x-down" style="--d:.85s;--od:.1s">
               <span class="btn btn-accent">Discover the reseller account</span>
               <span class="btn btn-light">rutherford.fr/account</span>
             </div>
-            <div class="badge-row mo soft x-down" style="--d:.62s;--od:.14s">
+            <div class="badge-row mo soft x-down" style="--d:1.05s;--od:.14s">
               <span class="chip">Reduce makeready waste</span>
               <span class="chip">Improve color control</span>
               <span class="chip">Save ink, paper and energy</span>
             </div>
-            <div class="hero-foot mo soft" style="--d:.74s">Simulation — "Atlas Graphic Solutions" and its clients are fictional names.</div>
+            <div class="hero-foot mo soft" style="--d:1.25s">Simulation — "Atlas Graphic Solutions" and its clients are fictional names.</div>
           </div>
         </section>
 
@@ -673,15 +674,16 @@
   var urlpath = document.getElementById('urlpath');
   var detail = document.getElementById('cv-detail');
 
-  // duration (ms) + address-bar URL per scene
+  // duration (ms) + address-bar URL per scene. Durations leave room for the
+  // staggered build-up (boxes arriving one by one) plus a short hold.
   var PLAN = [
-    {dur:3800, url:'/account'},
-    {dur:9400, url:'/account'},
-    {dur:9800, url:'/account/console-validations'},
-    {dur:9800, url:'/account/support'},
-    {dur:5600, url:'/account'}
+    {dur:4000,  url:'/account'},
+    {dur:8800,  url:'/account'},
+    {dur:9200,  url:'/account/console-validations'},
+    {dur:10800, url:'/account/support'},
+    {dur:5600,  url:'/account'}
   ];
-  var EXIT_LEAD = 900; // when the fly-out starts before the scene ends
+  var EXIT_LEAD = 950; // when the fly-out starts before the scene ends
 
   var idx = -1, timers = [], barAnim = null, playing = true;
 
@@ -707,10 +709,10 @@
   function sceneScript(i){
     if(detail) detail.classList.remove('flip');
     cursor.classList.remove('show');
-    if(i===2){ later(function(){ if(detail) detail.classList.add('flip'); }, 3600); } // In review -> Connectable
+    if(i===2){ later(function(){ if(detail) detail.classList.add('flip'); }, 4000); } // In review -> Connectable
     if(i===3){
-      later(function(){ moveCursor(1118, 700); }, 5400); // glide to "Send"
-      later(function(){ clickCursor(); }, 6200);
+      later(function(){ moveCursor(1118, 700); }, 6700); // glide to "Send" after the chat fills in
+      later(function(){ clickCursor(); }, 7500);
     }
   }
 
