@@ -327,6 +327,13 @@
   .cursor.tap{animation:tap .25s ease}
   @keyframes tap{50%{transform:translate(var(--cx),var(--cy)) scale(.82)}}
 
+  /* explainer caption — what each section does (sits under the window) */
+  .narrate{display:flex;align-items:center;justify-content:center;gap:13px;margin-top:16px;min-height:34px;
+    opacity:0;transform:translateY(8px);transition:opacity .45s ease, transform .45s ease}
+  .narrate.on{opacity:1;transform:none}
+  .narrate .nr-badge{flex:0 0 auto;font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#fff;background:var(--green);padding:6px 12px;border-radius:980px}
+  .narrate .nr-text{font-size:15px;color:#3a3a3a;font-weight:500;text-align:center}
+
   /* caption + controls */
   .caption{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-top:18px;padding:0 6px}
   .dots{display:flex;gap:10px}
@@ -646,6 +653,8 @@
       </div><!-- /view -->
     </div><!-- /browser -->
 
+    <div class="narrate" id="narrate"><span class="nr-badge" id="nrBadge"></span><span class="nr-text" id="nrText"></span></div>
+
     <div class="caption">
       <div class="dots" id="dots">
         <button class="dot-btn" data-go="0"><span class="n"></span>Intro</button>
@@ -673,6 +682,9 @@
   var cursor = document.getElementById('cursor');
   var urlpath = document.getElementById('urlpath');
   var detail = document.getElementById('cv-detail');
+  var narrate = document.getElementById('narrate');
+  var nrBadge = document.getElementById('nrBadge');
+  var nrText = document.getElementById('nrText');
 
   // duration (ms) + address-bar URL per scene. Durations leave room for the
   // staggered build-up (boxes arriving one by one) plus a short hold.
@@ -684,6 +696,15 @@
     {dur:5600,  url:'/account'}
   ];
   var EXIT_LEAD = 950; // when the fly-out starts before the scene ends
+
+  // One-line explainer of what each section does (null = title cards).
+  var NARR = [
+    null,
+    {badge:'My account', text:'One place to manage your clients, their presses and how their color is performing.'},
+    {badge:'Console Validation', text:'Check whether a press can run closed-loop color — and follow the status of every request.'},
+    {badge:'Support', text:'Open a ticket with photos and get an answer from our team within one business day.'},
+    null
+  ];
 
   var idx = -1, timers = [], barAnim = null, playing = true;
 
@@ -724,10 +745,13 @@
     scenes[i].classList.add('is-on');
     dots.forEach(function(d,k){ d.classList.toggle('on', k===i); });
     urlpath.textContent = PLAN[i].url;
+    narrate.classList.remove('on');
+    var nrr = NARR[i];
+    if(nrr){ nrBadge.textContent = nrr.badge; nrText.textContent = nrr.text; later(function(){ narrate.classList.add('on'); }, 650); }
     runBar(PLAN[i].dur);
     sceneScript(i);
     // fly-out phase near the end of the scene
-    later(function(){ scenes[i].classList.add('is-out'); cursor.classList.remove('show'); }, Math.max(0, PLAN[i].dur - EXIT_LEAD));
+    later(function(){ scenes[i].classList.add('is-out'); cursor.classList.remove('show'); narrate.classList.remove('on'); }, Math.max(0, PLAN[i].dur - EXIT_LEAD));
     if(playing){ later(function(){ show((i+1) % scenes.length); }, PLAN[i].dur); }
   }
 
