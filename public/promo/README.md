@@ -1,37 +1,35 @@
-# Promo — Espace revendeur (animation de présentation)
+# Promo — Reseller account (presentation animation)
 
-`espace-revendeur.html` est une **animation autonome** qui présente trois sections de
-l'espace client Rutherford à travers les yeux d'un **compte revendeur fictif** :
+`reseller-account.html` is a **standalone animation** that presents three sections of
+the Rutherford customer space through the eyes of a **fictional reseller account**:
 
-1. **Mon compte** — le hub revendeur « Atlas Graphic Solutions » et ses 5 clients
+1. **My account** — the reseller hub "Atlas Graphic Solutions" and its 5 clients
    (Imprimerie Berton, Cartonnages Vasseur, Helvetica Print AG, Grafica Lombarda,
    Nordpack Druck).
-2. **Console Validation** — le suivi des validations de presse, avec un dossier qui
-   passe de « En revue » à « Connectable ».
-3. **Support** — un ticket de support en cours, avec timeline et conversation.
+2. **Console Validation** — press-validation tracking, with one request moving from
+   "In review" to "Connectable".
+3. **Support** — an in-progress support ticket, with activity timeline and conversation.
 
-> ⚠️ Simulation. Toutes les entreprises et personnes citées sont **fictives** et ne
-> figurent pas parmi les clients réels de Rutherford.
+> ⚠️ Simulation. Every company and person mentioned is **fictional** and is not a real
+> Rutherford customer.
 
-## Comment la regarder
+## How to watch it
 
-- **Le plus simple :** ouvrez `espace-revendeur.html` directement dans un navigateur
-  (double-clic). Le fichier est 100 % autonome — aucune dépendance, aucun serveur,
-  fonctionne hors-ligne.
-- L'animation se joue en boucle ; les puces en bas permettent de sauter à une scène,
-  et « Rejouer » la relance.
-- **Pour en faire une vidéo** (LinkedIn, présentation commerciale…) : ouvrez le fichier
-  en plein écran et utilisez un enregistreur d'écran (QuickTime sur Mac, l'enregistreur
-  Xbox sur Windows, ou OBS). Format conseillé : 16:9.
+- **Simplest:** open `reseller-account.html` directly in a browser (double-click). The
+  file is 100% standalone — no dependencies, no server, works offline.
+- It auto-plays on a loop; the dots at the bottom jump to a scene, and "Replay" restarts it.
+- **To turn it into a video** (LinkedIn, sales deck…): open the file full-screen and use a
+  screen recorder (QuickTime on Mac, the Xbox Game Bar on Windows, or OBS). Suggested
+  format: 16:9.
 
-## Note technique (hébergement sur le site)
+## Technical note (hosting on the site)
 
-Ce dossier ne modifie **aucune page, route ou composant existant** du site.
+This folder does **not modify any existing page, route or component** of the site.
 
-Le `next.config.js` contient une redirection globale `*.html → /`. Servi par Next, le
-fichier serait donc redirigé vers l'accueil. Ce n'est pas gênant pour l'usage ci-dessus
-(ouverture directe / enregistrement). Si vous souhaitez le rendre accessible à une URL
-publique sur le site déployé, deux options **sans toucher au reste du site** :
+`next.config.js` contains a global `*.html → /` redirect. Served by Next, the file would
+therefore be redirected to the homepage. That does not matter for the usage above (direct
+open / recording). To make it reachable at a public URL on the deployed site, two options
+**without touching the rest of the site**:
 
-- le renommer en `.htm` (la redirection ne capture que `.html`), ou
-- ajouter une exception à la règle de redirection dans `next.config.js`.
+- rename it to `.htm` (the redirect only catches `.html`), or
+- add an exception to the redirect rule in `next.config.js`.
