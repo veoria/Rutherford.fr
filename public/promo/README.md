@@ -29,14 +29,17 @@ Both present three sections of the Rutherford customer space through the eyes of
   screen recorder (QuickTime on Mac, the Xbox Game Bar on Windows, or OBS). Suggested
   format: 16:9.
 
-## Technical note (hosting on the site)
+## Hosted (hidden) page on the site
 
-This folder does **not modify any existing page, route or component** of the site.
+The motion-design reel is also served as a **hidden page** at **`/promo`**
+(`rutherford.fr/promo`):
 
-`next.config.js` contains a global `*.html → /` redirect. Served by Next, the file would
-therefore be redirected to the homepage. That does not matter for the usage above (direct
-open / recording). To make it reachable at a public URL on the deployed site, two options
-**without touching the rest of the site**:
+- Rendered by `app/promo/page.tsx` inside an isolated `<iframe srcDoc>`.
+- `robots: noindex, nofollow` and **not linked** from any menu — reachable only with the URL.
+- `app/promo/animation.ts` is auto-generated from `reseller-account-motion.html`
+  (regenerate by copying the standalone file's content into that module).
 
-- rename it to `.htm` (the redirect only catches `.html`), or
-- add an exception to the redirect rule in `next.config.js`.
+The static `.html` files in this folder are **not** servable as-is on the deployed site
+because `next.config.js` has a global `*.html → /` redirect — that is why the hosted
+version goes through the `/promo` route instead. The `.html` files remain here purely for
+local opening and screen-recording.
