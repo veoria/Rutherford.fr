@@ -63,6 +63,16 @@ const PARTNER_BADGE: Record<Locale, string> = {
   es: 'Partner oficial X-Rite PANTONE',
 };
 
+// Co-brand badge for reseller partners — their logo is set by the Rutherford
+// team in the org back-office and surfaced at the top of their space.
+const RESELLER_BADGE: Record<Locale, string> = {
+  en: 'Official Rutherford partner',
+  fr: 'Partenaire officiel Rutherford',
+  de: 'Offizieller Rutherford-Partner',
+  it: 'Partner ufficiale Rutherford',
+  es: 'Partner oficial Rutherford',
+};
+
 const LANG_NAME: Record<Locale, string> = {
   en: 'English',
   fr: 'Français',
@@ -390,6 +400,9 @@ export function AccountHub(props: Props) {
   const { locale } = useLanguage();
   const t = COPY[locale];
   const accent = TONE[accountType];
+  // Resellers get the same top co-brand strip as X-Rite, using the org logo
+  // the Rutherford team uploads in the back-office (null until one is set).
+  const resellerLogo = accountType === 'reseller' ? team.org?.logoUrl ?? null : null;
   const rank = RANK_NAMES[locale][Math.min(academy.level - 1, 4)] ?? '';
   const nextRank = RANK_NAMES[locale][Math.min(academy.level, 4)] ?? '';
 
@@ -443,6 +456,14 @@ export function AccountHub(props: Props) {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img className="ah-cobrand-logo" src="/images/xrite-logo-black.png" alt="X-Rite PANTONE" />
             <span className="ah-cobrand-badge">{PARTNER_BADGE[locale]}</span>
+          </div>
+        </div>
+      ) : resellerLogo ? (
+        <div className="ah-cobrand-strip">
+          <div className="container ah-cobrand">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img className="ah-cobrand-logo" src={resellerLogo} alt={team.org?.name ?? ''} />
+            <span className="ah-cobrand-badge">{RESELLER_BADGE[locale]}</span>
           </div>
         </div>
       ) : null}
