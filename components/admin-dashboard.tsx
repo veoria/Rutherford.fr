@@ -1,13 +1,13 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { SiteFooter } from '@/components/site-footer';
 import { SiteNav } from '@/components/site-nav';
 import { COUNTRIES, JOB_TITLE_KEYS, isJobTitleKey, type JobTitleKey } from '@/data/onboarding-options';
 import { ACCOUNT_TYPES, type AccountType } from '@/data/account-types';
 import type { AdminConsoleValidation, AdminOverview, AdminUser } from '@/lib/admin';
-import type { AdminOrg, AdminOrgFull } from '@/lib/organizations';
+import type { AdminOrg, AdminOrgFull, MemberRole, OrgMember, PendingInvite } from '@/lib/organizations';
 
 const ROLE_LABELS: Record<JobTitleKey, string> = {
   operator: 'Conducteur de presse',
@@ -26,6 +26,12 @@ const ACCOUNT_TYPE_LABELS: Record<AccountType, string> = {
   reseller: 'Revendeur',
   distributor: 'Distributeur',
   team: 'Équipe',
+};
+
+const MEMBER_ROLE_LABELS: Record<MemberRole, string> = {
+  owner: 'Propriétaire',
+  admin: 'Admin',
+  member: 'Membre',
 };
 
 const CV_STATUS_LABELS: Record<string, string> = {
@@ -365,6 +371,11 @@ function OrgDrawer({ org, allOrgs, onClose }: { org: AdminOrgFull | null; allOrg
   const [logoUrl, setLogoUrl] = useState<string | null>(org?.logoUrl ?? null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [members, setMembers] = useState<OrgMember[]>([]);
+  const [pending, setPending] = useState<PendingInvite[]>([]);
+  const [loadingMembers, setLoadingMembers] = useState(false);
+  const [inviteEmail, setInviteEmail] = useState('');
+  const [inviteRole, setInviteRole] = useState<'admin' | 'member'>('member');
 
   const resellerOptions = allOrgs.filter((o) => o.type === 'reseller' && o.id !== org?.id);
   const distributorOptions = allOrgs.filter((o) => o.type === 'distributor' && o.id !== org?.id);
@@ -422,6 +433,76 @@ function OrgDrawer({ org, allOrgs, onClose }: { org: AdminOrgFull | null; allOrg
       }
       setLogoUrl(data.url ?? null);
       router.refresh();
+      setBusy(false);
+    } catch {
+      setError('Erreur réseau.');
+      setBusy(false);
+    }
+  };
+
+  const refreshMembers = async () => {
+    if (!org) return;
+    setLoadingMembers(true);
+    try {
+      const res = await fetch(`/api/admin/orgs/members?orgId=${encodeURIComponent(org.id)}`);
+      if (res.ok) {
+        const d = (await res.json()) as { members?: OrgMember[]; pending?: PendingInvite[] };
+        setMembers(d.members ?? []);
+        setPending(d.pending ?? []);
+      }
+    } catch {
+      /* ignore */
+    }
+    setLoadingMembers(false);
+  };
+
+  useEffect(() => {
+    void refreshMembers();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [org]);
+
+  const changeRole = async (userId: string, role: MemberRole) => {
+    if (!org) return;
+    await fetch('/api/admin/orgs/members', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ orgId: org.id, userId, role }),
+    });
+    void refreshMembers();
+    router.refresh();
+  };
+
+  const removeMem = async (userId: string) => {
+    if (!org) return;
+    await fetch(`/api/admin/orgs/members?orgId=${encodeURIComponent(org.id)}&userId=${encodeURIComponent(userId)}`, {
+      method: 'DELETE',
+    });
+    void refreshMembers();
+    router.refresh();
+  };
+
+  const revokeInvite = async (invitationId: string) => {
+    await fetch(`/api/admin/orgs/members?invitationId=${encodeURIComponent(invitationId)}`, { method: 'DELETE' });
+    void refreshMembers();
+  };
+
+  const sendInvite = async () => {
+    if (!org || !inviteEmail.trim()) return;
+    setBusy(true);
+    setError(null);
+    try {
+      const res = await fetch('/api/admin/orgs/members', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orgId: org.id, email: inviteEmail.trim(), role: inviteRole }),
+      });
+      if (!res.ok) {
+        setError(errorLabel((await res.json().catch(() => ({}))).error));
+        setBusy(false);
+        return;
+      }
+      setInviteEmail('');
+      void refreshMembers();
       setBusy(false);
     } catch {
       setError('Erreur réseau.');
@@ -561,6 +642,84 @@ function OrgDrawer({ org, allOrgs, onClose }: { org: AdminOrgFull | null; allOrg
             </div>
           )}
         </div>
+
+        {!isNew ? (
+          <div className="admin-modal-members">
+            <h4 className="admin-modal-subhead">Membres{loadingMembers ? ' …' : ` (${members.length})`}</h4>
+            {!loadingMembers && members.length === 0 ? (
+              <p className="admin-modal-section-status">Aucun membre.</p>
+            ) : null}
+            {members.map((m) => (
+              <div className="admin-mem-row" key={m.userId}>
+                <span className="admin-mem-main">
+                  <span className="admin-mem-name">{m.name || m.email || '—'}</span>
+                  {m.email ? <span className="admin-mem-email">{m.email}</span> : null}
+                </span>
+                <span className="ah-member-ctl">
+                  <select
+                    className="ah-role-select"
+                    value={m.role}
+                    disabled={busy}
+                    onChange={(e) => void changeRole(m.userId, e.target.value as MemberRole)}
+                  >
+                    <option value="owner">Propriétaire</option>
+                    <option value="admin">Admin</option>
+                    <option value="member">Membre</option>
+                  </select>
+                  <button
+                    type="button"
+                    className="ah-member-remove"
+                    disabled={busy}
+                    onClick={() => void removeMem(m.userId)}
+                    aria-label="Retirer"
+                  >
+                    ×
+                  </button>
+                </span>
+              </div>
+            ))}
+            {pending.map((p) => (
+              <div className="admin-mem-row" key={p.id}>
+                <span className="admin-mem-main">
+                  <span className="admin-mem-name">{p.email}</span>
+                  <span className="admin-mem-email">
+                    Invitation en attente · {MEMBER_ROLE_LABELS[p.role] ?? p.role}
+                  </span>
+                </span>
+                <button type="button" className="ah-revoke" disabled={busy} onClick={() => void revokeInvite(p.id)}>
+                  Révoquer
+                </button>
+              </div>
+            ))}
+            <div className="ah-invite-form">
+              <input
+                className="ah-invite-input"
+                type="email"
+                placeholder="email@société.com"
+                value={inviteEmail}
+                onChange={(e) => setInviteEmail(e.target.value)}
+                disabled={busy}
+              />
+              <select
+                className="ah-role-select"
+                value={inviteRole}
+                onChange={(e) => setInviteRole(e.target.value as 'admin' | 'member')}
+                disabled={busy}
+              >
+                <option value="member">Membre</option>
+                <option value="admin">Admin</option>
+              </select>
+              <button
+                type="button"
+                className="ah-invite-send"
+                onClick={() => void sendInvite()}
+                disabled={busy || !inviteEmail.trim()}
+              >
+                Inviter
+              </button>
+            </div>
+          </div>
+        ) : null}
 
         {error ? <p className="admin-modal-error">{error}</p> : null}
 

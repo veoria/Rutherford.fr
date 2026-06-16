@@ -14501,6 +14501,42 @@ textarea.cv-input { resize: vertical; min-height: 74px; }
   gap: 12px;
 }
 
+/* admin — org members management (inside the org editor) */
+.admin-modal-members {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid #f0ece5;
+}
+.admin-modal-subhead {
+  margin: 0 0 10px;
+  font-size: 0.95rem;
+  color: #1d1d1f;
+}
+.admin-mem-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 7px 0;
+  border-bottom: 1px solid #f4f1ec;
+}
+.admin-mem-main {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+.admin-mem-name {
+  font-size: 0.9rem;
+  color: #1d1d1f;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.admin-mem-email {
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
 /* account hub — avatar / logo upload slots */
 .ah-media {
   position: relative;

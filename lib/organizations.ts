@@ -569,3 +569,114 @@ export async function updateOrg(id: string, patch: OrgPatch): Promise<boolean> {
     return false;
   }
 }
+
+/** Admin: any org's active members + pending invites (no membership needed). */
+export async function getOrgMembersForAdmin(
+  orgId: string
+): Promise<{ members: OrgMember[]; pending: PendingInvite[] }> {
+  const supabase = admin();
+  if (!supabase || !orgId) return { members: [], pending: [] };
+  try {
+    const [{ data: memberRows }, { data: invites }] = await Promise.all([
+      supabase.from('organization_members').select('user_id, role').eq('org_id', orgId).eq('status', 'active'),
+      supabase.from('invitations').select('id, email, role, created_at').eq('org_id', orgId).eq('status', 'pending'),
+    ]);
+    const rows = (memberRows ?? []) as { user_id: string; role: MemberRole }[];
+    const ids = rows.map((m) => m.user_id).filter(Boolean);
+    const { data: profs } = await supabase
+      .from('profiles')
+      .select('id, full_name')
+      .in('id', ids.length ? ids : ['00000000-0000-0000-0000-000000000000']);
+    const nameById = new Map((profs ?? []).map((p: { id: string; full_name: string | null }) => [p.id, p.full_name]));
+    const { data: list } = await supabase.auth.admin.listUsers({ perPage: 1000 });
+    const emailById = new Map(
+      ((list?.users ?? []) as { id: string; email?: string | null }[]).map((u) => [u.id, u.email ?? ''])
+    );
+    const members: OrgMember[] = rows
+      .map((m) => ({
+        userId: m.user_id,
+        name: nameById.get(m.user_id) ?? null,
+        email: emailById.get(m.user_id) ?? '',
+        role: m.role,
+      }))
+      .sort((a, b) => (ROLE_RANK[a.role] ?? 9) - (ROLE_RANK[b.role] ?? 9));
+    const pending: PendingInvite[] = (
+      (invites ?? []) as { id: string; email: string; role: MemberRole; created_at: string }[]
+    ).map((i) => ({ id: i.id, email: i.email, role: i.role, createdAt: i.created_at }));
+    return { members, pending };
+  } catch {
+    return { members: [], pending: [] };
+  }
+}
+
+/** Admin: set any member's role. Won't leave an org with zero owners. */
+export async function adminUpdateMemberRole(
+  orgId: string,
+  memberUserId: string,
+  role: MemberRole
+): Promise<boolean> {
+  const supabase = admin();
+  if (!supabase) return false;
+  try {
+    const { data: rows } = await supabase
+      .from('organization_members')
+      .select('user_id, role')
+      .eq('org_id', orgId)
+      .eq('status', 'active');
+    const members = (rows ?? []) as { user_id: string; role: MemberRole }[];
+    const target = members.find((m) => m.user_id === memberUserId);
+    if (!target) return false;
+    if (target.role === 'owner' && role !== 'owner' && members.filter((m) => m.role === 'owner').length <= 1) {
+      return false; // don't orphan the org
+    }
+    const { error } = await supabase
+      .from('organization_members')
+      .update({ role })
+      .eq('org_id', orgId)
+      .eq('user_id', memberUserId);
+    return !error;
+  } catch {
+    return false;
+  }
+}
+
+/** Admin: remove any member. Won't remove an org's last owner. */
+export async function adminRemoveMember(orgId: string, memberUserId: string): Promise<boolean> {
+  const supabase = admin();
+  if (!supabase) return false;
+  try {
+    const { data: rows } = await supabase
+      .from('organization_members')
+      .select('user_id, role')
+      .eq('org_id', orgId)
+      .eq('status', 'active');
+    const members = (rows ?? []) as { user_id: string; role: MemberRole }[];
+    const target = members.find((m) => m.user_id === memberUserId);
+    if (!target) return false;
+    if (target.role === 'owner' && members.filter((m) => m.role === 'owner').length <= 1) return false;
+    const { error } = await supabase
+      .from('organization_members')
+      .delete()
+      .eq('org_id', orgId)
+      .eq('user_id', memberUserId);
+    return !error;
+  } catch {
+    return false;
+  }
+}
+
+/** Admin: revoke a pending invitation in any org. */
+export async function adminRevokeInvitation(invitationId: string): Promise<boolean> {
+  const supabase = admin();
+  if (!supabase) return false;
+  try {
+    const { error } = await supabase
+      .from('invitations')
+      .update({ status: 'revoked' })
+      .eq('id', invitationId)
+      .eq('status', 'pending');
+    return !error;
+  } catch {
+    return false;
+  }
+}
