@@ -435,3 +435,137 @@ export async function setClientReseller(clientOrgId: string, resellerOrgId: stri
     return false;
   }
 }
+
+export type AdminOrgFull = {
+  id: string;
+  name: string;
+  type: string;
+  country: string | null;
+  address: string | null;
+  postalCode: string | null;
+  city: string | null;
+  logoUrl: string | null;
+  resellerOrgId: string | null;
+  resellerName: string | null;
+  distributorOrgId: string | null;
+  distributorName: string | null;
+  memberCount: number;
+};
+
+/** Every org with full detail + active-member counts, for the org back-office. */
+export async function listOrgsForAdmin(): Promise<AdminOrgFull[]> {
+  const supabase = admin();
+  if (!supabase) return [];
+  try {
+    const { data: orgs } = await supabase
+      .from('organizations')
+      .select('id, name, type, country, address, postal_code, city, logo_url, reseller_org_id, distributor_org_id')
+      .order('name');
+    const all = (orgs ?? []) as {
+      id: string;
+      name: string;
+      type: string;
+      country: string | null;
+      address: string | null;
+      postal_code: string | null;
+      city: string | null;
+      logo_url: string | null;
+      reseller_org_id: string | null;
+      distributor_org_id: string | null;
+    }[];
+    const nameById = new Map(all.map((o) => [o.id, o.name]));
+    const counts = new Map<string, number>();
+    const ids = all.map((o) => o.id);
+    if (ids.length) {
+      const { data: mems } = await supabase
+        .from('organization_members')
+        .select('org_id')
+        .in('org_id', ids)
+        .eq('status', 'active');
+      for (const m of (mems ?? []) as { org_id: string }[]) counts.set(m.org_id, (counts.get(m.org_id) ?? 0) + 1);
+    }
+    return all.map((o) => ({
+      id: o.id,
+      name: o.name,
+      type: o.type,
+      country: o.country,
+      address: o.address,
+      postalCode: o.postal_code,
+      city: o.city,
+      logoUrl: o.logo_url,
+      resellerOrgId: o.reseller_org_id,
+      resellerName: o.reseller_org_id ? nameById.get(o.reseller_org_id) ?? null : null,
+      distributorOrgId: o.distributor_org_id,
+      distributorName: o.distributor_org_id ? nameById.get(o.distributor_org_id) ?? null : null,
+      memberCount: counts.get(o.id) ?? 0,
+    }));
+  } catch {
+    return [];
+  }
+}
+
+export type OrgInput = {
+  name: string;
+  type?: string;
+  country?: string | null;
+  address?: string | null;
+  postalCode?: string | null;
+  city?: string | null;
+  resellerOrgId?: string | null;
+  distributorOrgId?: string | null;
+};
+
+/** Admin: create an organization. Returns its id (or null on failure). */
+export async function createOrg(input: OrgInput): Promise<{ id: string } | null> {
+  const supabase = admin();
+  if (!supabase) return null;
+  const name = input.name.trim();
+  if (!name) return null;
+  try {
+    const { data, error } = await supabase
+      .from('organizations')
+      .insert({
+        name: name.slice(0, 200),
+        type: input.type ?? 'client',
+        country: input.country ?? null,
+        address: input.address ?? null,
+        postal_code: input.postalCode ?? null,
+        city: input.city ?? null,
+        reseller_org_id: input.resellerOrgId ?? null,
+        distributor_org_id: input.distributorOrgId ?? null,
+      })
+      .select('id')
+      .single();
+    if (error || !data) return null;
+    return { id: data.id as string };
+  } catch {
+    return null;
+  }
+}
+
+type OrgPatch = Partial<{
+  name: string;
+  type: string;
+  country: string | null;
+  address: string | null;
+  postal_code: string | null;
+  city: string | null;
+  logo_url: string | null;
+  reseller_org_id: string | null;
+  distributor_org_id: string | null;
+}>;
+
+/** Admin: update an organization's editable fields. */
+export async function updateOrg(id: string, patch: OrgPatch): Promise<boolean> {
+  const supabase = admin();
+  if (!supabase) return false;
+  try {
+    const { error } = await supabase
+      .from('organizations')
+      .update({ ...patch, updated_at: new Date().toISOString() })
+      .eq('id', id);
+    return !error;
+  } catch {
+    return false;
+  }
+}

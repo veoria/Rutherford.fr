@@ -14463,6 +14463,44 @@ textarea.cv-input { resize: vertical; min-height: 74px; }
   min-width: 180px;
 }
 
+/* admin — organization back-office (create / edit, logo) */
+.admin-modal-wide {
+  max-width: 640px;
+}
+.admin-field-row {
+  display: flex;
+  gap: 12px;
+}
+.admin-field-row .admin-field {
+  flex: 1;
+  min-width: 0;
+}
+.admin-logo-thumb {
+  height: 26px;
+  width: auto;
+  max-width: 88px;
+  object-fit: contain;
+  vertical-align: middle;
+}
+.admin-logo-preview {
+  height: 40px;
+  width: auto;
+  max-width: 150px;
+  object-fit: contain;
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 6px;
+  padding: 4px 8px;
+}
+.admin-logo-empty {
+  color: rgba(0, 0, 0, 0.4);
+}
+.admin-logo-edit {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 /* account hub — avatar / logo upload slots */
 .ah-media {
   position: relative;

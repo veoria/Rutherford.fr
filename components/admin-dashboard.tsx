@@ -7,7 +7,7 @@ import { SiteNav } from '@/components/site-nav';
 import { COUNTRIES, JOB_TITLE_KEYS, isJobTitleKey, type JobTitleKey } from '@/data/onboarding-options';
 import { ACCOUNT_TYPES, type AccountType } from '@/data/account-types';
 import type { AdminConsoleValidation, AdminOverview, AdminUser } from '@/lib/admin';
-import type { AdminOrg } from '@/lib/organizations';
+import type { AdminOrg, AdminOrgFull } from '@/lib/organizations';
 
 const ROLE_LABELS: Record<JobTitleKey, string> = {
   operator: 'Conducteur de presse',
@@ -330,7 +330,7 @@ function OrgRow({
               const res = await fetch('/api/admin/orgs', {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ clientOrgId: client.id, resellerOrgId: e.target.value || null }),
+                body: JSON.stringify({ id: client.id, reseller_org_id: e.target.value || null }),
               });
               if (res.ok) router.refresh();
             } catch {
@@ -351,14 +351,242 @@ function OrgRow({
   );
 }
 
+function OrgDrawer({ org, allOrgs, onClose }: { org: AdminOrgFull | null; allOrgs: AdminOrgFull[]; onClose: () => void }) {
+  const router = useRouter();
+  const isNew = !org;
+  const [name, setName] = useState(org?.name ?? '');
+  const [type, setType] = useState<AccountType>((org?.type as AccountType) ?? 'client');
+  const [country, setCountry] = useState(org?.country ?? '');
+  const [address, setAddress] = useState(org?.address ?? '');
+  const [postalCode, setPostalCode] = useState(org?.postalCode ?? '');
+  const [city, setCity] = useState(org?.city ?? '');
+  const [resellerOrgId, setResellerOrgId] = useState(org?.resellerOrgId ?? '');
+  const [distributorOrgId, setDistributorOrgId] = useState(org?.distributorOrgId ?? '');
+  const [logoUrl, setLogoUrl] = useState<string | null>(org?.logoUrl ?? null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const resellerOptions = allOrgs.filter((o) => o.type === 'reseller' && o.id !== org?.id);
+  const distributorOptions = allOrgs.filter((o) => o.type === 'distributor' && o.id !== org?.id);
+
+  const save = async () => {
+    if (!name.trim()) {
+      setError('Le nom est requis.');
+      return;
+    }
+    setBusy(true);
+    setError(null);
+    const fields = {
+      name: name.trim(),
+      type,
+      country,
+      address,
+      postal_code: postalCode,
+      city,
+      reseller_org_id: type === 'client' ? resellerOrgId || null : null,
+      distributor_org_id: type === 'reseller' ? distributorOrgId || null : null,
+    };
+    try {
+      const res = await fetch('/api/admin/orgs', {
+        method: isNew ? 'POST' : 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(isNew ? fields : { id: org!.id, ...fields }),
+      });
+      if (!res.ok) {
+        setError(errorLabel((await res.json().catch(() => ({}))).error));
+        setBusy(false);
+        return;
+      }
+      router.refresh();
+      onClose();
+    } catch {
+      setError('Erreur réseau.');
+      setBusy(false);
+    }
+  };
+
+  const uploadLogo = async (file: File) => {
+    if (!org) return;
+    setBusy(true);
+    setError(null);
+    try {
+      const fd = new FormData();
+      fd.append('file', file);
+      fd.append('orgId', org.id);
+      const res = await fetch('/api/admin/orgs/logo', { method: 'POST', body: fd });
+      const data = (await res.json().catch(() => ({}))) as { url?: string; error?: string };
+      if (!res.ok) {
+        setError(errorLabel(data.error));
+        setBusy(false);
+        return;
+      }
+      setLogoUrl(data.url ?? null);
+      router.refresh();
+      setBusy(false);
+    } catch {
+      setError('Erreur réseau.');
+      setBusy(false);
+    }
+  };
+
+  return (
+    <div className="admin-modal-overlay" onClick={onClose} role="presentation">
+      <div
+        className="admin-modal admin-modal-wide"
+        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+      >
+        <div className="admin-modal-head">
+          <h3>{isNew ? 'Nouvelle organisation' : org!.name}</h3>
+          <button type="button" className="admin-modal-close" onClick={onClose} aria-label="Fermer">
+            ×
+          </button>
+        </div>
+
+        <div className="admin-field">
+          <label>Nom</label>
+          <input className="admin-input" value={name} onChange={(e) => setName(e.target.value)} disabled={busy} />
+        </div>
+        <div className="admin-field">
+          <label>Type</label>
+          <select
+            className="admin-input"
+            value={type}
+            onChange={(e) => setType(e.target.value as AccountType)}
+            disabled={busy}
+          >
+            {ACCOUNT_TYPES.map((t) => (
+              <option key={t} value={t}>
+                {ACCOUNT_TYPE_LABELS[t]}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {type === 'client' ? (
+          <div className="admin-field">
+            <label>Revendeur rattaché</label>
+            <select
+              className="admin-input"
+              value={resellerOrgId}
+              onChange={(e) => setResellerOrgId(e.target.value)}
+              disabled={busy}
+            >
+              <option value="">— Aucun —</option>
+              {resellerOptions.map((o) => (
+                <option key={o.id} value={o.id}>
+                  {o.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        ) : null}
+        {type === 'reseller' ? (
+          <div className="admin-field">
+            <label>Distributeur rattaché</label>
+            <select
+              className="admin-input"
+              value={distributorOrgId}
+              onChange={(e) => setDistributorOrgId(e.target.value)}
+              disabled={busy}
+            >
+              <option value="">— Aucun —</option>
+              {distributorOptions.map((o) => (
+                <option key={o.id} value={o.id}>
+                  {o.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        ) : null}
+
+        <div className="admin-field">
+          <label>Adresse</label>
+          <input className="admin-input" value={address} onChange={(e) => setAddress(e.target.value)} disabled={busy} />
+        </div>
+        <div className="admin-field-row">
+          <div className="admin-field">
+            <label>Code postal</label>
+            <input
+              className="admin-input"
+              value={postalCode}
+              onChange={(e) => setPostalCode(e.target.value)}
+              disabled={busy}
+            />
+          </div>
+          <div className="admin-field">
+            <label>Ville</label>
+            <input className="admin-input" value={city} onChange={(e) => setCity(e.target.value)} disabled={busy} />
+          </div>
+        </div>
+        <div className="admin-field">
+          <label>Pays</label>
+          <select className="admin-input" value={country} onChange={(e) => setCountry(e.target.value)} disabled={busy}>
+            <option value="">—</option>
+            {COUNTRIES.map((c) => (
+              <option key={c} value={c}>
+                {c}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="admin-field">
+          <label>Logo</label>
+          {isNew ? (
+            <p className="admin-modal-section-status">Enregistrez l&apos;organisation pour pouvoir téléverser un logo.</p>
+          ) : (
+            <div className="admin-logo-edit">
+              {logoUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={logoUrl} alt="" className="admin-logo-preview" />
+              ) : (
+                <span className="admin-logo-empty">Aucun logo</span>
+              )}
+              <label className="admin-link-btn">
+                {busy ? '…' : logoUrl ? 'Remplacer' : 'Téléverser'}
+                <input
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp,image/svg+xml,image/gif"
+                  style={{ display: 'none' }}
+                  disabled={busy}
+                  onChange={(e) => {
+                    const f = e.target.files?.[0];
+                    if (f) void uploadLogo(f);
+                    e.target.value = '';
+                  }}
+                />
+              </label>
+            </div>
+          )}
+        </div>
+
+        {error ? <p className="admin-modal-error">{error}</p> : null}
+
+        <div className="admin-modal-actions">
+          <button type="button" className="button button-light" onClick={onClose} disabled={busy}>
+            Annuler
+          </button>
+          <button type="button" className="button button-accent" onClick={save} disabled={busy}>
+            {busy ? 'Enregistrement…' : isNew ? 'Créer' : 'Enregistrer'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function AdminDashboard({
   overview,
   orgs,
+  orgsFull,
   selfId,
   canManage,
 }: {
   overview: AdminOverview;
   orgs: { clients: AdminOrg[]; resellers: { id: string; name: string }[] };
+  orgsFull: AdminOrgFull[];
   selfId: string;
   canManage: boolean;
 }) {
@@ -366,6 +594,8 @@ export function AdminDashboard({
   const [query, setQuery] = useState('');
   const [editing, setEditing] = useState<AdminUser | null>(null);
   const [cvFilter, setCvFilter] = useState('');
+  const [editingOrg, setEditingOrg] = useState<AdminOrgFull | null>(null);
+  const [creatingOrg, setCreatingOrg] = useState(false);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -587,6 +817,69 @@ export function AdminDashboard({
 
           <div className="admin-block">
             <div className="admin-block-head">
+              <h2>Organisations ({orgsFull.length})</h2>
+              {canManage ? (
+                <button type="button" className="button button-light" onClick={() => setCreatingOrg(true)}>
+                  Créer une organisation
+                </button>
+              ) : null}
+            </div>
+            <div className="admin-table-wrap">
+              <table className="admin-table">
+                <thead>
+                  <tr>
+                    <th>Logo</th>
+                    <th>Nom</th>
+                    <th>Type</th>
+                    <th>Ville</th>
+                    <th>Pays</th>
+                    <th className="admin-num">Membres</th>
+                    <th>Rattaché à</th>
+                    <th />
+                  </tr>
+                </thead>
+                <tbody>
+                  {orgsFull.map((o) => (
+                    <tr key={o.id}>
+                      <td>
+                        {o.logoUrl ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={o.logoUrl} alt="" className="admin-logo-thumb" />
+                        ) : (
+                          <span className="admin-logo-empty">—</span>
+                        )}
+                      </td>
+                      <td>{o.name}</td>
+                      <td>
+                        <AccountTypeBadge type={o.type as AccountType} />
+                      </td>
+                      <td>{o.city ?? '—'}</td>
+                      <td>{o.country ?? '—'}</td>
+                      <td className="admin-num">{o.memberCount}</td>
+                      <td>{o.resellerName ?? o.distributorName ?? '—'}</td>
+                      <td>
+                        {canManage ? (
+                          <button type="button" className="admin-link-btn" onClick={() => setEditingOrg(o)}>
+                            Gérer
+                          </button>
+                        ) : null}
+                      </td>
+                    </tr>
+                  ))}
+                  {orgsFull.length === 0 ? (
+                    <tr>
+                      <td colSpan={8} className="admin-empty">
+                        Aucune organisation.
+                      </td>
+                    </tr>
+                  ) : null}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div className="admin-block">
+            <div className="admin-block-head">
               <h2>Attribution clients ({orgs.clients.length})</h2>
             </div>
             <div className="admin-table-wrap">
@@ -646,6 +939,16 @@ export function AdminDashboard({
       </section>
 
       {editing ? <UserDrawer user={editing} isSelf={editing.id === selfId} onClose={() => setEditing(null)} /> : null}
+      {creatingOrg || editingOrg ? (
+        <OrgDrawer
+          org={editingOrg}
+          allOrgs={orgsFull}
+          onClose={() => {
+            setEditingOrg(null);
+            setCreatingOrg(false);
+          }}
+        />
+      ) : null}
 
       <SiteFooter />
     </main>
