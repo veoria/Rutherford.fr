@@ -231,6 +231,64 @@ export async function ensureSharedXriteOrg(userId: string, email: string): Promi
   }
 }
 
+/** Ensure a user owns a personal organization so it surfaces in the back-office.
+ * Creates one (named after their company, typed by their account_type) when they
+ * belong to none, links the profile and adds them as owner. If they already own
+ * their org, keeps its type aligned with their account_type. Never retypes a
+ * shared org they're only a member of. Best-effort; returns the org id. */
+export async function ensurePersonalOrg(userId: string): Promise<string | null> {
+  const supabase = admin();
+  if (!supabase) return null;
+  try {
+    const { data: prof } = await supabase
+      .from('profiles')
+      .select('organization_id, company, country, account_type, full_name')
+      .eq('id', userId)
+      .maybeSingle();
+    if (!prof) return null;
+    const at = prof.account_type as string;
+    const type = at === 'reseller' || at === 'distributor' || at === 'team' ? at : 'client';
+    const orgId = (prof.organization_id as string | null) ?? null;
+
+    if (!orgId) {
+      const name = (
+        (prof.company as string | null)?.trim() ||
+        (prof.full_name as string | null)?.trim() ||
+        'Mon compte'
+      ).slice(0, 200);
+      const { data: created, error } = await supabase
+        .from('organizations')
+        .insert({ name, type, country: (prof.country as string | null) ?? null })
+        .select('id')
+        .single();
+      if (error || !created) return null;
+      const newId = created.id as string;
+      await supabase
+        .from('organization_members')
+        .upsert(
+          { org_id: newId, user_id: userId, role: 'owner', status: 'active' },
+          { onConflict: 'org_id,user_id', ignoreDuplicates: true }
+        );
+      await supabase.from('profiles').update({ organization_id: newId }).eq('id', userId);
+      return newId;
+    }
+
+    // Already linked — align the org type, but only if this user owns it.
+    const { data: mem } = await supabase
+      .from('organization_members')
+      .select('role')
+      .eq('org_id', orgId)
+      .eq('user_id', userId)
+      .maybeSingle();
+    if ((mem?.role as string | null) === 'owner') {
+      await supabase.from('organizations').update({ type, updated_at: new Date().toISOString() }).eq('id', orgId);
+    }
+    return orgId;
+  } catch {
+    return null;
+  }
+}
+
 export type ResellerClientOrg = {
   orgId: string;
   name: string;

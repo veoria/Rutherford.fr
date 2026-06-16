@@ -3,6 +3,7 @@ import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { isJobTitleKey, isKnownCountry, isTeamRoleKey } from '@/data/onboarding-options';
 import { accountTypeFromDomain, teamOrgFromEmail } from '@/lib/account-type';
 import { syncLeadToPipedrive } from '@/lib/pipedrive';
+import { ensurePersonalOrg } from '@/lib/organizations';
 
 export const dynamic = 'force-dynamic';
 
@@ -88,6 +89,11 @@ export async function POST(request: NextRequest) {
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
+
+  // Every standalone account gets an organization so it surfaces in the
+  // back-office (Organisations) and can carry a logo, address and reseller
+  // links. Idempotent — a no-op once the user already belongs to an org.
+  await ensurePersonalOrg(user.id);
 
   // Lead capture → CRM, only with explicit marketing consent (GDPR). No-op
   // until PipeDrive is configured; never throws.

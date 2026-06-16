@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { createSupabaseServerClient, createSupabaseAdminClient } from '@/lib/supabase/server';
 import { isAccountType } from '@/data/account-types';
 import { isJobTitleKey, isKnownCountry } from '@/data/onboarding-options';
+import { ensurePersonalOrg } from '@/lib/organizations';
 
 export const dynamic = 'force-dynamic';
 
@@ -70,6 +71,11 @@ export async function PATCH(request: NextRequest) {
   const admin = createSupabaseAdminClient();
   const { error } = await admin.from('profiles').update(patch).eq('id', id);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+  // Reflect a type change in the back-office org list: ensure the user has an
+  // organization and align its type when they own it.
+  if (typeof patch.account_type === 'string') await ensurePersonalOrg(id);
+
   return NextResponse.json({ ok: true });
 }
 
