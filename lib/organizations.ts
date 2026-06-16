@@ -435,3 +435,248 @@ export async function setClientReseller(clientOrgId: string, resellerOrgId: stri
     return false;
   }
 }
+
+export type AdminOrgFull = {
+  id: string;
+  name: string;
+  type: string;
+  country: string | null;
+  address: string | null;
+  postalCode: string | null;
+  city: string | null;
+  logoUrl: string | null;
+  resellerOrgId: string | null;
+  resellerName: string | null;
+  distributorOrgId: string | null;
+  distributorName: string | null;
+  memberCount: number;
+};
+
+/** Every org with full detail + active-member counts, for the org back-office. */
+export async function listOrgsForAdmin(): Promise<AdminOrgFull[]> {
+  const supabase = admin();
+  if (!supabase) return [];
+  try {
+    const { data: orgs } = await supabase
+      .from('organizations')
+      .select('id, name, type, country, address, postal_code, city, logo_url, reseller_org_id, distributor_org_id')
+      .order('name');
+    const all = (orgs ?? []) as {
+      id: string;
+      name: string;
+      type: string;
+      country: string | null;
+      address: string | null;
+      postal_code: string | null;
+      city: string | null;
+      logo_url: string | null;
+      reseller_org_id: string | null;
+      distributor_org_id: string | null;
+    }[];
+    const nameById = new Map(all.map((o) => [o.id, o.name]));
+    const counts = new Map<string, number>();
+    const ids = all.map((o) => o.id);
+    if (ids.length) {
+      const { data: mems } = await supabase
+        .from('organization_members')
+        .select('org_id')
+        .in('org_id', ids)
+        .eq('status', 'active');
+      for (const m of (mems ?? []) as { org_id: string }[]) counts.set(m.org_id, (counts.get(m.org_id) ?? 0) + 1);
+    }
+    return all.map((o) => ({
+      id: o.id,
+      name: o.name,
+      type: o.type,
+      country: o.country,
+      address: o.address,
+      postalCode: o.postal_code,
+      city: o.city,
+      logoUrl: o.logo_url,
+      resellerOrgId: o.reseller_org_id,
+      resellerName: o.reseller_org_id ? nameById.get(o.reseller_org_id) ?? null : null,
+      distributorOrgId: o.distributor_org_id,
+      distributorName: o.distributor_org_id ? nameById.get(o.distributor_org_id) ?? null : null,
+      memberCount: counts.get(o.id) ?? 0,
+    }));
+  } catch {
+    return [];
+  }
+}
+
+export type OrgInput = {
+  name: string;
+  type?: string;
+  country?: string | null;
+  address?: string | null;
+  postalCode?: string | null;
+  city?: string | null;
+  resellerOrgId?: string | null;
+  distributorOrgId?: string | null;
+};
+
+/** Admin: create an organization. Returns its id (or null on failure). */
+export async function createOrg(input: OrgInput): Promise<{ id: string } | null> {
+  const supabase = admin();
+  if (!supabase) return null;
+  const name = input.name.trim();
+  if (!name) return null;
+  try {
+    const { data, error } = await supabase
+      .from('organizations')
+      .insert({
+        name: name.slice(0, 200),
+        type: input.type ?? 'client',
+        country: input.country ?? null,
+        address: input.address ?? null,
+        postal_code: input.postalCode ?? null,
+        city: input.city ?? null,
+        reseller_org_id: input.resellerOrgId ?? null,
+        distributor_org_id: input.distributorOrgId ?? null,
+      })
+      .select('id')
+      .single();
+    if (error || !data) return null;
+    return { id: data.id as string };
+  } catch {
+    return null;
+  }
+}
+
+type OrgPatch = Partial<{
+  name: string;
+  type: string;
+  country: string | null;
+  address: string | null;
+  postal_code: string | null;
+  city: string | null;
+  logo_url: string | null;
+  reseller_org_id: string | null;
+  distributor_org_id: string | null;
+}>;
+
+/** Admin: update an organization's editable fields. */
+export async function updateOrg(id: string, patch: OrgPatch): Promise<boolean> {
+  const supabase = admin();
+  if (!supabase) return false;
+  try {
+    const { error } = await supabase
+      .from('organizations')
+      .update({ ...patch, updated_at: new Date().toISOString() })
+      .eq('id', id);
+    return !error;
+  } catch {
+    return false;
+  }
+}
+
+/** Admin: any org's active members + pending invites (no membership needed). */
+export async function getOrgMembersForAdmin(
+  orgId: string
+): Promise<{ members: OrgMember[]; pending: PendingInvite[] }> {
+  const supabase = admin();
+  if (!supabase || !orgId) return { members: [], pending: [] };
+  try {
+    const [{ data: memberRows }, { data: invites }] = await Promise.all([
+      supabase.from('organization_members').select('user_id, role').eq('org_id', orgId).eq('status', 'active'),
+      supabase.from('invitations').select('id, email, role, created_at').eq('org_id', orgId).eq('status', 'pending'),
+    ]);
+    const rows = (memberRows ?? []) as { user_id: string; role: MemberRole }[];
+    const ids = rows.map((m) => m.user_id).filter(Boolean);
+    const { data: profs } = await supabase
+      .from('profiles')
+      .select('id, full_name')
+      .in('id', ids.length ? ids : ['00000000-0000-0000-0000-000000000000']);
+    const nameById = new Map((profs ?? []).map((p: { id: string; full_name: string | null }) => [p.id, p.full_name]));
+    const { data: list } = await supabase.auth.admin.listUsers({ perPage: 1000 });
+    const emailById = new Map(
+      ((list?.users ?? []) as { id: string; email?: string | null }[]).map((u) => [u.id, u.email ?? ''])
+    );
+    const members: OrgMember[] = rows
+      .map((m) => ({
+        userId: m.user_id,
+        name: nameById.get(m.user_id) ?? null,
+        email: emailById.get(m.user_id) ?? '',
+        role: m.role,
+      }))
+      .sort((a, b) => (ROLE_RANK[a.role] ?? 9) - (ROLE_RANK[b.role] ?? 9));
+    const pending: PendingInvite[] = (
+      (invites ?? []) as { id: string; email: string; role: MemberRole; created_at: string }[]
+    ).map((i) => ({ id: i.id, email: i.email, role: i.role, createdAt: i.created_at }));
+    return { members, pending };
+  } catch {
+    return { members: [], pending: [] };
+  }
+}
+
+/** Admin: set any member's role. Won't leave an org with zero owners. */
+export async function adminUpdateMemberRole(
+  orgId: string,
+  memberUserId: string,
+  role: MemberRole
+): Promise<boolean> {
+  const supabase = admin();
+  if (!supabase) return false;
+  try {
+    const { data: rows } = await supabase
+      .from('organization_members')
+      .select('user_id, role')
+      .eq('org_id', orgId)
+      .eq('status', 'active');
+    const members = (rows ?? []) as { user_id: string; role: MemberRole }[];
+    const target = members.find((m) => m.user_id === memberUserId);
+    if (!target) return false;
+    if (target.role === 'owner' && role !== 'owner' && members.filter((m) => m.role === 'owner').length <= 1) {
+      return false; // don't orphan the org
+    }
+    const { error } = await supabase
+      .from('organization_members')
+      .update({ role })
+      .eq('org_id', orgId)
+      .eq('user_id', memberUserId);
+    return !error;
+  } catch {
+    return false;
+  }
+}
+
+/** Admin: remove any member. Won't remove an org's last owner. */
+export async function adminRemoveMember(orgId: string, memberUserId: string): Promise<boolean> {
+  const supabase = admin();
+  if (!supabase) return false;
+  try {
+    const { data: rows } = await supabase
+      .from('organization_members')
+      .select('user_id, role')
+      .eq('org_id', orgId)
+      .eq('status', 'active');
+    const members = (rows ?? []) as { user_id: string; role: MemberRole }[];
+    const target = members.find((m) => m.user_id === memberUserId);
+    if (!target) return false;
+    if (target.role === 'owner' && members.filter((m) => m.role === 'owner').length <= 1) return false;
+    const { error } = await supabase
+      .from('organization_members')
+      .delete()
+      .eq('org_id', orgId)
+      .eq('user_id', memberUserId);
+    return !error;
+  } catch {
+    return false;
+  }
+}
+
+/** Admin: revoke a pending invitation in any org. */
+export async function adminRevokeInvitation(invitationId: string): Promise<boolean> {
+  const supabase = admin();
+  if (!supabase) return false;
+  try {
+    const { error } = await supabase
+      .from('invitations')
+      .update({ status: 'revoked' })
+      .eq('id', invitationId)
+      .eq('status', 'pending');
+    return !error;
+  } catch {
+    return false;
+  }
+}

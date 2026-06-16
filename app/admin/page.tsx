@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { notFound, redirect } from 'next/navigation';
 import { getAdminAccess } from '@/lib/admin-access';
 import { getAdminOverview } from '@/lib/admin';
-import { getOrgsForAdmin } from '@/lib/organizations';
+import { getOrgsForAdmin, listOrgsForAdmin } from '@/lib/organizations';
 import { AdminDashboard } from '@/components/admin-dashboard';
 
 export const metadata: Metadata = {
@@ -23,8 +23,18 @@ export default async function AdminRoute() {
     notFound(); // forbidden — don't reveal the route exists
   }
 
-  const [overview, orgs] = await Promise.all([getAdminOverview(), getOrgsForAdmin()]);
+  const [overview, orgs, orgsFull] = await Promise.all([
+    getAdminOverview(),
+    getOrgsForAdmin(),
+    listOrgsForAdmin(),
+  ]);
   return (
-    <AdminDashboard overview={overview} orgs={orgs} selfId={access.userId} canManage={access.canManage} />
+    <AdminDashboard
+      overview={overview}
+      orgs={orgs}
+      orgsFull={orgsFull}
+      selfId={access.userId}
+      canManage={access.canManage}
+    />
   );
 }

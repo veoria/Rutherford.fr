@@ -88,3 +88,30 @@ export async function DELETE(request: NextRequest) {
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   return NextResponse.json({ ok: true });
 }
+
+/** Suspend (ban) or reactivate a user's ability to sign in. Reversible — a
+ * suspended user keeps all their data and can be reactivated at any time. */
+export async function POST(request: NextRequest) {
+  const gate = await requireAdmin();
+  if (gate.error) return NextResponse.json({ error: gate.error }, { status: gate.status });
+
+  let body: Record<string, unknown>;
+  try {
+    body = (await request.json()) as Record<string, unknown>;
+  } catch {
+    return NextResponse.json({ error: 'bad_body' }, { status: 400 });
+  }
+
+  const id = typeof body.id === 'string' ? body.id : '';
+  if (!id) return NextResponse.json({ error: 'missing_id' }, { status: 400 });
+  if (id === gate.user.id) return NextResponse.json({ error: 'cannot_suspend_self' }, { status: 400 });
+
+  const suspend = body.suspend === true;
+  const admin = createSupabaseAdminClient();
+  // 'none' clears the ban; a long duration suspends sign-in indefinitely.
+  const { error } = await admin.auth.admin.updateUserById(id, {
+    ban_duration: suspend ? '876000h' : 'none',
+  });
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  return NextResponse.json({ ok: true });
+}

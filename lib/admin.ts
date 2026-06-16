@@ -16,6 +16,7 @@ export type AdminUser = {
   jobTitle: string | null;
   isAdmin: boolean;
   accountType: AccountType;
+  suspended: boolean;
   onboarded: boolean;
   signupAt: string | null;
   lastActiveAt: string | null;
@@ -91,7 +92,13 @@ export async function getAdminOverview(): Promise<AdminOverview> {
       .order('created_at', { ascending: false }),
   ]);
 
-  type AuthUser = { id: string; email?: string | null; created_at?: string; last_sign_in_at?: string | null };
+  type AuthUser = {
+    id: string;
+    email?: string | null;
+    created_at?: string;
+    last_sign_in_at?: string | null;
+    banned_until?: string | null;
+  };
   const authUsers = (authRes.data?.users ?? []) as AuthUser[];
   const profiles = (profilesRes.data ?? []) as {
     id: string;
@@ -187,6 +194,7 @@ export async function getAdminOverview(): Promise<AdminOverview> {
       jobTitle: p?.job_title ?? null,
       isAdmin: Boolean(p?.is_admin),
       accountType: (p?.account_type as AccountType) ?? 'client',
+      suspended: Boolean(u.banned_until) && new Date(u.banned_until as string).getTime() > Date.now(),
       onboarded: Boolean(p?.onboarded_at),
       signupAt: u.created_at ?? null,
       lastActiveAt,

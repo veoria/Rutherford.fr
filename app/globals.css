@@ -11713,6 +11713,11 @@ a.blog-card-image:hover img {
   text-transform: uppercase;
 }
 
+.admin-badge-warn {
+  background: #fde7e4;
+  color: #c4332b;
+}
+
 .admin-empty {
   text-align: center;
   color: rgba(0, 0, 0, 0.5);
@@ -14335,6 +14340,34 @@ textarea.cv-input { resize: vertical; min-height: 74px; }
 .admin-btn-danger-ghost:hover {
   background: #fbe9e7;
 }
+.admin-modal-section {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid #f0ece5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.admin-modal-section-status {
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+.admin-btn-warn-ghost {
+  align-self: flex-start;
+  border: 1px solid #e8c9a6;
+  background: #fff;
+  color: #b06a12;
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-weight: 600;
+  font-size: 0.88rem;
+  cursor: pointer;
+}
+.admin-btn-warn-ghost:hover {
+  background: #fdf3e7;
+}
 
 /* account hub — invite a team member */
 .ah-invite-form {
@@ -14428,6 +14461,80 @@ textarea.cv-input { resize: vertical; min-height: 74px; }
   font-size: 0.85rem;
   background: #fff;
   min-width: 180px;
+}
+
+/* admin — organization back-office (create / edit, logo) */
+.admin-modal-wide {
+  max-width: 640px;
+}
+.admin-field-row {
+  display: flex;
+  gap: 12px;
+}
+.admin-field-row .admin-field {
+  flex: 1;
+  min-width: 0;
+}
+.admin-logo-thumb {
+  height: 26px;
+  width: auto;
+  max-width: 88px;
+  object-fit: contain;
+  vertical-align: middle;
+}
+.admin-logo-preview {
+  height: 40px;
+  width: auto;
+  max-width: 150px;
+  object-fit: contain;
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 6px;
+  padding: 4px 8px;
+}
+.admin-logo-empty {
+  color: rgba(0, 0, 0, 0.4);
+}
+.admin-logo-edit {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* admin — org members management (inside the org editor) */
+.admin-modal-members {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid #f0ece5;
+}
+.admin-modal-subhead {
+  margin: 0 0 10px;
+  font-size: 0.95rem;
+  color: #1d1d1f;
+}
+.admin-mem-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 7px 0;
+  border-bottom: 1px solid #f4f1ec;
+}
+.admin-mem-main {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+.admin-mem-name {
+  font-size: 0.9rem;
+  color: #1d1d1f;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.admin-mem-email {
+  font-size: 0.78rem;
+  color: var(--muted);
 }
 
 /* account hub — avatar / logo upload slots */
