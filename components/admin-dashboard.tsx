@@ -643,6 +643,35 @@ function OrgDrawer({ org, allOrgs, onClose }: { org: AdminOrgFull | null; allOrg
           )}
         </div>
 
+        <div className="admin-field">
+          <label>Aperçu — en-tête de l&apos;espace revendeur</label>
+          {type === 'reseller' ? (
+            logoUrl ? (
+              <div className="admin-cobrand-preview">
+                <div className="ah-cobrand">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img className="ah-cobrand-logo" src={logoUrl} alt={name} />
+                  <span className="ah-cobrand-badge">Partenaire officiel Rutherford</span>
+                </div>
+              </div>
+            ) : (
+              <p className="admin-modal-section-status">
+                Téléversez un logo : il s&apos;affichera en haut de l&apos;espace de ce revendeur, comme le bandeau X-Rite.
+              </p>
+            )
+          ) : type === 'distributor' ? (
+            <div className="admin-cobrand-preview">
+              <div className="ah-cobrand">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img className="ah-cobrand-logo" src="/images/xrite-logo-black.png" alt="X-Rite PANTONE" />
+                <span className="ah-cobrand-badge">Partenaire officiel X-Rite PANTONE</span>
+              </div>
+            </div>
+          ) : (
+            <p className="admin-modal-section-status">Pas de bandeau co-marqué pour ce type de compte.</p>
+          )}
+        </div>
+
         {!isNew ? (
           <div className="admin-modal-members">
             <h4 className="admin-modal-subhead">Membres{loadingMembers ? ' …' : ` (${members.length})`}</h4>

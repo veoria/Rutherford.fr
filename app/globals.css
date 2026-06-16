@@ -12985,6 +12985,7 @@ a.blog-card-image:hover img {
 .ah-cobrand { display: flex; align-items: center; gap: 14px; padding: 10px 0; }
 .ah-cobrand-logo { height: 22px; width: auto; flex: 0 0 auto; }
 .ah-cobrand-badge { font-size: 12.5px; font-weight: 700; color: #16130f; padding-left: 14px; border-left: 1px solid var(--line); }
+.admin-cobrand-preview { border: 1px solid var(--line); border-radius: 10px; padding: 0 14px; background: #fff; }
 @media (max-width: 900px) {
   .sup-2col { grid-template-columns: 1fr; }
   .sup-chat { max-height: none; }
