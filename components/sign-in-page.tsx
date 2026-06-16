@@ -349,7 +349,7 @@ export function SignInPage() {
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
-        options: { emailRedirectTo: callbackUrl(next) },
+        options: { emailRedirectTo: callbackUrl(next), data: { locale } },
       });
       if (error) {
         setStatus('error');
@@ -419,7 +419,7 @@ export function SignInPage() {
     const supabase = createSupabaseBrowserClient();
     const { error } = await supabase.auth.signInWithOtp({
       email,
-      options: { emailRedirectTo: callbackUrl(next), shouldCreateUser: true },
+      options: { emailRedirectTo: callbackUrl(next), shouldCreateUser: true, data: { locale } },
     });
     if (error) {
       setStatus('error');

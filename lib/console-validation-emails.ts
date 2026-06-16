@@ -103,11 +103,13 @@ function cta(label: string, href: string): string {
 
 // ── The renderer ──────────────────────────────────────────────────────────
 
-type EmailSpec = {
+export type EmailSpec = {
   subject: string;
   preheader: string;
   eyebrow: string;
   tone: Tone;
+  /** Transactional auth/security mails omit the manage/unsubscribe footer line. */
+  transactional?: boolean;
   headline: { pre: string; accent: string; post: string };
   /** Color for the accent word + its underline (defaults to brand blue). */
   accentColor?: string;
@@ -120,7 +122,7 @@ type EmailSpec = {
   cta: { label: string; href: string };
 };
 
-function render(spec: EmailSpec): string {
+export function render(spec: EmailSpec): string {
   const dot = DOT[spec.tone];
   const accent = spec.accentColor ?? BLUE;
   const headline = `${esc(spec.headline.pre)}<span style="color:${accent};border-bottom:3px solid ${accent};padding-bottom:1px;">${esc(
@@ -204,7 +206,11 @@ function render(spec: EmailSpec): string {
           <div style="margin-bottom:14px;font-size:0;line-height:0;">${spectrumRail(3)}</div>
           <div style="font-family:${F_BODY};font-size:12px;color:${FOOT_BRAND};margin-bottom:5px;">${FOOTLINE}</div>
           <div style="font-family:${F_MONO};font-size:10px;color:${MUTED};line-height:1.7;letter-spacing:.02em;">${FOOTMETA}</div>
-          <div style="font-family:${F_MONO};font-size:10px;color:${MUTED};line-height:1.7;letter-spacing:.02em;"><a href="mailto:${SUPPORT}?subject=Email%20preferences" style="color:${BLUE};text-decoration:none;">Manage emails</a> · <a href="mailto:${SUPPORT}?subject=Unsubscribe" style="color:${BLUE};text-decoration:none;">Unsubscribe</a></div>
+          ${
+            spec.transactional
+              ? ''
+              : `<div style="font-family:${F_MONO};font-size:10px;color:${MUTED};line-height:1.7;letter-spacing:.02em;"><a href="mailto:${SUPPORT}?subject=Email%20preferences" style="color:${BLUE};text-decoration:none;">Manage emails</a> · <a href="mailto:${SUPPORT}?subject=Unsubscribe" style="color:${BLUE};text-decoration:none;">Unsubscribe</a></div>`
+          }
         </td></tr>
       </table>
     </td></tr>
