@@ -47,6 +47,7 @@ const CV_STATUS_TONE: Record<string, string> = {
 const ERROR_LABELS: Record<string, string> = {
   cannot_self_demote: 'Vous ne pouvez pas retirer votre propre accès admin.',
   cannot_delete_self: 'Vous ne pouvez pas supprimer votre propre compte.',
+  cannot_suspend_self: 'Vous ne pouvez pas suspendre votre propre compte.',
   forbidden: 'Action réservée aux admins.',
   unauthorized: 'Session expirée — reconnectez-vous.',
   mfa_required: 'Activez la double authentification pour gérer les comptes.',
@@ -103,6 +104,7 @@ function UserDrawer({ user, isSelf, onClose }: { user: AdminUser; isSelf: boolea
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [suspended, setSuspended] = useState(user.suspended);
 
   const save = async () => {
     setBusy(true);
@@ -146,6 +148,29 @@ function UserDrawer({ user, isSelf, onClose }: { user: AdminUser; isSelf: boolea
       }
       router.refresh();
       onClose();
+    } catch {
+      setError('Erreur réseau.');
+      setBusy(false);
+    }
+  };
+
+  const toggleSuspend = async () => {
+    setBusy(true);
+    setError(null);
+    try {
+      const res = await fetch('/api/admin/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: user.id, suspend: !suspended }),
+      });
+      if (!res.ok) {
+        setError(errorLabel((await res.json().catch(() => ({}))).error));
+        setBusy(false);
+        return;
+      }
+      setSuspended((s) => !s);
+      router.refresh();
+      setBusy(false);
     } catch {
       setError('Erreur réseau.');
       setBusy(false);
@@ -228,6 +253,22 @@ function UserDrawer({ user, isSelf, onClose }: { user: AdminUser; isSelf: boolea
             {busy ? 'Enregistrement…' : 'Enregistrer'}
           </button>
         </div>
+
+        {!isSelf ? (
+          <div className="admin-modal-section">
+            <span className="admin-modal-section-status">
+              {suspended ? 'Compte suspendu — la connexion est bloquée.' : 'Compte actif.'}
+            </span>
+            <button
+              type="button"
+              className={suspended ? 'admin-link-btn' : 'admin-btn-warn-ghost'}
+              onClick={toggleSuspend}
+              disabled={busy}
+            >
+              {suspended ? 'Réactiver le compte' : 'Suspendre le compte'}
+            </button>
+          </div>
+        ) : null}
 
         {!isSelf ? (
           <div className="admin-modal-danger">
@@ -429,6 +470,7 @@ export function AdminDashboard({
                       <td>
                         {u.name ?? '—'}
                         {u.isAdmin ? <span className="admin-badge">admin</span> : null}
+                        {u.suspended ? <span className="admin-badge admin-badge-warn">suspendu</span> : null}
                       </td>
                       <td className="admin-email">{u.email}</td>
                       <td>{u.company ?? '—'}</td>

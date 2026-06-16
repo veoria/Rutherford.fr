@@ -11713,6 +11713,11 @@ a.blog-card-image:hover img {
   text-transform: uppercase;
 }
 
+.admin-badge-warn {
+  background: #fde7e4;
+  color: #c4332b;
+}
+
 .admin-empty {
   text-align: center;
   color: rgba(0, 0, 0, 0.5);
@@ -14334,6 +14339,34 @@ textarea.cv-input { resize: vertical; min-height: 74px; }
 }
 .admin-btn-danger-ghost:hover {
   background: #fbe9e7;
+}
+.admin-modal-section {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid #f0ece5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.admin-modal-section-status {
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+.admin-btn-warn-ghost {
+  align-self: flex-start;
+  border: 1px solid #e8c9a6;
+  background: #fff;
+  color: #b06a12;
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-weight: 600;
+  font-size: 0.88rem;
+  cursor: pointer;
+}
+.admin-btn-warn-ghost:hover {
+  background: #fdf3e7;
 }
 
 /* account hub — invite a team member */
