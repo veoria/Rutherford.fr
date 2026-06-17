@@ -5,6 +5,7 @@
 // empty/no-op when Supabase isn't configured.
 
 import { createSupabaseAdminClient } from '@/lib/supabase/server';
+import { companyDomainFromEmail } from '@/lib/account-type';
 
 export type MemberRole = 'owner' | 'admin' | 'member';
 
@@ -251,6 +252,31 @@ export async function ensurePersonalOrg(userId: string): Promise<string | null> 
     const orgId = (prof.organization_id as string | null) ?? null;
 
     if (!orgId) {
+      // Share one organization across colleagues who sign up with the same
+      // company email domain; free webmail domains stay individual.
+      const { data: userRes } = await supabase.auth.admin.getUserById(userId);
+      const companyDomain = companyDomainFromEmail(userRes?.user?.email ?? '');
+
+      const joinExisting = async (foundId: string): Promise<string> => {
+        await supabase
+          .from('organization_members')
+          .upsert(
+            { org_id: foundId, user_id: userId, role: 'member', status: 'active' },
+            { onConflict: 'org_id,user_id', ignoreDuplicates: true }
+          );
+        await supabase.from('profiles').update({ organization_id: foundId }).eq('id', userId);
+        return foundId;
+      };
+
+      if (companyDomain) {
+        const { data: existing } = await supabase
+          .from('organizations')
+          .select('id')
+          .eq('email_domain', companyDomain)
+          .maybeSingle();
+        if (existing?.id) return joinExisting(existing.id as string);
+      }
+
       const name = (
         (prof.company as string | null)?.trim() ||
         (prof.full_name as string | null)?.trim() ||
@@ -258,10 +284,21 @@ export async function ensurePersonalOrg(userId: string): Promise<string | null> 
       ).slice(0, 200);
       const { data: created, error } = await supabase
         .from('organizations')
-        .insert({ name, type, country: (prof.country as string | null) ?? null })
+        .insert({ name, type, country: (prof.country as string | null) ?? null, email_domain: companyDomain })
         .select('id')
         .single();
-      if (error || !created) return null;
+      if (error || !created) {
+        // Lost a race to a colleague who just created the org for this domain.
+        if (companyDomain) {
+          const { data: again } = await supabase
+            .from('organizations')
+            .select('id')
+            .eq('email_domain', companyDomain)
+            .maybeSingle();
+          if (again?.id) return joinExisting(again.id as string);
+        }
+        return null;
+      }
       const newId = created.id as string;
       await supabase
         .from('organization_members')
