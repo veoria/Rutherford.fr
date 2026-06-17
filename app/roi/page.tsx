@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     siteName: 'Rutherford.fr',
     images: [
       {
-        url: '/images/Bundle Rutherford-4.jpg',
+        url: '/images/og-roi.png',
         width: 1200,
         height: 630,
         alt: 'Rutherford closed-loop color control',
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title,
     description,
-    images: ['/images/Bundle Rutherford-4.jpg'],
+    images: ['/images/og-roi.png'],
   },
 };
 
