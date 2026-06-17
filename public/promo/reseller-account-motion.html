@@ -352,6 +352,9 @@
   .replay{display:inline-flex;align-items:center;gap:7px;background:var(--ink);color:#fff;border:0;border-radius:980px;padding:9px 16px;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer}
   .replay svg{width:15px;height:15px;stroke:#fff;fill:none;stroke-width:1.8}
   .sim-note{font-size:11.5px;color:#a6a6a0}
+  .cta-create{display:inline-flex;align-items:center;gap:8px;background:var(--green);color:#fff;border-radius:980px;padding:10px 20px;font-size:14px;font-weight:700;text-decoration:none;box-shadow:var(--shadow-soft);white-space:nowrap;transition:transform .15s ease, filter .15s ease}
+  .cta-create:hover{transform:translateY(-1px);filter:brightness(1.06)}
+  a.btn{text-decoration:none;cursor:pointer}
   @media (max-width:520px){ .caption{flex-direction:column;gap:12px} .progress{width:150px} }
 </style>
 </head>
@@ -637,7 +640,7 @@
             <h1 class="hero-h mo x-zoom" style="--d:.35s;--od:0s">Run your color network</h1>
             <p class="hero-sub mo soft x-zoom" style="--d:.6s;--od:.05s">My account, Console Validation and Support — the reseller account that tracks your clients, their presses and their color stability.</p>
             <div class="hero-cta mo x-down" style="--d:.85s;--od:.1s">
-              <span class="btn btn-accent">Discover the reseller account</span>
+              <a class="btn btn-accent" href="/account/sign-in?mode=signup&amp;next=/account" target="_top" rel="noopener">Create your account</a>
               <span class="btn btn-light">rutherford.fr/account</span>
             </div>
             <div class="badge-row mo soft x-down" style="--d:1.05s;--od:.14s">
@@ -668,6 +671,7 @@
         <button class="dot-btn" data-go="3"><span class="n"></span>Support</button>
         <button class="dot-btn" data-go="4"><span class="n"></span>Wrap-up</button>
       </div>
+      <a class="cta-create" href="/account/sign-in?mode=signup&amp;next=/account" target="_top" rel="noopener">Create your account →</a>
       <div class="cap-right">
         <span class="sim-note">Motion design · auto-play · fictional names</span>
         <div class="progress"><span id="bar"></span></div>
