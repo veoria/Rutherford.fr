@@ -266,7 +266,11 @@ export function SignInPage() {
   const t = COPY[locale];
   const search = useSearchParams();
   const next = search.get('next') ?? '/account';
-  const [mode, setMode] = useState<'signin' | 'signup'>('signin');
+  // ?mode=signup lets external CTAs (e.g. the /promo reels) land directly on
+  // the "Create your account" tab.
+  const [mode, setMode] = useState<'signin' | 'signup'>(
+    search.get('mode') === 'signup' ? 'signup' : 'signin',
+  );
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [status, setStatus] = useState<Status>('idle');
