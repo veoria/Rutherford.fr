@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server';
+import { randomUUID } from 'node:crypto';
 import { createSupabaseAdminClient } from '@/lib/supabase/server';
 
 export const dynamic = 'force-dynamic';
@@ -30,10 +31,14 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid field' }, { status: 400 });
   }
 
-  const uploadId = clean(String(body.uploadId ?? ''), 60);
-  if (!uploadId) return NextResponse.json({ error: 'Invalid uploadId' }, { status: 400 });
-
   const ext = (clean(String(body.ext ?? 'jpg'), 5) || 'jpg').toLowerCase();
+
+  // The upload id is generated SERVER-SIDE and never taken from the request.
+  // This endpoint is public (anonymous intake), so trusting a caller-supplied
+  // id would let anyone write to — or overwrite — an arbitrary tmp/ path. A
+  // fresh random UUID keeps every path server-minted and unguessable; the
+  // consumers (../route.ts, ../../support) only ever act on the path we return.
+  const uploadId = randomUUID();
 
   const supabase = createSupabaseAdminClient();
   // Lazy bucket creation with an image-only, size-capped policy so the public
