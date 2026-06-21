@@ -53,7 +53,6 @@ const FOOTMETA = '25+ years · 30+ countries · 1,000+ systems deployed';
 const REF_NOTE = 'Quote this reference on any order or when you follow up on this validation.';
 
 type Tone = 'info' | 'ok' | 'warn' | 'no';
-type Row = { k: string; v: string; mono?: boolean };
 type Cell = { k: string; v: string; tone?: 'ok' | 'warn' | 'no' };
 
 const esc = (value: string) =>
@@ -67,21 +66,6 @@ function spectrumRail(height: number): string {
       `<td width="16.66%" height="${height}" style="background:${c};height:${height}px;line-height:${height}px;font-size:0;">&nbsp;</td>`
   ).join('');
   return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;"><tr>${cells}</tr></table>`;
-}
-
-function tableBlock(rows: Row[]): string {
-  const body = rows
-    .map((r, i) => {
-      const bb = i < rows.length - 1 ? `border-bottom:1px solid ${DIVIDER};` : '';
-      const valueFont = r.mono ? F_MONO : F_BODY;
-      return `<tr>
-        <td width="12" valign="middle" style="padding:12px 0 12px 16px;${bb}"><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:${SWATCH[i % SWATCH.length]};">&nbsp;</span></td>
-        <td valign="middle" style="padding:12px 12px;font-family:${F_MONO};font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:${MUTED};${bb}">${esc(r.k)}</td>
-        <td valign="middle" style="padding:12px 16px 12px 0;font-family:${valueFont};font-size:14.5px;font-weight:600;color:${INK};${bb}">${esc(r.v)}</td>
-      </tr>`;
-    })
-    .join('');
-  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border:1px solid ${DATA_BORDER};border-radius:10px;border-collapse:separate;margin:20px 0 22px;">${body}</table>`;
 }
 
 function stripBlock(cells: Cell[]): string {
@@ -272,10 +256,14 @@ export type AckLead = {
 /** 02 · Confirmation — request received. */
 export function acknowledgementEmail(lead: AckLead): { subject: string; html: string } {
   const ref = reference(lead.dealId);
-  const rows: Row[] = [];
-  rows.push({ k: 'Company', v: lead.company });
-  rows.push({ k: 'Country', v: lead.country });
-  rows.push({ k: 'Press', v: lead.machine });
+  // Same horizontal strip layout as the result emails, so Company / Country /
+  // Press read consistently across the whole journey.
+  const cells: Cell[] = [
+    { k: 'Status', v: 'Received' },
+    { k: 'Company', v: lead.company },
+    { k: 'Country', v: lead.country },
+    { k: 'Press', v: lead.machine },
+  ];
 
   return {
     subject: `We've received your console validation${ref ? ` — ref ${ref}` : ''}`,
@@ -289,7 +277,7 @@ export function acknowledgementEmail(lead: AckLead): { subject: string; html: st
       body: [
         'Your console validation request is in. Our team reviews every submission and comes back within <strong>one business day</strong> with your press eligibility and the next steps.',
       ],
-      dataBlock: tableBlock(rows),
+      dataBlock: stripBlock(cells),
       cta: TRACK_CTA,
     }),
   };
