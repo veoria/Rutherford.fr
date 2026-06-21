@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { ChangeEvent, CSSProperties, DragEvent, FormEvent, Fragment, useEffect, useMemo, useState } from 'react';
 import { SiteFooter } from '@/components/site-footer';
 import { SiteNav } from '@/components/site-nav';
+import { useLanguage } from '@/components/language-provider';
 import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 import { COUNTRY_NAMES, isKnownCountry } from '@/lib/countries';
 
@@ -255,6 +256,7 @@ export function ConsoleValidationPage({
   faq?: ConsoleValidationFaqItem[];
   invite?: ConsoleValidationInvite;
 } = {}) {
+  const { locale } = useLanguage();
   const [files, setFiles] = useState<FileMap>(emptyFiles);
   const [previews, setPreviews] = useState<PreviewMap>(emptyPreviews);
   const [submitted, setSubmitted] = useState(false);
@@ -444,7 +446,7 @@ export function ConsoleValidationPage({
       const res = await fetch('/api/console-validation', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, companyName, country, machineName, notes, ref: refCode, invite: invite?.token, uploadId, photos }),
+        body: JSON.stringify({ email, companyName, country, machineName, notes, ref: refCode, invite: invite?.token, uploadId, photos, locale }),
       });
       if (!res.ok) {
         const body = await res.json().catch(() => null);

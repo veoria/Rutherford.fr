@@ -30,6 +30,7 @@ export type ConsoleValidationRecord = {
   dropboxLink: string | null;
   asanaTaskGid: string | null;
   photos: Record<string, string>;
+  locale?: string | null;
 };
 
 function adminClient() {
@@ -66,7 +67,18 @@ export async function insertConsoleValidation(record: ConsoleValidationRecord): 
       console.error('console_validations insert failed:', error.message);
       return null;
     }
-    return data?.id ?? null;
+    const id = data?.id ?? null;
+    // Persist the locale separately and best-effort, so that if the `locale`
+    // column migration hasn't been applied yet it can never block the row write
+    // (which would lose the request). Falls back to English emails until then.
+    if (id && record.locale) {
+      const { error: locErr } = await supabase
+        .from('console_validations')
+        .update({ locale: record.locale })
+        .eq('id', id);
+      if (locErr) console.error('console_validations locale set failed (migration applied?):', locErr.message);
+    }
+    return id;
   } catch (error) {
     console.error('console_validations insert threw:', error);
     return null;
@@ -160,15 +172,27 @@ export async function getConsoleValidationByAsanaTask(gid: string): Promise<{
   country: string | null;
   machine: string | null;
   lastAgentStoryGid: string | null;
+  locale: string | null;
 } | null> {
   const supabase = adminClient();
   if (!supabase) return null;
+  const base = 'id, email, company, country, machine, last_agent_story_gid';
   try {
-    const { data } = await supabase
+    // Prefer selecting the locale too; fall back to the base columns if that
+    // column isn't there yet, so a not-yet-applied migration never breaks the
+    // verdict / comment-relay flow (emails just default to English).
+    let { data, error } = await supabase
       .from('console_validations')
-      .select('id, email, company, country, machine, last_agent_story_gid')
+      .select(`${base}, locale`)
       .eq('asana_task_gid', gid)
       .maybeSingle();
+    if (error) {
+      ({ data } = await supabase
+        .from('console_validations')
+        .select(base)
+        .eq('asana_task_gid', gid)
+        .maybeSingle());
+    }
     return data
       ? {
           id: data.id as string,
@@ -177,6 +201,7 @@ export async function getConsoleValidationByAsanaTask(gid: string): Promise<{
           country: (data.country as string | null) ?? null,
           machine: (data.machine as string | null) ?? null,
           lastAgentStoryGid: (data.last_agent_story_gid as string | null) ?? null,
+          locale: ((data as { locale?: string | null }).locale as string | null) ?? null,
         }
       : null;
   } catch {

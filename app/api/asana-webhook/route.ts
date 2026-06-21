@@ -8,6 +8,7 @@ import {
   cannotConnectEmail,
   consoleAgentMessageEmail,
   moreInfoEmail,
+  normalizeLocale,
 } from '@/lib/console-validation-emails';
 import { supportAgentMessageEmail, supportStatusEmail } from '@/lib/support-emails';
 import {
@@ -145,6 +146,7 @@ export async function POST(request: NextRequest) {
     // The submission row carries the client's company / country / press, which
     // the verdict emails surface alongside the status.
     const cv = await getConsoleValidationByAsanaTask(gid);
+    const locale = normalizeLocale(cv?.locale);
     const lead = {
       name,
       dealId,
@@ -155,7 +157,7 @@ export async function POST(request: NextRequest) {
 
     if (status === 'can_be_connected') {
       if (email) {
-        const mail = canConnectEmail(lead);
+        const mail = canConnectEmail(lead, locale);
         await sendMail({ to: notifyTo, subject: mail.subject, html: mail.html, bcc: mail.bcc });
       }
       await addDealNote(
@@ -164,7 +166,7 @@ export async function POST(request: NextRequest) {
       );
     } else if (status === 'rejected') {
       if (email) {
-        const mail = cannotConnectEmail(lead);
+        const mail = cannotConnectEmail(lead, locale);
         await sendMail({ to: notifyTo, subject: mail.subject, html: mail.html });
       }
       await addDealNote(
@@ -173,7 +175,7 @@ export async function POST(request: NextRequest) {
       );
     } else if (status === 'changes_requested') {
       if (email) {
-        const mail = moreInfoEmail(lead);
+        const mail = moreInfoEmail(lead, locale);
         await sendMail({ to: notifyTo, subject: mail.subject, html: mail.html });
       }
       await addDealNote(
@@ -216,7 +218,7 @@ export async function POST(request: NextRequest) {
     if (!message) continue;
     await setConsoleValidationAgentStory(taskGid, storyGid);
     await insertConsoleValidationMessage({ validationId: cv.id, author: 'team', body: message, asanaStoryGid: storyGid });
-    const mail = consoleAgentMessageEmail(message);
+    const mail = consoleAgentMessageEmail(message, normalizeLocale(cv.locale));
     await sendMail({ to: await getNotificationEmailByAsanaTask(taskGid, cv.email), subject: mail.subject, html: mail.html });
   }
 
