@@ -36,6 +36,9 @@ const DOT: Record<Tone, string> = { info: '#2E9E47', ok: '#2E9E47', warn: '#E5A1
 const VALUE_TONE: Record<string, string> = { ok: '#1F8A4C', warn: '#B07D12', no: '#C4332B' };
 // Soft background tint for a toned cell, so the Status box reads its state at a glance.
 const FILL_TONE: Record<string, string> = { ok: '#E5F4EB', warn: '#FAF1E0', no: '#FBE9E7' };
+// Reference-ID callout — a light blue tint derived from the brand blue.
+const REF_BG = '#F3F4FD';
+const REF_BORDER = '#D7DBF6';
 
 // Font stacks — web font first, then the fallback the design is built to hold on.
 const F_SANS = "'Geist',Arial,Helvetica,sans-serif";
@@ -44,6 +47,10 @@ const F_MONO = "'JetBrains Mono','Courier New',monospace";
 
 const FOOTLINE = 'Rutherford.fr — closed-loop color management for offset &amp; flexo printing.';
 const FOOTMETA = '25+ years · 30+ countries · 1,000+ systems deployed';
+
+// The deal ID is the spine of the workflow: customers quote it when they place
+// an order and to follow up. Surfaced through a prominent banner with this note.
+const REF_NOTE = 'Quote this reference on any order or when you follow up on this validation.';
 
 type Tone = 'info' | 'ok' | 'warn' | 'no';
 type Row = { k: string; v: string; mono?: boolean };
@@ -93,6 +100,23 @@ function stripBlock(cells: Cell[]): string {
   return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border:1px solid ${DATA_BORDER};border-radius:10px;border-collapse:separate;margin:20px 0 22px;"><tr>${tds}</tr></table>`;
 }
 
+// A high-visibility reference-ID callout: a light-blue card with a blue accent
+// bar and the ID set large in mono, so it can't be missed. Unlike a data row or
+// the eyebrow, this is the one element the customer can't scroll past.
+function referenceBanner(value: string, note: string): string {
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:separate;margin:18px 0 22px;">
+    <tr><td style="background:${REF_BG};border:1px solid ${REF_BORDER};border-left:4px solid ${BLUE};border-radius:10px;padding:16px 20px;">
+      <div style="font-family:${F_MONO};font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:${MUTED};">Your reference</div>
+      <div style="font-family:${F_MONO};font-size:27px;font-weight:600;letter-spacing:.01em;color:${BLUE};line-height:1.15;margin-top:5px;">${esc(
+        value
+      )}</div>
+      <div style="font-family:${F_BODY};font-size:12.5px;line-height:1.5;color:${BODY};margin-top:8px;">${esc(
+        note
+      )}</div>
+    </td></tr>
+  </table>`;
+}
+
 function cta(label: string, href: string): string {
   return `<table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr><td align="left" bgcolor="${BLUE}" style="border-radius:999px;">
     <!--[if mso]>&nbsp;<![endif]-->
@@ -115,6 +139,9 @@ export type EmailSpec = {
   accentColor?: string;
   /** Optional co-brand line under the header (e.g. "Invited by [reseller]"). */
   coBrand?: { prefix: string; label: string; logoUrl: string | null };
+  /** Prominent reference-ID callout, rendered just under the headline. The deal
+   * ID the customer quotes on orders and follow-ups — given top billing. */
+  reference?: { value: string; note: string };
   /** Body paragraphs — may contain <strong>. Caller is responsible for escaping. */
   body: string[];
   dataBlock?: string;
@@ -197,6 +224,7 @@ export function render(spec: EmailSpec): string {
 
           <h1 class="rf-h1" style="font-family:${F_SANS};font-weight:600;font-size:26px;line-height:1.16;letter-spacing:-.022em;color:${INK};margin:12px 0 15px;">${headline}</h1>
 
+          ${spec.reference ? referenceBanner(spec.reference.value, spec.reference.note) : ''}
           ${paragraphs}
           ${spec.dataBlock ?? ''}
           ${secondary}
@@ -245,7 +273,6 @@ export type AckLead = {
 export function acknowledgementEmail(lead: AckLead): { subject: string; html: string } {
   const ref = reference(lead.dealId);
   const rows: Row[] = [];
-  if (ref) rows.push({ k: 'Reference', v: ref, mono: true });
   rows.push({ k: 'Company', v: lead.company });
   rows.push({ k: 'Country', v: lead.country });
   rows.push({ k: 'Press', v: lead.machine });
@@ -255,12 +282,12 @@ export function acknowledgementEmail(lead: AckLead): { subject: string; html: st
     html: render({
       subject: `We've received your console validation${ref ? ` — ref ${ref}` : ''}`,
       preheader: 'Reviewed within one business day.',
-      eyebrow: `REQUEST RECEIVED${ref ? ` · REF ${ref}` : ''}`,
+      eyebrow: 'REQUEST RECEIVED',
       tone: 'info',
       headline: { pre: "Thank you — we've ", accent: 'received', post: ' your request.' },
+      reference: ref ? { value: ref, note: REF_NOTE } : undefined,
       body: [
         'Your console validation request is in. Our team reviews every submission and comes back within <strong>one business day</strong> with your press eligibility and the next steps.',
-        'Please keep your reference for any follow-up.',
       ],
       dataBlock: tableBlock(rows),
       cta: TRACK_CTA,
@@ -296,10 +323,11 @@ export function canConnectEmail(lead: ResultLead): { subject: string; html: stri
     html: render({
       subject: 'Good news — your press is eligible for closed-loop color',
       preheader: `${press} · confirmed compatible.`,
-      eyebrow: `ELIGIBILITY CONFIRMED${ref ? ` · REF ${ref}` : ''}`,
+      eyebrow: 'ELIGIBILITY CONFIRMED',
       tone: 'ok',
       headline: { pre: 'Good news — your press is ', accent: 'eligible', post: '.' },
       accentColor: VALUE_TONE.ok,
+      reference: ref ? { value: ref, note: REF_NOTE } : undefined,
       body: [
         `We've reviewed your console validation and confirmed that your <strong>${esc(
           press
@@ -326,10 +354,11 @@ export function cannotConnectEmail(lead: ResultLead): { subject: string; html: s
     html: render({
       subject: `Your console review is complete${ref ? ` — ref ${ref}` : ''}`,
       preheader: "This press isn't currently supported — but that can change.",
-      eyebrow: `REVIEW COMPLETE${ref ? ` · REF ${ref}` : ''}`,
+      eyebrow: 'REVIEW COMPLETE',
       tone: 'no',
       headline: { pre: "This press isn't currently ", accent: 'eligible', post: '.' },
       accentColor: VALUE_TONE.no,
+      reference: ref ? { value: ref, note: REF_NOTE } : undefined,
       body: [
         `We've finished reviewing your submission. Your <strong>${esc(
           press
@@ -476,9 +505,10 @@ export function moreInfoEmail(lead: ResultLead): { subject: string; html: string
     html: render({
       subject: `We need a little more to finish your review${ref ? ` — ref ${ref}` : ''}`,
       preheader: 'A few extra details before we can confirm eligibility.',
-      eyebrow: `MORE INFORMATION NEEDED${ref ? ` · REF ${ref}` : ''}`,
+      eyebrow: 'MORE INFORMATION NEEDED',
       tone: 'warn',
       headline: { pre: 'We need a little ', accent: 'more', post: ' to finish your review.' },
+      reference: ref ? { value: ref, note: REF_NOTE } : undefined,
       body: [
         `Your submission${press ? ` for <strong>${esc(press)}</strong>` : ''} is almost there. Before we can confirm eligibility, our team needs a few additional details about your press and console.`,
         'Open your request to add the details — a comment and any extra photos. Your request stays open and we resume the review as soon as they arrive.',
