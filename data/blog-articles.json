@@ -1,5 +1,271 @@
 [
   {
+    "slug": "g7-vs-iso-12647-offset-color",
+    "title": "G7 vs ISO 12647",
+    "excerpt": "G7 and ISO 12647 both standardize offset color, but they take different routes. Here is how they differ and how to choose, or combine, them.",
+    "lead": "G7 and ISO 12647 are the two references most offset printers run into. They are not rivals so much as two routes to the same goal: predictable, repeatable color. Here is how they differ.",
+    "image": "/images/academy/hero.jpg",
+    "publishedAt": "2026-06-17",
+    "category": "Guides",
+    "paragraphs": [
+      "G7 and ISO 12647 aim at the same outcome: color that hits a known target and repeats, job after job. Where they differ is the method they use to get there, which is why printers often confuse them.",
+      "ISO 12647-2 is a process standard. It defines aim values: the Lab values of the solid primaries, the tone value increase (TVI) curves, the substrate classes and the tolerances. You conform by measuring the sheet and matching those numbers.",
+      "G7, from Idealliance, is a calibration methodology built on gray balance. Instead of controlling each channel's dot gain, it defines how a press should reproduce a neutral print density curve (NPDC) and gray balance, so two devices share the same visual appearance.",
+      "The key difference is what you control. ISO controls TVI per channel; G7 controls gray balance and the neutral curve. ISO is process-value-led, G7 is appearance-led. In practice many shops use G7 as the calibration route to reach an ISO 12647 or Fogra characterization.",
+      "Geography plays a role too. G7 is dominant in North America and in much of packaging; ISO 12647 is the common reference in Europe. Plenty of printers run both, because customers and proofing chains expect one or the other.",
+      "How to choose: let the customer or brand-owner requirement decide first; otherwise pick the standard your proofing and approval chain already expects. They are compatible, not mutually exclusive.",
+      "Whichever you choose, the mechanics are the same: measurement, a defined target, and control to hold it. Closed-loop color control keeps the press on your chosen target run after run, instead of drifting between checks."
+    ],
+    "originalUrl": "https://rutherford.fr/console-validation",
+    "sources": [
+      {
+        "label": "Idealliance, G7 methodology",
+        "href": "https://www.idealliance.org/g7"
+      },
+      {
+        "label": "ISO 12647-2",
+        "href": "https://www.iso.org/standard/57833.html"
+      },
+      {
+        "label": "Fogra research institute",
+        "href": "https://fogra.org/"
+      }
+    ]
+  },
+  {
+    "slug": "m0-m1-m2-m3-measurement-conditions-print",
+    "title": "M0, M1, M2, M3 explained",
+    "excerpt": "What M0, M1, M2 and M3 measurement conditions mean for print color, how optical brighteners and UV change your readings, and which to use.",
+    "lead": "Two operators can measure the same sheet and read different numbers, simply because they used a different measurement condition. Here is what M0, M1, M2 and M3 mean, and when to use each.",
+    "image": "/images/academy/illustration.jpg",
+    "publishedAt": "2026-06-15",
+    "category": "Guides",
+    "paragraphs": [
+      "The light used during a measurement changes the result, especially on modern papers that contain optical brightening agents (OBAs). A color value reported without its measurement condition is ambiguous, because someone else may read the same sheet differently. ISO 13655 defines these conditions so results are comparable.",
+      "M0 is traditional, unfiltered illumination (roughly incandescent, illuminant A). It is the legacy condition and still widely used, but its UV content is undefined, so OBA-heavy papers can read inconsistently between instruments.",
+      "M1 is defined daylight (D50), including a specified UV content. It is the modern reference for consistent results across instruments and locations, particularly on brightened papers, and it is now the recommended default in many standards and workflows.",
+      "M2 excludes UV with a filter. By cutting the brightener's contribution, it shows the ink's color without the OBA effect, which is useful when you want to compare ink independently of the paper's brightening.",
+      "M3 adds polarization on top of UV exclusion. Polarized measurement reduces the gap between wet and dry readings on press, which helps when measuring fresh sheets at the console.",
+      "Practical guidance: align the condition with your standard and your customer, document it with every measurement, and use the same condition everywhere (proofing, press and reporting). M1 is the common modern choice for most commercial and packaging work.",
+      "The takeaway is simple: choose one condition, set it consistently across the workflow, and let your closed-loop system hold the target as measured under that condition. Consistency of method matters as much as the numbers themselves."
+    ],
+    "originalUrl": "https://rutherford.fr/console-validation",
+    "sources": [
+      {
+        "label": "ISO 13655, spectral measurement and computation",
+        "href": "https://www.iso.org/standard/65430.html"
+      },
+      {
+        "label": "X-Rite, M0/M1/M2 measurement conditions",
+        "href": "https://www.xrite.com/"
+      },
+      {
+        "label": "Idealliance, G7 and measurement",
+        "href": "https://www.idealliance.org/g7"
+      }
+    ]
+  },
+  {
+    "slug": "closed-loop-color-control-offset-guide",
+    "title": "Closed-loop color control for offset",
+    "excerpt": "What closed-loop color control is, how it works on an offset press, and how it cuts makeready waste while holding color stable, shift after shift.",
+    "lead": "Closed-loop color control is the difference between chasing color by eye and holding it automatically, run after run. Here is how it works on a modern offset press, and what it changes on the floor.",
+    "image": "/images/Bundle Rutherford-4.jpg",
+    "publishedAt": "2026-06-16",
+    "category": "Guides",
+    "paragraphs": [
+      "Closed-loop color control is a continuous loop: measure, decide, correct. A measurement device reads the color bar on the printed sheet, software compares each zone to the target, and the press ink keys are adjusted automatically to bring color back in line. The opposite, open-loop control, relies on the operator to read a sheet, judge it and turn the keys by hand, which is slower and far less repeatable.",
+      "A closed-loop setup has three building blocks. The sensor reads color: a handheld spectrophotometer, an automated scanning table such as X-Rite IntelliTrax2, or a true inline system. The decision layer is the software that holds your spectral targets and standards (ISO 12647, G7) and computes the correction. The actuator is the press ink-zone control that moves the keys. The approach is press-agnostic and works across Heidelberg, Koenig & Bauer, Komori, Manroland and other console families.",
+      "The first win is at makeready. CIP3/CIP4 presetting opens the ink keys from prepress data instead of from a default, so the press starts close to target. Closed-loop then drives the press into tolerance in fewer pulls, which means fewer sheets and less ink burned before the first saleable copy.",
+      "The second win is during the run. Color drifts as paper batches change, fountain solution shifts, temperature rises and plates wear. A closed-loop system measures and corrects continuously, so color stays inside your DeltaE tolerance from the first sheet to the last. That means fewer remakes and fewer customer rejections.",
+      "The outcomes are measurable: lower makeready waste, shorter setup time, tighter DeltaE, and repeatability across shifts and sites. It also produces auditable color data for every job, which is increasingly valuable for brand owners and for packaging compliance.",
+      "Most printers already run X-Rite PANTONE measurement. Going closed-loop is the step of adding the decision and actuator layer, for example with Rutherford ColorLoop. A free console validation confirms whether your specific press console and ink-key system qualify, in about two minutes."
+    ],
+    "originalUrl": "https://rutherford.fr/offset360",
+    "sources": [
+      {
+        "label": "Rutherford, Offset360 closed-loop solution",
+        "href": "https://rutherford.fr/offset360"
+      },
+      {
+        "label": "ISO 12647 process standard for offset",
+        "href": "https://www.iso.org/standard/57833.html"
+      },
+      {
+        "label": "X-Rite, measurement instruments",
+        "href": "https://www.xrite.com/"
+      }
+    ]
+  },
+  {
+    "slug": "reduce-makeready-waste-offset-press",
+    "title": "Reduce makeready waste: 10 levers",
+    "excerpt": "Ten concrete levers to cut makeready waste on offset, from CIP3 presetting to closed-loop color control, and how to measure the savings.",
+    "lead": "Makeready is where margin quietly leaks out: paper, ink, energy and press time, on every job. Here are ten levers that cut that waste, with the highest-impact ones first.",
+    "image": "/images/academy/illustration.jpg",
+    "publishedAt": "2026-06-13",
+    "category": "Guides",
+    "paragraphs": [
+      "Every setup burns sheets before the first saleable copy. Multiply the waste per makeready by the number of makereadies per day, per press, per year, and it becomes one of the largest recurring costs in the pressroom. The good news: most of it is controllable.",
+      "Lever 1, CIP3/CIP4 ink presetting. Open the ink keys from prepress coverage data instead of starting from a default. The press begins close to target, which removes the slowest part of makeready.",
+      "Lever 2, automated scanning measurement. Replace slow handheld spot checks with full color-bar scanning, for example X-Rite IntelliTrax2. Reads are faster, complete and repeatable, so decisions are made on data, not memory.",
+      "Lever 3, closed-loop color control. Let the system move the ink keys into tolerance automatically. This is the single biggest reduction in pulls once presetting and scanning are in place.",
+      "Lever 4, standardize to ISO 12647 or G7. A defined, measurable target means the operator and the system chase the same thing, instead of a subjective good copy.",
+      "Levers 5 to 8, control the variables that move color: fountain solution pH and conductivity, substrate batch consistency, plate and ink consistency, and a well-designed color bar placed where it can be read.",
+      "Lever 9, operator workflow and training. A shared vocabulary and a defined procedure cut the variation between operators and shifts, which is often invisible until it is measured.",
+      "Lever 10, measure it. Track makeready sheets, time and cost per job. What gets measured improves, and you cannot prove a saving you never baselined.",
+      "These levers compound. Presetting plus scanning plus closed-loop together can let the system effectively self-finance from the waste it removes. You can estimate the annual saving for your own figures with the Rutherford ROI tool, then confirm your press with a free console validation."
+    ],
+    "originalUrl": "https://rutherford.fr/roi",
+    "sources": [
+      {
+        "label": "Rutherford, ROI estimator",
+        "href": "https://rutherford.fr/roi"
+      },
+      {
+        "label": "ISO 12647 process standard",
+        "href": "https://www.iso.org/standard/57833.html"
+      },
+      {
+        "label": "Idealliance, G7 methodology",
+        "href": "https://www.idealliance.org/g7"
+      }
+    ]
+  },
+  {
+    "slug": "iso-12647-2-explained-press-operators",
+    "title": "ISO 12647-2, explained",
+    "excerpt": "A plain-language guide to ISO 12647-2 for offset: what it standardizes (substrates, primaries, tone value increase, tolerances) and why it makes color repeatable.",
+    "lead": "ISO 12647-2 is the reference that turns good color from an opinion into a target. Here is what it actually specifies for sheetfed and web offset, without the jargon.",
+    "image": "/images/academy/hero.jpg",
+    "publishedAt": "2026-06-11",
+    "category": "Guides",
+    "paragraphs": [
+      "ISO 12647-2 is the international process standard for offset printing. It defines the aim values a job should hit so that the same file prints consistently, whether it runs today or next month, on one press or another.",
+      "It starts with substrate classes. Different paper categories (for example gloss coated, matte coated, uncoated) have their own aim values, because the same ink looks different on different stock.",
+      "It defines the primaries: the target Lab values for solid cyan, magenta, yellow and black, plus the two-color overprints. These are the anchor colors your process is judged against.",
+      "It defines tone value increase, often called dot gain: how much the midtones grow on press, expressed as curves. Controlling TVI is what keeps images from going muddy or flat.",
+      "Finally it sets tolerances: how far a production sheet may deviate from aim, and how much it may vary across the run. Conformance is judged from measurements taken under defined conditions (M0 or M1), which is why the measurement condition matters as much as the number.",
+      "On the floor, a defined target is what makes color repeatable. The operator and a closed-loop system chase the same aim values, makeready is faster, and brand owners get consistent results they can trust.",
+      "ISO 12647 is not alone. G7 and GRACoL approach the same goal through gray balance, and Fogra characterization data underpins many profiles. They are complementary ways to reach a known, measurable target.",
+      "Reaching the standard takes three things: measurement, a defined target, and ideally closed-loop control to hold it during the run. A free console validation tells you whether your press is equipped to get there."
+    ],
+    "originalUrl": "https://rutherford.fr/console-validation",
+    "sources": [
+      {
+        "label": "ISO 12647-2",
+        "href": "https://www.iso.org/standard/57833.html"
+      },
+      {
+        "label": "Fogra research institute",
+        "href": "https://fogra.org/"
+      },
+      {
+        "label": "Idealliance, G7 and GRACoL",
+        "href": "https://www.idealliance.org/g7"
+      }
+    ]
+  },
+  {
+    "slug": "delta-e-tolerance-print-guide",
+    "title": "DeltaE: what tolerance is acceptable?",
+    "excerpt": "What DeltaE and DeltaE00 mean in printing, what tolerances are realistic for process and brand colors, and how to hold them in production.",
+    "lead": "DeltaE is how the print industry puts a number on color difference. But the right answer to what DeltaE is acceptable depends on what you are measuring. Here is a practical guide.",
+    "image": "/images/Bundle Rutherford-4.jpg",
+    "publishedAt": "2026-06-09",
+    "category": "Guides",
+    "paragraphs": [
+      "DeltaE is a single number for the distance between two colors in Lab space. A measured sheet and its target each have a Lab value, and DeltaE is how far apart they are. The smaller the number, the closer the match.",
+      "There are several formulas. The older DeltaE76 is a simple geometric distance; modern standards use DeltaE00 (CIE2000), which weights the calculation to match how the human eye actually perceives differences, especially in neutrals and saturated colors.",
+      "As a rough guide, a DeltaE00 around 1 is barely perceptible to a trained eye, a few units is noticeable on a critical color, and larger values are obvious. These are guidelines, not hard rules, because perceptibility depends on the color and the viewing conditions.",
+      "Realistic tolerances depend on the color. Process primaries are usually held to the limits set by ISO 12647 or G7. Brand and spot colors are stricter, because a customer recognizes their signature color instantly; brand owners often ask for DeltaE00 of 2 or less on those.",
+      "Color drifts in production for physical reasons: substrate batch, ink, fountain solution, temperature and plate wear all move the result during a run.",
+      "Holding DeltaE means three things: measure under the correct condition (M0 or M1), set a clear target, and correct continuously. Closed-loop control corrects every few sheets rather than at occasional checks, which is what keeps DeltaE inside tolerance from first sheet to last.",
+      "The payoff is direct: tighter DeltaE means fewer rejects, less makeready and rerun waste, and brand colors that look the same every time. A free console validation confirms whether your press can run that kind of control."
+    ],
+    "originalUrl": "https://rutherford.fr/console-validation",
+    "sources": [
+      {
+        "label": "ISO 12647 tolerances",
+        "href": "https://www.iso.org/standard/57833.html"
+      },
+      {
+        "label": "X-Rite, understanding DeltaE",
+        "href": "https://www.xrite.com/"
+      },
+      {
+        "label": "Idealliance, G7 tolerances",
+        "href": "https://www.idealliance.org/g7"
+      }
+    ]
+  },
+  {
+    "slug": "ppwr-dpp-readiness-checklist-packaging-printers",
+    "title": "PPWR & DPP: printer checklist",
+    "excerpt": "What the EU PPWR and Digital Product Passport mean for packaging printers, and a practical checklist to get color, data and traceability ready.",
+    "lead": "The EU Packaging and Packaging Waste Regulation (PPWR) and the Digital Product Passport (DPP) are reshaping packaging. Here is a printer-focused checklist of what to prepare.",
+    "image": "/images/newsletter-products.jpg",
+    "publishedAt": "2026-06-06",
+    "category": "Guides",
+    "paragraphs": [
+      "Two EU initiatives are changing packaging at the same time. PPWR pushes recyclability, recycled content and waste reduction across packaging. The Digital Product Passport adds traceable, shareable data about a product and how it was made. Both reach back to the printer.",
+      "Material and recyclability come first. Substrate and ink choices, and design-for-recycling decisions, increasingly determine whether a pack is compliant. Printers are part of that conversation with brand owners and converters.",
+      "Waste reduction is now also a sustainability metric, not only a cost. Every sheet wasted at makeready is material wasted, so production efficiency and compliance now point in the same direction.",
+      "Data and traceability are the new requirement. A DPP means information about the product and process must be captured and made available. Color and quality data, such as validation records and DeltaE measurements per job, become assets rather than paperwork.",
+      "This is where color control connects to compliance. A closed-loop system produces auditable color data for every run, which supports brand-owner reporting and the traceability that DPP expects.",
+      "A practical checklist: standardize to ISO 12647 or G7; capture measurement and validation records per job; cut makeready waste; document materials and inks; and make your data exportable so it can feed a passport.",
+      "Rutherford sits on the color and data side of this shift: closed-loop color with traceable records. A free console validation is a low-effort first step to see where your press stands."
+    ],
+    "originalUrl": "https://rutherford.fr/offset360",
+    "sources": [
+      {
+        "label": "EU Packaging and Packaging Waste Regulation",
+        "href": "https://environment.ec.europa.eu/topics/waste-and-recycling/packaging-waste_en"
+      },
+      {
+        "label": "European Commission, Digital Product Passport",
+        "href": "https://commission.europa.eu/energy-climate-change-environment/standards-tools-and-labels/products-labelling-rules-and-requirements/digital-product-passport_en"
+      },
+      {
+        "label": "Rutherford, Offset360",
+        "href": "https://rutherford.fr/offset360"
+      }
+    ]
+  },
+  {
+    "slug": "cip3-cip4-ink-presetting-makeready",
+    "title": "CIP3/CIP4 ink presetting",
+    "excerpt": "What CIP3/CIP4 (PPF, JDF) ink presetting is, how it opens ink keys from prepress data, and how it pairs with closed-loop color to shorten makeready.",
+    "lead": "CIP3/CIP4 presetting is one of the cheapest ways to shorten makeready: it opens your ink keys from prepress data instead of from zero. Here is how it works and where its limits are.",
+    "image": "/images/academy/illustration.jpg",
+    "publishedAt": "2026-06-04",
+    "category": "Guides",
+    "paragraphs": [
+      "Starting ink keys at a default and dialing them in by hand is one of the slowest parts of makeready. Every zone has to be read, judged and adjusted, and the press wastes sheets while the operator converges on target.",
+      "CIP3 and its successor CIP4 are workflow standards that move data between prepress, press and postpress. The relevant piece here is ink presetting: the Print Production Format (PPF), and later CIP4/JDF, carry ink-coverage information from prepress to the press console.",
+      "Presetting works from the plate. The RIP computes how much ink each key zone needs from the coverage of the separations, and the console opens the keys accordingly. The press starts close to target instead of flat.",
+      "The makeready gain is immediate: starting close means fewer pulls before the first good sheet, which is less paper, ink and time on every job.",
+      "Presetting and closed-loop are complementary. Presetting gets you close fast; closed-loop then drives the press into DeltaE tolerance and holds it through the run. Together they remove the most makeready waste.",
+      "There are practical conditions. The preset curves must be calibrated to the press and substrate, and the prepress data has to be clean. When that is in place, presetting is close to free savings on every job.",
+      "If you want to size the gain for your own production, the Rutherford ROI tool estimates the saved sheets and time, and a free console validation confirms what your press supports."
+    ],
+    "originalUrl": "https://rutherford.fr/roi",
+    "sources": [
+      {
+        "label": "CIP4 Organization (PPF, JDF)",
+        "href": "https://www.cip4.org/"
+      },
+      {
+        "label": "ISO 12647 process standard",
+        "href": "https://www.iso.org/standard/57833.html"
+      },
+      {
+        "label": "Rutherford, ROI estimator",
+        "href": "https://rutherford.fr/roi"
+      }
+    ]
+  },
+  {
     "slug": "offset360-closed-loop-bundle",
     "title": "Offset360",
     "excerpt": "The X-Rite + Rutherford closed-loop bundle for sheetfed offset. Discover the dedicated page.",

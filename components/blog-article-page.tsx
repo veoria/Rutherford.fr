@@ -8,11 +8,11 @@ import type { BlogArticle } from '@/lib/blog';
 export function BlogArticlePage({ article }: { article: BlogArticle }) {
   const { locale } = useLanguage();
   const labels = {
-    en: { sources: 'Sources', back: 'Back to all articles', original: 'Original page' },
-    fr: { sources: 'Sources', back: 'Retour aux articles', original: "Page d'origine" },
-    de: { sources: 'Quellen', back: 'Zurück zu allen Artikeln', original: 'Originalseite' },
-    it: { sources: 'Fonti', back: 'Torna a tutti gli articoli', original: 'Pagina originale' },
-    es: { sources: 'Fuentes', back: 'Volver a todos los artículos', original: 'Página original' },
+    en: { sources: 'Sources', back: 'Back to all articles', original: 'Original page', ctaTitle: 'Is your press ready for closed-loop color?', ctaCheck: 'Check your eligibility', ctaRoi: 'Calculate your ROI' },
+    fr: { sources: 'Sources', back: 'Retour aux articles', original: "Page d'origine", ctaTitle: 'Votre presse est-elle prête pour le closed-loop ?', ctaCheck: 'Vérifier votre éligibilité', ctaRoi: 'Calculer votre ROI' },
+    de: { sources: 'Quellen', back: 'Zurück zu allen Artikeln', original: 'Originalseite', ctaTitle: 'Ist Ihre Druckmaschine bereit für Closed-Loop?', ctaCheck: 'Eignung prüfen', ctaRoi: 'ROI berechnen' },
+    it: { sources: 'Fonti', back: 'Torna a tutti gli articoli', original: 'Pagina originale', ctaTitle: 'La tua macchina è pronta per il closed-loop?', ctaCheck: "Verifica l'idoneità", ctaRoi: 'Calcola il ROI' },
+    es: { sources: 'Fuentes', back: 'Volver a todos los artículos', original: 'Página original', ctaTitle: '¿Tu prensa está lista para closed-loop?', ctaCheck: 'Comprobar elegibilidad', ctaRoi: 'Calcular tu ROI' },
   }[locale];
 
   return (
@@ -53,6 +53,14 @@ export function BlogArticlePage({ article }: { article: BlogArticle }) {
               </div>
             ) : null}
           </article>
+        </div>
+
+        <div className="container">
+          <div style={{ background: '#f5f5f7', border: '1px solid #e7e7e0', borderRadius: '18px', padding: '30px 24px', textAlign: 'center', margin: '8px 0 4px' }}>
+            <h2 style={{ margin: '0 0 18px', fontSize: '22px', lineHeight: '28px', letterSpacing: '-0.3px', color: '#16130f' }}>{labels.ctaTitle}</h2>
+            <a className="button button-accent" href="/console-validation" style={{ margin: '0 6px 8px' }}>{labels.ctaCheck}</a>
+            <a className="button button-light" href="/roi" style={{ margin: '0 6px 8px' }}>{labels.ctaRoi}</a>
+          </div>
         </div>
 
         <div className="container article-actions">
