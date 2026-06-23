@@ -15,6 +15,9 @@ const nextConfig = {
       { source: '/console-validation.html', destination: '/console-validation', permanent: true },
       { source: '/support.html', destination: '/support', permanent: true },
 
+      // Short link for social bios / posts → console validation
+      { source: '/check', destination: '/console-validation', permanent: false },
+
       { source: '/success-story-from-rutherford-xrite-pantone.html', destination: '/#cases', permanent: true },
       { source: '/phillips.html', destination: '/#cases', permanent: true },
       { source: '/vms-print-moscow-russia.html', destination: '/#cases', permanent: true },
@@ -22,7 +25,9 @@ const nextConfig = {
       { source: '/blog.html', destination: '/blog', permanent: true },
       { source: '/whats-about-extended-gamut.html', destination: '/blog/extended-gamut-from-lefrancq', permanent: true },
 
-      { source: '/:path*.html', destination: '/', permanent: true },
+      // Catch-all for legacy *.html URLs — but never swallow the Google
+      // Search Console verification file (served statically from /public).
+      { source: '/:path((?!google[0-9a-f]+).*).html', destination: '/', permanent: true },
     ];
   },
 };
