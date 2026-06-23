@@ -111,11 +111,11 @@ export function BlogArticlePage({ article }: { article: BlogArticle }) {
             </div>
 
             <div className="article-actions">
-              <a className="button button-light" href="/blog">
-                {labels.back}
+              <a className="article-textlink" href="/blog">
+                <span aria-hidden="true">&larr;</span> {labels.back}
               </a>
-              <a className="button button-accent" href={article.originalUrl} target="_blank" rel="noreferrer">
-                {labels.original}
+              <a className="article-textlink" href={article.originalUrl} target="_blank" rel="noreferrer">
+                {labels.original} <span aria-hidden="true">&rarr;</span>
               </a>
             </div>
           </div>
