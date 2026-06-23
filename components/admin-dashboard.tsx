@@ -782,6 +782,7 @@ export function AdminDashboard({
   const [query, setQuery] = useState('');
   const [editing, setEditing] = useState<AdminUser | null>(null);
   const [cvFilter, setCvFilter] = useState('');
+  const [cvQuery, setCvQuery] = useState('');
   const [editingOrg, setEditingOrg] = useState<AdminOrgFull | null>(null);
   const [creatingOrg, setCreatingOrg] = useState(false);
 
@@ -793,10 +794,27 @@ export function AdminDashboard({
     );
   }, [users, query]);
 
-  const filteredCv = useMemo(
-    () => (cvFilter ? consoleValidations.filter((c) => c.status === cvFilter) : consoleValidations),
-    [consoleValidations, cvFilter]
-  );
+  const filteredCv = useMemo(() => {
+    const q = cvQuery.trim().toLowerCase();
+    return consoleValidations.filter((c) => {
+      if (cvFilter && c.status !== cvFilter) return false;
+      if (!q) return true;
+      // Match a person across both the submission email and the account email
+      // (so requests sent before the account existed — user_id still null — are
+      // found too), plus reviewer, company, press and the deal/ref id.
+      return [
+        c.company,
+        c.country,
+        c.machine,
+        c.email,
+        c.userEmail,
+        c.reviewedBy,
+        c.refCode,
+        c.pipedriveDealId != null ? `id ${c.pipedriveDealId}` : null,
+        c.pipedriveDealId != null ? String(c.pipedriveDealId) : null,
+      ].some((f) => (f ?? '').toString().toLowerCase().includes(q));
+    });
+  }, [consoleValidations, cvFilter, cvQuery]);
 
   const downloadCsv = () => {
     const blob = new Blob(['﻿' + toCsv(users)], { type: 'text/csv;charset=utf-8;' });
@@ -930,19 +948,29 @@ export function AdminDashboard({
           <div className="admin-block">
             <div className="admin-block-head">
               <h2>Console validations ({filteredCv.length})</h2>
-              <select
-                className="admin-search"
-                value={cvFilter}
-                onChange={(e) => setCvFilter(e.target.value)}
-                aria-label="Filtrer par statut"
-              >
-                <option value="">Tous les statuts</option>
-                {Object.keys(CV_STATUS_LABELS).map((s) => (
-                  <option key={s} value={s}>
-                    {CV_STATUS_LABELS[s]}
-                  </option>
-                ))}
-              </select>
+              <div className="admin-block-controls">
+                <input
+                  type="search"
+                  className="admin-search"
+                  placeholder="Rechercher (e-mail, société, presse, validé par, ID…)"
+                  value={cvQuery}
+                  onChange={(e) => setCvQuery(e.target.value)}
+                  aria-label="Rechercher une validation"
+                />
+                <select
+                  className="admin-search"
+                  value={cvFilter}
+                  onChange={(e) => setCvFilter(e.target.value)}
+                  aria-label="Filtrer par statut"
+                >
+                  <option value="">Tous les statuts</option>
+                  {Object.keys(CV_STATUS_LABELS).map((s) => (
+                    <option key={s} value={s}>
+                      {CV_STATUS_LABELS[s]}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
             <div className="admin-table-wrap">
               <table className="admin-table">
