@@ -8,6 +8,17 @@ export type BlogArticle = {
   image: string;
   publishedAt?: string;
   paragraphs: string[];
+  /**
+   * Optional structured editorial body (headings, subheadings, bullet lists).
+   * When present, the article page renders this instead of the flat
+   * `paragraphs`, for a magazine-style layout. `paragraphs` stays as the
+   * fallback / SEO summary for articles that don't define a body.
+   */
+  body?: Array<
+    | { type: 'h2' | 'h3' | 'p'; text: string }
+    | { type: 'ul'; items: string[] }
+    | { type: 'figure'; src: string; alt?: string; caption?: string }
+  >;
   originalUrl: string;
   category: string;
   /**
