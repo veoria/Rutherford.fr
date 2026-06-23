@@ -1,9 +1,12 @@
 'use client';
 
 import Image from 'next/image';
+import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { type Locale, useLanguage } from '@/components/language-provider';
 import { createSupabaseBrowserClient } from '@/lib/supabase/client';
+
+const NAV_PREFIX_LOCALES = ['fr', 'de', 'it', 'es'];
 
 type SiteNavProps = {
   current?: 'home' | 'roi' | 'blog' | 'console-validation' | 'support' | 'academy' | 'account';
@@ -13,6 +16,13 @@ const ACADEMY_ENABLED = process.env.NEXT_PUBLIC_ACADEMY_ENABLED === 'true';
 
 export function SiteNav({ current = 'home' }: SiteNavProps) {
   const { locale, setLocale } = useLanguage();
+  const pathname = usePathname() || '/';
+  const router = useRouter();
+  const navSeg = pathname.split('/')[1];
+  const basePath = NAV_PREFIX_LOCALES.includes(navSeg) ? pathname.slice(navSeg.length + 1) || '/' : pathname;
+  // Prefix internal marketing links with the current locale so navigation stays in-language.
+  const lhref = (path: string) =>
+    locale === 'en' || !path.startsWith('/') ? path : `/${locale}${path === '/' ? '' : path}`;
   const [open, setOpen] = useState(false);
   const [localeOpen, setLocaleOpen] = useState(false);
   const localeRef = useRef<HTMLDivElement | null>(null);
@@ -176,7 +186,7 @@ export function SiteNav({ current = 'home' }: SiteNavProps) {
     <>
       <header className="site-header">
       <div className="container header-inner">
-        <a className="brandmark" href="/" aria-label="Rutherford.fr">
+        <a className="brandmark" href={lhref('/')} aria-label="Rutherford.fr">
           <Image src="/images/rutherford-logo-black.png" alt="Rutherford.fr" width={300} height={58} sizes="184px" priority />
         </a>
 
@@ -196,20 +206,20 @@ export function SiteNav({ current = 'home' }: SiteNavProps) {
           className={`main-nav ${open ? 'is-open' : ''}`}
           aria-label={labels.mainNav}
         >
-          <a className={current === 'home' ? 'is-current' : undefined} href="/" onClick={() => setOpen(false)}>
+          <a className={current === 'home' ? 'is-current' : undefined} href={lhref('/')} onClick={() => setOpen(false)}>
             {labels.home}
           </a>
-          <a href="/#colorloop" onClick={() => setOpen(false)}>
+          <a href={lhref('/#colorloop')} onClick={() => setOpen(false)}>
             {labels.colorloop}
           </a>
-          <a className={current === 'roi' ? 'is-current' : undefined} href="/roi" onClick={() => setOpen(false)}>
+          <a className={current === 'roi' ? 'is-current' : undefined} href={lhref('/roi')} onClick={() => setOpen(false)}>
             {labels.roi}
           </a>
-          <a className={current === 'blog' ? 'is-current' : undefined} href="/blog" onClick={() => setOpen(false)}>
+          <a className={current === 'blog' ? 'is-current' : undefined} href={lhref('/blog')} onClick={() => setOpen(false)}>
             {labels.blog}
           </a>
           {academyEnabled ? (
-            <a className={current === 'academy' ? 'is-current' : undefined} href="/academy" onClick={() => setOpen(false)}>
+            <a className={current === 'academy' ? 'is-current' : undefined} href={lhref('/academy')} onClick={() => setOpen(false)}>
               {labels.academy}
             </a>
           ) : null}
@@ -227,14 +237,14 @@ export function SiteNav({ current = 'home' }: SiteNavProps) {
           </a>
           <a
             className={`mobile-nav-link mobile-nav-link-accent ${current === 'support' ? 'is-current' : ''}`}
-            href="/support"
+            href={lhref('/support')}
             onClick={() => setOpen(false)}
           >
             {labels.support}
           </a>
           <a
             className="mobile-nav-link mobile-nav-link-dark"
-            href="/console-validation"
+            href={lhref('/console-validation')}
             onClick={() => setOpen(false)}
           >
             {labels.console}
@@ -264,8 +274,13 @@ export function SiteNav({ current = 'home' }: SiteNavProps) {
                     role="menuitemradio"
                     aria-checked={option.code === locale}
                     onClick={() => {
+                      const target =
+                        option.code === 'en'
+                          ? basePath || '/'
+                          : `/${option.code}${basePath === '/' ? '' : basePath}`;
                       setLocale(option.code);
                       setLocaleOpen(false);
+                      router.push(target);
                     }}
                   >
                     {option.label}

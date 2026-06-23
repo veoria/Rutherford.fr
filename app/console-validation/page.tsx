@@ -9,7 +9,6 @@ const ogDescription =
 export const metadata: Metadata = {
   title: ogTitle,
   description: ogDescription,
-  alternates: { canonical: '/console-validation' },
   openGraph: {
     title: ogTitle,
     description: ogDescription,

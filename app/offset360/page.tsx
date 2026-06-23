@@ -6,9 +6,6 @@ export const metadata: Metadata = {
   title: 'Offset360 | Closed-loop color for sheetfed offset',
   description:
     'Offset360 is the X-Rite + Rutherford closed-loop bundle for sheetfed offset: IntelliTrax2 scanning, MeasureColor reporting, and Rutherford ColorLoop closed-loop control on the press.',
-  alternates: {
-    canonical: '/offset360',
-  },
   openGraph: {
     title: 'Offset360 | Closed-loop color for sheetfed offset',
     description:
