@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { SiteFooter } from '@/components/site-footer';
 import { SiteNav } from '@/components/site-nav';
 import { AccountSubnav } from '@/components/account-subnav';
+import { CvInvite, type CvInviteItem } from '@/components/cv-invite';
 import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 
 export type ConsoleValidationStatus =
@@ -25,6 +26,14 @@ export type ConsoleValidationRow = {
   reviewedBy: string | null;
   reviewedAt: string | null;
   customerReplyAt: string | null;
+};
+
+export type CvMessage = {
+  validationId: string;
+  author: 'team' | 'customer';
+  body: string | null;
+  photos: string[];
+  createdAt: string;
 };
 
 // Statuses where the customer can still add details (vs. a settled verdict).
@@ -164,50 +173,6 @@ function Stepper({ status }: { status: ConsoleValidationStatus }) {
   );
 }
 
-type TimelineItem = {
-  date?: string;
-  label: string;
-  sub?: string;
-  state: 'done' | 'current' | 'future';
-  tone?: 'amber' | 'blue' | 'red';
-};
-
-// Per-status activity, derived from what we actually store (submission date +
-// current status). No fabricated clock times — only the real submission date.
-function timelineFor(r: ConsoleValidationRow): TimelineItem[] {
-  const d = formatDate(r.createdAt);
-  const ref = r.reference ?? '';
-  const by = r.reviewedBy ? `by ${r.reviewedBy}` : undefined;
-  const rdate = r.reviewedAt ? formatDate(r.reviewedAt) : undefined;
-  const ev: TimelineItem[] = [
-    { date: d, label: 'Request submitted', state: 'done' },
-    { label: ref ? `Received — reference ${ref} assigned` : 'Received', state: 'done' },
-  ];
-  if (r.status !== 'submitted') ev.push({ label: 'Assigned to a reviewer', state: 'done' });
-  if (r.customerReplyAt) {
-    ev.push({ label: 'You sent additional details', date: formatDate(r.customerReplyAt), state: 'done' });
-  }
-
-  if (r.status === 'submitted') {
-    ev.push({ label: 'Awaiting review', state: 'current', tone: 'blue' });
-    ev.push({ label: 'Eligibility verdict', state: 'future' });
-  } else if (r.status === 'in_review') {
-    ev.push({ label: 'Under review', state: 'current', tone: 'blue' });
-    ev.push({ label: 'Eligibility verdict', state: 'future' });
-  } else if (r.status === 'changes_requested') {
-    ev.push({ label: 'More information requested', sub: by, date: rdate, state: 'current', tone: 'amber' });
-    ev.push({ label: 'Awaiting your response', state: 'future' });
-    ev.push({ label: 'Eligibility verdict', state: 'future' });
-  } else if (r.status === 'can_be_connected') {
-    ev.push({ label: 'Reviewed — compatible with closed-loop color', state: 'done' });
-    ev.push({ label: 'Marked connectable', sub: by, date: rdate, state: 'done' });
-  } else if (r.status === 'rejected') {
-    ev.push({ label: 'Reviewed', state: 'done' });
-    ev.push({ label: 'Marked not eligible', sub: by, date: rdate, state: 'done', tone: 'red' });
-  }
-  return ev;
-}
-
 function PageHead() {
   return (
     <div className="cvp-head">
@@ -237,16 +202,21 @@ function ProfilePrompt() {
 export function ConsoleValidationsPortal({
   rows,
   profileComplete,
+  canInvite = false,
+  invitations = [],
+  messages = [],
 }: {
   rows: ConsoleValidationRow[];
   profileComplete: boolean;
+  canInvite?: boolean;
+  invitations?: CvInviteItem[];
+  messages?: CvMessage[];
 }) {
   const router = useRouter();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [filter, setFilter] = useState<Tone | null>(null);
 
-  // "Provide more details" reply form state.
-  const [showReply, setShowReply] = useState(false);
+  // Conversation composer state.
   const [replyFiles, setReplyFiles] = useState<File[]>([]);
   const [replyComment, setReplyComment] = useState('');
   const [sending, setSending] = useState(false);
@@ -267,7 +237,6 @@ export function ConsoleValidationsPortal({
 
   // Reset the reply form whenever the selected dossier changes.
   useEffect(() => {
-    setShowReply(false);
     setReplied(false);
     setReplyFiles([]);
     setReplyComment('');
@@ -321,7 +290,6 @@ export function ConsoleValidationsPortal({
         throw new Error(b?.error ?? 'Something went wrong, please retry.');
       }
       setReplied(true);
-      setShowReply(false);
       setReplyFiles([]);
       setReplyComment('');
       router.refresh();
@@ -341,6 +309,7 @@ export function ConsoleValidationsPortal({
           <div className="cvp-wrap">
             <PageHead />
             {!profileComplete ? <ProfilePrompt /> : null}
+            {canInvite ? <CvInvite invitations={invitations} /> : null}
             <div className="cvp-empty">
               <p style={{ margin: 0, color: '#6A6A6A' }}>You have no console validation requests yet.</p>
               <a className="button button-dark" href="/console-validation" style={{ marginTop: 16 }}>
@@ -356,6 +325,8 @@ export function ConsoleValidationsPortal({
 
   const m = META[selected.status];
   const tone = GROUP_OF[selected.status];
+  const selectedMessages = messages.filter((msg) => msg.validationId === selected.id);
+  const canReply = CAN_REPLY.includes(selected.status);
 
   return (
     <main className="page-shell">
@@ -365,6 +336,7 @@ export function ConsoleValidationsPortal({
         <div className="cvp-wrap">
           <PageHead />
           {!profileComplete ? <ProfilePrompt /> : null}
+          {canInvite ? <CvInvite invitations={invitations} /> : null}
 
           <div className="cvp-summary">
             {GROUPS.map((g) => (
@@ -449,59 +421,37 @@ export function ConsoleValidationsPortal({
                 ))}
               </div>
 
-              <div className="cvp-tlhead">Activity</div>
-              <ol className="cvp-tline">
-                {timelineFor(selected).map((e, i) => (
-                  <li
-                    key={i}
-                    className={`cvp-tlrow is-${e.state}${e.tone === 'blue' ? ' is-blue' : ''}${
-                      e.tone === 'red' ? ' is-red' : ''
-                    }`}
-                  >
-                    <span className="cvp-tlnode" />
-                    <div>
-                      <div className="cvp-tllabel">{e.label}</div>
-                      {e.sub ? <div className="cvp-tlsub">{e.sub}</div> : null}
-                      {e.date ? <div className="cvp-tltime cvp-mono">{e.date}</div> : null}
-                    </div>
-                  </li>
-                ))}
-              </ol>
+              <div className="sup-chat cvp-chat">
+                <div className="sup-chat-h">Conversation</div>
+                <div className="sup-chat-body">
+                  {selectedMessages.length > 0 ? (
+                    selectedMessages.map((msg, i) => (
+                      <div key={i} className={`sup-msg sup-msg-${msg.author}`}>
+                        <div className="sup-msg-h">
+                          {msg.author === 'team' ? 'Our team' : 'You'}
+                          <span className="cvp-mono"> · {formatDate(msg.createdAt)}</span>
+                        </div>
+                        {msg.body ? <p>{msg.body}</p> : null}
+                        {msg.photos.length > 0 ? (
+                          <div className="sup-msg-photos">
+                            {msg.photos.map((url, j) => (
+                              <a key={j} href={url} target="_blank" rel="noreferrer">
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img src={url} alt="" />
+                              </a>
+                            ))}
+                          </div>
+                        ) : null}
+                      </div>
+                    ))
+                  ) : (
+                    <p className="sup-chat-empty">No messages yet — write below and our team will get it.</p>
+                  )}
+                </div>
 
-              <div className="cvp-actions">
-                {CAN_REPLY.includes(selected.status) ? (
-                  <button
-                    type="button"
-                    className={`cvp-btn${selected.status === 'changes_requested' ? ' is-amber' : ''}`}
-                    onClick={() => {
-                      setReplied(false);
-                      setShowReply((v) => !v);
-                    }}
-                  >
-                    {showReply ? 'Close' : m.action} →
-                  </button>
-                ) : (
-                  <a
-                    className="cvp-btn"
-                    href={`mailto:${SUPPORT}?subject=${encodeURIComponent(
-                      `Console validation ${selected.reference || listTitle(selected)}`
-                    )}`}
-                  >
-                    {m.action} →
-                  </a>
-                )}
-              </div>
-
-              {replied ? (
-                <p className="cvp-reply-msg">
-                  Thank you — your details were sent to our team and your request is back in review.
-                </p>
-              ) : null}
-
-              {showReply ? (
-                <div className="cvp-reply">
+                {canReply ? (
                   <div
-                    className={`cvp-reply-drop${dragging ? ' is-dragging' : ''}`}
+                    className={`sup-compose${dragging ? ' is-dragging' : ''}`}
                     onDragOver={(e: DragEvent<HTMLDivElement>) => {
                       e.preventDefault();
                       if (!dragging) setDragging(true);
@@ -516,64 +466,76 @@ export function ConsoleValidationsPortal({
                       addReplyFiles(e.dataTransfer.files);
                     }}
                   >
-                    <input
-                      id="cvp-reply-input"
-                      className="cvp-reply-input"
-                      type="file"
-                      accept="image/*"
-                      multiple
-                      onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                        addReplyFiles(e.target.files);
-                        e.currentTarget.value = '';
-                      }}
-                    />
-                    <label htmlFor="cvp-reply-input" className="cvp-reply-droplabel">
-                      <strong>Drag &amp; drop or click to add photos</strong>
-                      <span>Up to 9 images — drop here or tap to use the camera</span>
-                    </label>
-                  </div>
-
-                  {replyFiles.length > 0 ? (
-                    <div className="cvp-reply-files">
-                      {replyFiles.map((f, i) => (
-                        <span key={i} className="cvp-file-chip">
-                          {f.name}
-                          <button
-                            type="button"
-                            aria-label="Remove"
-                            onClick={() => setReplyFiles((cur) => cur.filter((_, j) => j !== i))}
-                          >
-                            ×
-                          </button>
-                        </span>
-                      ))}
+                    {replied ? <p className="sup-compose-sent">Sent — our team has it ✓</p> : null}
+                    {replyFiles.length > 0 ? (
+                      <div className="sup-compose-files">
+                        {replyFiles.map((f, i) => (
+                          <span key={i} className="cvp-file-chip">
+                            {f.name}
+                            <button
+                              type="button"
+                              aria-label="Remove"
+                              onClick={() => setReplyFiles((cur) => cur.filter((_, j) => j !== i))}
+                            >
+                              ×
+                            </button>
+                          </span>
+                        ))}
+                      </div>
+                    ) : null}
+                    {replyError ? (
+                      <p className="cvp-reply-error" role="alert">
+                        {replyError}
+                      </p>
+                    ) : null}
+                    <div className="sup-compose-row">
+                      <label className="sup-compose-attach" title="Add an image">
+                        <input
+                          type="file"
+                          accept="image/*"
+                          multiple
+                          hidden
+                          onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                            addReplyFiles(e.target.files);
+                            e.currentTarget.value = '';
+                          }}
+                        />
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                          <path d="M21 11.5l-8.5 8.5a5 5 0 0 1-7-7l8.5-8.5a3.3 3.3 0 0 1 4.7 4.7l-8.5 8.5a1.6 1.6 0 0 1-2.3-2.3l7.8-7.8" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                      </label>
+                      <textarea
+                        className="sup-compose-text"
+                        rows={1}
+                        placeholder="Write a message…"
+                        value={replyComment}
+                        onChange={(e) => setReplyComment(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' && !e.shiftKey) {
+                            e.preventDefault();
+                            handleReply();
+                          }
+                        }}
+                        disabled={sending}
+                      />
+                      <button type="button" className="sup-compose-send" disabled={sending} onClick={handleReply}>
+                        {sending ? '…' : 'Send'}
+                      </button>
                     </div>
-                  ) : null}
-
-                  <textarea
-                    className="cvp-reply-text"
-                    rows={4}
-                    placeholder="Add a comment for our team (what changed, extra details, answers to their questions…)"
-                    value={replyComment}
-                    onChange={(e) => setReplyComment(e.target.value)}
-                  />
-
-                  {replyError ? (
-                    <p className="cvp-reply-error" role="alert">
-                      {replyError}
-                    </p>
-                  ) : null}
-
-                  <div className="cvp-reply-actions">
-                    <button type="button" className="cvp-btn" disabled={sending} onClick={handleReply}>
-                      {sending ? 'Sending…' : 'Send to our team'}
-                    </button>
-                    <button type="button" className="cvp-ghost" onClick={() => setShowReply(false)}>
-                      Cancel
-                    </button>
                   </div>
-                </div>
-              ) : null}
+                ) : (
+                  <div className="sup-chat-closed">
+                    {m.desc}{' '}
+                    <a
+                      href={`mailto:${SUPPORT}?subject=${encodeURIComponent(
+                        `Console validation ${selected.reference || listTitle(selected)}`,
+                      )}`}
+                    >
+                      {m.action} →
+                    </a>
+                  </div>
+                )}
+              </div>
             </section>
           </div>
         </div>

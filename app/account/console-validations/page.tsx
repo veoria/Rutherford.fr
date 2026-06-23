@@ -4,7 +4,10 @@ import { createSupabaseServerClient } from '@/lib/supabase/server';
 import {
   ConsoleValidationsPortal,
   type ConsoleValidationRow,
+  type CvMessage,
 } from '@/components/console-validations-portal';
+import type { CvInviteItem } from '@/components/cv-invite';
+import { listCvInvitations } from '@/lib/console-invitations';
 
 export const metadata: Metadata = {
   title: 'Your console validations | Rutherford',
@@ -28,12 +31,25 @@ export default async function ConsoleValidationsRoute() {
   // Drives the non-blocking "complete your profile" prompt.
   const { data: profile } = await supabase
     .from('profiles')
-    .select('full_name, country, company, job_title')
+    .select('full_name, country, company, job_title, account_type')
     .eq('id', user.id)
     .maybeSingle();
   const profileComplete = Boolean(
     profile?.full_name && profile?.country && profile?.company && profile?.job_title
   );
+
+  // Resellers / distributors / team can invite a client to fill a validation.
+  const accountType = (profile?.account_type as string | null) ?? 'client';
+  const canInvite = accountType === 'reseller' || accountType === 'distributor' || accountType === 'team';
+  const invitations: CvInviteItem[] = canInvite
+    ? (await listCvInvitations(user.id)).map((i) => ({
+        id: i.id,
+        clientEmail: i.clientEmail,
+        company: i.company,
+        status: i.status,
+        createdAt: i.createdAt,
+      }))
+    : [];
 
   // RLS scopes this to the visitor's own requests (by account or by email).
   const { data } = await supabase
@@ -56,5 +72,39 @@ export default async function ConsoleValidationsRoute() {
     customerReplyAt: (row.customer_reply_at as string | null) ?? null,
   }));
 
-  return <ConsoleValidationsPortal rows={rows} profileComplete={profileComplete} />;
+  // Conversation threads for the visitor's validations (RLS-scoped).
+  let messages: CvMessage[] = [];
+  if (rows.length) {
+    const { data: msgRows } = await supabase
+      .from('console_validation_messages')
+      .select('validation_id, author, body, photos, created_at')
+      .in(
+        'validation_id',
+        rows.map((r) => r.id)
+      )
+      .order('created_at', { ascending: true });
+    messages = ((msgRows ?? []) as {
+      validation_id: string;
+      author: string;
+      body: string | null;
+      photos: unknown;
+      created_at: string;
+    }[]).map((m) => ({
+      validationId: m.validation_id,
+      author: m.author === 'team' ? 'team' : 'customer',
+      body: m.body,
+      photos: Array.isArray(m.photos) ? (m.photos as string[]) : [],
+      createdAt: m.created_at,
+    }));
+  }
+
+  return (
+    <ConsoleValidationsPortal
+      rows={rows}
+      profileComplete={profileComplete}
+      canInvite={canInvite}
+      invitations={invitations}
+      messages={messages}
+    />
+  );
 }

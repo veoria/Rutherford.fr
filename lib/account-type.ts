@@ -16,6 +16,26 @@ import { getPersonLabelByEmail } from '@/lib/pipedrive';
 const TEAM_DOMAINS = ['rutherford.fr', 'veoria.fr', 'studiodelaroche.fr'];
 const DISTRIBUTOR_DOMAINS = ['xrite.com'];
 
+// Public webmail providers: colleagues on these do NOT share a company org
+// (each address is an individual), so org auto-creation must never dedup by them.
+const FREE_EMAIL_DOMAINS = new Set([
+  'gmail.com', 'googlemail.com', 'outlook.com', 'outlook.fr', 'hotmail.com', 'hotmail.fr',
+  'hotmail.co.uk', 'hotmail.it', 'live.com', 'live.fr', 'msn.com', 'icloud.com', 'me.com',
+  'mac.com', 'yahoo.com', 'yahoo.fr', 'yahoo.co.uk', 'yahoo.it', 'ymail.com', 'aol.com',
+  'gmx.com', 'gmx.de', 'gmx.net', 'proton.me', 'protonmail.com', 'pm.me', 'mail.com',
+  'zoho.com', 'yandex.com', 'yandex.ru', 'qq.com', '163.com', '126.com', 'web.de',
+  'free.fr', 'orange.fr', 'wanadoo.fr', 'laposte.net', 'sfr.fr', 'bbox.fr', 'neuf.fr',
+  'libero.it', 't-online.de',
+]);
+
+// Company + country for an internal team member, keyed by email domain. Lets the
+// dedicated team onboarding skip the company/country questions we already know.
+const TEAM_ORG: Record<string, { company: string; country: string }> = {
+  'rutherford.fr': { company: 'Rutherford', country: 'France' },
+  'veoria.fr': { company: 'Veoria', country: 'France' },
+  'studiodelaroche.fr': { company: 'Studio de la Roche', country: 'France' },
+};
+
 function domainOf(email: string): string {
   const at = email.lastIndexOf('@');
   return at === -1 ? '' : email.slice(at + 1).trim().toLowerCase();
@@ -31,6 +51,27 @@ export function accountTypeFromDomain(email: string): AccountType | null {
   if (TEAM_DOMAINS.includes(domain)) return 'team';
   if (DISTRIBUTOR_DOMAINS.includes(domain)) return 'distributor';
   return null;
+}
+
+/**
+ * The company email domain for an address, or null when it's a public webmail
+ * provider (or malformed). Used to share a single organization across colleagues
+ * who sign up with the same company domain (e.g. two @digitalview.co.za users).
+ */
+export function companyDomainFromEmail(email: string): string | null {
+  const domain = domainOf(email);
+  if (!domain || !domain.includes('.')) return null;
+  if (FREE_EMAIL_DOMAINS.has(domain)) return null;
+  return domain;
+}
+
+/**
+ * Company + country for an internal team member, derived from their email domain.
+ * Returns null for non-team domains. The team onboarding/profile use this to fill
+ * those fields server-side instead of asking for them.
+ */
+export function teamOrgFromEmail(email: string): { company: string; country: string } | null {
+  return TEAM_ORG[domainOf(email)] ?? null;
 }
 
 /**

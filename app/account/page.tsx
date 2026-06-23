@@ -11,7 +11,23 @@ import { getDistributorResellers, getResellerClients, getTeamForUser } from '@/l
 import type { AccountType } from '@/data/account-types';
 
 export const metadata: Metadata = {
-  title: 'Your account | Rutherford',
+  title: 'Your partner account | Rutherford',
+  description: 'Your presses, validations and clients, in one login.',
+  openGraph: {
+    title: 'Your partner account | Rutherford',
+    description: 'Your presses, validations and clients, in one login.',
+    url: 'https://rutherford.fr/account',
+    siteName: 'Rutherford.fr',
+    images: [{ url: '/images/og-account.png', width: 1200, height: 630, alt: 'Your presses, validations and clients. One login.' }],
+    locale: 'en_US',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Your partner account | Rutherford',
+    description: 'Your presses, validations and clients, in one login.',
+    images: ['/images/og-account.png'],
+  },
 };
 
 export const dynamic = 'force-dynamic';
@@ -32,7 +48,7 @@ export default async function AccountHubRoute() {
     await Promise.all([
       supabase
         .from('profiles')
-        .select('full_name, avatar_url, country, company, job_title, onboarded_at, account_type')
+        .select('full_name, avatar_url, country, company, job_title, onboarded_at, account_type, is_admin')
         .eq('id', user.id)
         .maybeSingle(),
       supabase.from('course_progress').select('course_slug, lesson_index').eq('user_id', user.id),

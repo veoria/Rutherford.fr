@@ -1,4 +1,33 @@
+import type { Metadata } from 'next';
 import { ConsoleValidationPage } from '@/components/console-validation-page';
+import { getCvInvitationByToken } from '@/lib/console-invitations';
+
+const ogTitle = 'Console validation | Rutherford.fr';
+const ogDescription =
+  'See if your press qualifies for closed-loop color. Free console validation in 2 minutes.';
+
+export const metadata: Metadata = {
+  title: ogTitle,
+  description: ogDescription,
+  alternates: { canonical: '/console-validation' },
+  openGraph: {
+    title: ogTitle,
+    description: ogDescription,
+    url: 'https://rutherford.fr/console-validation',
+    siteName: 'Rutherford.fr',
+    images: [{ url: '/images/og-console-validation.png', width: 1200, height: 630, alt: 'Is your press ready for closed-loop color?' }],
+    locale: 'en_US',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: ogTitle,
+    description: ogDescription,
+    images: ['/images/og-console-validation.png'],
+  },
+};
+
+export const dynamic = 'force-dynamic';
 
 const FAQ = [
   {
@@ -29,11 +58,20 @@ const FAQ_JSON_LD = {
   })),
 };
 
-export default function ConsoleValidationRoute() {
+export default async function ConsoleValidationRoute({
+  searchParams,
+}: {
+  searchParams: { invite?: string };
+}) {
+  const token = typeof searchParams.invite === 'string' ? searchParams.invite : '';
+  const inv = token ? await getCvInvitationByToken(token) : null;
+  const invite = inv
+    ? { token: inv.token, clientEmail: inv.clientEmail, company: inv.company, inviterCompany: inv.inviterCompany }
+    : undefined;
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(FAQ_JSON_LD) }} />
-      <ConsoleValidationPage faq={FAQ} />
+      <ConsoleValidationPage faq={FAQ} invite={invite} />
     </>
   );
 }

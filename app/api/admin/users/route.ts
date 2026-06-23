@@ -2,10 +2,12 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { createSupabaseServerClient, createSupabaseAdminClient } from '@/lib/supabase/server';
 import { isAccountType } from '@/data/account-types';
 import { isJobTitleKey, isKnownCountry } from '@/data/onboarding-options';
+import { ensurePersonalOrg } from '@/lib/organizations';
 
 export const dynamic = 'force-dynamic';
 
-// Verify the caller is a signed-in admin. RLS lets a user self-read is_admin.
+// Verify the caller is a signed-in admin with 2FA this session. RLS lets a user
+// self-read is_admin; the AAL2 check matches the /admin access policy.
 async function requireAdmin() {
   const supabase = createSupabaseServerClient();
   const {
@@ -14,6 +16,8 @@ async function requireAdmin() {
   if (!user) return { user: null, error: 'unauthorized', status: 401 } as const;
   const { data } = await supabase.from('profiles').select('is_admin').eq('id', user.id).maybeSingle();
   if (!data?.is_admin) return { user: null, error: 'forbidden', status: 403 } as const;
+  const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+  if (aal?.currentLevel !== 'aal2') return { user: null, error: 'mfa_required', status: 403 } as const;
   return { user, error: null, status: 200 } as const;
 }
 
@@ -67,6 +71,11 @@ export async function PATCH(request: NextRequest) {
   const admin = createSupabaseAdminClient();
   const { error } = await admin.from('profiles').update(patch).eq('id', id);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+  // Reflect a type change in the back-office org list: ensure the user has an
+  // organization and align its type when they own it.
+  if (typeof patch.account_type === 'string') await ensurePersonalOrg(id);
+
   return NextResponse.json({ ok: true });
 }
 
@@ -82,6 +91,33 @@ export async function DELETE(request: NextRequest) {
 
   const admin = createSupabaseAdminClient();
   const { error } = await admin.auth.admin.deleteUser(id);
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  return NextResponse.json({ ok: true });
+}
+
+/** Suspend (ban) or reactivate a user's ability to sign in. Reversible — a
+ * suspended user keeps all their data and can be reactivated at any time. */
+export async function POST(request: NextRequest) {
+  const gate = await requireAdmin();
+  if (gate.error) return NextResponse.json({ error: gate.error }, { status: gate.status });
+
+  let body: Record<string, unknown>;
+  try {
+    body = (await request.json()) as Record<string, unknown>;
+  } catch {
+    return NextResponse.json({ error: 'bad_body' }, { status: 400 });
+  }
+
+  const id = typeof body.id === 'string' ? body.id : '';
+  if (!id) return NextResponse.json({ error: 'missing_id' }, { status: 400 });
+  if (id === gate.user.id) return NextResponse.json({ error: 'cannot_suspend_self' }, { status: 400 });
+
+  const suspend = body.suspend === true;
+  const admin = createSupabaseAdminClient();
+  // 'none' clears the ban; a long duration suspends sign-in indefinitely.
+  const { error } = await admin.auth.admin.updateUserById(id, {
+    ban_duration: suspend ? '876000h' : 'none',
+  });
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   return NextResponse.json({ ok: true });
 }

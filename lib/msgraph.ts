@@ -40,7 +40,7 @@ async function getToken(): Promise<string> {
 
 export type Mail = { to: string; subject: string; html: string; bcc?: string[] };
 
-export async function sendMail(mail: Mail): Promise<void> {
+export async function sendMail(mail: Mail, opts?: { throwOnError?: boolean }): Promise<void> {
   if (!msgraphEnabled() || !mail.to) return;
   try {
     const token = await getToken();
@@ -65,5 +65,9 @@ export async function sendMail(mail: Mail): Promise<void> {
     if (!res.ok) throw new Error(`MS Graph sendMail → ${res.status} ${await res.text().catch(() => '')}`);
   } catch (error) {
     console.error('MS Graph sendMail failed:', error);
+    // Most callers fire-and-forget so a mail hiccup never breaks request
+    // handling. The auth-email hook opts in to rethrow so Supabase surfaces the
+    // failure and the user can retry, rather than silently getting no email.
+    if (opts?.throwOnError) throw error;
   }
 }

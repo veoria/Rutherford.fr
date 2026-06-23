@@ -3,11 +3,19 @@ import { createHmac, timingSafeEqual } from 'crypto';
 import { getConsoleValidationTaskState, getStory, getSupportTaskState } from '@/lib/asana';
 import { addDealNote } from '@/lib/pipedrive';
 import { sendMail } from '@/lib/msgraph';
-import { canConnectEmail, cannotConnectEmail, moreInfoEmail } from '@/lib/console-validation-emails';
+import {
+  canConnectEmail,
+  cannotConnectEmail,
+  consoleAgentMessageEmail,
+  moreInfoEmail,
+} from '@/lib/console-validation-emails';
 import { supportAgentMessageEmail, supportStatusEmail } from '@/lib/support-emails';
 import {
+  getConsoleValidationByAsanaTask,
   getConsoleValidationStatusByAsanaTask,
   getNotificationEmailByAsanaTask,
+  insertConsoleValidationMessage,
+  setConsoleValidationAgentStory,
   updateConsoleValidationStatusByAsanaTask,
   type ConsoleValidationStatus,
 } from '@/lib/console-validations';
@@ -134,10 +142,20 @@ export async function POST(request: NextRequest) {
     const dealId = extractDealId(state.name);
     const name = state.name;
     const by = state.completedByName || 'the team';
+    // The submission row carries the client's company / country / press, which
+    // the verdict emails surface alongside the status.
+    const cv = await getConsoleValidationByAsanaTask(gid);
+    const lead = {
+      name,
+      dealId,
+      company: cv?.company ?? null,
+      country: cv?.country ?? null,
+      machine: cv?.machine ?? null,
+    };
 
     if (status === 'can_be_connected') {
       if (email) {
-        const mail = canConnectEmail({ name, dealId });
+        const mail = canConnectEmail(lead);
         await sendMail({ to: notifyTo, subject: mail.subject, html: mail.html, bcc: mail.bcc });
       }
       await addDealNote(
@@ -146,7 +164,7 @@ export async function POST(request: NextRequest) {
       );
     } else if (status === 'rejected') {
       if (email) {
-        const mail = cannotConnectEmail({ name, dealId });
+        const mail = cannotConnectEmail(lead);
         await sendMail({ to: notifyTo, subject: mail.subject, html: mail.html });
       }
       await addDealNote(
@@ -155,7 +173,7 @@ export async function POST(request: NextRequest) {
       );
     } else if (status === 'changes_requested') {
       if (email) {
-        const mail = moreInfoEmail({ name, dealId });
+        const mail = moreInfoEmail(lead);
         await sendMail({ to: notifyTo, subject: mail.subject, html: mail.html });
       }
       await addDealNote(
@@ -168,19 +186,38 @@ export async function POST(request: NextRequest) {
   // Relay support comments a team member tagged for the customer ("[client] …").
   // Other comments stay internal. Dedupe on the story gid so a re-delivery
   // doesn't email twice.
+  const clientComment = (text: string): string | null => {
+    const m = text.match(/^\s*\[client\]\s*:?\s*([\s\S]+)/i);
+    const msg = m?.[1]?.trim();
+    return msg || null;
+  };
+
   for (const { storyGid, taskGid } of storyEvents) {
     const ticket = await getSupportTicketByAsanaTask(taskGid);
-    if (!ticket || ticket.lastAgentStoryGid === storyGid) continue;
+    if (ticket) {
+      if (ticket.lastAgentStoryGid === storyGid) continue;
+      const story = await getStory(storyGid);
+      if (!story || !story.isComment) continue;
+      const message = clientComment(story.text);
+      if (!message) continue;
+      await setAgentMessageByAsanaTask(taskGid, storyGid, message);
+      await insertSupportMessage({ ticketId: ticket.id, author: 'team', body: message, asanaStoryGid: storyGid });
+      const mail = supportAgentMessageEmail(message, `#${ticket.id.slice(0, 8)}`);
+      await sendMail({ to: ticket.email, subject: mail.subject, html: mail.html });
+      continue;
+    }
+
+    // Console validation? Relay the same "[client] …" team comment into its thread.
+    const cv = await getConsoleValidationByAsanaTask(taskGid);
+    if (!cv || cv.lastAgentStoryGid === storyGid) continue;
     const story = await getStory(storyGid);
     if (!story || !story.isComment) continue;
-    const m = story.text.match(/^\s*\[client\]\s*:?\s*([\s\S]+)/i);
-    if (!m) continue;
-    const message = m[1].trim();
+    const message = clientComment(story.text);
     if (!message) continue;
-    await setAgentMessageByAsanaTask(taskGid, storyGid, message);
-    await insertSupportMessage({ ticketId: ticket.id, author: 'team', body: message, asanaStoryGid: storyGid });
-    const mail = supportAgentMessageEmail(message, `#${ticket.id.slice(0, 8)}`);
-    await sendMail({ to: ticket.email, subject: mail.subject, html: mail.html });
+    await setConsoleValidationAgentStory(taskGid, storyGid);
+    await insertConsoleValidationMessage({ validationId: cv.id, author: 'team', body: message, asanaStoryGid: storyGid });
+    const mail = consoleAgentMessageEmail(message);
+    await sendMail({ to: await getNotificationEmailByAsanaTask(taskGid, cv.email), subject: mail.subject, html: mail.html });
   }
 
   return NextResponse.json({ ok: true });

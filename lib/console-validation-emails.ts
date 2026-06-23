@@ -43,7 +43,7 @@ const F_BODY = "'Manrope',Arial,Helvetica,sans-serif";
 const F_MONO = "'JetBrains Mono','Courier New',monospace";
 
 const FOOTLINE = 'Rutherford.fr — closed-loop color management for offset &amp; flexo printing.';
-const FOOTMETA = '25+ years · 30+ countries · 1,000+ systems deployed · Made in France';
+const FOOTMETA = '25+ years · 30+ countries · 1,000+ systems deployed';
 
 type Tone = 'info' | 'ok' | 'warn' | 'no';
 type Row = { k: string; v: string; mono?: boolean };
@@ -103,14 +103,18 @@ function cta(label: string, href: string): string {
 
 // ── The renderer ──────────────────────────────────────────────────────────
 
-type EmailSpec = {
+export type EmailSpec = {
   subject: string;
   preheader: string;
   eyebrow: string;
   tone: Tone;
+  /** Transactional auth/security mails omit the manage/unsubscribe footer line. */
+  transactional?: boolean;
   headline: { pre: string; accent: string; post: string };
   /** Color for the accent word + its underline (defaults to brand blue). */
   accentColor?: string;
+  /** Optional co-brand line under the header (e.g. "Invited by [reseller]"). */
+  coBrand?: { prefix: string; label: string; logoUrl: string | null };
   /** Body paragraphs — may contain <strong>. Caller is responsible for escaping. */
   body: string[];
   dataBlock?: string;
@@ -118,7 +122,7 @@ type EmailSpec = {
   cta: { label: string; href: string };
 };
 
-function render(spec: EmailSpec): string {
+export function render(spec: EmailSpec): string {
   const dot = DOT[spec.tone];
   const accent = spec.accentColor ?? BLUE;
   const headline = `${esc(spec.headline.pre)}<span style="color:${accent};border-bottom:3px solid ${accent};padding-bottom:1px;">${esc(
@@ -134,6 +138,17 @@ function render(spec: EmailSpec): string {
     ? `<a href="${spec.secondary.href}" style="font-family:${F_BODY};display:inline-block;font-size:13px;font-weight:600;color:${BLUE};text-decoration:none;margin:0 0 20px;white-space:nowrap;">${esc(
         spec.secondary.label
       )} &rarr;</a><br>`
+    : '';
+  const coBrand = spec.coBrand
+    ? `<div style="margin-top:16px;padding-top:14px;border-top:1px solid ${DIVIDER};">
+        <span style="font-family:${F_MONO};font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:${MUTED};vertical-align:middle;">${esc(
+          spec.coBrand.prefix
+        )}</span>&nbsp;&nbsp;${
+          spec.coBrand.logoUrl
+            ? `<img src="${spec.coBrand.logoUrl}" alt="${esc(spec.coBrand.label)}" height="18" style="height:18px;width:auto;vertical-align:middle;display:inline-block;">`
+            : `<span style="font-family:${F_BODY};font-size:13px;font-weight:700;color:${INK};vertical-align:middle;">${esc(spec.coBrand.label)}</span>`
+        }
+      </div>`
     : '';
 
   return `<!doctype html>
@@ -172,6 +187,7 @@ function render(spec: EmailSpec): string {
             <td align="left" valign="middle"><img src="${LOGO}" alt="Rutherford.fr" height="24" style="display:block;height:24px;width:auto;"></td>
             <td align="right" valign="middle"><span style="font-family:${F_MONO};font-size:9px;letter-spacing:.16em;color:${MUTED};border:1px solid #E5E1DB;border-radius:999px;padding:4px 11px;white-space:nowrap;">CLOSED-LOOP COLOR</span></td>
           </tr></table>
+          ${coBrand}
 
           <div style="margin-top:24px;font-family:${F_MONO};font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:${EYEBROW};font-weight:600;">
             <span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:${dot};vertical-align:middle;margin-right:8px;">&nbsp;</span>${esc(
@@ -189,8 +205,12 @@ function render(spec: EmailSpec): string {
         <tr><td class="rf-foot" style="padding:4px 34px 24px;">
           <div style="margin-bottom:14px;font-size:0;line-height:0;">${spectrumRail(3)}</div>
           <div style="font-family:${F_BODY};font-size:12px;color:${FOOT_BRAND};margin-bottom:5px;">${FOOTLINE}</div>
-          <div style="font-family:${F_MONO};font-size:10px;color:${MUTED};line-height:1.7;letter-spacing:.02em;">${FOOTMETA} · Data stays in the EU</div>
-          <div style="font-family:${F_MONO};font-size:10px;color:${MUTED};line-height:1.7;letter-spacing:.02em;"><a href="mailto:${SUPPORT}?subject=Email%20preferences" style="color:${BLUE};text-decoration:none;">Manage emails</a> · <a href="mailto:${SUPPORT}?subject=Unsubscribe" style="color:${BLUE};text-decoration:none;">Unsubscribe</a></div>
+          <div style="font-family:${F_MONO};font-size:10px;color:${MUTED};line-height:1.7;letter-spacing:.02em;">${FOOTMETA}</div>
+          ${
+            spec.transactional
+              ? ''
+              : `<div style="font-family:${F_MONO};font-size:10px;color:${MUTED};line-height:1.7;letter-spacing:.02em;"><a href="mailto:${SUPPORT}?subject=Email%20preferences" style="color:${BLUE};text-decoration:none;">Manage emails</a> · <a href="mailto:${SUPPORT}?subject=Unsubscribe" style="color:${BLUE};text-decoration:none;">Unsubscribe</a></div>`
+          }
         </td></tr>
       </table>
     </td></tr>
@@ -211,9 +231,6 @@ function derivePress(name: string): string {
     .filter((s) => s && !/^ID\s*\d+$/i.test(s));
   return parts[parts.length - 1] || name.trim();
 }
-
-const reviewedDate = () =>
-  new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
 
 // ── Public builders ───────────────────────────────────────────────────────
 
@@ -251,14 +268,27 @@ export function acknowledgementEmail(lead: AckLead): { subject: string; html: st
   };
 }
 
-export type ResultLead = { name: string; dealId: number | null };
+export type ResultLead = {
+  name: string;
+  dealId: number | null;
+  company?: string | null;
+  country?: string | null;
+  machine?: string | null;
+};
+
+// Press label: prefer the structured machine field, fall back to parsing the
+// deal title. Country / Company come straight from the submission.
+const leadPress = (lead: ResultLead) => (lead.machine && lead.machine.trim()) || derivePress(lead.name);
+const trimmed = (s: string | null | undefined) => (s && s.trim() ? s.trim() : '');
 
 /** 05 · Approved — press is eligible. */
 export function canConnectEmail(lead: ResultLead): { subject: string; html: string; bcc: string[] } {
   const ref = reference(lead.dealId);
-  const press = derivePress(lead.name);
-  const cells: Cell[] = [{ k: 'Status', v: 'Eligible', tone: 'ok' }, { k: 'Press', v: press }];
-  if (ref) cells.push({ k: 'Reference', v: ref });
+  const press = leadPress(lead);
+  const cells: Cell[] = [{ k: 'Status', v: 'Eligible', tone: 'ok' }];
+  if (trimmed(lead.company)) cells.push({ k: 'Company', v: trimmed(lead.company) });
+  if (trimmed(lead.country)) cells.push({ k: 'Country', v: trimmed(lead.country) });
+  cells.push({ k: 'Press', v: press });
 
   return {
     subject: 'Good news — your press is eligible for closed-loop color',
@@ -285,12 +315,11 @@ export function canConnectEmail(lead: ResultLead): { subject: string; html: stri
 /** 06 · Not eligible — press isn't currently supported. */
 export function cannotConnectEmail(lead: ResultLead): { subject: string; html: string } {
   const ref = reference(lead.dealId);
-  const press = derivePress(lead.name);
-  const cells: Cell[] = [
-    { k: 'Status', v: 'Not eligible', tone: 'no' },
-    { k: 'Press', v: press },
-    { k: 'Reviewed', v: reviewedDate() },
-  ];
+  const press = leadPress(lead);
+  const cells: Cell[] = [{ k: 'Status', v: 'Not eligible', tone: 'no' }];
+  if (trimmed(lead.company)) cells.push({ k: 'Company', v: trimmed(lead.company) });
+  if (trimmed(lead.country)) cells.push({ k: 'Country', v: trimmed(lead.country) });
+  cells.push({ k: 'Press', v: press });
 
   return {
     subject: `Your console review is complete${ref ? ` — ref ${ref}` : ''}`,
@@ -300,6 +329,7 @@ export function cannotConnectEmail(lead: ResultLead): { subject: string; html: s
       eyebrow: `REVIEW COMPLETE${ref ? ` · REF ${ref}` : ''}`,
       tone: 'no',
       headline: { pre: "This press isn't currently ", accent: 'eligible', post: '.' },
+      accentColor: VALUE_TONE.no,
       body: [
         `We've finished reviewing your submission. Your <strong>${esc(
           press
@@ -312,10 +342,135 @@ export function cannotConnectEmail(lead: ResultLead): { subject: string; html: s
   };
 }
 
+// ── Invitation (reseller / distributor / team invites a client) ─────────────
+
+type EmailLocale = 'en' | 'fr' | 'de' | 'it' | 'es';
+
+type InviteCopy = {
+  subject: (company: string) => string;
+  preheader: string;
+  eyebrow: string;
+  headline: { pre: string; accent: string; post: string };
+  intro: (companyHtml: string) => string;
+  closing: string;
+  cta: string;
+  invitedBy: string;
+};
+
+const INVITE_COPY: Record<EmailLocale, InviteCopy> = {
+  en: {
+    subject: (c) => `${c} invites you to a free console validation`,
+    preheader: 'Check whether your press can run closed-loop — about 2 minutes.',
+    eyebrow: 'CONSOLE VALIDATION · INVITATION',
+    headline: { pre: 'Is your press ready for ', accent: 'closed-loop', post: '?' },
+    intro: (c) =>
+      `<strong>${c}</strong> invites you to run a free console validation. With a few details about your press, Rutherford's experts confirm whether it can be connected to automate color control and cut makeready waste.`,
+    closing: 'It takes about two minutes and commits you to nothing.',
+    cta: 'Start my console validation',
+    invitedBy: 'Invited by',
+  },
+  fr: {
+    subject: (c) => `${c} vous invite à une validation console gratuite`,
+    preheader: 'Vérifiez si votre presse peut passer en closed-loop — environ 2 minutes.',
+    eyebrow: 'VALIDATION CONSOLE · INVITATION',
+    headline: { pre: 'Votre presse est-elle prête pour le ', accent: 'closed-loop', post: ' ?' },
+    intro: (c) =>
+      `<strong>${c}</strong> vous invite à réaliser une validation console gratuite. En quelques informations sur votre presse, les experts Rutherford vérifient si elle peut être connectée pour automatiser le contrôle couleur et réduire la gâche au calage.`,
+    closing: 'Cela prend environ deux minutes et ne vous engage à rien.',
+    cta: 'Démarrer ma validation console',
+    invitedBy: 'Invité par',
+  },
+  de: {
+    subject: (c) => `${c} lädt Sie zu einer kostenlosen Konsolenvalidierung ein`,
+    preheader: 'Prüfen Sie, ob Ihre Druckmaschine Closed-Loop-fähig ist — etwa 2 Minuten.',
+    eyebrow: 'KONSOLENVALIDIERUNG · EINLADUNG',
+    headline: { pre: 'Ist Ihre Druckmaschine bereit für ', accent: 'Closed-Loop', post: '?' },
+    intro: (c) =>
+      `<strong>${c}</strong> lädt Sie zu einer kostenlosen Konsolenvalidierung ein. Mit wenigen Angaben zu Ihrer Maschine prüfen die Rutherford-Experten, ob sie für die automatische Farbsteuerung angebunden werden kann und die Makulatur beim Einrichten reduziert.`,
+    closing: 'Es dauert etwa zwei Minuten und ist unverbindlich.',
+    cta: 'Konsolenvalidierung starten',
+    invitedBy: 'Eingeladen von',
+  },
+  it: {
+    subject: (c) => `${c} la invita a una validazione console gratuita`,
+    preheader: 'Verifichi se la sua macchina può funzionare in closed-loop — circa 2 minuti.',
+    eyebrow: 'VALIDAZIONE CONSOLE · INVITO',
+    headline: { pre: 'La sua macchina è pronta per il ', accent: 'closed-loop', post: '?' },
+    intro: (c) =>
+      `<strong>${c}</strong> la invita a effettuare una validazione console gratuita. Con poche informazioni sulla sua macchina, gli esperti Rutherford verificano se può essere collegata per automatizzare il controllo colore e ridurre lo scarto di avviamento.`,
+    closing: 'Richiede circa due minuti e non comporta alcun impegno.',
+    cta: 'Avvia la validazione console',
+    invitedBy: 'Invito da',
+  },
+  es: {
+    subject: (c) => `${c} le invita a una validación de consola gratuita`,
+    preheader: 'Compruebe si su prensa puede funcionar en closed-loop — unos 2 minutos.',
+    eyebrow: 'VALIDACIÓN DE CONSOLA · INVITACIÓN',
+    headline: { pre: '¿Está su prensa lista para el ', accent: 'closed-loop', post: '?' },
+    intro: (c) =>
+      `<strong>${c}</strong> le invita a realizar una validación de consola gratuita. Con unos pocos datos sobre su prensa, los expertos de Rutherford comprueban si puede conectarse para automatizar el control del color y reducir el desperdicio de puesta a punto.`,
+    closing: 'Lleva unos dos minutos y no supone ningún compromiso.',
+    cta: 'Iniciar mi validación de consola',
+    invitedBy: 'Invitado por',
+  },
+};
+
+/** Invitation email a reseller / distributor / team member sends to a client. */
+export function consoleInviteEmail(opts: {
+  locale: string;
+  inviterCompany: string;
+  inviterLogoUrl: string | null;
+  note: string | null;
+  url: string;
+}): { subject: string; html: string } {
+  const loc = (['en', 'fr', 'de', 'it', 'es'].includes(opts.locale) ? opts.locale : 'en') as EmailLocale;
+  const c = INVITE_COPY[loc];
+  const body = [c.intro(esc(opts.inviterCompany))];
+  if (opts.note && opts.note.trim()) {
+    body.push(`<em style="color:${BODY};">&ldquo;${esc(opts.note.trim())}&rdquo;</em>`);
+  }
+  body.push(c.closing);
+  const subject = c.subject(opts.inviterCompany);
+  return {
+    subject,
+    html: render({
+      subject,
+      preheader: c.preheader,
+      eyebrow: c.eyebrow,
+      tone: 'info',
+      headline: c.headline,
+      body,
+      cta: { label: c.cta, href: opts.url },
+      coBrand: { prefix: c.invitedBy, label: opts.inviterCompany, logoUrl: opts.inviterLogoUrl },
+    }),
+  };
+}
+
+/** Sent when a team member posts a "[client] …" comment on the validation's
+ * Asana task — relays that message into the tracker thread. Free text → escape. */
+export function consoleAgentMessageEmail(message: string): { subject: string; html: string } {
+  return {
+    subject: 'A message about your console validation',
+    html: render({
+      subject: 'A message about your console validation',
+      preheader: 'Your reviewer sent you a message.',
+      eyebrow: 'NEW MESSAGE',
+      tone: 'info',
+      headline: { pre: 'A message from ', accent: 'our team', post: '.' },
+      body: [esc(message).replace(/\n/g, '<br>')],
+      cta: TRACK_CTA,
+    }),
+  };
+}
+
 /** 04 · More info needed — review started, the team needs extra details. */
 export function moreInfoEmail(lead: ResultLead): { subject: string; html: string } {
   const ref = reference(lead.dealId);
-  const press = derivePress(lead.name);
+  const press = leadPress(lead);
+  const cells: Cell[] = [{ k: 'Status', v: 'More info needed', tone: 'warn' }];
+  if (trimmed(lead.company)) cells.push({ k: 'Company', v: trimmed(lead.company) });
+  if (trimmed(lead.country)) cells.push({ k: 'Country', v: trimmed(lead.country) });
+  if (press) cells.push({ k: 'Press', v: press });
   return {
     subject: `We need a little more to finish your review${ref ? ` — ref ${ref}` : ''}`,
     html: render({
@@ -328,6 +483,7 @@ export function moreInfoEmail(lead: ResultLead): { subject: string; html: string
         `Your submission${press ? ` for <strong>${esc(press)}</strong>` : ''} is almost there. Before we can confirm eligibility, our team needs a few additional details about your press and console.`,
         'Open your request to add the details — a comment and any extra photos. Your request stays open and we resume the review as soon as they arrive.',
       ],
+      dataBlock: stripBlock(cells),
       cta: TRACK_CTA,
     }),
   };

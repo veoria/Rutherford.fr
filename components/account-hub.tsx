@@ -63,6 +63,16 @@ const PARTNER_BADGE: Record<Locale, string> = {
   es: 'Partner oficial X-Rite PANTONE',
 };
 
+// Co-brand badge for reseller partners — their logo is set by the Rutherford
+// team in the org back-office and surfaced at the top of their space.
+const RESELLER_BADGE: Record<Locale, string> = {
+  en: 'Official Rutherford partner',
+  fr: 'Partenaire officiel Rutherford',
+  de: 'Offizieller Rutherford-Partner',
+  it: 'Partner ufficiale Rutherford',
+  es: 'Partner oficial Rutherford',
+};
+
 const LANG_NAME: Record<Locale, string> = {
   en: 'English',
   fr: 'Français',
@@ -111,7 +121,7 @@ type Copy = {
   moduleWord: string;
   settingsT: string;
   settingsS: string;
-  rowName: string; rowEmail: string; rowCompany: string; rowCountry: string; rowLang: string; rowPwd: string;
+  rowName: string; rowEmail: string; rowCompany: string; rowCountry: string; rowLang: string; rowPwd: string; security: string;
   manage: {
     teamTitle: string; teamSub: string;
     clientsTitle: string; clientsSub: string;
@@ -163,7 +173,7 @@ const COPY: Record<Locale, Copy> = {
     },
     resumeKicker: 'Pick up where you left off', resumeCta: 'Continue', moduleWord: 'Module',
     settingsT: 'Account information', settingsS: 'Manage your profile and preferences',
-    rowName: 'Full name', rowEmail: 'Email address', rowCompany: 'Company', rowCountry: 'Country', rowLang: 'Language', rowPwd: 'Password',
+    rowName: 'Full name', rowEmail: 'Email address', rowCompany: 'Company', rowCountry: 'Country', rowLang: 'Language', rowPwd: 'Password', security: 'Password & two-factor',
     manage: {
       teamTitle: 'My team', teamSub: 'Who can access this account',
       clientsTitle: 'Clients & team', clientsSub: 'Your clients and your team',
@@ -204,7 +214,7 @@ const COPY: Record<Locale, Copy> = {
     },
     resumeKicker: 'Reprenez où vous en étiez', resumeCta: 'Continuer', moduleWord: 'Module',
     settingsT: 'Informations du compte', settingsS: 'Gérez votre profil et vos préférences',
-    rowName: 'Nom complet', rowEmail: 'Adresse email', rowCompany: 'Société', rowCountry: 'Pays', rowLang: 'Langue', rowPwd: 'Mot de passe',
+    rowName: 'Nom complet', rowEmail: 'Adresse email', rowCompany: 'Société', rowCountry: 'Pays', rowLang: 'Langue', rowPwd: 'Mot de passe', security: 'Mot de passe et 2FA',
     manage: {
       teamTitle: 'Mon équipe', teamSub: 'Qui peut accéder à ce compte',
       clientsTitle: 'Clients & équipe', clientsSub: 'Vos clients et votre équipe',
@@ -245,7 +255,7 @@ const COPY: Record<Locale, Copy> = {
     },
     resumeKicker: 'Weitermachen, wo Sie aufgehört haben', resumeCta: 'Fortsetzen', moduleWord: 'Modul',
     settingsT: 'Kontoinformationen', settingsS: 'Profil und Einstellungen verwalten',
-    rowName: 'Vollständiger Name', rowEmail: 'E-Mail-Adresse', rowCompany: 'Unternehmen', rowCountry: 'Land', rowLang: 'Sprache', rowPwd: 'Passwort',
+    rowName: 'Vollständiger Name', rowEmail: 'E-Mail-Adresse', rowCompany: 'Unternehmen', rowCountry: 'Land', rowLang: 'Sprache', rowPwd: 'Passwort', security: 'Passwort & Zwei-Faktor',
     manage: {
       teamTitle: 'Mein Team', teamSub: 'Wer auf dieses Konto zugreifen kann',
       clientsTitle: 'Kunden & Team', clientsSub: 'Ihre Kunden und Ihr Team',
@@ -286,7 +296,7 @@ const COPY: Record<Locale, Copy> = {
     },
     resumeKicker: 'Riprenda da dove era rimasto', resumeCta: 'Continua', moduleWord: 'Modulo',
     settingsT: 'Informazioni dell’account', settingsS: 'Gestisci profilo e preferenze',
-    rowName: 'Nome completo', rowEmail: 'Indirizzo email', rowCompany: 'Azienda', rowCountry: 'Paese', rowLang: 'Lingua', rowPwd: 'Password',
+    rowName: 'Nome completo', rowEmail: 'Indirizzo email', rowCompany: 'Azienda', rowCountry: 'Paese', rowLang: 'Lingua', rowPwd: 'Password', security: 'Password e 2FA',
     manage: {
       teamTitle: 'Il mio team', teamSub: 'Chi può accedere a questo account',
       clientsTitle: 'Clienti & team', clientsSub: 'I suoi clienti e il suo team',
@@ -327,7 +337,7 @@ const COPY: Record<Locale, Copy> = {
     },
     resumeKicker: 'Retome donde lo dejó', resumeCta: 'Continuar', moduleWord: 'Módulo',
     settingsT: 'Información de la cuenta', settingsS: 'Gestione su perfil y preferencias',
-    rowName: 'Nombre completo', rowEmail: 'Correo electrónico', rowCompany: 'Empresa', rowCountry: 'País', rowLang: 'Idioma', rowPwd: 'Contraseña',
+    rowName: 'Nombre completo', rowEmail: 'Correo electrónico', rowCompany: 'Empresa', rowCountry: 'País', rowLang: 'Idioma', rowPwd: 'Contraseña', security: 'Contraseña y doble factor',
     manage: {
       teamTitle: 'Mi equipo', teamSub: 'Quién puede acceder a esta cuenta',
       clientsTitle: 'Clientes & equipo', clientsSub: 'Sus clientes y su equipo',
@@ -390,6 +400,9 @@ export function AccountHub(props: Props) {
   const { locale } = useLanguage();
   const t = COPY[locale];
   const accent = TONE[accountType];
+  // Resellers get the same top co-brand strip as X-Rite, using the org logo
+  // the Rutherford team uploads in the back-office (null until one is set).
+  const resellerLogo = accountType === 'reseller' ? team.org?.logoUrl ?? null : null;
   const rank = RANK_NAMES[locale][Math.min(academy.level - 1, 4)] ?? '';
   const nextRank = RANK_NAMES[locale][Math.min(academy.level, 4)] ?? '';
 
@@ -420,6 +433,8 @@ export function AccountHub(props: Props) {
   } else if (accountType === 'distributor') {
     roleTile = { ic: 'network', cls: 'violet', t: t.tiles.networkT, s: t.tiles.networkS, href: '/account/team', statV: t.stat.networkSoon };
   } else if (accountType === 'team') {
+    // Back-office entry for all staff. /admin enforces the real gate (team
+    // domain + 2FA); non-admins land in a read-only view there.
     roleTile = { ic: 'admin', cls: 'ink', t: t.tiles.adminT, s: t.tiles.adminS, href: '/admin', statV: t.stat.backoffice };
   } else {
     roleTile = { ic: 'team', cls: 'green', t: t.tiles.teamT, s: t.tiles.teamS, href: '/account/team', statV: t.stat.youOnly };
@@ -441,6 +456,14 @@ export function AccountHub(props: Props) {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img className="ah-cobrand-logo" src="/images/xrite-logo-black.png" alt="X-Rite PANTONE" />
             <span className="ah-cobrand-badge">{PARTNER_BADGE[locale]}</span>
+          </div>
+        </div>
+      ) : resellerLogo ? (
+        <div className="ah-cobrand-strip">
+          <div className="container ah-cobrand">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img className="ah-cobrand-logo" src={resellerLogo} alt={team.org?.name ?? ''} />
+            <span className="ah-cobrand-badge">{RESELLER_BADGE[locale]}</span>
           </div>
         </div>
       ) : null}
@@ -567,6 +590,10 @@ function SettingsCard({ t, locale, profile, email }: { t: Copy; locale: Locale; 
             <span className="ah-row-v">{v}</span>
           </div>
         ))}
+        <a className="ah-row ah-row-link" href="/account/security">
+          <span className="ah-row-k">{t.security}</span>
+          <span className="ah-row-v">→</span>
+        </a>
       </div>
     </div>
   );
@@ -830,7 +857,8 @@ export function ManagePanel({
   const sub = accountType === 'distributor' ? t.manage.networkSub : accountType === 'reseller' ? t.manage.clientsSub : t.manage.teamSub;
   const canManage = team.myRole === 'owner' || team.myRole === 'admin';
 
-  // Rutherford staff manage everything from the back-office.
+  // Rutherford staff reach the back-office from here. /admin enforces the real
+  // gate (team domain + 2FA) and shows non-admins a read-only view.
   if (accountType === 'team') {
     return (
       <div className="ah-card" id="account-manage">

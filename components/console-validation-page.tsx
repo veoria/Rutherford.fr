@@ -15,6 +15,7 @@ type PhotoConfig = {
   help: string;
   exampleSrc: string;
   conditional?: boolean;
+  optional?: boolean;
 };
 
 const PRESS_BRANDS = [
@@ -28,15 +29,40 @@ const PRESS_BRANDS = [
 ];
 
 // Press brand drives which photos we ask for.
-const BRANDS = ['Heidelberg', 'Komori', 'Koenig & Bauer', 'Manroland', 'Mitsubishi', 'Ryobi', 'Goss', 'Presstek'];
+const BRANDS = [
+  'Heidelberg',
+  'Koenig & Bauer',
+  'KBA',
+  'KBA-Sheetfed',
+  'KBA-Metronic',
+  'Manroland',
+  'Manroland Sheetfed',
+  'Manroland Web',
+  'manroland Goss web systems',
+  'Komori',
+  'Mitsubishi',
+  'Ryobi',
+  'Ryobi MHI',
+  'RMGT',
+  'Goss',
+  'Goss International',
+  'Presstek',
+  'Sakurai',
+  'Shinohara',
+  'Akiyama',
+  'Planeta',
+  'Guanghua',
+];
 const INSIDE_BRANDS = ['Heidelberg', 'Komori', 'Mitsubishi'];
 
+// Required: console, press and number of keys. The inside-console and machine
+// plate photos are optional (and the inside one only applies to some brands).
 const PHOTO_FIELDS: PhotoConfig[] = [
   { id: 'consolePhoto', title: 'Console photo', help: 'One clear picture of the full console in its environment.', exampleSrc: '/images/Console offset.jpg' },
   { id: 'pressPhoto', title: 'Press photo', help: 'The press with brand, type and number of units visible.', exampleSrc: '/images/Brand:Type and numbers of units.png' },
-  { id: 'insideConsolePhoto', title: 'Inside console or computer', help: 'Inside the bottom of the console or computer cabinet.', exampleSrc: '/images/inside the bottom of the console or computer.png', conditional: true },
   { id: 'keysPhoto', title: 'Number of keys', help: 'Close-up of the number of keys on the console.', exampleSrc: '/images/the number of keys.png' },
-  { id: 'platePhoto', title: 'Machine plate number', help: 'The machine plate showing model, year and units.', exampleSrc: '/images/Take a picture of the machine plate number..png' },
+  { id: 'insideConsolePhoto', title: 'Inside console or computer', help: 'Inside the bottom of the console or computer cabinet.', exampleSrc: '/images/inside the bottom of the console or computer.png', conditional: true, optional: true },
+  { id: 'platePhoto', title: 'Machine plate number', help: 'The machine plate showing model, year and units.', exampleSrc: '/images/Take a picture of the machine plate number..png', optional: true },
 ];
 
 const CONFETTI_COLORS = ['#29ABE2', '#2E9E47', '#F7941D', '#EC0E8C', '#ED1C24', '#2E2BB8', '#1B6FF3'];
@@ -80,7 +106,7 @@ function UploadCard({
   onChange: (id: UploadFieldId, file: File | null) => void;
 }) {
   const [dragging, setDragging] = useState(false);
-  const required = !config.conditional || INSIDE_BRANDS.includes(brand);
+  const required = !config.optional && (!config.conditional || INSIDE_BRANDS.includes(brand));
   const accept = (f: File | null | undefined) => {
     if (f && f.type.startsWith('image/')) onChange(config.id, f);
   };
@@ -213,10 +239,22 @@ export type ConsoleValidationBrand = {
 
 export type ConsoleValidationFaqItem = { q: string; a: string };
 
+export type ConsoleValidationInvite = {
+  token: string;
+  clientEmail: string;
+  company: string | null;
+  inviterCompany: string | null;
+};
+
 export function ConsoleValidationPage({
   brand,
   faq,
-}: { brand?: ConsoleValidationBrand; faq?: ConsoleValidationFaqItem[] } = {}) {
+  invite,
+}: {
+  brand?: ConsoleValidationBrand;
+  faq?: ConsoleValidationFaqItem[];
+  invite?: ConsoleValidationInvite;
+} = {}) {
   const [files, setFiles] = useState<FileMap>(emptyFiles);
   const [previews, setPreviews] = useState<PreviewMap>(emptyPreviews);
   const [submitted, setSubmitted] = useState(false);
@@ -257,12 +295,22 @@ export function ConsoleValidationPage({
     setStarted(true);
   };
 
-  // Prefill from the signed-in profile, then IP geo for the country.
+  // Prefill from the signed-in profile, then IP geo for the country. Resellers /
+  // distributors / team submit FOR a client, so none of THEIR details (email,
+  // company, country, geo) are prefilled — those fields belong to the client.
   useEffect(() => {
     let active = true;
     (async () => {
       let countryResolved = false;
-      if (authConfigured) {
+      let isReseller = false;
+      // Invited client (token link): prefill the CLIENT's details from the
+      // invite and ignore any signed-in profile.
+      if (invite) {
+        if (active) {
+          setEmail((v) => v || invite.clientEmail);
+          if (invite.company) setCompanyName((v) => v || invite.company!);
+        }
+      } else if (authConfigured) {
         try {
           const supabase = createSupabaseBrowserClient();
           const {
@@ -275,14 +323,15 @@ export function ConsoleValidationPage({
               .select('company, country, account_type')
               .eq('id', user.id)
               .maybeSingle();
-            // A reseller / distributor submits FOR a client: the email + company
-            // are the client's, so don't prefill the submitter's own.
-            const reseller = profile?.account_type === 'reseller' || profile?.account_type === 'distributor';
-            if (active) setOnBehalf(reseller);
-            if (!reseller && user.email) setEmail((v) => v || user.email!);
-            if (profile && active) {
-              if (!reseller && profile.company) setCompanyName((v) => v || (profile.company as string));
-              if (profile.country && isKnownCountry(profile.country as string)) {
+            isReseller =
+              profile?.account_type === 'reseller' ||
+              profile?.account_type === 'distributor' ||
+              profile?.account_type === 'team';
+            if (active) setOnBehalf(isReseller);
+            if (!isReseller) {
+              if (user.email) setEmail((v) => v || user.email!);
+              if (profile?.company) setCompanyName((v) => v || (profile.company as string));
+              if (profile?.country && isKnownCountry(profile.country as string)) {
                 setCountry((v) => v || (profile.country as string));
                 countryResolved = true;
               }
@@ -292,7 +341,8 @@ export function ConsoleValidationPage({
           /* anonymous */
         }
       }
-      if (!countryResolved && active) {
+      // Geo fallback — skip for resellers / team (their location ≠ the client's).
+      if (!countryResolved && !isReseller && active) {
         try {
           const res = await fetch('/api/geo');
           if (res.ok) {
@@ -307,7 +357,7 @@ export function ConsoleValidationPage({
     return () => {
       active = false;
     };
-  }, [authConfigured]);
+  }, [authConfigured, invite]);
 
   useEffect(() => {
     return () => {
@@ -326,9 +376,12 @@ export function ConsoleValidationPage({
   };
 
   const list = photosFor(pressBrand || 'Heidelberg');
-  const photosLeft = list.filter((p) => !files[p.id]).length;
-  const photosDone = list.length - photosLeft;
-  const pct = list.length ? Math.round((photosDone / list.length) * 100) : 0;
+  // Only the required photos (console, press, number of keys) gate submission
+  // and drive the progress bar; optional ones never block.
+  const requiredList = list.filter((p) => !p.optional);
+  const photosLeft = requiredList.filter((p) => !files[p.id]).length;
+  const photosDone = requiredList.length - photosLeft;
+  const pct = requiredList.length ? Math.round((photosDone / requiredList.length) * 100) : 0;
   const inside = INSIDE_BRANDS.includes(pressBrand);
 
   const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -391,7 +444,7 @@ export function ConsoleValidationPage({
       const res = await fetch('/api/console-validation', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, companyName, country, machineName, notes, ref: refCode, uploadId, photos }),
+        body: JSON.stringify({ email, companyName, country, machineName, notes, ref: refCode, invite: invite?.token, uploadId, photos }),
       });
       if (!res.ok) {
         const body = await res.json().catch(() => null);
@@ -586,7 +639,25 @@ export function ConsoleValidationPage({
                     {step === 1 ? (
                       <>
                         <div className="cv-step-h">Your details</div>
-                        {authConfigured ? (
+                        {invite ? (
+                          <div className="cv-login is-signed">
+                            <span className="cv-login-ic">
+                              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                                <path d="M5 12.5l4.2 4.2L19 7" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" />
+                              </svg>
+                            </span>
+                            <span>
+                              {invite.inviterCompany ? (
+                                <>
+                                  <strong>{invite.inviterCompany}</strong> invited you to validate your console — your
+                                  details are below.
+                                </>
+                              ) : (
+                                <>You&apos;ve been invited to validate your console — your details are below.</>
+                              )}
+                            </span>
+                          </div>
+                        ) : authConfigured ? (
                           signedInEmail ? (
                             <div className="cv-login is-signed">
                               <span className="cv-login-ic">
@@ -784,7 +855,7 @@ export function ConsoleValidationPage({
                         Continue →
                       </button>
                     ) : (
-                      <button type="button" className="cv-btn-primary" disabled={sending} onClick={handleSubmit}>
+                      <button type="button" className="cv-btn-primary" disabled={sending || photosLeft > 0} onClick={handleSubmit}>
                         {sending ? 'Sending…' : 'Send →'}
                       </button>
                     )}
