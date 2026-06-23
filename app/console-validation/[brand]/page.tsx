@@ -15,7 +15,6 @@ export function generateMetadata({ params }: { params: RouteParams }): Metadata 
   return {
     title: `${brand.name} console compatibility, closed-loop color control | Rutherford.fr`,
     description: `Check for free whether your ${brand.name} press (${brand.consoles}) is eligible for Rutherford closed-loop color. A few photos, two minutes, answer within one business day.`,
-    alternates: { canonical: `/console-validation/${brand.slug}` },
     openGraph: {
       title: `${brand.name} console compatibility, closed-loop color control`,
       description: `Free eligibility check for ${brand.name} ${brand.presses}. Stop losing money on makeready.`,

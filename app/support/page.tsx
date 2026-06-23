@@ -7,7 +7,6 @@ const ogDescription = 'Tickets, documentation and live help, all in one place.';
 export const metadata: Metadata = {
   title: ogTitle,
   description: ogDescription,
-  alternates: { canonical: '/support' },
   openGraph: {
     title: ogTitle,
     description: ogDescription,

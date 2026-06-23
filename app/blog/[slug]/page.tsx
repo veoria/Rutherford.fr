@@ -24,9 +24,6 @@ export function generateMetadata({ params }: ArticlePageProps): Metadata {
   return {
     title: `${article.title} | Rutherford Blog`,
     description: article.lead,
-    alternates: {
-      canonical: `/blog/${article.slug}`,
-    },
     openGraph: {
       title: `${article.title} | Rutherford Blog`,
       description: article.lead,

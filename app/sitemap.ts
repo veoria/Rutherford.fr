@@ -4,35 +4,52 @@ import { ALL_COURSES } from '@/data/academy-courses';
 import { PRESS_BRANDS_PAGES } from '@/data/press-brands';
 
 const BASE = 'https://rutherford.fr';
+const PREFIX_LOCALES = ['fr', 'de', 'it', 'es'];
+
+// Language alternates (hreflang) for a given canonical (English, unprefixed) path.
+function languages(path: string): Record<string, string> {
+  const suffix = path === '/' ? '' : path;
+  return Object.fromEntries(PREFIX_LOCALES.map((l) => [l, `${BASE}/${l}${suffix}`]));
+}
+
+type Entry = { path: string; changeFrequency: MetadataRoute.Sitemap[number]['changeFrequency']; priority: number; lastModified?: string | Date };
+
+function entry({ path, changeFrequency, priority, lastModified }: Entry): MetadataRoute.Sitemap[number] {
+  return {
+    url: `${BASE}${path}`,
+    ...(lastModified ? { lastModified } : {}),
+    changeFrequency,
+    priority,
+    alternates: { languages: languages(path) },
+  };
+}
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const staticRoutes: MetadataRoute.Sitemap = [
-    { url: `${BASE}/`, changeFrequency: 'weekly', priority: 1 },
-    { url: `${BASE}/offset360`, changeFrequency: 'monthly', priority: 0.9 },
-    { url: `${BASE}/console-validation`, changeFrequency: 'monthly', priority: 0.9 },
-    { url: `${BASE}/academy`, changeFrequency: 'weekly', priority: 0.8 },
-    { url: `${BASE}/blog`, changeFrequency: 'weekly', priority: 0.7 },
-    { url: `${BASE}/support`, changeFrequency: 'yearly', priority: 0.3 },
-  ];
+  const staticRoutes = [
+    { path: '/', changeFrequency: 'weekly' as const, priority: 1 },
+    { path: '/offset360', changeFrequency: 'monthly' as const, priority: 0.9 },
+    { path: '/console-validation', changeFrequency: 'monthly' as const, priority: 0.9 },
+    { path: '/academy', changeFrequency: 'weekly' as const, priority: 0.8 },
+    { path: '/blog', changeFrequency: 'weekly' as const, priority: 0.7 },
+    { path: '/support', changeFrequency: 'yearly' as const, priority: 0.3 },
+  ].map(entry);
 
-  const brandRoutes: MetadataRoute.Sitemap = PRESS_BRANDS_PAGES.map((brand) => ({
-    url: `${BASE}/console-validation/${brand.slug}`,
-    changeFrequency: 'monthly',
-    priority: 0.8,
-  }));
+  const brandRoutes = PRESS_BRANDS_PAGES.map((brand) =>
+    entry({ path: `/console-validation/${brand.slug}`, changeFrequency: 'monthly', priority: 0.8 }),
+  );
 
-  const courseRoutes: MetadataRoute.Sitemap = ALL_COURSES.map((course) => ({
-    url: `${BASE}/academy/${course.id}`,
-    changeFrequency: 'monthly',
-    priority: 0.6,
-  }));
+  const courseRoutes = ALL_COURSES.map((course) =>
+    entry({ path: `/academy/${course.id}`, changeFrequency: 'monthly', priority: 0.6 }),
+  );
 
-  const articleRoutes: MetadataRoute.Sitemap = getAllArticles().map((article) => ({
-    url: `${BASE}/blog/${article.slug}`,
-    lastModified: article.publishedAt,
-    changeFrequency: 'yearly',
-    priority: 0.5,
-  }));
+  const articleRoutes = getAllArticles().map((article) =>
+    entry({
+      path: `/blog/${article.slug}`,
+      changeFrequency: 'yearly',
+      priority: 0.5,
+      lastModified: article.publishedAt,
+    }),
+  );
 
   return [...staticRoutes, ...brandRoutes, ...courseRoutes, ...articleRoutes];
 }
