@@ -809,6 +809,8 @@ export function AdminDashboard({
         c.email,
         c.userEmail,
         c.reviewedBy,
+        c.assignee,
+        (c.followers ?? []).join(' '),
         c.refCode,
         c.pipedriveDealId != null ? `id ${c.pipedriveDealId}` : null,
         c.pipedriveDealId != null ? String(c.pipedriveDealId) : null,
@@ -984,6 +986,7 @@ export function AdminDashboard({
                     <th>Réf</th>
                     <th>E-mail</th>
                     <th>Compte</th>
+                    <th>Assigné</th>
                     <th>Validé par</th>
                     <th>Liens</th>
                   </tr>
@@ -1003,6 +1006,12 @@ export function AdminDashboard({
                       <td>{c.pipedriveDealId ? `ID ${c.pipedriveDealId}` : '—'}</td>
                       <td className="admin-email">{c.email}</td>
                       <td className="admin-email">{c.userEmail ?? '—'}</td>
+                      <td>
+                        {c.assignee ?? '—'}
+                        {c.followers && c.followers.length ? (
+                          <span className="admin-cv-sub">Suivi : {c.followers.join(', ')}</span>
+                        ) : null}
+                      </td>
                       <td>{c.reviewedBy ?? '—'}</td>
                       <td className="admin-cv-links">
                         {c.asanaUrl ? (
@@ -1021,7 +1030,7 @@ export function AdminDashboard({
                   ))}
                   {filteredCv.length === 0 ? (
                     <tr>
-                      <td colSpan={10} className="admin-empty">
+                      <td colSpan={11} className="admin-empty">
                         Aucune demande.
                       </td>
                     </tr>

@@ -14211,6 +14211,13 @@ textarea.cv-input { resize: vertical; min-height: 74px; }
   color: #c4332b;
 }
 
+.admin-cv-sub {
+  display: block;
+  margin-top: 2px;
+  font-size: 0.78em;
+  color: rgba(0, 0, 0, 0.45);
+}
+
 .admin-cv-links {
   white-space: nowrap;
 }

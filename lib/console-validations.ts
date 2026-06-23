@@ -73,6 +73,26 @@ export async function insertConsoleValidation(record: ConsoleValidationRecord): 
   }
 }
 
+/** Persist who handles the request — the Asana assignee and followers — on
+ * every task change (even while pending). Best-effort; surfaced in the admin so
+ * "validations X handles" is filterable. No-op when the gid isn't one of ours. */
+export async function setConsoleValidationAssignee(
+  asanaTaskGid: string,
+  who: { assignee: string | null; followers: string[] }
+): Promise<void> {
+  const supabase = adminClient();
+  if (!supabase) return;
+  try {
+    const { error } = await supabase
+      .from('console_validations')
+      .update({ assignee: who.assignee, followers: who.followers, updated_at: new Date().toISOString() })
+      .eq('asana_task_gid', asanaTaskGid);
+    if (error) console.error('console_validations assignee update failed:', error.message);
+  } catch (error) {
+    console.error('console_validations assignee update threw:', error);
+  }
+}
+
 /** Current status for a task, so the webhook can skip no-op re-deliveries. */
 export async function getConsoleValidationStatusByAsanaTask(
   asanaTaskGid: string

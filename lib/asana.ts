@@ -114,6 +114,11 @@ export type AsanaTaskState = {
   approvalStatus: string | null;
   completedByName: string | null;
   completedAt: string | null;
+  // Who currently handles the request: the Asana assignee, plus its followers
+  // (the board adds Shajith as a follower on every request). Surfaced in the
+  // admin so "validations X handles" is filterable, not just "validated by X".
+  assigneeName: string | null;
+  followerNames: string[];
 };
 
 /**
@@ -126,7 +131,7 @@ export async function getConsoleValidationTaskState(taskGid: string): Promise<As
   try {
     const res = await asana(
       'GET',
-      `/tasks/${taskGid}?opt_fields=name,notes,approval_status,completed_at,completed_by.name,memberships.section.name,memberships.project.gid`
+      `/tasks/${taskGid}?opt_fields=name,notes,approval_status,completed_at,completed_by.name,assignee.name,followers.name,memberships.section.name,memberships.project.gid`
     );
     const data = res?.data;
     if (!data) return null;
@@ -138,6 +143,8 @@ export async function getConsoleValidationTaskState(taskGid: string): Promise<As
       approvalStatus: data.approval_status ?? null,
       completedByName: data.completed_by?.name ?? null,
       completedAt: data.completed_at ?? null,
+      assigneeName: data.assignee?.name ?? null,
+      followerNames: (data.followers ?? []).map((f: any) => f?.name).filter(Boolean) as string[],
     };
   } catch (error) {
     console.error('Asana task fetch failed:', error);

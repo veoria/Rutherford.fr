@@ -16,6 +16,7 @@ import {
   getNotificationEmailByAsanaTask,
   insertConsoleValidationMessage,
   setConsoleValidationAgentStory,
+  setConsoleValidationAssignee,
   updateConsoleValidationStatusByAsanaTask,
   type ConsoleValidationStatus,
 } from '@/lib/console-validations';
@@ -123,6 +124,9 @@ export async function POST(request: NextRequest) {
 
     const state = await getConsoleValidationTaskState(gid);
     if (!state) continue;
+    // Mirror who handles it on every change (assignee can shift, and it's set
+    // long before any verdict), so the admin "Assigné" view stays current.
+    await setConsoleValidationAssignee(gid, { assignee: state.assigneeName, followers: state.followerNames });
     const status = APPROVAL_STATUS[state.approvalStatus ?? ''];
     if (!status) continue; // still pending — no verdict yet
 
