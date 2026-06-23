@@ -14818,3 +14818,6 @@ textarea.cv-input { resize: vertical; min-height: 74px; }
 .article-cta h2 { margin: 0 0 20px; font-size: 1.4rem; line-height: 1.3; letter-spacing: -0.02em; color: #16130f; }
 .article-cta-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
 .article-actions { justify-content: center; }
+.article-actions { gap: 30px; margin-top: 30px; }
+.article-textlink { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-weight: 600; font-size: 1rem; text-decoration: none; background: none; padding: 0; }
+.article-textlink:hover { text-decoration: underline; text-underline-offset: 4px; }
