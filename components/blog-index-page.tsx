@@ -32,9 +32,12 @@ export function BlogIndexPage({ articles }: { articles: BlogArticle[] }) {
     return articles.filter((a) => {
       if (cat !== 'all' && a.category !== cat) return false;
       if (!q) return true;
-      return `${a.title} ${a.excerpt ?? ''} ${a.category ?? ''}`.toLowerCase().includes(q);
+      const tr = a.i18n?.[locale];
+      return `${tr?.title ?? a.title} ${tr?.excerpt ?? a.excerpt ?? ''} ${a.title} ${a.category ?? ''}`
+        .toLowerCase()
+        .includes(q);
     });
-  }, [articles, query, cat]);
+  }, [articles, query, cat, locale]);
 
   const fmtDate = (iso?: string) =>
     iso ? new Date(iso).toLocaleDateString(t.dateLocale, { day: '2-digit', month: 'short', year: 'numeric' }) : '';
@@ -80,11 +83,15 @@ export function BlogIndexPage({ articles }: { articles: BlogArticle[] }) {
           {filtered.length ? (
             <div className="blog-list">
               {filtered.map((article) => {
-                const href = article.href ?? `/blog/${article.slug}`;
+                const tr = article.i18n?.[locale];
+                const title = tr?.title ?? article.title;
+                const excerpt = tr?.excerpt ?? article.excerpt;
+                const base = article.href ?? `/blog/${article.slug}`;
+                const href = locale === 'en' ? base : `/${locale}${base}`;
                 return (
                   <article className="blog-row" key={article.slug}>
-                    <a className="blog-row-media" href={href} aria-label={article.title} tabIndex={-1}>
-                      {article.image ? <img src={article.image} alt={article.title} loading="lazy" /> : null}
+                    <a className="blog-row-media" href={href} aria-label={title} tabIndex={-1}>
+                      {article.image ? <img src={article.image} alt={title} loading="lazy" /> : null}
                     </a>
                     <div className="blog-row-body">
                       <p className="blog-row-meta">
@@ -92,10 +99,10 @@ export function BlogIndexPage({ articles }: { articles: BlogArticle[] }) {
                         {article.publishedAt ? <span className="blog-row-dot">·</span> : null}
                         {article.publishedAt ? <time dateTime={article.publishedAt}>{fmtDate(article.publishedAt)}</time> : null}
                       </p>
-                      <h2 className="blog-row-title"><a href={href}>{article.title}</a></h2>
-                      <p className="blog-row-excerpt">{article.excerpt}</p>
+                      <h2 className="blog-row-title"><a href={href}>{title}</a></h2>
+                      <p className="blog-row-excerpt">{excerpt}</p>
                     </div>
-                    <a className="blog-row-arrow" href={href} aria-label={article.title}>
+                    <a className="blog-row-arrow" href={href} aria-label={title}>
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13m0 0-5-5m5 5-5 5" /></svg>
                     </a>
                   </article>

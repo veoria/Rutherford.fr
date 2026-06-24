@@ -38,6 +38,13 @@ export function BlogArticlePage({ article }: { article: BlogArticle }) {
     es: { sources: 'Fuentes', back: 'Volver a todos los artículos', original: 'Página original', ctaTitle: '¿Tu prensa está lista para closed-loop?', ctaCheck: 'Comprobar elegibilidad', ctaRoi: 'Calcular tu ROI' },
   }[locale];
 
+  // Localized content (falls back to the English base when a field is missing).
+  const tr = article.i18n?.[locale];
+  const title = tr?.title ?? article.title;
+  const lead = tr?.lead ?? article.lead;
+  const body = tr?.body ?? article.body;
+  const lhref = (p: string) => (locale === 'en' ? p : `/${locale}${p}`);
+
   return (
     <main className="page-shell">
       <SiteNav current="blog" />
@@ -45,8 +52,8 @@ export function BlogArticlePage({ article }: { article: BlogArticle }) {
       <section className="article-hero section">
         <div className="container article-hero-inner">
           <p className="section-kicker">{article.category}</p>
-          <h1>{article.title}</h1>
-          <p>{article.lead}</p>
+          <h1>{title}</h1>
+          <p>{lead}</p>
         </div>
       </section>
 
@@ -55,13 +62,13 @@ export function BlogArticlePage({ article }: { article: BlogArticle }) {
           <div className="article-reading">
             {article.image ? (
               <figure className="article-figure">
-                <img src={article.image} alt={article.title} />
+                <img src={article.image} alt={title} />
               </figure>
             ) : null}
 
             <article className="article-content">
-              {article.body?.length
-                ? article.body.map((block, index) => {
+              {body?.length
+                ? body.map((block, index) => {
                     const key = `${article.slug}-b-${index}`;
                     if (block.type === 'h2') return <h2 key={key} className="article-h2">{renderInline(block.text)}</h2>;
                     if (block.type === 'h3') return <h3 key={key} className="article-h3">{renderInline(block.text)}</h3>;
@@ -105,13 +112,13 @@ export function BlogArticlePage({ article }: { article: BlogArticle }) {
             <div className="article-cta">
               <h2>{labels.ctaTitle}</h2>
               <div className="article-cta-actions">
-                <a className="button button-accent" href="/console-validation">{labels.ctaCheck}</a>
-                <a className="button button-light" href="/roi">{labels.ctaRoi}</a>
+                <a className="button button-accent" href={lhref('/console-validation')}>{labels.ctaCheck}</a>
+                <a className="button button-light" href={lhref('/roi')}>{labels.ctaRoi}</a>
               </div>
             </div>
 
             <div className="article-actions">
-              <a className="article-textlink" href="/blog">
+              <a className="article-textlink" href={lhref('/blog')}>
                 <span aria-hidden="true">&larr;</span> {labels.back}
               </a>
               <a className="article-textlink" href={article.originalUrl} target="_blank" rel="noreferrer">
