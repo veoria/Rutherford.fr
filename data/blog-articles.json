@@ -120,6 +120,53 @@
             ]
           }
         ]
+      },
+      "fr": {
+        "title": "G7 vs ISO 12647",
+        "excerpt": "G7 et ISO 12647 standardisent tous deux la couleur offset, mais par des voies différentes. Voici en quoi ils diffèrent et comment choisir, ou les combiner.",
+        "lead": "G7 et ISO 12647 sont les deux références que croisent la plupart des imprimeurs offset. Moins des rivales que deux voies vers le même but : une couleur prévisible et répétable. Voici en quoi elles diffèrent.",
+        "body": [
+          {
+            "type": "p",
+            "text": "G7 et ISO 12647 sont les deux références que croisent la plupart des imprimeurs offset. Moins des rivales que deux voies vers la même destination : une couleur prévisible et répétable. Voici en quoi elles diffèrent et comment choisir, ou les combiner."
+          },
+          {
+            "type": "h2",
+            "text": "Deux voies vers le même but"
+          },
+          {
+            "type": "p",
+            "text": "Les deux méthodes visent à rendre la couleur cohérente et reproductible. La différence tient à ce qu'elles posent en premier : l'ISO 12647 fixe des valeurs cibles, tandis que G7 fixe la façon dont le gris et la tonalité doivent apparaître, puis vous laisse atteindre le reste à partir de là."
+          },
+          {
+            "type": "h2",
+            "text": "Ce que contrôle l'ISO 12647"
+          },
+          {
+            "type": "p",
+            "text": "L'ISO 12647-2 définit des valeurs cibles pour les primaires, l'engraissement et des tolérances sur une classe de substrat donnée. C'est une spécification : imprimez ces chiffres, dans cet écart, et vous êtes conforme."
+          },
+          {
+            "type": "h2",
+            "text": "Ce que contrôle G7"
+          },
+          {
+            "type": "p",
+            "text": "G7 est une méthode de calibration construite autour de l'équilibre des gris et d'une courbe de densité neutre (NPDC). En obtenant une apparence de gris commune relative au substrat, les travaux paraissent cohérents entre appareils et sites, même sur des papiers différents."
+          },
+          {
+            "type": "h2",
+            "text": "Comment choisir, ou combiner"
+          },
+          {
+            "type": "ul",
+            "items": [
+              "Si vous travaillez surtout dans la chaîne nord-américaine ou si vous accordez par apparence des gris : G7 s'impose naturellement.",
+              "Si des spécifications et valeurs cibles européennes ou basées sur l'ISO priment : l'ISO 12647-2 est la référence.",
+              "En pratique, beaucoup d'imprimeurs calibrent avec G7 puis vérifient contre les valeurs cibles de l'ISO 12647, combinant ainsi les deux."
+            ]
+          }
+        ]
       }
     }
   },
@@ -244,6 +291,54 @@
           {
             "type": "p",
             "text": "Standardisieren Sie für neue Arbeiten auf M1: Es ist die aktuelle ISO-konforme Referenz und überträgt sich am besten zwischen Partnern. Richten Sie sich nach der Bedingung, die Ihr Kunde oder Standard vorgibt, und stellen Sie sicher, dass jedes Gerät in der Kette gleich eingestellt ist."
+          }
+        ]
+      },
+      "fr": {
+        "title": "M0, M1, M2, M3 expliqués",
+        "excerpt": "Ce que signifient les conditions de mesure M0, M1, M2 et M3 pour la couleur imprimée, comment les azurants optiques et l'UV modifient vos mesures, et laquelle utiliser.",
+        "lead": "Deux opérateurs peuvent mesurer la même feuille et lire des chiffres différents, simplement parce qu'ils ont utilisé une condition de mesure différente. Voici ce que signifient M0, M1, M2 et M3, et quand utiliser chacune.",
+        "body": [
+          {
+            "type": "p",
+            "text": "Deux opérateurs peuvent mesurer la même feuille et lire des chiffres différents, simplement parce qu'ils ont utilisé une condition de mesure différente. Voici ce que signifient M0, M1, M2 et M3, et quand utiliser chacune, pour que vos résultats DeltaE soient réellement comparables."
+          },
+          {
+            "type": "h2",
+            "text": "Pourquoi les conditions de mesure comptent"
+          },
+          {
+            "type": "p",
+            "text": "Une mesure au spectrophotomètre dépend de la lumière utilisée et de la façon dont l'appareil traite l'UV et le brillant. Les conditions M standardisent cela, de sorte qu'une mesure soit reproductible entre appareils, opérateurs et sites. Mélanger les conditions est l'une des causes les plus fréquentes de désaccord entre deux mesures."
+          },
+          {
+            "type": "h2",
+            "text": "Les quatre conditions"
+          },
+          {
+            "type": "ul",
+            "items": [
+              "M0 : éclairage historique non filtré (proche de l'incandescence). Encore courant, mais sensible aux azurants optiques du papier.",
+              "M1 : lumière du jour D50 définie, avec une teneur en UV spécifiée. La référence moderne, car elle traite les azurants de façon cohérente.",
+              "M2 : UV-cut. Exclut l'UV pour que les azurants optiques ne fluorescent pas ; utile pour isoler l'encre de l'effet du papier.",
+              "M3 : polarisation. Réduit le brillant et l'écart de densité humide/sec, souvent utilisée à la presse."
+            ]
+          },
+          {
+            "type": "h2",
+            "text": "Azurants optiques et UV"
+          },
+          {
+            "type": "p",
+            "text": "Beaucoup de papiers contiennent des azurants optiques qui brillent sous l'UV, décalant le blanc mesuré et les couleurs qui reposent dessus. Comme M0, M1 et M2 traitent l'UV différemment, la même feuille se lit différemment sous chacune, et c'est précisément pourquoi la condition doit être indiquée."
+          },
+          {
+            "type": "h2",
+            "text": "Laquelle utiliser"
+          },
+          {
+            "type": "p",
+            "text": "Pour les nouveaux travaux, standardisez sur M1 : c'est la référence actuelle alignée sur l'ISO et celle qui voyage le mieux entre partenaires. Alignez-vous sur la condition imposée par votre client ou votre standard, et assurez-vous que chaque appareil de la chaîne est réglé de la même façon."
           }
         ]
       }
@@ -419,6 +514,78 @@
             "text": "Viele Druckereien arbeiten bereits mit X-Rite PANTONE-Messtechnik. Der Schritt zu Closed-Loop bedeutet, die Entscheidungs- und Aktorebene hinzuzufügen, zum Beispiel mit Rutherford ColorLoop. Eine kostenlose Konsolenvalidierung bestätigt in etwa zwei Minuten, ob Ihr konkretes Druckpult und Farbzonensystem geeignet ist."
           }
         ]
+      },
+      "fr": {
+        "title": "Contrôle couleur closed-loop en offset",
+        "excerpt": "Ce qu'est le contrôle couleur closed-loop, comment il fonctionne sur une presse offset, et comment il réduit la gâche au calage tout en gardant la couleur stable, équipe après équipe.",
+        "lead": "Le contrôle couleur closed-loop, c'est la différence entre courir après la couleur à l'œil et la maintenir automatiquement, tirage après tirage. Voici comment il fonctionne sur une presse offset moderne et ce qu'il change en production.",
+        "body": [
+          {
+            "type": "p",
+            "text": "La plupart des ateliers amènent encore la couleur à la main : l'opérateur lit une feuille, la compare au proof et tourne les clés d'encrage jusqu'à ce que ce soit bon. Le contrôle couleur closed-loop remplace cette boucle manuelle par une boucle mesurée qui tourne en continu, tirage après tirage."
+          },
+          {
+            "type": "h2",
+            "text": "Ce qu'est vraiment le contrôle couleur closed-loop"
+          },
+          {
+            "type": "p",
+            "text": "Le closed-loop est un cycle continu de trois actions : mesurer, décider, corriger. Un dispositif de mesure lit la barre de contrôle couleur sur la feuille imprimée, le logiciel compare chaque zone d'encrage à la cible, et les clés d'encrage de la presse sont ajustées automatiquement pour ramener la couleur dans le rang. La commande open-loop, à l'inverse, dépend de l'opérateur qui lit et règle à la main, ce qui est plus lent et bien moins répétable."
+          },
+          {
+            "type": "h2",
+            "text": "Les trois briques de base"
+          },
+          {
+            "type": "p",
+            "text": "Tout système closed-loop combine trois briques, et la plupart des imprimeurs possèdent déjà la première."
+          },
+          {
+            "type": "ul",
+            "items": [
+              "Capteur : un spectrophotomètre portable, une table de scan automatique comme le X-Rite IntelliTrax2, ou un véritable système inline qui lit la couleur sur la feuille.",
+              "Couche de décision : le logiciel qui détient vos cibles spectrales et vos standards (ISO 12647, G7) et calcule la correction.",
+              "Actionneur : la commande des zones d'encrage de la presse qui bouge les clés. L'approche est indépendante de la marque, de Heidelberg à Koenig & Bauer, Komori et Manroland."
+            ]
+          },
+          {
+            "type": "h2",
+            "text": "Ce que ça change au calage"
+          },
+          {
+            "type": "p",
+            "text": "Le presetting CIP3/CIP4 ouvre les clés d'encrage à partir des données prépresse plutôt que d'un réglage par défaut, si bien que la presse démarre proche de la cible. Le closed-loop l'amène ensuite dans la tolérance en moins de passes, ce qui signifie moins de feuilles et moins d'encre brûlées avant la première feuille conforme."
+          },
+          {
+            "type": "h2",
+            "text": "Ce que ça change pendant le tirage"
+          },
+          {
+            "type": "p",
+            "text": "La couleur dérive quand les lots de papier changent, que la solution de mouillage évolue, que la température monte et que les plaques s'usent. Un système closed-loop mesure et corrige toutes les quelques feuilles, de sorte que la couleur reste dans votre tolérance DeltaE de la première à la dernière feuille, pas seulement lors de contrôles ponctuels."
+          },
+          {
+            "type": "h2",
+            "text": "Les résultats que vous pouvez mesurer"
+          },
+          {
+            "type": "ul",
+            "items": [
+              "Moins de gâche au calage et un temps de calage plus court.",
+              "Un DeltaE plus serré, tenu de façon constante entre les équipes et les sites.",
+              "Moins de relances et de rejets clients.",
+              "Des données couleur auditables pour chaque travail, utiles aux marques et à la conformité packaging."
+            ]
+          },
+          {
+            "type": "h2",
+            "text": "Comment démarrer"
+          },
+          {
+            "type": "p",
+            "text": "La plupart des imprimeurs utilisent déjà la mesure X-Rite PANTONE. Passer au closed-loop, c'est ajouter la couche de décision et l'actionneur, par exemple avec Rutherford ColorLoop. Une validation console gratuite confirme en deux minutes environ si votre pupitre de presse et votre système de clés d'encrage sont éligibles."
+          }
+        ]
       }
     }
   },
@@ -557,6 +724,60 @@
           {
             "type": "p",
             "text": "Die meisten Druckereien besitzen bereits ein Messgerät. Die schnellsten Gewinne entstehen meist aus der Kombination von CIP3/CIP4-Presetting mit Closed-Loop-Regelung: Die Druckmaschine startet nahe am Zielwert und erreicht ihn dann in weniger Druckgängen. Eine kostenlose Konsolenvalidierung bestätigt, ob Ihr Druckpult geeignet ist."
+          }
+        ]
+      },
+      "fr": {
+        "title": "Réduire la gâche au calage : 10 leviers",
+        "excerpt": "Dix leviers concrets pour réduire la gâche au calage en offset, du presetting CIP3 au contrôle couleur closed-loop, et comment mesurer les gains.",
+        "lead": "Le calage, c'est là où la marge fuit en silence : papier, encre, énergie et temps presse, sur chaque travail. Voici dix leviers qui réduisent cette gâche, les plus impactants d'abord.",
+        "body": [
+          {
+            "type": "p",
+            "text": "Le calage, c'est là où la marge fuit en silence : papier, encre, énergie et temps presse, sur chaque travail. La bonne nouvelle, c'est que l'essentiel est adressable avec des changements que vous pouvez déployer un à un. Voici dix leviers, les plus impactants d'abord."
+          },
+          {
+            "type": "h2",
+            "text": "D'où vient la gâche au calage"
+          },
+          {
+            "type": "p",
+            "text": "La gâche au calage, c'est le rebut entre le démarrage d'un travail et la première feuille conforme : amener le repérage, la densité d'encre et la couleur à la cible à la main. Plus cela dure, plus vous brûlez de papier et d'encre, et moins il vous reste de temps presse pour du travail facturable."
+          },
+          {
+            "type": "h2",
+            "text": "Les dix leviers"
+          },
+          {
+            "type": "ul",
+            "items": [
+              "Presetting d'encrage CIP3/CIP4 : ouvrir les clés d'encrage à partir des données prépresse plutôt que d'un réglage par défaut.",
+              "Contrôle couleur closed-loop : mesurer et corriger automatiquement jusqu'à ce que la couleur soit dans la tolérance.",
+              "Substrats et encres standardisés, imprimés sur les valeurs cibles de l'ISO 12647.",
+              "Presetting des plaques et du repérage, avec chargement automatique des plaques si disponible.",
+              "Une barre de contrôle couleur sur chaque feuille, liée à une cible définie.",
+              "Des procédures opérateur partagées et de la formation, pour que chaque équipe cale de la même façon.",
+              "Contrôle de la solution de mouillage et de la température d'encre pour stabiliser le procédé.",
+              "Un prépresse propre : profils ICC corrects et soft-proofing fiable.",
+              "Regroupement des travaux par substrat et couleur pour réduire le nombre de changements.",
+              "Mesurer la gâche par travail, pour disposer d'une base de référence et d'un indicateur à améliorer."
+            ]
+          },
+          {
+            "type": "h2",
+            "text": "Comment mesurer les gains"
+          },
+          {
+            "type": "p",
+            "text": "Suivez quatre chiffres par travail : feuilles jusqu'à la première feuille bonne, DeltaE sur cette feuille, temps de calage, et encre et papier consommés avant validation. Améliorer les deux premiers tire presque toujours les deux autres vers le bas."
+          },
+          {
+            "type": "h2",
+            "text": "Par où commencer"
+          },
+          {
+            "type": "p",
+            "text": "La plupart des imprimeurs possèdent déjà un dispositif de mesure. Les gains les plus rapides viennent généralement de l'association du presetting CIP3/CIP4 et du contrôle closed-loop : la presse démarre proche de la cible, puis l'atteint en moins de passes. Une validation console gratuite confirme si votre pupitre est éligible."
           }
         ]
       }
@@ -704,6 +925,63 @@
             "text": "Standardisieren Sie Bedruckstoff und Farben, charakterisieren Sie die Druckmaschine und regeln Sie dann jede Auflage mit einem Farbmessstreifen und einem Messgerät gegen die Sollwerte. Die Closed-Loop-Regelung hält Sie vom ersten bis zum letzten Bogen in der Toleranz, nicht nur bei Stichproben."
           }
         ]
+      },
+      "fr": {
+        "title": "ISO 12647-2, expliquée",
+        "excerpt": "Un guide en langage clair de l'ISO 12647-2 pour l'offset : ce qu'elle standardise (substrats, primaires, engraissement, tolérances) et pourquoi elle rend la couleur répétable.",
+        "lead": "L'ISO 12647-2 est la référence qui transforme une bonne couleur d'une opinion en une cible. Voici ce qu'elle spécifie réellement pour l'offset feuille et rotative, sans jargon.",
+        "body": [
+          {
+            "type": "p",
+            "text": "L'ISO 12647-2 est la référence qui transforme une bonne couleur d'une opinion en une cible. C'est elle qui permet à un travail imprimé aujourd'hui de correspondre au même travail imprimé le mois prochain, ou dans un autre site. Voici ce qu'elle spécifie réellement pour l'offset feuille et rotative, sans jargon."
+          },
+          {
+            "type": "h2",
+            "text": "Ce que standardise l'ISO 12647-2"
+          },
+          {
+            "type": "ul",
+            "items": [
+              "Des classes de substrat, avec un blanc papier et un brillant définis.",
+              "Des valeurs cibles pour les primaires du procédé (cyan, magenta, jaune, noir) en CIELAB.",
+              "Des courbes d'engraissement (TVI), selon la trame et le substrat.",
+              "L'équilibre des gris, pour que les neutres restent neutres sur toute la plage tonale.",
+              "Des tolérances : de combien une feuille de production peut s'écarter tout en restant conforme."
+            ]
+          },
+          {
+            "type": "h2",
+            "text": "Pourquoi elle rend la couleur répétable"
+          },
+          {
+            "type": "p",
+            "text": "En fixant les cibles et l'écart acceptable autour, l'ISO 12647-2 retire le pifomètre. Deux opérateurs, deux équipes ou deux sites impriment sur les mêmes chiffres plutôt que sur un jugement personnel, et c'est ce qui rend le résultat répétable."
+          },
+          {
+            "type": "h2",
+            "text": "Substrats et primaires d'encre"
+          },
+          {
+            "type": "p",
+            "text": "La couleur est toujours relative au papier sur lequel elle repose ; la norme définit donc des classes de substrat et les valeurs Lab que les primaires doivent atteindre sur chacune. Rattachez d'abord votre papier à la bonne classe ; le reste des valeurs cibles en découle."
+          },
+          {
+            "type": "h2",
+            "text": "Engraissement et tolérances"
+          },
+          {
+            "type": "p",
+            "text": "L'encre s'étale en se transférant et en séchant, si bien qu'un point de 50 % imprime plus foncé que 50 %. L'ISO 12647-2 précise l'engraissement attendu et la tolérance autour. Tenir l'engraissement et l'équilibre des gris est généralement ce qui sépare une feuille conforme d'un quasi-échec."
+          },
+          {
+            "type": "h2",
+            "text": "Imprimer selon l'ISO 12647-2 en pratique"
+          },
+          {
+            "type": "p",
+            "text": "Standardisez le substrat et les encres, caractérisez la presse, puis pilotez chaque tirage contre les valeurs cibles avec une barre de contrôle couleur et un dispositif de mesure. Le contrôle closed-loop vous maintient dans la tolérance de la première à la dernière feuille, pas seulement aux contrôles ponctuels."
+          }
+        ]
       }
     }
   },
@@ -826,6 +1104,53 @@
           {
             "type": "p",
             "text": "Legen Sie Formel und Zielwert fest, drucken Sie einen Farbmessstreifen auf jedem Bogen und messen Sie kontinuierlich statt stichprobenartig. Die Closed-Loop-Regelung korrigiert die Farbzonen automatisch, wenn die Auflage driftet, und genau das hält DeltaE von Anfang bis Ende in der Toleranz."
+          }
+        ]
+      },
+      "fr": {
+        "title": "DeltaE : quelle tolérance est acceptable ?",
+        "excerpt": "Ce que signifient DeltaE et DeltaE00 en impression, quelles tolérances sont réalistes pour les couleurs de procédé et de marque, et comment les tenir en production.",
+        "lead": "Le DeltaE, c'est la façon dont l'industrie de l'impression met un chiffre sur l'écart de couleur. Mais la bonne réponse à « quel DeltaE est acceptable » dépend de ce que vous mesurez. Voici un guide pratique.",
+        "body": [
+          {
+            "type": "p",
+            "text": "Le DeltaE, c'est la façon dont l'industrie de l'impression met un seul chiffre sur l'écart entre deux couleurs. Mais la bonne réponse à « quel DeltaE est acceptable » dépend entièrement de ce que vous mesurez et de qui le juge. Voici un guide pratique."
+          },
+          {
+            "type": "h2",
+            "text": "Ce que mesure le DeltaE"
+          },
+          {
+            "type": "p",
+            "text": "Le DeltaE est la distance entre deux couleurs dans un espace colorimétrique. Plus le chiffre est élevé, plus l'écart est visible. Pour situer : un DeltaE autour de 1 est à peine perceptible pour un œil exercé, tandis que des valeurs plus élevées deviennent évidentes côte à côte."
+          },
+          {
+            "type": "h2",
+            "text": "DeltaE76 face à DeltaE2000"
+          },
+          {
+            "type": "p",
+            "text": "Le DeltaE76 est la distance euclidienne d'origine, simple, mais qui ne colle pas uniformément à la perception humaine sur tout le spectre. Le DeltaE2000 (dE00) corrige cela et constitue le standard moderne pour les tolérances d'impression. Précisez toujours à quelle formule une tolérance se rapporte."
+          },
+          {
+            "type": "h2",
+            "text": "Quelle tolérance est réaliste"
+          },
+          {
+            "type": "ul",
+            "items": [
+              "Couleurs de procédé selon l'ISO 12647 : primaires à quelques dE00, de plus en plus serrées à mesure que vous approchez de la cible.",
+              "Couleurs de marque et tons directs : les marques demandent souvent un dE00 de 2 ou moins sur les couleurs critiques.",
+              "Le substrat compte : un papier non couché ou de faible qualité rend les tolérances très serrées physiquement plus difficiles à tenir."
+            ]
+          },
+          {
+            "type": "h2",
+            "text": "Comment tenir la tolérance en production"
+          },
+          {
+            "type": "p",
+            "text": "Choisissez la formule et la cible, imprimez une barre de contrôle couleur sur chaque feuille, et mesurez en continu plutôt que par sondage. Le contrôle closed-loop corrige les zones d'encrage automatiquement à mesure que le tirage dérive, et c'est ce qui maintient le DeltaE dans la tolérance du début à la fin."
           }
         ]
       }
@@ -958,6 +1283,56 @@
             "text": "Compliance ist einfacher, wenn die Farbregelung bereits saubere, prüffähige Daten erzeugt. Ein Closed-Loop-Workflow protokolliert, was gedruckt wurde und wie nah es am Zielwert war, genau die Art rückverfolgbarer Nachweise, die PPWR und DPP belohnen."
           }
         ]
+      },
+      "fr": {
+        "title": "PPWR & DPP : checklist imprimeur",
+        "excerpt": "Ce que la PPWR de l'UE et le passeport produit numérique signifient pour les imprimeurs packaging, et une checklist pratique pour préparer couleur, données et traçabilité.",
+        "lead": "Le règlement européen sur les emballages (PPWR) et le passeport produit numérique (DPP) redessinent l'emballage. Voici une checklist orientée imprimeur de ce qu'il faut préparer.",
+        "body": [
+          {
+            "type": "p",
+            "text": "Le règlement européen sur les emballages et les déchets d'emballages (PPWR) et le passeport produit numérique (DPP) transforment la façon dont l'emballage est conçu, produit et suivi. Pour les imprimeurs et transformateurs, cela signifie de nouvelles exigences en matière de données, de traçabilité et de couleur. Voici une checklist orientée imprimeur de ce qu'il faut préparer."
+          },
+          {
+            "type": "h2",
+            "text": "Ce que change la PPWR"
+          },
+          {
+            "type": "p",
+            "text": "La PPWR pousse l'emballage vers la recyclabilité, le contenu recyclé et la réduction des déchets dans toute l'UE. Elle influe sur le choix des substrats et des encres, l'éco-conception et la documentation nécessaire pour prouver la conformité, ce qui à son tour influe sur la façon dont vous calez et prouvez un travail."
+          },
+          {
+            "type": "h2",
+            "text": "Ce qu'ajoute le passeport produit numérique"
+          },
+          {
+            "type": "p",
+            "text": "Le DPP attache un enregistrement numérique à un produit, accessible via un porteur de données comme un code sur l'emballage. Pour les imprimeurs, la partie pertinente est de produire et de suivre les données et le porteur imprimé de façon fiable, travail après travail."
+          },
+          {
+            "type": "h2",
+            "text": "Checklist de préparation de l'imprimeur"
+          },
+          {
+            "type": "ul",
+            "items": [
+              "Standardiser la couleur sur l'ISO 12647 pour que les travaux soient répétables et documentés.",
+              "Capturer les données couleur par travail : cibles, mesures et résultats DeltaE.",
+              "Rendre ces données traçables et exportables, pas enfermées dans la tête d'un opérateur.",
+              "Vérifier que les codes et porteurs s'impriment et se scannent de façon fiable sur vos substrats.",
+              "Examiner substrats et encres au regard de la recyclabilité et des exigences de contenu recyclé.",
+              "Tenir un enregistrement auditable reliant chaque tirage à son standard et à ses résultats."
+            ]
+          },
+          {
+            "type": "h2",
+            "text": "Là où couleur et données se rejoignent"
+          },
+          {
+            "type": "p",
+            "text": "La conformité est plus simple quand le contrôle couleur produit déjà des données propres et auditables. Un workflow closed-loop enregistre ce qui a été imprimé et à quel point c'était proche de la cible, exactement le type de preuve traçable que la PPWR et le DPP récompensent."
+          }
+        ]
       }
     }
   },
@@ -1079,6 +1454,53 @@
               "Presetting ist Open-Loop: Es sieht das gedruckte Ergebnis nicht und kann eine Drift daher nicht selbst korrigieren.",
               "Die Genauigkeit hängt von sauberen Prepress-Daten und einer gut charakterisierten Druckmaschine ab.",
               "Bedruckstoff, Farbe und Maschinenzustand verschieben den Zielwert während der Auflage weiterhin."
+            ]
+          }
+        ]
+      },
+      "fr": {
+        "title": "Presetting d'encrage CIP3/CIP4",
+        "excerpt": "Ce qu'est le presetting d'encrage CIP3/CIP4 (PPF, JDF), comment il ouvre les clés d'encrage à partir des données prépresse, et comment il s'associe au closed-loop pour raccourcir le calage.",
+        "lead": "Le presetting CIP3/CIP4 est l'un des moyens les moins chers de raccourcir le calage : il ouvre vos clés d'encrage à partir des données prépresse plutôt que de zéro. Voici comment il fonctionne et où sont ses limites.",
+        "body": [
+          {
+            "type": "p",
+            "text": "Le presetting CIP3/CIP4 est l'un des moyens les moins chers de raccourcir le calage : il ouvre vos clés d'encrage à partir des données prépresse plutôt que de zéro. Voici comment il fonctionne, où il aide le plus, et où sont ses limites."
+          },
+          {
+            "type": "h2",
+            "text": "Ce que fait le presetting CIP3/CIP4"
+          },
+          {
+            "type": "p",
+            "text": "Lors du rip, le système prépresse calcule la quantité d'encre nécessaire à chaque zone de la presse, d'après la surface d'image dans cette zone. La presse lit ce fichier et règle ses clés d'encrage avant le démarrage, si bien que les premières feuilles tombent bien plus près de la cible qu'un réglage par défaut manuel."
+          },
+          {
+            "type": "h2",
+            "text": "PPF face à JDF"
+          },
+          {
+            "type": "p",
+            "text": "Le CIP3 utilise l'ancien format PPF, qui porte les données de presetting des clés d'encrage. Le CIP4 l'étend avec le JDF, un ticket de travail plus riche qui peut aussi transporter le repérage, la planification et des données de production. Les deux remplissent le même rôle de fond à la presse : démarrer proche, pas de zéro."
+          },
+          {
+            "type": "h2",
+            "text": "Où il s'associe au closed-loop"
+          },
+          {
+            "type": "p",
+            "text": "Le presetting vous amène jusqu'à la porte ; le closed-loop vous fait entrer. Le presetting ouvre les clés à peu près au bon endroit, puis le closed-loop mesure la feuille imprimée et affine chaque zone dans la tolérance, en moins de passes que chaque méthode seule."
+          },
+          {
+            "type": "h2",
+            "text": "Les limites à connaître"
+          },
+          {
+            "type": "ul",
+            "items": [
+              "Le presetting est open-loop : il ne voit pas le résultat imprimé, il ne peut donc pas corriger une dérive de lui-même.",
+              "La précision dépend de données prépresse propres et d'une presse bien caractérisée.",
+              "Le substrat, l'encre et l'état de la presse déplacent encore la cible pendant le tirage."
             ]
           }
         ]
