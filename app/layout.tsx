@@ -53,7 +53,7 @@ export async function generateMetadata(): Promise<Metadata> {
       description: DESCRIPTION,
       url: selfHref,
       siteName: 'Rutherford.fr',
-      images: [{ url: '/images/Bundle Rutherford-4.jpg', width: 1200, height: 630, alt: 'Rutherford team' }],
+      images: [{ url: '/images/og-home.png', width: 1200, height: 630, alt: 'Rutherford.fr | Closed-loop color control' }],
       locale: OG_LOCALE[locale] ?? 'en_US',
       type: 'website',
     },
@@ -61,7 +61,7 @@ export async function generateMetadata(): Promise<Metadata> {
       card: 'summary_large_image',
       title: TITLE,
       description: DESCRIPTION,
-      images: ['/images/Bundle Rutherford-4.jpg'],
+      images: ['/images/og-home.png'],
     },
   };
 }
