@@ -3,7 +3,7 @@ import { createSupabaseAdminClient, createSupabaseServerClient } from '@/lib/sup
 import { addDealNote, createConsoleValidationDeal } from '@/lib/pipedrive';
 import { createConsoleValidationTask } from '@/lib/asana';
 import { sendMail } from '@/lib/msgraph';
-import { acknowledgementEmail } from '@/lib/console-validation-emails';
+import { acknowledgementEmail, normalizeLocale } from '@/lib/console-validation-emails';
 import { getNotificationEmail, insertConsoleValidation } from '@/lib/console-validations';
 import { completeCvInvitation, getCvInvitationByToken } from '@/lib/console-invitations';
 import { createInvitation } from '@/lib/organizations';
@@ -50,6 +50,8 @@ export async function POST(request: NextRequest) {
   const notes = String(body.notes ?? '').trim();
   const refCode = String(body.ref ?? '').trim().slice(0, 100) || null;
   const inviteToken = String(body.invite ?? '').trim().slice(0, 200);
+  // The visitor's site language — drives every email about this request.
+  const locale = normalizeLocale(body.locale);
 
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 200) {
     return NextResponse.json({ error: 'A valid email address is required' }, { status: 400 });
@@ -185,7 +187,7 @@ export async function POST(request: NextRequest) {
   // 3) Asana task (To do list), 4) acknowledgement email, 5) deal note + row.
   const asanaTaskGid = await createConsoleValidationTask({ title, email, notes, photoLinks, folderLink: null });
 
-  const ack = acknowledgementEmail({ company: companyName, country, machine: machineName, dealId });
+  const ack = acknowledgementEmail({ company: companyName, country, machine: machineName, dealId }, locale);
   await sendMail({
     to: await getNotificationEmail(userId, onBehalf ? submitterEmail ?? email : email),
     subject: ack.subject,
@@ -215,6 +217,7 @@ export async function POST(request: NextRequest) {
     dropboxLink: null,
     asanaTaskGid,
     photos: photoLinks,
+    locale,
   });
 
   // Mark the invitation completed (and link the record) so the inviter sees it.
