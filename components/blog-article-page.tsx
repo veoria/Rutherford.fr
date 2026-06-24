@@ -31,11 +31,11 @@ function renderInline(text: string): ReactNode {
 export function BlogArticlePage({ article }: { article: BlogArticle }) {
   const { locale } = useLanguage();
   const labels = {
-    en: { sources: 'Sources', back: 'Back to all articles', original: 'Original page', ctaTitle: 'Is your press ready for closed-loop color?', ctaCheck: 'Check your eligibility', ctaRoi: 'Calculate your ROI', relatedTitle: 'Go further with the matching training', relatedNote: 'A hands-on Rutherford Academy training, not a certification and not affiliated with Idealliance.' },
-    fr: { sources: 'Sources', back: 'Retour aux articles', original: "Page d'origine", ctaTitle: 'Votre presse est-elle prête pour le closed-loop ?', ctaCheck: 'Vérifier votre éligibilité', ctaRoi: 'Calculer votre ROI', relatedTitle: 'Aller plus loin avec la formation associée', relatedNote: "Une formation pratique Rutherford Academy, pas une certification et sans lien avec Idealliance." },
-    de: { sources: 'Quellen', back: 'Zurück zu allen Artikeln', original: 'Originalseite', ctaTitle: 'Ist Ihre Druckmaschine bereit für Closed-Loop?', ctaCheck: 'Eignung prüfen', ctaRoi: 'ROI berechnen', relatedTitle: 'Mit der passenden Schulung weitermachen', relatedNote: 'Eine praxisnahe Rutherford-Academy-Schulung, keine Zertifizierung und ohne Verbindung zu Idealliance.' },
-    it: { sources: 'Fonti', back: 'Torna a tutti gli articoli', original: 'Pagina originale', ctaTitle: 'La tua macchina è pronta per il closed-loop?', ctaCheck: "Verifica l'idoneità", ctaRoi: 'Calcola il ROI', relatedTitle: 'Approfondisci con la formazione correlata', relatedNote: 'Una formazione pratica Rutherford Academy, non una certificazione e senza legami con Idealliance.' },
-    es: { sources: 'Fuentes', back: 'Volver a todos los artículos', original: 'Página original', ctaTitle: '¿Tu prensa está lista para closed-loop?', ctaCheck: 'Comprobar elegibilidad', ctaRoi: 'Calcular tu ROI', relatedTitle: 'Profundiza con la formación relacionada', relatedNote: 'Una formación práctica de Rutherford Academy, no una certificación y sin vínculo con Idealliance.' },
+    en: { sources: 'Sources', back: 'Back to all articles', original: 'Original page', ctaTitle: 'Is your press ready for closed-loop color?', ctaCheck: 'Check your eligibility', ctaRoi: 'Calculate your ROI', relatedTitle: 'Go further with the matching training' },
+    fr: { sources: 'Sources', back: 'Retour aux articles', original: "Page d'origine", ctaTitle: 'Votre presse est-elle prête pour le closed-loop ?', ctaCheck: 'Vérifier votre éligibilité', ctaRoi: 'Calculer votre ROI', relatedTitle: 'Aller plus loin avec la formation associée' },
+    de: { sources: 'Quellen', back: 'Zurück zu allen Artikeln', original: 'Originalseite', ctaTitle: 'Ist Ihre Druckmaschine bereit für Closed-Loop?', ctaCheck: 'Eignung prüfen', ctaRoi: 'ROI berechnen', relatedTitle: 'Mit der passenden Schulung weitermachen' },
+    it: { sources: 'Fonti', back: 'Torna a tutti gli articoli', original: 'Pagina originale', ctaTitle: 'La tua macchina è pronta per il closed-loop?', ctaCheck: "Verifica l'idoneità", ctaRoi: 'Calcola il ROI', relatedTitle: 'Approfondisci con la formazione correlata' },
+    es: { sources: 'Fuentes', back: 'Volver a todos los artículos', original: 'Página original', ctaTitle: '¿Tu prensa está lista para closed-loop?', ctaCheck: 'Comprobar elegibilidad', ctaRoi: 'Calcular tu ROI', relatedTitle: 'Profundiza con la formación relacionada' },
   }[locale];
 
   // Localized content (falls back to the English base when a field is missing).
@@ -113,7 +113,6 @@ export function BlogArticlePage({ article }: { article: BlogArticle }) {
                   <a className="article-related-link" href={lhref(`/academy/${related.id}`)}>
                     {related.title} <span aria-hidden="true">&rarr;</span>
                   </a>
-                  <p className="article-related-note">{labels.relatedNote}</p>
                 </aside>
               ) : null}
 
