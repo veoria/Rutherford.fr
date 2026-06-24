@@ -3,6 +3,7 @@ import { headers } from 'next/headers';
 import { LanguageProvider, type Locale } from '@/components/language-provider';
 import { GoogleAnalytics } from '@/components/google-analytics';
 import { CookieConsent } from '@/components/cookie-consent';
+import { Analytics } from '@vercel/analytics/next';
 import './globals.css';
 // import './brutalism.css'; // disabled, v1 design
 
@@ -94,6 +95,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           <CookieConsent />
         </LanguageProvider>
         <GoogleAnalytics />
+        <Analytics />
       </body>
     </html>
   );
