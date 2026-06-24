@@ -31,11 +31,11 @@ function renderInline(text: string): ReactNode {
 export function BlogArticlePage({ article }: { article: BlogArticle }) {
   const { locale } = useLanguage();
   const labels = {
-    en: { sources: 'Sources', back: 'Back to all articles', original: 'Original page', ctaTitle: 'Is your press ready for closed-loop color?', ctaCheck: 'Check your eligibility', ctaRoi: 'Calculate your ROI' },
-    fr: { sources: 'Sources', back: 'Retour aux articles', original: "Page d'origine", ctaTitle: 'Votre presse est-elle prête pour le closed-loop ?', ctaCheck: 'Vérifier votre éligibilité', ctaRoi: 'Calculer votre ROI' },
-    de: { sources: 'Quellen', back: 'Zurück zu allen Artikeln', original: 'Originalseite', ctaTitle: 'Ist Ihre Druckmaschine bereit für Closed-Loop?', ctaCheck: 'Eignung prüfen', ctaRoi: 'ROI berechnen' },
-    it: { sources: 'Fonti', back: 'Torna a tutti gli articoli', original: 'Pagina originale', ctaTitle: 'La tua macchina è pronta per il closed-loop?', ctaCheck: "Verifica l'idoneità", ctaRoi: 'Calcola il ROI' },
-    es: { sources: 'Fuentes', back: 'Volver a todos los artículos', original: 'Página original', ctaTitle: '¿Tu prensa está lista para closed-loop?', ctaCheck: 'Comprobar elegibilidad', ctaRoi: 'Calcular tu ROI' },
+    en: { sources: 'Sources', back: 'Back to all articles', original: 'Original page', ctaTitle: 'Is your press ready for closed-loop color?', ctaCheck: 'Check your eligibility', ctaRoi: 'Calculate your ROI', relatedTitle: 'Go further with the matching training', relatedNote: 'A hands-on Rutherford Academy training, not a certification and not affiliated with Idealliance.' },
+    fr: { sources: 'Sources', back: 'Retour aux articles', original: "Page d'origine", ctaTitle: 'Votre presse est-elle prête pour le closed-loop ?', ctaCheck: 'Vérifier votre éligibilité', ctaRoi: 'Calculer votre ROI', relatedTitle: 'Aller plus loin avec la formation associée', relatedNote: "Une formation pratique Rutherford Academy, pas une certification et sans lien avec Idealliance." },
+    de: { sources: 'Quellen', back: 'Zurück zu allen Artikeln', original: 'Originalseite', ctaTitle: 'Ist Ihre Druckmaschine bereit für Closed-Loop?', ctaCheck: 'Eignung prüfen', ctaRoi: 'ROI berechnen', relatedTitle: 'Mit der passenden Schulung weitermachen', relatedNote: 'Eine praxisnahe Rutherford-Academy-Schulung, keine Zertifizierung und ohne Verbindung zu Idealliance.' },
+    it: { sources: 'Fonti', back: 'Torna a tutti gli articoli', original: 'Pagina originale', ctaTitle: 'La tua macchina è pronta per il closed-loop?', ctaCheck: "Verifica l'idoneità", ctaRoi: 'Calcola il ROI', relatedTitle: 'Approfondisci con la formazione correlata', relatedNote: 'Una formazione pratica Rutherford Academy, non una certificazione e senza legami con Idealliance.' },
+    es: { sources: 'Fuentes', back: 'Volver a todos los artículos', original: 'Página original', ctaTitle: '¿Tu prensa está lista para closed-loop?', ctaCheck: 'Comprobar elegibilidad', ctaRoi: 'Calcular tu ROI', relatedTitle: 'Profundiza con la formación relacionada', relatedNote: 'Una formación práctica de Rutherford Academy, no una certificación y sin vínculo con Idealliance.' },
   }[locale];
 
   // Localized content (falls back to the English base when a field is missing).
@@ -44,6 +44,20 @@ export function BlogArticlePage({ article }: { article: BlogArticle }) {
   const lead = tr?.lead ?? article.lead;
   const body = tr?.body ?? article.body;
   const lhref = (p: string) => (locale === 'en' ? p : `/${locale}${p}`);
+
+  // Related Rutherford Academy training per article (hands-on training, not a certification, no Idealliance link).
+  const academyEnabled = process.env.NEXT_PUBLIC_ACADEMY_ENABLED === 'true';
+  const RELATED_COURSE: Record<string, { id: string; title: string }> = {
+    'closed-loop-color-control-offset-guide': { id: 'closed-loop-flagship', title: 'The Complete Closed-Loop Color Masterclass' },
+    'reduce-makeready-waste-offset-press': { id: 'where-color-hurts', title: 'Where Color Hurts: From Makeready to Saleable Sheet' },
+    'iso-12647-2-explained-press-operators': { id: 'fundamentals', title: 'Offset Color Management Fundamentals' },
+    'delta-e-tolerance-print-guide': { id: 'measurement-essentials', title: 'Press-Side Measurement Essentials' },
+    'cip3-cip4-ink-presetting-makeready': { id: 'colorloop-ai', title: 'ColorLoop AI: Predictive Setup for Modern Offset' },
+    'g7-vs-iso-12647-offset-color': { id: 'fundamentals', title: 'Offset Color Management Fundamentals' },
+    'm0-m1-m2-m3-measurement-conditions-print': { id: 'measurement-essentials', title: 'Press-Side Measurement Essentials' },
+    'ppwr-dpp-readiness-checklist-packaging-printers': { id: 'measurecolor-reports', title: 'MeasureColor Reports' },
+  };
+  const related = academyEnabled ? RELATED_COURSE[article.slug] : undefined;
 
   return (
     <main className="page-shell">
@@ -92,6 +106,16 @@ export function BlogArticlePage({ article }: { article: BlogArticle }) {
                 : article.paragraphs.map((paragraph, index) => (
                     <p key={`${article.slug}-${index}`}>{paragraph}</p>
                   ))}
+
+              {related ? (
+                <aside className="article-related">
+                  <p className="article-related-kicker">{labels.relatedTitle}</p>
+                  <a className="article-related-link" href={lhref(`/academy/${related.id}`)}>
+                    {related.title} <span aria-hidden="true">&rarr;</span>
+                  </a>
+                  <p className="article-related-note">{labels.relatedNote}</p>
+                </aside>
+              ) : null}
 
               {article.sources?.length ? (
                 <div className="article-sources">

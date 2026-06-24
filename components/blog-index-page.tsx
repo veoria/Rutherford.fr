@@ -89,23 +89,23 @@ export function BlogIndexPage({ articles }: { articles: BlogArticle[] }) {
                 const base = article.href ?? `/blog/${article.slug}`;
                 const href = locale === 'en' ? base : `/${locale}${base}`;
                 return (
-                  <article className="blog-row" key={article.slug}>
-                    <a className="blog-row-media" href={href} aria-label={title} tabIndex={-1}>
-                      {article.image ? <img src={article.image} alt={title} loading="lazy" /> : null}
-                    </a>
-                    <div className="blog-row-body">
-                      <p className="blog-row-meta">
+                  <a className="blog-row" key={article.slug} href={href} aria-label={title}>
+                    <span className="blog-row-media">
+                      {article.image ? <img src={article.image} alt="" loading="lazy" /> : null}
+                    </span>
+                    <span className="blog-row-body">
+                      <span className="blog-row-meta">
                         <span className="blog-row-cat">{article.category}</span>
                         {article.publishedAt ? <span className="blog-row-dot">·</span> : null}
                         {article.publishedAt ? <time dateTime={article.publishedAt}>{fmtDate(article.publishedAt)}</time> : null}
-                      </p>
-                      <h2 className="blog-row-title"><a href={href}>{title}</a></h2>
-                      <p className="blog-row-excerpt">{excerpt}</p>
-                    </div>
-                    <a className="blog-row-arrow" href={href} aria-label={title}>
+                      </span>
+                      <span className="blog-row-title">{title}</span>
+                      <span className="blog-row-excerpt">{excerpt}</span>
+                    </span>
+                    <span className="blog-row-arrow" aria-hidden="true">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13m0 0-5-5m5 5-5 5" /></svg>
-                    </a>
-                  </article>
+                    </span>
+                  </a>
                 );
               })}
             </div>
