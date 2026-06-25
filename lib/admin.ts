@@ -54,6 +54,8 @@ export type AdminConsoleValidation = {
   asanaUrl: string | null;
   reviewedBy: string | null;
   reviewedAt: string | null;
+  assignee: string | null;
+  followers: string[];
   userEmail: string | null;
 };
 
@@ -87,7 +89,7 @@ export async function getAdminOverview(): Promise<AdminOverview> {
     admin
       .from('console_validations')
       .select(
-        'id, created_at, company, country, machine, status, email, ref_code, pipedrive_deal_id, asana_task_gid, reviewed_by, reviewed_at, user_id'
+        'id, created_at, company, country, machine, status, email, ref_code, pipedrive_deal_id, asana_task_gid, reviewed_by, reviewed_at, assignee, followers, user_id'
       )
       .order('created_at', { ascending: false }),
   ]);
@@ -246,6 +248,8 @@ export async function getAdminOverview(): Promise<AdminOverview> {
     asana_task_gid: string | null;
     reviewed_by: string | null;
     reviewed_at: string | null;
+    assignee: string | null;
+    followers: string[] | null;
     user_id: string | null;
   }[];
   const consoleValidations: AdminConsoleValidation[] = cvRows.map((r) => ({
@@ -262,6 +266,8 @@ export async function getAdminOverview(): Promise<AdminOverview> {
     asanaUrl: asanaTaskUrl(r.asana_task_gid),
     reviewedBy: r.reviewed_by,
     reviewedAt: r.reviewed_at,
+    assignee: r.assignee,
+    followers: r.followers ?? [],
     userEmail: r.user_id ? emailByUserId.get(r.user_id) ?? null : null,
   }));
   const consoleOpen = consoleValidations.filter((c) =>

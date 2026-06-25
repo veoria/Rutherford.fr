@@ -11639,6 +11639,13 @@ a.blog-card-image:hover img {
   color: #1d1d1f;
 }
 
+.admin-block-controls {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
 .admin-search {
   appearance: none;
   border: 1px solid rgba(0, 0, 0, 0.16);
@@ -14202,6 +14209,13 @@ textarea.cv-input { resize: vertical; min-height: 74px; }
 .admin-status-red {
   background: #fbe9e7;
   color: #c4332b;
+}
+
+.admin-cv-sub {
+  display: block;
+  margin-top: 2px;
+  font-size: 0.78em;
+  color: rgba(0, 0, 0, 0.45);
 }
 
 .admin-cv-links {
