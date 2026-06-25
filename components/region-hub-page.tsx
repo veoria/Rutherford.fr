@@ -1,129 +1,120 @@
 'use client';
 
+import { useLanguage, type Locale } from '@/components/language-provider';
 import { SiteNav } from '@/components/site-nav';
 import { SiteFooter } from '@/components/site-footer';
+import { ScrollReveal } from '@/components/scroll-reveal';
+import { HeroBackground } from '@/components/hero-background';
+import { BrandExplainerSection } from '@/components/brand-explainer-section';
+import { ColorLoopSection } from '@/components/colorloop-section';
+import { ConsoleValidationCTA } from '@/components/console-validation-cta';
 import type { Region } from '@/data/regions';
-import './region-hub.css';
 
-const PRESS_BRANDS = [
-  { src: '/images/komori.webp', alt: 'Komori' },
-  { src: '/images/koenig-bauer.webp', alt: 'Koenig & Bauer' },
-  { src: '/images/manroland.webp', alt: 'Manroland' },
-];
+type Copy = {
+  kicker: string;
+  lead: string;
+  accent: string;
+  sub: string;
+  cta1: string;
+  cta2: string;
+};
 
-const VALUE = [
-  {
-    title: 'Less makeready waste',
-    body: 'Start close to target with prepress data, then reach it in fewer pulls. Fewer sheets and less ink burned before the first saleable copy.',
+const COPY: Record<Locale, Copy> = {
+  en: {
+    kicker: 'Rutherford · X-Rite PANTONE · MeasureColor',
+    lead: 'Color on target.',
+    accent: 'Automatically.',
+    sub: 'Closed-loop color for offset and flexo presses. Less waste, steadier color, every shift.',
+    cta1: 'Check eligibility',
+    cta2: 'Talk to us',
   },
-  {
-    title: 'Stable color, every shift',
-    body: 'Closed-loop measures and corrects every few sheets, holding color inside your DeltaE tolerance from the first sheet to the last.',
+  fr: {
+    kicker: 'Rutherford · X-Rite PANTONE · MeasureColor',
+    lead: 'La couleur, juste.',
+    accent: 'Automatiquement.',
+    sub: 'Le closed-loop couleur pour presses offset et flexo. Moins de gâche, une couleur stable à chaque équipe.',
+    cta1: 'Vérifier mon éligibilité',
+    cta2: 'Nous contacter',
   },
-  {
-    title: 'Auditable on every job',
-    body: 'Targets, measurements and DeltaE recorded per job, ready for brand owners, audits and packaging compliance.',
+  de: {
+    kicker: 'Rutherford · X-Rite PANTONE · MeasureColor',
+    lead: 'Farbe auf Ziel.',
+    accent: 'Automatisch.',
+    sub: 'Closed-Loop-Farbe für Offset- und Flexodruckmaschinen. Weniger Makulatur, stabile Farbe in jeder Schicht.',
+    cta1: 'Eignung prüfen',
+    cta2: 'Kontakt',
   },
-];
+  it: {
+    kicker: 'Rutherford · X-Rite PANTONE · MeasureColor',
+    lead: 'Colore a target.',
+    accent: 'Automaticamente.',
+    sub: 'Colore closed-loop per macchine offset e flexo. Meno scarto, colore stabile a ogni turno.',
+    cta1: 'Verifica idoneità',
+    cta2: 'Contattaci',
+  },
+  es: {
+    kicker: 'Rutherford · X-Rite PANTONE · MeasureColor',
+    lead: 'Color en objetivo.',
+    accent: 'Automáticamente.',
+    sub: 'Color closed-loop para prensas offset y flexo. Menos desperdicio, color estable en cada turno.',
+    cta1: 'Comprobar elegibilidad',
+    cta2: 'Contactar',
+  },
+};
 
-export function RegionHubPage({ region }: { region: Region }) {
+export function RegionHubPage({ region: _region }: { region?: Region }) {
+  const { locale } = useLanguage();
+  const t = COPY[locale];
+
   return (
-    <main className="page-shell region-hub">
+    <main className="page-shell region-landing" id="top">
+      <ScrollReveal />
       <SiteNav current="home" />
 
-      <section className="region-hero section">
-        <div className="container region-hero-inner">
-          <p className="section-kicker">Rutherford for {region.forWhom}</p>
-          <h1>Closed-loop color control {region.inName}</h1>
-          <p className="region-hero-sub">
-            {region.angle} Rutherford brings closed-loop color to offset and flexo presses, on the X-Rite PANTONE
-            measurement you already trust, so color hits target faster and holds shift after shift.
-          </p>
-          <div className="region-hero-actions">
-            <a className="button button-accent" href="/console-validation">Request a console validation</a>
-            <a className="button button-light" href="/account/sign-in">Create your free account</a>
-            <a className="button button-dark" href="#contact">Talk to an expert</a>
-          </div>
-          <p className="region-trust">25+ years · 30+ countries · 1,000+ systems deployed · X-Rite PANTONE partner</p>
-          <div className="region-logos" aria-hidden="true">
-            {PRESS_BRANDS.map((b) => (
-              <img key={b.alt} src={b.src} alt={b.alt} loading="lazy" />
-            ))}
-          </div>
-          <figure className="region-hero-visual">
-            <img src="/images/colorloop-lenovo-half-2.webp" alt="Rutherford ColorLoop closed-loop color control on press" loading="lazy" />
-          </figure>
-        </div>
-      </section>
+      <section className="hero-section">
+        <HeroBackground />
+        <div className="container hero-stack">
+          <div className="hero-copy">
+            <p className="hero-kicker">{t.kicker}</p>
+            <h1 className="hero-headline">
+              <span className="hero-headline-line hero-headline-line-1">{t.lead}</span>{' '}
+              <span className="hero-headline-line hero-headline-line-2">
+                <span className="hero-headline-accent">{t.accent}</span>
+              </span>
+            </h1>
 
-      <section className="region-value section">
-        <div className="container">
-          <div className="region-value-grid">
-            {VALUE.map((v) => (
-              <div className="region-value-card" key={v.title}>
-                <h2>{v.title}</h2>
-                <p>{v.body}</p>
+            <div className="hero-feature">
+              <img src="/images/colorloop-lenovo-half-2.webp" alt="Rutherford ColorLoop on press" className="hero-feature-base" />
+              <img src="/images/colorloop-lenovo-half-2.webp" alt="" aria-hidden="true" className="hero-feature-lens hero-feature-lens-rutherford" />
+              <img src="/images/colorloop-lenovo-half-2.webp" alt="" aria-hidden="true" className="hero-feature-lens hero-feature-lens-xrite" />
+              <img src="/images/colorloop-lenovo-half-2.webp" alt="" aria-hidden="true" className="hero-feature-lens hero-feature-lens-measurecolor" />
+              <div className="hero-cursor hero-cursor-rutherford" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="32" height="32"><path d="M5.5 3.5l13 8-5.4 1.6-2.6 5.4z" /></svg>
+                <span className="hero-cursor-label">Rutherford</span>
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="region-band section">
-        <div className="container region-band-inner">
-          <h2>Stop losing money on every makeready</h2>
-          <p>
-            Color drift burns sheets, ink and press time. Check for free whether your press is eligible for Rutherford
-            closed-loop color.
-          </p>
-          <div className="region-hero-actions">
-            <a className="button button-accent" href="/console-validation">Test your eligibility for free</a>
-            <a className="button button-light" href="#contact">Talk to Rutherford</a>
-          </div>
-        </div>
-      </section>
-
-      <section className="region-contact section" id="contact">
-        <div className="container region-contact-inner">
-          <p className="section-kicker">Talk to Rutherford</p>
-          <h2>Get started {region.inName}</h2>
-          <div className="region-contact-grid">
-            {region.channel ? (
-              <div className="region-contact-card region-contact-channel">
-                <h3>{region.channel.label}</h3>
-                {region.channel.note ? <p>{region.channel.note}</p> : null}
-                {region.channel.qr ? (
-                  <div className="region-qr">
-                    <img src={region.channel.qr} alt={`Rutherford ${region.channel.label}`} />
-                  </div>
-                ) : null}
-                {region.channel.value ? <p className="region-contact-id">{region.channel.value}</p> : null}
-                {region.channel.href ? (
-                  <a className="button button-dark" href={region.channel.href}>Open {region.channel.label}</a>
-                ) : null}
+              <div className="hero-cursor hero-cursor-xrite" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="32" height="32"><path d="M5.5 3.5l13 8-5.4 1.6-2.6 5.4z" /></svg>
+                <span className="hero-cursor-label">X-Rite PANTONE</span>
               </div>
-            ) : null}
-
-            <div className="region-contact-card">
-              <h3>Request a console validation</h3>
-              <p>Check for free whether your press and ink-key system qualify for Rutherford closed-loop color.</p>
-              <a className="button button-accent" href="/console-validation">Check eligibility</a>
+              <div className="hero-cursor hero-cursor-measurecolor" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="32" height="32"><path d="M5.5 3.5l13 8-5.4 1.6-2.6 5.4z" /></svg>
+                <span className="hero-cursor-label">MeasureColor</span>
+              </div>
             </div>
 
-            <div className="region-contact-card">
-              <h3>Create your account</h3>
-              <p>Open a free account to run validations, follow every press and reach support in one place.</p>
-              <a className="button button-light" href="/account/sign-in">Create account</a>
-            </div>
+            <p className="hero-supporting">{t.sub}</p>
 
-            <div className="region-contact-card">
-              <h3>Talk to an expert</h3>
-              <p>Tell us your press and your goal. Our team replies within one business day.</p>
-              <a className="button button-dark" href="mailto:contact@rutherford.fr">Email contact@rutherford.fr</a>
+            <div className="hero-actions">
+              <a className="button button-dark hero-cta" href="/console-validation">{t.cta1}</a>
+              <a className="button button-light hero-cta" href="mailto:contact@rutherford.fr">{t.cta2}</a>
             </div>
           </div>
         </div>
       </section>
+
+      <BrandExplainerSection />
+      <ColorLoopSection />
+      <ConsoleValidationCTA />
 
       <SiteFooter />
     </main>
