@@ -14821,3 +14821,16 @@ textarea.cv-input { resize: vertical; min-height: 74px; }
 .article-actions { gap: 30px; margin-top: 30px; }
 .article-textlink { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-weight: 600; font-size: 1rem; text-decoration: none; background: none; padding: 0; }
 .article-textlink:hover { text-decoration: underline; text-underline-offset: 4px; }
+
+/* Blog index: whole row clickable (FX) */
+.blog-row { text-decoration: none; color: inherit; }
+.blog-row-body { display: block; min-width: 0; }
+.blog-row-title { display: block; color: var(--ink); }
+.blog-row:hover .blog-row-title { color: var(--accent); }
+
+/* Blog article: related Academy training (FX) */
+.article-related { margin: 30px 0 0; padding: 20px 22px; border: 1px solid var(--line); border-radius: 16px; background: #f7f7f3; }
+.article-related-kicker { margin: 0 0 6px; font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--accent); }
+.article-related-link { display: inline-flex; align-items: center; gap: 8px; font-size: 1.05rem; font-weight: 600; color: var(--ink); text-decoration: none; }
+.article-related-link:hover { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+.article-related-note { margin: 8px 0 0; font-size: 0.85rem; color: var(--muted); }
