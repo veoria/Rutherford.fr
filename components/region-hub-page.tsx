@@ -83,11 +83,8 @@ export function RegionHubPage({ region: _region }: { region?: Region }) {
               </span>
             </h1>
 
-            <div className="hero-feature">
-              <img src="/images/colorloop-lenovo-half-2.webp" alt="Rutherford ColorLoop on press" className="hero-feature-base" />
-              <img src="/images/colorloop-lenovo-half-2.webp" alt="" aria-hidden="true" className="hero-feature-lens hero-feature-lens-rutherford" />
-              <img src="/images/colorloop-lenovo-half-2.webp" alt="" aria-hidden="true" className="hero-feature-lens hero-feature-lens-xrite" />
-              <img src="/images/colorloop-lenovo-half-2.webp" alt="" aria-hidden="true" className="hero-feature-lens hero-feature-lens-measurecolor" />
+            <div className="hero-feature hero-feature-full">
+              <img src="/images/Colorloop-Lenovo-Packshotv3.png.png.webp" alt="Rutherford ColorLoop on press" className="hero-feature-base" />
               <div className="hero-cursor hero-cursor-rutherford" aria-hidden="true">
                 <svg viewBox="0 0 24 24" width="32" height="32"><path d="M5.5 3.5l13 8-5.4 1.6-2.6 5.4z" /></svg>
                 <span className="hero-cursor-label">Rutherford</span>

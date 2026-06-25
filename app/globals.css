@@ -14834,3 +14834,13 @@ textarea.cv-input { resize: vertical; min-height: 74px; }
 .article-related-link { display: inline-flex; align-items: center; gap: 8px; font-size: 1.05rem; font-weight: 600; color: var(--ink); text-decoration: none; }
 .article-related-link:hover { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
 .article-related-note { margin: 8px 0 0; font-size: 0.85rem; color: var(--muted); }
+
+/* Region landing: full ColorLoop device (color) + partner cursors confined to the screen */
+.hero-feature-full { max-width: 620px; }
+.hero-feature-full .hero-feature-base { filter: none; }
+.hero-feature-full .hero-cursor-rutherford { animation-name: hero-cursor-r-full; }
+.hero-feature-full .hero-cursor-xrite { animation-name: hero-cursor-x-full; }
+.hero-feature-full .hero-cursor-measurecolor { animation-name: hero-cursor-m-full; }
+@keyframes hero-cursor-r-full { 0% { top: 32%; left: 16%; } 25% { top: 31%; left: 56%; } 50% { top: 60%; left: 70%; } 75% { top: 63%; left: 26%; } 100% { top: 32%; left: 16%; } }
+@keyframes hero-cursor-x-full { 0% { top: 30%; left: 62%; } 25% { top: 44%; left: 26%; } 50% { top: 60%; left: 18%; } 75% { top: 56%; left: 60%; } 100% { top: 30%; left: 62%; } }
+@keyframes hero-cursor-m-full { 0% { top: 64%; left: 44%; } 25% { top: 48%; left: 66%; } 50% { top: 33%; left: 46%; } 75% { top: 48%; left: 24%; } 100% { top: 64%; left: 44%; } }
