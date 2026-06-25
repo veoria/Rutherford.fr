@@ -73,6 +73,19 @@ function fmtDate(value: string | null): string {
 type AdminTab = 'overview' | 'accounts' | 'validations' | 'orgs' | 'courses';
 type AccountSortKey = 'name' | 'company' | 'country' | 'signup' | 'activity' | 'level';
 
+// A saved view = a named snapshot of the accounts filter/sort, kept in
+// localStorage so each admin builds their own (no backend needed).
+type SavedView = {
+  name: string;
+  segment: string;
+  countryFilter: string;
+  activityFilter: string;
+  query: string;
+  sortKey: AccountSortKey;
+  sortDir: 'asc' | 'desc';
+};
+const SAVED_VIEWS_KEY = 'rf-admin-saved-views';
+
 const ACCOUNT_ACTIVE_DAYS = 30;
 
 function withinDays(iso: string | null, days: number): boolean {
@@ -885,6 +898,40 @@ export function AdminDashboard({
     }
   };
 
+  const [savedViews, setSavedViews] = useState<SavedView[]>([]);
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(SAVED_VIEWS_KEY);
+      if (raw) setSavedViews(JSON.parse(raw) as SavedView[]);
+    } catch {
+      /* ignore */
+    }
+  }, []);
+  const persistViews = (views: SavedView[]) => {
+    setSavedViews(views);
+    try {
+      localStorage.setItem(SAVED_VIEWS_KEY, JSON.stringify(views));
+    } catch {
+      /* ignore */
+    }
+  };
+  const saveCurrentView = () => {
+    const name = window.prompt('Nom de la vue enregistrée ?')?.trim();
+    if (!name) return;
+    persistViews([
+      ...savedViews.filter((v) => v.name !== name),
+      { name, segment, countryFilter, activityFilter, query, sortKey, sortDir },
+    ]);
+  };
+  const applyView = (v: SavedView) => {
+    setSegment(v.segment);
+    setCountryFilter(v.countryFilter);
+    setActivityFilter(v.activityFilter);
+    setQuery(v.query);
+    setSortKey(v.sortKey);
+    setSortDir(v.sortDir);
+  };
+
   const filteredCv = useMemo(() => {
     const q = cvQuery.trim().toLowerCase();
     return consoleValidations.filter((c) => {
@@ -1114,6 +1161,27 @@ export function AdminDashboard({
                 ))}
               </div>
 
+              <div className="admin-saved-views">
+                {savedViews.map((v) => (
+                  <span key={v.name} className="admin-saved-view">
+                    <button type="button" className="admin-saved-view-apply" onClick={() => applyView(v)}>
+                      {v.name}
+                    </button>
+                    <button
+                      type="button"
+                      className="admin-saved-view-del"
+                      onClick={() => persistViews(savedViews.filter((x) => x.name !== v.name))}
+                      aria-label={`Supprimer la vue ${v.name}`}
+                    >
+                      ×
+                    </button>
+                  </span>
+                ))}
+                <button type="button" className="admin-saved-view-add" onClick={saveCurrentView}>
+                  + Enregistrer la vue
+                </button>
+              </div>
+
               <div className="admin-table-wrap">
                 <table className="admin-table">
                   <thead>
@@ -1134,7 +1202,9 @@ export function AdminDashboard({
                     {filteredAccounts.map((u) => (
                       <tr key={u.id}>
                         <td>
-                          {u.name ?? '—'}
+                          <a className="admin-name-link" href={`/admin/users/${u.id}`}>
+                            {u.name || u.email}
+                          </a>
                           {u.isAdmin ? <span className="admin-badge">admin</span> : null}
                           {u.suspended ? <span className="admin-badge admin-badge-warn">suspendu</span> : null}
                         </td>

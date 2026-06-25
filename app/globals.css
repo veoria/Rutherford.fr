@@ -11800,6 +11800,127 @@ a.blog-card-image:hover img {
   color: rgba(0, 0, 0, 0.5);
 }
 
+/* Clickable account name (opens the detail page) */
+.admin-name-link {
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: none;
+}
+.admin-name-link:hover {
+  text-decoration: underline;
+}
+
+/* Account detail page */
+.admin-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 14px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.55);
+  text-decoration: none;
+}
+.admin-back-link:hover {
+  color: #1d1d1f;
+}
+.admin-detail-head {
+  margin-bottom: 18px;
+}
+.admin-detail-sub {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 6px 0 0;
+}
+.admin-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 14px;
+  margin-bottom: 24px;
+  padding: 18px;
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 14px;
+}
+.admin-fact {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.admin-fact-label {
+  font-size: 0.76rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: rgba(0, 0, 0, 0.45);
+}
+.admin-fact-value {
+  font-size: 0.96rem;
+  font-weight: 600;
+  color: #1d1d1f;
+}
+
+/* Saved account views (accounts tab) */
+.admin-saved-views {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.admin-saved-view {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid rgba(0, 0, 0, 0.14);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.admin-saved-view-apply {
+  appearance: none;
+  background: none;
+  border: none;
+  padding: 5px 6px 5px 12px;
+  font: inherit;
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: #1d1d1f;
+  cursor: pointer;
+}
+.admin-saved-view-apply:hover {
+  color: var(--accent);
+}
+.admin-saved-view-del {
+  appearance: none;
+  background: none;
+  border: none;
+  padding: 5px 10px 5px 4px;
+  font: inherit;
+  font-size: 1rem;
+  line-height: 1;
+  color: rgba(0, 0, 0, 0.4);
+  cursor: pointer;
+}
+.admin-saved-view-del:hover {
+  color: #c0392b;
+}
+.admin-saved-view-add {
+  appearance: none;
+  background: none;
+  border: 1px dashed rgba(0, 0, 0, 0.25);
+  border-radius: 999px;
+  padding: 5px 12px;
+  font: inherit;
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.55);
+  cursor: pointer;
+}
+.admin-saved-view-add:hover {
+  color: #1d1d1f;
+  border-color: rgba(0, 0, 0, 0.4);
+}
+
 .admin-table-wrap {
   overflow-x: auto;
   border: 1px solid rgba(0, 0, 0, 0.08);
