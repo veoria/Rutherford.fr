@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { RegionHubPage } from '@/components/region-hub-page';
 import { REGIONS } from '@/data/regions';
 
-const region = REGIONS.china;
+const region = REGIONS['latin-america'];
 
 export const metadata: Metadata = {
   title: region.metaTitle,
@@ -18,6 +18,6 @@ export const metadata: Metadata = {
   },
 };
 
-export default function ChinaRoute() {
+export default function RegionRoute() {
   return <RegionHubPage region={region} />;
 }

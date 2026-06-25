@@ -2,6 +2,8 @@
 
 import { SiteNav } from '@/components/site-nav';
 import { SiteFooter } from '@/components/site-footer';
+import type { Region } from '@/data/regions';
+import './region-hub.css';
 
 const PRESS_BRANDS = [
   { src: '/images/komori.webp', alt: 'Komori' },
@@ -24,32 +26,33 @@ const VALUE = [
   },
 ];
 
-export function ChinaHubPage() {
+export function RegionHubPage({ region }: { region: Region }) {
   return (
     <main className="page-shell region-hub">
       <SiteNav current="home" />
 
       <section className="region-hero section">
         <div className="container region-hero-inner">
-          <p className="section-kicker">Rutherford in China</p>
-          <h1>Closed-loop color control for your pressroom</h1>
+          <p className="section-kicker">Rutherford for {region.forWhom}</p>
+          <h1>Closed-loop color control {region.inName}</h1>
           <p className="region-hero-sub">
-            Cut makeready waste, hold color shift after shift, and prove it on every job. Rutherford brings closed-loop
-            color to offset and flexo presses, on the X-Rite PANTONE measurement you already trust.
+            {region.angle} Rutherford brings closed-loop color to offset and flexo presses, on the X-Rite PANTONE
+            measurement you already trust, so color hits target faster and holds shift after shift.
           </p>
           <div className="region-hero-actions">
             <a className="button button-accent" href="/console-validation">Request a console validation</a>
             <a className="button button-light" href="/account/sign-in">Create your free account</a>
-            <a className="button button-dark" href="#contact">Talk to us on WeChat</a>
+            <a className="button button-dark" href="#contact">Talk to an expert</a>
           </div>
-          <p className="region-trust">
-            25+ years · 30+ countries · 1,000+ systems deployed · X-Rite PANTONE partner
-          </p>
+          <p className="region-trust">25+ years · 30+ countries · 1,000+ systems deployed · X-Rite PANTONE partner</p>
           <div className="region-logos" aria-hidden="true">
             {PRESS_BRANDS.map((b) => (
               <img key={b.alt} src={b.src} alt={b.alt} loading="lazy" />
             ))}
           </div>
+          <figure className="region-hero-visual">
+            <img src="/images/colorloop-lenovo-half-2.webp" alt="Rutherford ColorLoop closed-loop color control on press" loading="lazy" />
+          </figure>
         </div>
       </section>
 
@@ -83,16 +86,23 @@ export function ChinaHubPage() {
       <section className="region-contact section" id="contact">
         <div className="container region-contact-inner">
           <p className="section-kicker">Talk to Rutherford</p>
-          <h2>Three ways to get started in China</h2>
+          <h2>Get started {region.inName}</h2>
           <div className="region-contact-grid">
-            <div className="region-contact-card region-contact-wechat">
-              <h3>WeChat</h3>
-              <p>Scan to connect with our team directly on WeChat.</p>
-              <div className="region-wechat-qr">
-                <img src="/images/wechat-qr.png" alt="Rutherford WeChat QR code" />
+            {region.channel ? (
+              <div className="region-contact-card region-contact-channel">
+                <h3>{region.channel.label}</h3>
+                {region.channel.note ? <p>{region.channel.note}</p> : null}
+                {region.channel.qr ? (
+                  <div className="region-qr">
+                    <img src={region.channel.qr} alt={`Rutherford ${region.channel.label}`} />
+                  </div>
+                ) : null}
+                {region.channel.value ? <p className="region-contact-id">{region.channel.value}</p> : null}
+                {region.channel.href ? (
+                  <a className="button button-dark" href={region.channel.href}>Open {region.channel.label}</a>
+                ) : null}
               </div>
-              <p className="region-contact-id">WeChat ID: rutherford</p>
-            </div>
+            ) : null}
 
             <div className="region-contact-card">
               <h3>Request a console validation</h3>
@@ -104,9 +114,12 @@ export function ChinaHubPage() {
               <h3>Create your account</h3>
               <p>Open a free account to run validations, follow every press and reach support in one place.</p>
               <a className="button button-light" href="/account/sign-in">Create account</a>
-              <p className="region-contact-email">
-                Or email <a href="mailto:contact@rutherford.fr">contact@rutherford.fr</a>
-              </p>
+            </div>
+
+            <div className="region-contact-card">
+              <h3>Talk to an expert</h3>
+              <p>Tell us your press and your goal. Our team replies within one business day.</p>
+              <a className="button button-dark" href="mailto:contact@rutherford.fr">Email contact@rutherford.fr</a>
             </div>
           </div>
         </div>

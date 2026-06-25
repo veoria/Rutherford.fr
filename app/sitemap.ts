@@ -2,6 +2,7 @@ import type { MetadataRoute } from 'next';
 import { getAllArticles } from '@/lib/blog';
 import { ALL_COURSES } from '@/data/academy-courses';
 import { PRESS_BRANDS_PAGES } from '@/data/press-brands';
+import { ALL_REGIONS } from '@/data/regions';
 
 const BASE = 'https://rutherford.fr';
 const PREFIX_LOCALES = ['fr', 'de', 'it', 'es'];
@@ -51,5 +52,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     }),
   );
 
-  return [...staticRoutes, ...brandRoutes, ...courseRoutes, ...articleRoutes];
+  // Region conversion hubs (English-only for now → no hreflang language alternates).
+  const regionRoutes: MetadataRoute.Sitemap = ALL_REGIONS.map((region) => ({
+    url: `${BASE}/${region.slug}`,
+    changeFrequency: 'monthly',
+    priority: 0.8,
+  }));
+
+  return [...staticRoutes, ...brandRoutes, ...courseRoutes, ...articleRoutes, ...regionRoutes];
 }
