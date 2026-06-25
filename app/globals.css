@@ -11661,6 +11661,145 @@ a.blog-card-image:hover img {
   outline-offset: 1px;
 }
 
+/* Back-office tabs */
+.admin-subnav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0 0 22px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+.admin-subnav-link {
+  appearance: none;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  padding: 10px 14px;
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.55);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border-radius: 8px 8px 0 0;
+}
+.admin-subnav-link:hover {
+  color: #1d1d1f;
+  background: rgba(0, 0, 0, 0.03);
+}
+.admin-subnav-link.is-active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+.admin-subnav-count {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.06);
+  border-radius: 999px;
+  padding: 1px 8px;
+}
+.admin-subnav-link.is-active .admin-subnav-count {
+  color: var(--accent);
+}
+
+/* Segment chips (accounts) */
+.admin-segments {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.admin-chip {
+  appearance: none;
+  border: 1px solid rgba(0, 0, 0, 0.14);
+  background: #fff;
+  border-radius: 999px;
+  padding: 6px 12px;
+  font: inherit;
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: #1d1d1f;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+.admin-chip:hover {
+  border-color: rgba(0, 0, 0, 0.3);
+}
+.admin-chip.is-active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+.admin-chip-count {
+  font-size: 0.78rem;
+  opacity: 0.7;
+}
+
+/* Sortable column headers */
+.admin-sort {
+  appearance: none;
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  font-weight: 600;
+  color: inherit;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+}
+.admin-sort.is-active {
+  color: var(--accent);
+}
+.admin-sort-arrow {
+  font-size: 0.85em;
+}
+
+/* Overview action lists */
+.admin-overview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 18px;
+}
+.admin-mini-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.admin-mini-row {
+  appearance: none;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  padding: 10px 4px;
+  font: inherit;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.admin-mini-row:hover {
+  background: rgba(0, 0, 0, 0.02);
+}
+.admin-mini-name {
+  font-weight: 600;
+  color: #1d1d1f;
+}
+.admin-mini-meta {
+  font-size: 0.82rem;
+  color: rgba(0, 0, 0, 0.5);
+}
+
 .admin-table-wrap {
   overflow-x: auto;
   border: 1px solid rgba(0, 0, 0, 0.08);
