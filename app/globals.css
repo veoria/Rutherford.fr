@@ -11783,6 +11783,8 @@ a.blog-card-image:hover img {
   border-top: 1px solid rgba(0, 0, 0, 0.06);
   padding: 10px 4px;
   font: inherit;
+  color: inherit;
+  text-decoration: none;
   cursor: pointer;
   display: flex;
   flex-direction: column;
@@ -11919,6 +11921,58 @@ a.blog-card-image:hover img {
 .admin-saved-view-add:hover {
   color: #1d1d1f;
   border-color: rgba(0, 0, 0, 0.4);
+}
+
+/* Clickable overview stat boxes */
+.admin-total-btn {
+  font: inherit;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.12s ease, box-shadow 0.12s ease;
+}
+.admin-total-btn:hover {
+  border-color: rgba(36, 51, 201, 0.45);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.04);
+}
+
+/* Management panel on the account detail page */
+.admin-detail-manage {
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 14px;
+  padding: 18px;
+}
+
+/* Company → organisation link + logos */
+.admin-company-link {
+  appearance: none;
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: var(--accent);
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  text-align: left;
+}
+.admin-company-link:hover {
+  text-decoration: underline;
+}
+.admin-company-logo {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+.admin-org-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
 }
 
 .admin-table-wrap {

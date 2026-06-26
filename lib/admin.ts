@@ -20,6 +20,8 @@ export type AdminUser = {
   onboarded: boolean;
   signupAt: string | null;
   lastActiveAt: string | null;
+  lastSignInAt: string | null;
+  orgId: string | null;
   modulesCompleted: number;
   coursesCompleted: number;
   certificates: number;
@@ -59,16 +61,30 @@ export type AdminConsoleValidation = {
   userEmail: string | null;
 };
 
+export type AdminSupportTicket = {
+  id: string;
+  createdAt: string;
+  name: string | null;
+  email: string;
+  status: string;
+  assignee: string | null;
+  asanaUrl: string | null;
+  userEmail: string | null;
+  customerReplyAt: string | null;
+};
+
 export type AdminOverview = {
   users: AdminUser[];
   courses: AdminCourseStat[];
   consoleValidations: AdminConsoleValidation[];
+  supportTickets: AdminSupportTicket[];
   totals: {
     users: number;
     onboarded: number;
     certificates: number;
     activePass: number;
     consoleOpen: number;
+    supportOpen: number;
   };
 };
 
@@ -79,9 +95,11 @@ const moduleCountBySlug = new Map(ALL_COURSES.map((c) => [c.id, c.modules] as co
 export async function getAdminOverview(): Promise<AdminOverview> {
   const admin = createSupabaseAdminClient();
 
-  const [authRes, profilesRes, progressRes, quizRes, enrollRes, passRes, cvRes] = await Promise.all([
+  const [authRes, profilesRes, progressRes, quizRes, enrollRes, passRes, cvRes, supportRes] = await Promise.all([
     admin.auth.admin.listUsers({ perPage: 1000 }),
-    admin.from('profiles').select('id, full_name, company, country, job_title, onboarded_at, is_admin, account_type'),
+    admin
+      .from('profiles')
+      .select('id, full_name, company, country, job_title, onboarded_at, is_admin, account_type, organization_id'),
     admin.from('course_progress').select('user_id, course_slug, lesson_index, completed_at'),
     admin.from('quiz_attempts').select('user_id, course_slug, passed, score, total, created_at'),
     admin.from('enrollments').select('user_id, course_slug, source'),
@@ -91,6 +109,10 @@ export async function getAdminOverview(): Promise<AdminOverview> {
       .select(
         'id, created_at, company, country, machine, status, email, ref_code, pipedrive_deal_id, asana_task_gid, reviewed_by, reviewed_at, assignee, followers, user_id'
       )
+      .order('created_at', { ascending: false }),
+    admin
+      .from('support_tickets')
+      .select('id, created_at, name, email, status, assignee_name, asana_task_gid, user_id, customer_reply_at')
       .order('created_at', { ascending: false }),
   ]);
 
@@ -111,6 +133,7 @@ export async function getAdminOverview(): Promise<AdminOverview> {
     onboarded_at: string | null;
     is_admin: boolean;
     account_type: string;
+    organization_id: string | null;
   }[];
   const progress = (progressRes.data ?? []) as (ProgressRow & { user_id: string })[];
   const quiz = (quizRes.data ?? []) as {
@@ -200,6 +223,8 @@ export async function getAdminOverview(): Promise<AdminOverview> {
       onboarded: Boolean(p?.onboarded_at),
       signupAt: u.created_at ?? null,
       lastActiveAt,
+      lastSignInAt: lastSignIn,
+      orgId: p?.organization_id ?? null,
       modulesCompleted,
       coursesCompleted,
       certificates,
@@ -274,16 +299,44 @@ export async function getAdminOverview(): Promise<AdminOverview> {
     ['submitted', 'in_review', 'changes_requested'].includes(c.status)
   ).length;
 
+  const supportRows = (supportRes.data ?? []) as {
+    id: string;
+    created_at: string;
+    name: string | null;
+    email: string;
+    status: string;
+    assignee_name: string | null;
+    asana_task_gid: string | null;
+    user_id: string | null;
+    customer_reply_at: string | null;
+  }[];
+  const supportTickets: AdminSupportTicket[] = supportRows.map((r) => ({
+    id: r.id,
+    createdAt: r.created_at,
+    name: r.name,
+    email: r.email,
+    status: r.status,
+    assignee: r.assignee_name,
+    asanaUrl: asanaTaskUrl(r.asana_task_gid),
+    userEmail: r.user_id ? emailByUserId.get(r.user_id) ?? null : null,
+    customerReplyAt: r.customer_reply_at,
+  }));
+  const supportOpen = supportTickets.filter((t) =>
+    ['new', 'in_progress', 'waiting_customer'].includes(t.status)
+  ).length;
+
   return {
     users,
     courses,
     consoleValidations,
+    supportTickets,
     totals: {
       users: authUsers.length,
       onboarded: users.filter((u) => u.onboarded).length,
       certificates: users.reduce((s, u) => s + u.certificates, 0),
       activePass: users.filter((u) => u.activePass).length,
       consoleOpen,
+      supportOpen,
     },
   };
 }
@@ -312,7 +365,7 @@ export type AdminUserDetail = {
   onboarded: boolean;
   signupAt: string | null;
   lastSignInAt: string | null;
-  org: { id: string; name: string; type: string; role: string | null } | null;
+  org: { id: string; name: string; type: string; role: string | null; logoUrl: string | null } | null;
   level: number;
   xp: number;
   modulesCompleted: number;
@@ -322,6 +375,7 @@ export type AdminUserDetail = {
   purchases: number;
   courses: AdminUserCourse[];
   validations: AdminConsoleValidation[];
+  supportTickets: AdminSupportTicket[];
 };
 
 /** Everything the back-office shows for ONE account: identity, org/role, the
@@ -367,7 +421,7 @@ export async function getAdminUserDetail(userId: string): Promise<AdminUserDetai
   let org: AdminUserDetail['org'] = null;
   if (p?.organization_id) {
     const [{ data: o }, { data: mem }] = await Promise.all([
-      admin.from('organizations').select('id, name, type').eq('id', p.organization_id).maybeSingle(),
+      admin.from('organizations').select('id, name, type, logo_url').eq('id', p.organization_id).maybeSingle(),
       admin
         .from('organization_members')
         .select('role')
@@ -376,8 +430,14 @@ export async function getAdminUserDetail(userId: string): Promise<AdminUserDetai
         .maybeSingle(),
     ]);
     if (o) {
-      const oo = o as { id: string; name: string; type: string };
-      org = { id: oo.id, name: oo.name, type: oo.type, role: ((mem as { role?: string } | null)?.role as string | null) ?? null };
+      const oo = o as { id: string; name: string; type: string; logo_url: string | null };
+      org = {
+        id: oo.id,
+        name: oo.name,
+        type: oo.type,
+        role: ((mem as { role?: string } | null)?.role as string | null) ?? null,
+        logoUrl: oo.logo_url ?? null,
+      };
     }
   }
 
@@ -459,6 +519,32 @@ export async function getAdminUserDetail(userId: string): Promise<AdminUserDetai
       userEmail: email || null,
     }));
 
+  // Support tickets owned by the account OR matched by the login email.
+  const SUPPORT_SEL = 'id, created_at, name, email, status, assignee_name, asana_task_gid, customer_reply_at, user_id';
+  const [supById, supByEmail] = await Promise.all([
+    admin.from('support_tickets').select(SUPPORT_SEL).eq('user_id', userId),
+    email
+      ? admin.from('support_tickets').select(SUPPORT_SEL).ilike('email', email)
+      : Promise.resolve({ data: [] as Record<string, unknown>[] }),
+  ]);
+  const supMap = new Map<string, Record<string, unknown>>();
+  for (const r of [...((supById.data ?? []) as Record<string, unknown>[]), ...((supByEmail.data ?? []) as Record<string, unknown>[])]) {
+    supMap.set(r.id as string, r);
+  }
+  const supportTickets: AdminSupportTicket[] = Array.from(supMap.values())
+    .sort((a, b) => String(b.created_at ?? '').localeCompare(String(a.created_at ?? '')))
+    .map((r) => ({
+      id: r.id as string,
+      createdAt: r.created_at as string,
+      name: (r.name as string | null) ?? null,
+      email: r.email as string,
+      status: r.status as string,
+      assignee: (r.assignee_name as string | null) ?? null,
+      asanaUrl: asanaTaskUrl((r.asana_task_gid as string | null) ?? null),
+      userEmail: email || null,
+      customerReplyAt: (r.customer_reply_at as string | null) ?? null,
+    }));
+
   return {
     id: authUser.id,
     name: p?.full_name ?? null,
@@ -483,5 +569,6 @@ export async function getAdminUserDetail(userId: string): Promise<AdminUserDetai
     purchases,
     courses,
     validations,
+    supportTickets,
   };
 }

@@ -6,7 +6,7 @@ import { SiteFooter } from '@/components/site-footer';
 import { SiteNav } from '@/components/site-nav';
 import { COUNTRIES, JOB_TITLE_KEYS, isJobTitleKey, type JobTitleKey } from '@/data/onboarding-options';
 import { ACCOUNT_TYPES, type AccountType } from '@/data/account-types';
-import type { AdminConsoleValidation, AdminOverview, AdminUser } from '@/lib/admin';
+import type { AdminConsoleValidation, AdminOverview, AdminSupportTicket, AdminUser } from '@/lib/admin';
 import type { AdminOrg, AdminOrgFull, MemberRole, OrgMember, PendingInvite } from '@/lib/organizations';
 
 const ROLE_LABELS: Record<JobTitleKey, string> = {
@@ -50,6 +50,22 @@ const CV_STATUS_TONE: Record<string, string> = {
   rejected: 'red',
 };
 
+const SUPPORT_STATUS_LABELS: Record<string, string> = {
+  new: 'Nouveau',
+  in_progress: 'En cours',
+  waiting_customer: 'Attente client',
+  resolved: 'Résolu',
+  closed: 'Fermé',
+};
+
+const SUPPORT_STATUS_TONE: Record<string, string> = {
+  new: 'review',
+  in_progress: 'review',
+  waiting_customer: 'action',
+  resolved: 'green',
+  closed: 'green',
+};
+
 const ERROR_LABELS: Record<string, string> = {
   cannot_self_demote: 'Vous ne pouvez pas retirer votre propre accès admin.',
   cannot_delete_self: 'Vous ne pouvez pas supprimer votre propre compte.',
@@ -70,7 +86,7 @@ function fmtDate(value: string | null): string {
   }
 }
 
-type AdminTab = 'overview' | 'accounts' | 'validations' | 'orgs' | 'courses';
+type AdminTab = 'overview' | 'accounts' | 'validations' | 'support' | 'orgs' | 'courses';
 type AccountSortKey = 'name' | 'company' | 'country' | 'signup' | 'activity' | 'level';
 
 // A saved view = a named snapshot of the accounts filter/sort, kept in
@@ -816,7 +832,7 @@ export function AdminDashboard({
   selfId: string;
   canManage: boolean;
 }) {
-  const { users, courses, consoleValidations, totals } = overview;
+  const { users, courses, consoleValidations, supportTickets, totals } = overview;
   const [tab, setTab] = useState<AdminTab>('overview');
   const [query, setQuery] = useState('');
   const [editing, setEditing] = useState<AdminUser | null>(null);
@@ -827,6 +843,8 @@ export function AdminDashboard({
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
   const [cvFilter, setCvFilter] = useState('');
   const [cvQuery, setCvQuery] = useState('');
+  const [supportFilter, setSupportFilter] = useState('');
+  const [supportQuery, setSupportQuery] = useState('');
   const [editingOrg, setEditingOrg] = useState<AdminOrgFull | null>(null);
   const [creatingOrg, setCreatingOrg] = useState(false);
 
@@ -867,7 +885,7 @@ export function AdminDashboard({
         case 'country':
           return (u.country ?? '').toLowerCase();
         case 'activity':
-          return u.lastActiveAt ?? '';
+          return u.lastSignInAt ?? '';
         case 'level':
           return u.level;
         default:
@@ -956,6 +974,17 @@ export function AdminDashboard({
     });
   }, [consoleValidations, cvFilter, cvQuery]);
 
+  const orgById = useMemo(() => new Map(orgsFull.map((o) => [o.id, o] as const)), [orgsFull]);
+
+  const filteredSupport = useMemo(() => {
+    const q = supportQuery.trim().toLowerCase();
+    return supportTickets.filter((t) => {
+      if (supportFilter && t.status !== supportFilter) return false;
+      if (!q) return true;
+      return [t.name, t.email, t.userEmail, t.assignee].some((f) => (f ?? '').toLowerCase().includes(q));
+    });
+  }, [supportTickets, supportFilter, supportQuery]);
+
   const downloadCsv = () => {
     const blob = new Blob(['﻿' + toCsv(filteredAccounts)], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
@@ -972,6 +1001,7 @@ export function AdminDashboard({
     { key: 'overview', label: 'Vue d’ensemble', count: null },
     { key: 'accounts', label: 'Comptes', count: totals.users },
     { key: 'validations', label: 'Validations', count: consoleValidations.length },
+    { key: 'support', label: 'Support', count: supportTickets.length },
     { key: 'orgs', label: 'Organisations', count: orgsFull.length },
     { key: 'courses', label: 'Cours', count: courses.length },
   ];
@@ -1029,25 +1059,49 @@ export function AdminDashboard({
           {tab === 'overview' ? (
             <>
               <ul className="admin-totals">
-                <li className="admin-total">
-                  <span className="admin-total-value">{totals.users}</span>
-                  <span className="admin-total-label">Comptes</span>
+                <li>
+                  <button type="button" className="admin-total admin-total-btn" onClick={() => setTab('accounts')}>
+                    <span className="admin-total-value">{totals.users}</span>
+                    <span className="admin-total-label">Comptes</span>
+                  </button>
                 </li>
-                <li className="admin-total">
-                  <span className="admin-total-value">{totals.onboarded}</span>
-                  <span className="admin-total-label">Onboardés (leads)</span>
+                <li>
+                  <button
+                    type="button"
+                    className="admin-total admin-total-btn"
+                    onClick={() => {
+                      setSegment('all');
+                      setActivityFilter('');
+                      setTab('accounts');
+                    }}
+                  >
+                    <span className="admin-total-value">{totals.onboarded}</span>
+                    <span className="admin-total-label">Onboardés (leads)</span>
+                  </button>
                 </li>
-                <li className="admin-total">
-                  <span className="admin-total-value">{totals.consoleOpen}</span>
-                  <span className="admin-total-label">Validations ouvertes</span>
+                <li>
+                  <button type="button" className="admin-total admin-total-btn" onClick={() => setTab('validations')}>
+                    <span className="admin-total-value">{totals.consoleOpen}</span>
+                    <span className="admin-total-label">Validations ouvertes</span>
+                  </button>
                 </li>
-                <li className="admin-total">
-                  <span className="admin-total-value">{totals.certificates}</span>
-                  <span className="admin-total-label">Certificats délivrés</span>
+                <li>
+                  <button type="button" className="admin-total admin-total-btn" onClick={() => setTab('support')}>
+                    <span className="admin-total-value">{totals.supportOpen}</span>
+                    <span className="admin-total-label">Tickets ouverts</span>
+                  </button>
                 </li>
-                <li className="admin-total">
-                  <span className="admin-total-value">{totals.activePass}</span>
-                  <span className="admin-total-label">Academy Pass actifs</span>
+                <li>
+                  <button type="button" className="admin-total admin-total-btn" onClick={() => setTab('courses')}>
+                    <span className="admin-total-value">{totals.certificates}</span>
+                    <span className="admin-total-label">Certificats délivrés</span>
+                  </button>
+                </li>
+                <li>
+                  <button type="button" className="admin-total admin-total-btn" onClick={() => setTab('accounts')}>
+                    <span className="admin-total-value">{totals.activePass}</span>
+                    <span className="admin-total-label">Academy Pass actifs</span>
+                  </button>
                 </li>
               </ul>
 
@@ -1060,17 +1114,10 @@ export function AdminDashboard({
                     <ul className="admin-mini-list">
                       {newThisWeek.map((u) => (
                         <li key={u.id}>
-                          <button
-                            type="button"
-                            className="admin-mini-row"
-                            onClick={() => {
-                              setTab('accounts');
-                              if (canManage) setEditing(u);
-                            }}
-                          >
+                          <a className="admin-mini-row" href={`/admin/users/${u.id}`}>
                             <span className="admin-mini-name">{u.name || u.email}</span>
                             <span className="admin-mini-meta">{(u.company ?? '—') + ' · ' + fmtDate(u.signupAt)}</span>
-                          </button>
+                          </a>
                         </li>
                       ))}
                     </ul>
@@ -1087,17 +1134,10 @@ export function AdminDashboard({
                     <ul className="admin-mini-list">
                       {toReengage.map((u) => (
                         <li key={u.id}>
-                          <button
-                            type="button"
-                            className="admin-mini-row"
-                            onClick={() => {
-                              setTab('accounts');
-                              if (canManage) setEditing(u);
-                            }}
-                          >
+                          <a className="admin-mini-row" href={`/admin/users/${u.id}`}>
                             <span className="admin-mini-name">{u.name || u.email}</span>
                             <span className="admin-mini-meta">{(u.company ?? '—') + ' · vu ' + fmtDate(u.lastActiveAt)}</span>
-                          </button>
+                          </a>
                         </li>
                       ))}
                     </ul>
@@ -1187,58 +1227,63 @@ export function AdminDashboard({
                   <thead>
                     <tr>
                       {sortTh('name', 'Nom')}
-                      <th>E-mail</th>
                       {sortTh('company', 'Société')}
                       {sortTh('country', 'Pays')}
                       <th>Type</th>
-                      {sortTh('level', 'Academy')}
                       {sortTh('signup', 'Inscrit')}
-                      {sortTh('activity', 'Dern. activité')}
+                      {sortTh('activity', 'Dernière connexion')}
                       <th>Accès</th>
                       <th />
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredAccounts.map((u) => (
-                      <tr key={u.id}>
-                        <td>
-                          <a className="admin-name-link" href={`/admin/users/${u.id}`}>
-                            {u.name || u.email}
-                          </a>
-                          {u.isAdmin ? <span className="admin-badge">admin</span> : null}
-                          {u.suspended ? <span className="admin-badge admin-badge-warn">suspendu</span> : null}
-                        </td>
-                        <td className="admin-email">{u.email}</td>
-                        <td>{u.company ?? '—'}</td>
-                        <td>{u.country ?? '—'}</td>
-                        <td>
-                          <AccountTypeBadge type={u.accountType} />
-                        </td>
-                        <td>
-                          niv {u.level}
-                          {u.coursesCompleted || u.certificates ? (
-                            <span className="admin-cv-sub">
-                              {u.coursesCompleted} cours{u.certificates ? ` · ${u.certificates} certif.` : ''}
-                            </span>
-                          ) : null}
-                        </td>
-                        <td>{fmtDate(u.signupAt)}</td>
-                        <td>{fmtDate(u.lastActiveAt)}</td>
-                        <td>
-                          {u.activePass ? 'Pass' : u.purchases > 0 ? `${u.purchases} achat(s)` : u.onboarded ? 'Gratuit' : '—'}
-                        </td>
-                        <td>
-                          {canManage ? (
-                            <button type="button" className="admin-link-btn" onClick={() => setEditing(u)}>
-                              Gérer
-                            </button>
-                          ) : null}
-                        </td>
-                      </tr>
-                    ))}
+                    {filteredAccounts.map((u) => {
+                      const org = u.orgId ? orgById.get(u.orgId) : undefined;
+                      return (
+                        <tr key={u.id}>
+                          <td>
+                            <a className="admin-name-link" href={`/admin/users/${u.id}`}>
+                              {u.name || u.email}
+                            </a>
+                            {u.isAdmin ? <span className="admin-badge">admin</span> : null}
+                            {u.suspended ? <span className="admin-badge admin-badge-warn">suspendu</span> : null}
+                            {u.name ? <span className="admin-cv-sub">{u.email}</span> : null}
+                          </td>
+                          <td>
+                            {org ? (
+                              <button type="button" className="admin-company-link" onClick={() => setEditingOrg(org)}>
+                                {org.logoUrl ? (
+                                  // eslint-disable-next-line @next/next/no-img-element
+                                  <img src={org.logoUrl} alt="" className="admin-company-logo" />
+                                ) : null}
+                                <span>{u.company ?? org.name}</span>
+                              </button>
+                            ) : (
+                              u.company ?? '—'
+                            )}
+                          </td>
+                          <td>{u.country ?? '—'}</td>
+                          <td>
+                            <AccountTypeBadge type={u.accountType} />
+                          </td>
+                          <td>{fmtDate(u.signupAt)}</td>
+                          <td>{fmtDate(u.lastSignInAt)}</td>
+                          <td>
+                            {u.activePass ? 'Pass' : u.purchases > 0 ? `${u.purchases} achat(s)` : u.onboarded ? 'Gratuit' : '—'}
+                          </td>
+                          <td>
+                            {canManage ? (
+                              <button type="button" className="admin-link-btn" onClick={() => setEditing(u)}>
+                                Gérer
+                              </button>
+                            ) : null}
+                          </td>
+                        </tr>
+                      );
+                    })}
                     {filteredAccounts.length === 0 ? (
                       <tr>
-                        <td colSpan={10} className="admin-empty">
+                        <td colSpan={8} className="admin-empty">
                           Aucun compte pour ce filtre.
                         </td>
                       </tr>
@@ -1335,6 +1380,85 @@ export function AdminDashboard({
                       <tr>
                         <td colSpan={11} className="admin-empty">
                           Aucune demande.
+                        </td>
+                      </tr>
+                    ) : null}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          ) : null}
+
+          {tab === 'support' ? (
+            <div className="admin-block">
+              <div className="admin-block-head">
+                <h2>Support ({filteredSupport.length})</h2>
+                <div className="admin-block-controls">
+                  <input
+                    type="search"
+                    className="admin-search"
+                    placeholder="Rechercher (nom, e-mail, assigné…)"
+                    value={supportQuery}
+                    onChange={(e) => setSupportQuery(e.target.value)}
+                    aria-label="Rechercher un ticket"
+                  />
+                  <select
+                    className="admin-search"
+                    value={supportFilter}
+                    onChange={(e) => setSupportFilter(e.target.value)}
+                    aria-label="Filtrer par statut"
+                  >
+                    <option value="">Tous les statuts</option>
+                    {Object.keys(SUPPORT_STATUS_LABELS).map((s) => (
+                      <option key={s} value={s}>
+                        {SUPPORT_STATUS_LABELS[s]}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              <div className="admin-table-wrap">
+                <table className="admin-table">
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>Demandeur</th>
+                      <th>Compte</th>
+                      <th>Statut</th>
+                      <th>Assigné</th>
+                      <th>Lien</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredSupport.map((t) => (
+                      <tr key={t.id}>
+                        <td>{fmtDate(t.createdAt)}</td>
+                        <td>
+                          {t.name ?? '—'}
+                          <span className="admin-cv-sub">{t.email}</span>
+                        </td>
+                        <td className="admin-email">{t.userEmail ?? '—'}</td>
+                        <td>
+                          <span className={`admin-status admin-status-${SUPPORT_STATUS_TONE[t.status] ?? 'review'}`}>
+                            {SUPPORT_STATUS_LABELS[t.status] ?? t.status}
+                          </span>
+                        </td>
+                        <td>{t.assignee ?? '—'}</td>
+                        <td className="admin-cv-links">
+                          {t.asanaUrl ? (
+                            <a href={t.asanaUrl} target="_blank" rel="noreferrer">
+                              Asana
+                            </a>
+                          ) : (
+                            '—'
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                    {filteredSupport.length === 0 ? (
+                      <tr>
+                        <td colSpan={6} className="admin-empty">
+                          Aucun ticket.
                         </td>
                       </tr>
                     ) : null}
