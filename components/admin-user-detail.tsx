@@ -43,6 +43,22 @@ const CV_STATUS_TONE: Record<string, string> = {
   rejected: 'red',
 };
 
+const SUPPORT_STATUS_LABELS: Record<string, string> = {
+  new: 'Nouveau',
+  in_progress: 'En cours',
+  waiting_customer: 'Attente client',
+  resolved: 'Résolu',
+  closed: 'Fermé',
+};
+
+const SUPPORT_STATUS_TONE: Record<string, string> = {
+  new: 'review',
+  in_progress: 'review',
+  waiting_customer: 'action',
+  resolved: 'green',
+  closed: 'green',
+};
+
 const ERROR_LABELS: Record<string, string> = {
   cannot_self_demote: 'Vous ne pouvez pas retirer votre propre accès admin.',
   cannot_delete_self: 'Vous ne pouvez pas supprimer votre propre compte.',
@@ -310,10 +326,23 @@ export function AdminUserDetail({
             <Fact label="Société" value={user.company ?? '—'} />
             <Fact label="Pays" value={user.country ?? '—'} />
             <Fact label="Poste" value={user.jobTitle && isJobTitleKey(user.jobTitle) ? ROLE_LABELS[user.jobTitle] : '—'} />
-            <Fact
-              label="Organisation"
-              value={user.org ? `${user.org.name}${user.org.role ? ` · ${user.org.role}` : ''}` : '—'}
-            />
+            <div className="admin-fact">
+              <span className="admin-fact-label">Organisation</span>
+              <span className="admin-fact-value">
+                {user.org ? (
+                  <span className="admin-org-inline">
+                    {user.org.logoUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={user.org.logoUrl} alt="" className="admin-company-logo" />
+                    ) : null}
+                    {user.org.name}
+                    {user.org.role ? ` · ${user.org.role}` : ''}
+                  </span>
+                ) : (
+                  '—'
+                )}
+              </span>
+            </div>
             <Fact label="Inscrit" value={fmtDate(user.signupAt)} />
             <Fact label="Dernière connexion" value={fmtDate(user.lastSignInAt)} />
             <Fact label="E-mail de notification" value={user.notificationEmail ?? '—'} />
@@ -413,6 +442,50 @@ export function AdminUserDetail({
               </div>
             ) : (
               <p className="admin-modal-section-status">Aucune validation console pour ce compte.</p>
+            )}
+          </div>
+
+          <div className="admin-block">
+            <div className="admin-block-head">
+              <h2>Support ({user.supportTickets.length})</h2>
+            </div>
+            {user.supportTickets.length ? (
+              <div className="admin-table-wrap">
+                <table className="admin-table">
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>Statut</th>
+                      <th>Assigné</th>
+                      <th>Lien</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {user.supportTickets.map((t) => (
+                      <tr key={t.id}>
+                        <td>{fmtDate(t.createdAt)}</td>
+                        <td>
+                          <span className={`admin-status admin-status-${SUPPORT_STATUS_TONE[t.status] ?? 'review'}`}>
+                            {SUPPORT_STATUS_LABELS[t.status] ?? t.status}
+                          </span>
+                        </td>
+                        <td>{t.assignee ?? '—'}</td>
+                        <td className="admin-cv-links">
+                          {t.asanaUrl ? (
+                            <a href={t.asanaUrl} target="_blank" rel="noreferrer">
+                              Asana
+                            </a>
+                          ) : (
+                            '—'
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <p className="admin-modal-section-status">Aucun ticket de support pour ce compte.</p>
             )}
           </div>
         </div>
