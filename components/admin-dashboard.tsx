@@ -1029,25 +1029,43 @@ export function AdminDashboard({
           {tab === 'overview' ? (
             <>
               <ul className="admin-totals">
-                <li className="admin-total">
-                  <span className="admin-total-value">{totals.users}</span>
-                  <span className="admin-total-label">Comptes</span>
+                <li>
+                  <button type="button" className="admin-total admin-total-btn" onClick={() => setTab('accounts')}>
+                    <span className="admin-total-value">{totals.users}</span>
+                    <span className="admin-total-label">Comptes</span>
+                  </button>
                 </li>
-                <li className="admin-total">
-                  <span className="admin-total-value">{totals.onboarded}</span>
-                  <span className="admin-total-label">Onboardés (leads)</span>
+                <li>
+                  <button
+                    type="button"
+                    className="admin-total admin-total-btn"
+                    onClick={() => {
+                      setSegment('all');
+                      setActivityFilter('');
+                      setTab('accounts');
+                    }}
+                  >
+                    <span className="admin-total-value">{totals.onboarded}</span>
+                    <span className="admin-total-label">Onboardés (leads)</span>
+                  </button>
                 </li>
-                <li className="admin-total">
-                  <span className="admin-total-value">{totals.consoleOpen}</span>
-                  <span className="admin-total-label">Validations ouvertes</span>
+                <li>
+                  <button type="button" className="admin-total admin-total-btn" onClick={() => setTab('validations')}>
+                    <span className="admin-total-value">{totals.consoleOpen}</span>
+                    <span className="admin-total-label">Validations ouvertes</span>
+                  </button>
                 </li>
-                <li className="admin-total">
-                  <span className="admin-total-value">{totals.certificates}</span>
-                  <span className="admin-total-label">Certificats délivrés</span>
+                <li>
+                  <button type="button" className="admin-total admin-total-btn" onClick={() => setTab('courses')}>
+                    <span className="admin-total-value">{totals.certificates}</span>
+                    <span className="admin-total-label">Certificats délivrés</span>
+                  </button>
                 </li>
-                <li className="admin-total">
-                  <span className="admin-total-value">{totals.activePass}</span>
-                  <span className="admin-total-label">Academy Pass actifs</span>
+                <li>
+                  <button type="button" className="admin-total admin-total-btn" onClick={() => setTab('accounts')}>
+                    <span className="admin-total-value">{totals.activePass}</span>
+                    <span className="admin-total-label">Academy Pass actifs</span>
+                  </button>
                 </li>
               </ul>
 
@@ -1060,17 +1078,10 @@ export function AdminDashboard({
                     <ul className="admin-mini-list">
                       {newThisWeek.map((u) => (
                         <li key={u.id}>
-                          <button
-                            type="button"
-                            className="admin-mini-row"
-                            onClick={() => {
-                              setTab('accounts');
-                              if (canManage) setEditing(u);
-                            }}
-                          >
+                          <a className="admin-mini-row" href={`/admin/users/${u.id}`}>
                             <span className="admin-mini-name">{u.name || u.email}</span>
                             <span className="admin-mini-meta">{(u.company ?? '—') + ' · ' + fmtDate(u.signupAt)}</span>
-                          </button>
+                          </a>
                         </li>
                       ))}
                     </ul>
@@ -1087,17 +1098,10 @@ export function AdminDashboard({
                     <ul className="admin-mini-list">
                       {toReengage.map((u) => (
                         <li key={u.id}>
-                          <button
-                            type="button"
-                            className="admin-mini-row"
-                            onClick={() => {
-                              setTab('accounts');
-                              if (canManage) setEditing(u);
-                            }}
-                          >
+                          <a className="admin-mini-row" href={`/admin/users/${u.id}`}>
                             <span className="admin-mini-name">{u.name || u.email}</span>
                             <span className="admin-mini-meta">{(u.company ?? '—') + ' · vu ' + fmtDate(u.lastActiveAt)}</span>
-                          </button>
+                          </a>
                         </li>
                       ))}
                     </ul>
@@ -1187,11 +1191,9 @@ export function AdminDashboard({
                   <thead>
                     <tr>
                       {sortTh('name', 'Nom')}
-                      <th>E-mail</th>
                       {sortTh('company', 'Société')}
                       {sortTh('country', 'Pays')}
                       <th>Type</th>
-                      {sortTh('level', 'Academy')}
                       {sortTh('signup', 'Inscrit')}
                       {sortTh('activity', 'Dern. activité')}
                       <th>Accès</th>
@@ -1207,20 +1209,12 @@ export function AdminDashboard({
                           </a>
                           {u.isAdmin ? <span className="admin-badge">admin</span> : null}
                           {u.suspended ? <span className="admin-badge admin-badge-warn">suspendu</span> : null}
+                          {u.name ? <span className="admin-cv-sub">{u.email}</span> : null}
                         </td>
-                        <td className="admin-email">{u.email}</td>
                         <td>{u.company ?? '—'}</td>
                         <td>{u.country ?? '—'}</td>
                         <td>
                           <AccountTypeBadge type={u.accountType} />
-                        </td>
-                        <td>
-                          niv {u.level}
-                          {u.coursesCompleted || u.certificates ? (
-                            <span className="admin-cv-sub">
-                              {u.coursesCompleted} cours{u.certificates ? ` · ${u.certificates} certif.` : ''}
-                            </span>
-                          ) : null}
                         </td>
                         <td>{fmtDate(u.signupAt)}</td>
                         <td>{fmtDate(u.lastActiveAt)}</td>
@@ -1238,7 +1232,7 @@ export function AdminDashboard({
                     ))}
                     {filteredAccounts.length === 0 ? (
                       <tr>
-                        <td colSpan={10} className="admin-empty">
+                        <td colSpan={8} className="admin-empty">
                           Aucun compte pour ce filtre.
                         </td>
                       </tr>
