@@ -59,6 +59,24 @@ export async function notifyDiscordConsoleValidation(v: {
   await postEmbed(`🆕 Nouvelle validation console${v.dealId ? ` — ID ${v.dealId}` : ''}`, fields);
 }
 
+/** Alert the team when the console-validations photo bucket crosses its storage
+ * threshold (monthly cron). No-op without a webhook. */
+export async function notifyDiscordStorageAlert(a: {
+  usedGb: number;
+  thresholdGb: number;
+  objects: number;
+  cleanupUrl?: string | null;
+}): Promise<void> {
+  if (!WEBHOOK_URL) return;
+  const fields: EmbedField[] = [
+    { name: 'Utilisé', value: `${a.usedGb.toFixed(1)} Go`, inline: true },
+    { name: 'Seuil', value: `${a.thresholdGb} Go`, inline: true },
+    { name: 'Objets', value: String(a.objects), inline: true },
+  ];
+  if (a.cleanupUrl) fields.push({ name: 'Nettoyage (simulation)', value: a.cleanupUrl });
+  await postEmbed('⚠️ Stockage photos élevé — console-validations', fields);
+}
+
 /** Ping the team on a new support ticket. No-op without a webhook. */
 export async function notifyDiscordSupport(t: {
   company: string | null;
