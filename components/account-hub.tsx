@@ -7,6 +7,7 @@ import { SiteFooter } from '@/components/site-footer';
 import { SiteNav } from '@/components/site-nav';
 import { type Locale, useLanguage } from '@/components/language-provider';
 import type { AccountType } from '@/data/account-types';
+import { AccountSystems, type ClientSystem } from '@/components/account-systems';
 
 export type ResellerClient = {
   name: string;
@@ -44,7 +45,13 @@ type Props = {
   supportStat: { status: string | null; newMessage: boolean };
   resume: { slug: string; title: string; moduleIndex: number; moduleTitle: string } | null;
   resellerClients: ResellerClient[];
+  systems: ClientSystem[];
+  // Read-only admin preview ("view as client"): hides every action that would
+  // act on the admin's own session (edit profile, sign out, uploads, team mgmt).
+  preview?: boolean;
 };
+
+export type AccountHubProps = Props;
 
 // Accent colour per role (matches the design handoff).
 const TONE: Record<AccountType, string> = {
@@ -396,13 +403,15 @@ function fmtMonth(iso: string | null, locale: Locale): string {
 type Tile = { ic: string; cls: string; t: string; s: string; href: string; statDot?: string; statV: string; statM?: string };
 
 export function AccountHub(props: Props) {
-  const { accountType, team, selfId, networkResellers, email, memberSince, profile, academy, consoleStat, supportStat, resume, resellerClients } = props;
+  const { accountType, team, selfId, networkResellers, email, memberSince, profile, academy, consoleStat, supportStat, resume, resellerClients, systems, preview = false } = props;
   const { locale } = useLanguage();
   const t = COPY[locale];
   const accent = TONE[accountType];
   // Resellers get the same top co-brand strip as X-Rite, using the org logo
   // the Rutherford team uploads in the back-office (null until one is set).
   const resellerLogo = accountType === 'reseller' ? team.org?.logoUrl ?? null : null;
+  // Clients see their own company logo at the top when one is set.
+  const clientLogo = accountType === 'client' ? team.org?.logoUrl ?? null : null;
   const rank = RANK_NAMES[locale][Math.min(academy.level - 1, 4)] ?? '';
   const nextRank = RANK_NAMES[locale][Math.min(academy.level, 4)] ?? '';
 
@@ -450,6 +459,19 @@ export function AccountHub(props: Props) {
   return (
     <main className="page-shell" id="top">
       <SiteNav current="account" />
+      {preview ? (
+        <div style={{ background: '#fff7e6', borderBottom: '1px solid #f0e3c0' }}>
+          <div
+            className="container"
+            style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, padding: '10px 0' }}
+          >
+            <span style={{ fontSize: '0.88rem', fontWeight: 600, color: '#7a5b00' }}>
+              👁 Aperçu de l’espace client — lecture seule{profile.fullName ? ` · ${profile.fullName}` : ''}
+            </span>
+            <a className="button button-light" href={`/admin/users/${selfId}`}>← Fiche admin</a>
+          </div>
+        </div>
+      ) : null}
       {accountType === 'distributor' ? (
         <div className="ah-cobrand-strip">
           <div className="container ah-cobrand">
@@ -466,6 +488,16 @@ export function AccountHub(props: Props) {
             <span className="ah-cobrand-badge">{RESELLER_BADGE[locale]}</span>
           </div>
         </div>
+      ) : clientLogo ? (
+        <div className="ah-cobrand-strip">
+          <div className="container ah-cobrand">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img className="ah-cobrand-logo" src={clientLogo} alt={team.org?.name ?? profile.company ?? ''} />
+            {profile.company || team.org?.name ? (
+              <span className="ah-cobrand-badge">{profile.company ?? team.org?.name}</span>
+            ) : null}
+          </div>
+        </div>
       ) : null}
 
       <section className="ah-section section">
@@ -477,7 +509,7 @@ export function AccountHub(props: Props) {
               currentUrl={profile.avatarUrl}
               fallback={initials(profile.fullName, email)}
               shape="circle"
-              editable
+              editable={!preview}
               bg={accent}
               fg="#ffffff"
             />
@@ -494,7 +526,7 @@ export function AccountHub(props: Props) {
                     currentUrl={team.org?.logoUrl ?? null}
                     fallback={initials(profile.company, profile.company || 'CO')}
                     shape="square"
-                    editable={team.myRole === 'owner' || team.myRole === 'admin'}
+                    editable={!preview && (team.myRole === 'owner' || team.myRole === 'admin')}
                     bg="#f1efec"
                     fg="#16130f"
                   />
@@ -507,10 +539,16 @@ export function AccountHub(props: Props) {
               </div>
             </div>
             <div className="ah-actions">
-              <a className="button button-light" href="/account/profile">{t.editProfile}</a>
-              <form action="/api/auth/sign-out" method="post">
-                <button type="submit" className="button button-light">{t.signOut}</button>
-              </form>
+              {preview ? (
+                <a className="button button-light" href={`/admin/users/${selfId}`}>← Fiche admin</a>
+              ) : (
+                <>
+                  <a className="button button-light" href="/account/profile">{t.editProfile}</a>
+                  <form action="/api/auth/sign-out" method="post">
+                    <button type="submit" className="button button-light">{t.signOut}</button>
+                  </form>
+                </>
+              )}
             </div>
           </div>
 
@@ -544,10 +582,13 @@ export function AccountHub(props: Props) {
             ))}
           </div>
 
+          {/* My presses — clients (renders nothing when there are none) */}
+          <AccountSystems systems={systems} accent={accent} />
+
           {/* Body */}
           <div className="ah-grid">
             <div className="ah-stack">
-              <SettingsCard t={t} locale={locale} profile={profile} email={email} />
+              <SettingsCard t={t} locale={locale} profile={profile} email={email} preview={preview} />
               <ManagePanel
                 accountType={accountType}
                 team={team}
@@ -569,7 +610,7 @@ export function AccountHub(props: Props) {
   );
 }
 
-function SettingsCard({ t, locale, profile, email }: { t: Copy; locale: Locale; profile: Props['profile']; email: string }) {
+function SettingsCard({ t, locale, profile, email, preview }: { t: Copy; locale: Locale; profile: Props['profile']; email: string; preview?: boolean }) {
   const rows: [string, string][] = [
     [t.rowName, profile.fullName || '—'],
     [t.rowEmail, email],
@@ -581,7 +622,7 @@ function SettingsCard({ t, locale, profile, email }: { t: Copy; locale: Locale; 
     <div className="ah-card">
       <div className="ah-card-h">
         <div><div className="ah-card-t">{t.settingsT}</div><div className="ah-card-s">{t.settingsS}</div></div>
-        <a className="button button-light" href="/account/profile">{t.editProfile}</a>
+        {preview ? null : <a className="button button-light" href="/account/profile">{t.editProfile}</a>}
       </div>
       <div className="ah-card-bd">
         {rows.map(([k, v], i) => (
@@ -590,10 +631,17 @@ function SettingsCard({ t, locale, profile, email }: { t: Copy; locale: Locale; 
             <span className="ah-row-v">{v}</span>
           </div>
         ))}
-        <a className="ah-row ah-row-link" href="/account/security">
-          <span className="ah-row-k">{t.security}</span>
-          <span className="ah-row-v">→</span>
-        </a>
+        {preview ? (
+          <div className="ah-row">
+            <span className="ah-row-k">{t.security}</span>
+            <span className="ah-row-v">••••</span>
+          </div>
+        ) : (
+          <a className="ah-row ah-row-link" href="/account/security">
+            <span className="ah-row-k">{t.security}</span>
+            <span className="ah-row-v">→</span>
+          </a>
+        )}
       </div>
     </div>
   );

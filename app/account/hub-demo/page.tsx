@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { AccountHub, type ResellerClient } from '@/components/account-hub';
+import type { ClientSystem } from '@/components/account-systems';
 import type { AccountType } from '@/data/account-types';
 import type { ResellerClientOrg, Team } from '@/lib/organizations';
 
@@ -16,8 +17,9 @@ export const dynamic = 'force-dynamic';
 // Switch the role with ?type=client|reseller|distributor|team.
 const TYPES: AccountType[] = ['client', 'reseller', 'distributor', 'team'];
 
-export default function AccountHubDemoRoute({ searchParams }: { searchParams: { type?: string } }) {
+export default function AccountHubDemoRoute({ searchParams }: { searchParams: { type?: string; preview?: string } }) {
   if (process.env.NEXT_PUBLIC_ACADEMY_ENABLED !== 'true') notFound();
+  const preview = searchParams.preview === '1';
 
   const accountType = (TYPES.includes(searchParams.type as AccountType) ? searchParams.type : 'distributor') as AccountType;
   const isXrite = accountType === 'distributor';
@@ -53,6 +55,14 @@ export default function AccountHubDemoRoute({ searchParams }: { searchParams: { 
           ]
         : [];
 
+  const systems: ClientSystem[] =
+    accountType === 'client'
+      ? [
+          { machine: 'Heidelberg Speedmaster CD102-6+L', company: 'Acme Print', country: 'France', status: 'can_be_connected', dealId: 2391, count: 2 },
+          { machine: 'Komori Lithrone GL-840', company: 'Acme Print', country: 'France', status: 'in_review', dealId: 2392, count: 1 },
+        ]
+      : [];
+
   return (
     <AccountHub
       accountType={accountType}
@@ -81,6 +91,8 @@ export default function AccountHubDemoRoute({ searchParams }: { searchParams: { 
         moduleTitle: 'Reading the press: density, ΔE and tolerances',
       }}
       resellerClients={resellerClients}
+      systems={systems}
+      preview={preview}
     />
   );
 }
