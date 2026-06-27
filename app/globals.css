@@ -14095,6 +14095,96 @@ textarea.cv-input { resize: vertical; min-height: 74px; }
   color: var(--ah-muted);
 }
 
+/* my presses (systems) */
+.ah-sys-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+.ah-sys {
+  border: 1px solid var(--ah-border);
+  border-radius: 14px;
+  background: #fff;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+}
+.ah-sys-h {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.ah-sys-name {
+  font-weight: 600;
+  color: var(--ah-ink);
+  line-height: 1.3;
+}
+.ah-sys-meta {
+  font-size: 0.82rem;
+  color: var(--ah-muted);
+  margin-top: 3px;
+}
+.ah-sys-pill {
+  font-size: 0.73rem;
+  font-weight: 700;
+  padding: 4px 9px;
+  border-radius: 999px;
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+.ah-sys-pill.green { background: #e7f4ec; color: #1e874b; }
+.ah-sys-pill.blue { background: #eaf1fc; color: #1b6ff3; }
+.ah-sys-pill.amber { background: #fbf1d9; color: #9a6a00; }
+.ah-sys-pill.grey { background: #f1efec; color: #6b6661; }
+.ah-sys-group {
+  border-top: 1px solid #f1efea;
+  padding-top: 11px;
+}
+.ah-sys-glabel {
+  font-size: 0.71rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ah-muted);
+  margin-bottom: 8px;
+}
+.ah-sys-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+.ah-sys-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.84rem;
+  padding: 6px 11px;
+  border-radius: 9px;
+  border: 1px solid var(--ah-border);
+  background: #fff;
+  color: var(--ah-ink);
+  text-decoration: none;
+  transition: border-color 0.15s, background 0.15s;
+}
+.ah-sys-link:hover {
+  border-color: #d9d9d5;
+  background: #faf9f7;
+}
+.ah-sys-link.primary {
+  background: var(--role, #1b6ff3);
+  color: #fff;
+  border-color: transparent;
+}
+.ah-sys-link.primary:hover {
+  background: var(--role, #1b6ff3);
+  filter: brightness(1.06);
+}
+@media (max-width: 720px) {
+  .ah-sys-grid { grid-template-columns: 1fr; }
+}
+
 /* two-column body */
 .ah-grid {
   display: grid;

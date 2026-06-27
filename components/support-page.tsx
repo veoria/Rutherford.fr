@@ -605,6 +605,17 @@ export function SupportPage() {
     process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
   );
 
+  // Prefill from the URL — the per-press "Support" button in the account passes
+  // ?subject=<machine>&company=<company>. Never clobbers a value already typed.
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const params = new URLSearchParams(window.location.search);
+    const s = params.get('subject');
+    const c = params.get('company');
+    if (s) setSubject((v) => v || s.slice(0, 200));
+    if (c) setCompany((v) => v || c.slice(0, 200));
+  }, []);
+
   // Prefill from the signed-in profile, then fall back to IP geo for the country.
   useEffect(() => {
     let active = true;

@@ -7,6 +7,7 @@ import { SiteFooter } from '@/components/site-footer';
 import { SiteNav } from '@/components/site-nav';
 import { type Locale, useLanguage } from '@/components/language-provider';
 import type { AccountType } from '@/data/account-types';
+import { AccountSystems, type ClientSystem } from '@/components/account-systems';
 
 export type ResellerClient = {
   name: string;
@@ -44,6 +45,7 @@ type Props = {
   supportStat: { status: string | null; newMessage: boolean };
   resume: { slug: string; title: string; moduleIndex: number; moduleTitle: string } | null;
   resellerClients: ResellerClient[];
+  systems: ClientSystem[];
 };
 
 // Accent colour per role (matches the design handoff).
@@ -396,13 +398,15 @@ function fmtMonth(iso: string | null, locale: Locale): string {
 type Tile = { ic: string; cls: string; t: string; s: string; href: string; statDot?: string; statV: string; statM?: string };
 
 export function AccountHub(props: Props) {
-  const { accountType, team, selfId, networkResellers, email, memberSince, profile, academy, consoleStat, supportStat, resume, resellerClients } = props;
+  const { accountType, team, selfId, networkResellers, email, memberSince, profile, academy, consoleStat, supportStat, resume, resellerClients, systems } = props;
   const { locale } = useLanguage();
   const t = COPY[locale];
   const accent = TONE[accountType];
   // Resellers get the same top co-brand strip as X-Rite, using the org logo
   // the Rutherford team uploads in the back-office (null until one is set).
   const resellerLogo = accountType === 'reseller' ? team.org?.logoUrl ?? null : null;
+  // Clients see their own company logo at the top when one is set.
+  const clientLogo = accountType === 'client' ? team.org?.logoUrl ?? null : null;
   const rank = RANK_NAMES[locale][Math.min(academy.level - 1, 4)] ?? '';
   const nextRank = RANK_NAMES[locale][Math.min(academy.level, 4)] ?? '';
 
@@ -464,6 +468,16 @@ export function AccountHub(props: Props) {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img className="ah-cobrand-logo" src={resellerLogo} alt={team.org?.name ?? ''} />
             <span className="ah-cobrand-badge">{RESELLER_BADGE[locale]}</span>
+          </div>
+        </div>
+      ) : clientLogo ? (
+        <div className="ah-cobrand-strip">
+          <div className="container ah-cobrand">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img className="ah-cobrand-logo" src={clientLogo} alt={team.org?.name ?? profile.company ?? ''} />
+            {profile.company || team.org?.name ? (
+              <span className="ah-cobrand-badge">{profile.company ?? team.org?.name}</span>
+            ) : null}
           </div>
         </div>
       ) : null}
@@ -543,6 +557,9 @@ export function AccountHub(props: Props) {
               </a>
             ))}
           </div>
+
+          {/* My presses — clients (renders nothing when there are none) */}
+          <AccountSystems systems={systems} accent={accent} />
 
           {/* Body */}
           <div className="ah-grid">
