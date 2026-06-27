@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { createSupabaseAdminClient, createSupabaseServerClient } from '@/lib/supabase/server';
 import { addDealNote, createConsoleValidationDeal, pipedriveDealUrl } from '@/lib/pipedrive';
-import { asanaTaskUrl, createConsoleValidationTask } from '@/lib/asana';
+import { addConsoleValidationPreviews, asanaTaskUrl, createConsoleValidationTask } from '@/lib/asana';
 import { notifyDiscordConsoleValidation } from '@/lib/discord';
 import { dropboxEnabled, uploadConsoleValidation } from '@/lib/dropbox';
 import { sendMail } from '@/lib/msgraph';
@@ -12,6 +12,7 @@ import { createInvitation } from '@/lib/organizations';
 import { teamInviteEmail } from '@/lib/team-emails';
 
 export const dynamic = 'force-dynamic';
+export const maxDuration = 120;
 
 const BUCKET = 'console-validations';
 const SIGNED_URL_TTL = 60 * 60 * 24 * 365; // 1 year, so the Asana/CRM links keep working
@@ -211,6 +212,27 @@ export async function POST(request: NextRequest) {
 
   // 3) Asana task (To do list), 4) acknowledgement email, 5) deal note + row.
   const asanaTaskGid = await createConsoleValidationTask({ title, email, notes, photoLinks, folderLink: dropboxLink });
+
+  // 3b) Attach lightweight machine previews to the Asana task — a resized JPEG
+  // per photo (Supabase image transform), viewable inline in Asana, while the
+  // full-resolution originals stay on Dropbox. Best-effort; never blocks.
+  if (asanaTaskGid && movedPhotos.length && process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    try {
+      const supabase = createSupabaseAdminClient();
+      const previews: { field: string; file: Blob }[] = [];
+      for (const { field, path } of movedPhotos) {
+        const { data: signed } = await supabase.storage
+          .from(BUCKET)
+          .createSignedUrl(path, 600, { transform: { width: 1600, quality: 68 } });
+        if (!signed?.signedUrl) continue;
+        const res = await fetch(signed.signedUrl, { cache: 'no-store' }).catch(() => null);
+        if (res?.ok) previews.push({ field, file: await res.blob() });
+      }
+      if (previews.length) await addConsoleValidationPreviews(asanaTaskGid, previews);
+    } catch (error) {
+      console.error('Asana preview attach failed (non-blocking):', error);
+    }
+  }
 
   const ack = acknowledgementEmail({ company: companyName, country, machine: machineName, dealId });
   await sendMail({
