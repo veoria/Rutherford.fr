@@ -3,6 +3,7 @@ import { createSupabaseAdminClient, createSupabaseServerClient } from '@/lib/sup
 import { addDealNote, createConsoleValidationDeal, pipedriveDealUrl } from '@/lib/pipedrive';
 import { asanaTaskUrl, createConsoleValidationTask } from '@/lib/asana';
 import { notifyDiscordConsoleValidation } from '@/lib/discord';
+import { dropboxEnabled, uploadConsoleValidation } from '@/lib/dropbox';
 import { sendMail } from '@/lib/msgraph';
 import { acknowledgementEmail } from '@/lib/console-validation-emails';
 import { getNotificationEmail, insertConsoleValidation } from '@/lib/console-validations';
@@ -162,15 +163,18 @@ export async function POST(request: NextRequest) {
   const photoLinks: Record<string, string> = {};
   let photoCount = 0;
   let storageRef = `${submittedAt.slice(0, 10)}-${dealId ?? Date.now().toString(36)}-${slug(companyName)}`;
+  // Final storage paths, kept so the photos can also be mirrored into Dropbox.
+  const movedPhotos: { field: string; path: string; ext: string }[] = [];
 
   if (process.env.SUPABASE_SERVICE_ROLE_KEY && photos.length) {
     const supabase = createSupabaseAdminClient();
     for (const { field, path } of photos) {
-      const ext = path.split('.').pop() || 'jpg';
+      const ext = (path.split('.').pop() || 'jpg').toLowerCase();
       const dest = `${storageRef}/${field}.${ext}`;
       const { error: moveError } = await supabase.storage.from(BUCKET).move(path, dest);
       const finalPath = moveError ? path : dest;
       photoCount += 1;
+      movedPhotos.push({ field, path: finalPath, ext });
       const { data: signed } = await supabase.storage.from(BUCKET).createSignedUrl(finalPath, SIGNED_URL_TTL);
       if (signed?.signedUrl) photoLinks[field] = signed.signedUrl;
     }
@@ -183,8 +187,30 @@ export async function POST(request: NextRequest) {
       .catch(() => {});
   }
 
+  // 2b) Mirror the request into Dropbox — "<DROPBOX_FOLDER>/<deal title>/" with the
+  // photos + infos.txt — when Dropbox is configured. The team works from Dropbox;
+  // the Supabase folder above stays the in-account tracker and the fallback.
+  // Best-effort: a Dropbox failure is logged and never breaks the submission.
+  let dropboxFolder = storageRef;
+  let dropboxLink: string | null = null;
+  if (dropboxEnabled() && movedPhotos.length && process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    try {
+      const supabase = createSupabaseAdminClient();
+      const files: { field: string; file: File }[] = [];
+      for (const { field, path, ext } of movedPhotos) {
+        const { data: blob } = await supabase.storage.from(BUCKET).download(path);
+        if (blob) files.push({ field, file: new File([blob], `${field}.${ext}`) });
+      }
+      const up = await uploadConsoleValidation(title, files, infosTxt);
+      dropboxFolder = up.folderPath;
+      dropboxLink = up.folderLink;
+    } catch (error) {
+      console.error('Dropbox mirror failed (kept Supabase):', error);
+    }
+  }
+
   // 3) Asana task (To do list), 4) acknowledgement email, 5) deal note + row.
-  const asanaTaskGid = await createConsoleValidationTask({ title, email, notes, photoLinks, folderLink: null });
+  const asanaTaskGid = await createConsoleValidationTask({ title, email, notes, photoLinks, folderLink: dropboxLink });
 
   const ack = acknowledgementEmail({ company: companyName, country, machine: machineName, dealId });
   await sendMail({
@@ -212,8 +238,8 @@ export async function POST(request: NextRequest) {
     machine: machineName,
     notes,
     pipedriveDealId: dealId,
-    dropboxFolder: storageRef,
-    dropboxLink: null,
+    dropboxFolder,
+    dropboxLink,
     asanaTaskGid,
     photos: photoLinks,
   });
