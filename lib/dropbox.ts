@@ -45,14 +45,15 @@ function dbxArg(obj: unknown): string {
   return out;
 }
 
-function teamHeaders(): Record<string, string> {
+function teamHeaders(pathRootOverride?: string | null): Record<string, string> {
   const headers: Record<string, string> = {};
-  if (PATH_ROOT) headers['Dropbox-API-Path-Root'] = JSON.stringify({ '.tag': 'namespace_id', namespace_id: PATH_ROOT });
+  const pathRoot = pathRootOverride === undefined ? PATH_ROOT : pathRootOverride;
+  if (pathRoot) headers['Dropbox-API-Path-Root'] = JSON.stringify({ '.tag': 'namespace_id', namespace_id: pathRoot });
   if (SELECT_USER) headers['Dropbox-API-Select-User'] = SELECT_USER;
   return headers;
 }
 
-async function getAccessToken(): Promise<string> {
+export async function getAccessToken(): Promise<string> {
   if (REFRESH_TOKEN && APP_KEY && APP_SECRET) {
     const res = await fetch('https://api.dropbox.com/oauth2/token', {
       method: 'POST',
@@ -141,4 +142,116 @@ export async function uploadConsoleValidation(
 
   const folderLink = await createSharedLink(token, folderPath).catch(() => null);
   return { links, folderLink, folderPath, count };
+}
+
+// ---------------------------------------------------------------------------
+// Diagnostics & repair (admin /api/admin/dropbox-debug).
+//
+// A Dropbox Business account exposes two namespaces: the member's personal
+// "home" and the shared "team space" (root). With a user token and NO path-root
+// set, every write lands in the personal home — which is why the validation
+// folders ended up under "<your name>/Dossier RUTHERFORD/Prospects information"
+// instead of the team's "Dossier RUTHERFORD/Prospects information". The fix is
+// to set DROPBOX_PATH_ROOT to the team's root_namespace_id (reported below).
+// ---------------------------------------------------------------------------
+
+export type DropboxListing = { ok: boolean; status?: number; error?: string; folders?: string[] };
+
+export async function dropboxGetAccount(token: string): Promise<any | null> {
+  const res = await fetch('https://api.dropboxapi.com/2/users/get_current_account', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+    signal: AbortSignal.timeout(TIMEOUT_MS),
+    cache: 'no-store',
+  });
+  if (!res.ok) return null;
+  return res.json().catch(() => null);
+}
+
+export async function dropboxListFolder(token: string, path: string, pathRoot?: string | null): Promise<DropboxListing> {
+  const res = await fetch('https://api.dropboxapi.com/2/files/list_folder', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json', ...teamHeaders(pathRoot) },
+    body: JSON.stringify({ path, recursive: false, limit: 1000 }),
+    signal: AbortSignal.timeout(TIMEOUT_MS),
+    cache: 'no-store',
+  });
+  const json = await res.json().catch(() => null);
+  if (!res.ok) return { ok: false, status: res.status, error: json?.error_summary || `${res.status}` };
+  const folders = (json?.entries ?? []).filter((e: any) => e['.tag'] === 'folder').map((e: any) => e.name as string);
+  return { ok: true, folders };
+}
+
+export async function dropboxMoveFolder(
+  token: string,
+  fromPath: string,
+  toPath: string,
+  pathRoot?: string | null
+): Promise<{ ok: boolean; status?: number; error?: string; path?: string }> {
+  const res = await fetch('https://api.dropboxapi.com/2/files/move_v2', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json', ...teamHeaders(pathRoot) },
+    body: JSON.stringify({ from_path: fromPath, to_path: toPath, autorename: true }),
+    signal: AbortSignal.timeout(TIMEOUT_MS),
+    cache: 'no-store',
+  });
+  const json = await res.json().catch(() => null);
+  if (!res.ok) return { ok: false, status: res.status, error: json?.error_summary || `${res.status}` };
+  return { ok: true, path: json?.metadata?.path_display ?? toPath };
+}
+
+export type DropboxDiagnostics = {
+  account: { name: string | null; email: string | null; accountId: string | null; team: string | null } | null;
+  namespaces: { rootNamespaceId: string | null; homeNamespaceId: string | null; isTeamSpace: boolean };
+  config: { baseFolder: string; pathRoot: string | null; selectUser: string | null; usingRefreshToken: boolean };
+  whereFoldersAre: { label: string; pathRoot: string | null; listing: DropboxListing }[];
+  fix: string | null;
+};
+
+export async function dropboxDiagnostics(): Promise<DropboxDiagnostics> {
+  const token = await getAccessToken();
+  const account = await dropboxGetAccount(token);
+  const root = account?.root_info ?? null;
+  const homeNs = (root?.home_namespace_id as string | undefined) ?? null;
+  const rootNs = (root?.root_namespace_id as string | undefined) ?? null;
+  const isTeamSpace = Boolean(homeNs && rootNs && homeNs !== rootNs);
+
+  const whereFoldersAre: { label: string; pathRoot: string | null; listing: DropboxListing }[] = [
+    { label: 'configured (current env)', pathRoot: PATH_ROOT ?? null, listing: await dropboxListFolder(token, BASE_FOLDER) },
+  ];
+  if (homeNs) {
+    whereFoldersAre.push({ label: 'personal home namespace', pathRoot: homeNs, listing: await dropboxListFolder(token, BASE_FOLDER, homeNs) });
+  }
+  if (rootNs && rootNs !== homeNs) {
+    whereFoldersAre.push({ label: 'team space (root namespace)', pathRoot: rootNs, listing: await dropboxListFolder(token, BASE_FOLDER, rootNs) });
+  }
+
+  let fix: string | null = null;
+  if (isTeamSpace && !PATH_ROOT) {
+    fix = `Set DROPBOX_PATH_ROOT="${rootNs}" in Vercel (keep DROPBOX_FOLDER="${BASE_FOLDER}"), then redeploy — new validations land in the team space. Then call ?move=1 to relocate the existing folders.`;
+  } else if (isTeamSpace && PATH_ROOT) {
+    fix = `DROPBOX_PATH_ROOT is set to "${PATH_ROOT}" (team root is "${rootNs}"). New validations target the team space.`;
+  } else if (!isTeamSpace) {
+    fix = 'This token sees a single namespace (no separate team space). The base folder is written directly; verify DROPBOX_FOLDER and the authorising account.';
+  }
+
+  return {
+    account: account
+      ? {
+          name: account?.name?.display_name ?? null,
+          email: account?.email ?? null,
+          accountId: account?.account_id ?? null,
+          team: account?.team?.name ?? null,
+        }
+      : null,
+    namespaces: { rootNamespaceId: rootNs, homeNamespaceId: homeNs, isTeamSpace },
+    config: {
+      baseFolder: BASE_FOLDER,
+      pathRoot: PATH_ROOT ?? null,
+      selectUser: SELECT_USER ?? null,
+      usingRefreshToken: Boolean(REFRESH_TOKEN && APP_KEY && APP_SECRET),
+    },
+    whereFoldersAre,
+    fix,
+  };
 }
