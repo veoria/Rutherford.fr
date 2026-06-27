@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { createSupabaseAdminClient, createSupabaseServerClient } from '@/lib/supabase/server';
-import { addSupportTaskAttachment, asanaTaskUrl, createSupportTask } from '@/lib/asana';
+import { addTaskAttachment, asanaTaskUrl, createSupportTask } from '@/lib/asana';
 import { notifyDiscordSupport } from '@/lib/discord';
 import { sendMail } from '@/lib/msgraph';
 import { supportAckEmail } from '@/lib/support-emails';
@@ -88,7 +88,7 @@ export async function POST(request: NextRequest) {
   if (asanaTaskGid && admin && attachable.length) {
     for (const { path, filename } of attachable) {
       const { data: blob } = await admin.storage.from(BUCKET).download(path);
-      if (blob) await addSupportTaskAttachment(asanaTaskGid, filename, blob);
+      if (blob) await addTaskAttachment(asanaTaskGid, filename, blob);
     }
   }
 
