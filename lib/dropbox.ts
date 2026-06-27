@@ -144,6 +144,29 @@ export async function uploadConsoleValidation(
   return { links, folderLink, folderPath, count };
 }
 
+/**
+ * Upload extra files (e.g. customer-reply photos) into an EXISTING request
+ * folder, given its Dropbox path. Used by the reply route to drop reply photos
+ * next to the original request. Throws on a hard failure so the caller can swallow it.
+ */
+export async function uploadFilesToFolder(
+  folderPath: string,
+  files: { name: string; bytes: ArrayBuffer | Uint8Array }[]
+): Promise<{ links: string[]; count: number }> {
+  const token = await getAccessToken();
+  const base = folderPath.replace(/\/+$/, '');
+  const links: string[] = [];
+  let count = 0;
+  for (const { name, bytes } of files) {
+    const path = `${base}/${name}`;
+    await uploadFile(token, path, bytes);
+    count += 1;
+    const link = await createSharedLink(token, path).catch(() => null);
+    if (link) links.push(link);
+  }
+  return { links, count };
+}
+
 // ---------------------------------------------------------------------------
 // Diagnostics & repair (admin /api/admin/dropbox-debug).
 //
