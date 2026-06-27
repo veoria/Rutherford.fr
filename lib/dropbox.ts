@@ -64,7 +64,7 @@ async function getAccessToken(): Promise<string> {
       signal: AbortSignal.timeout(TIMEOUT_MS),
       cache: 'no-store',
     });
-    if (!res.ok) throw new Error(`Dropbox token refresh → ${res.status}`);
+    if (!res.ok) throw new Error(`Dropbox token refresh → ${res.status} ${await res.text().catch(() => '')}`);
     return (await res.json()).access_token as string;
   }
   if (ACCESS_TOKEN) return ACCESS_TOKEN;
