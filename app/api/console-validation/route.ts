@@ -1,7 +1,8 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { createSupabaseAdminClient, createSupabaseServerClient } from '@/lib/supabase/server';
-import { addDealNote, createConsoleValidationDeal } from '@/lib/pipedrive';
-import { createConsoleValidationTask } from '@/lib/asana';
+import { addDealNote, createConsoleValidationDeal, pipedriveDealUrl } from '@/lib/pipedrive';
+import { asanaTaskUrl, createConsoleValidationTask } from '@/lib/asana';
+import { notifyDiscordConsoleValidation } from '@/lib/discord';
 import { sendMail } from '@/lib/msgraph';
 import { acknowledgementEmail } from '@/lib/console-validation-emails';
 import { getNotificationEmail, insertConsoleValidation } from '@/lib/console-validations';
@@ -215,6 +216,17 @@ export async function POST(request: NextRequest) {
     dropboxLink: null,
     asanaTaskGid,
     photos: photoLinks,
+  });
+
+  // Best-effort team ping (no-op without DISCORD_WEBHOOK_URL).
+  await notifyDiscordConsoleValidation({
+    dealId,
+    company: companyName,
+    country,
+    machine: machineName,
+    email,
+    asanaUrl: asanaTaskUrl(asanaTaskGid),
+    pipedriveUrl: pipedriveDealUrl(dealId),
   });
 
   // Mark the invitation completed (and link the record) so the inviter sees it.
