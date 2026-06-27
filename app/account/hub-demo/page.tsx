@@ -17,8 +17,9 @@ export const dynamic = 'force-dynamic';
 // Switch the role with ?type=client|reseller|distributor|team.
 const TYPES: AccountType[] = ['client', 'reseller', 'distributor', 'team'];
 
-export default function AccountHubDemoRoute({ searchParams }: { searchParams: { type?: string } }) {
+export default function AccountHubDemoRoute({ searchParams }: { searchParams: { type?: string; preview?: string } }) {
   if (process.env.NEXT_PUBLIC_ACADEMY_ENABLED !== 'true') notFound();
+  const preview = searchParams.preview === '1';
 
   const accountType = (TYPES.includes(searchParams.type as AccountType) ? searchParams.type : 'distributor') as AccountType;
   const isXrite = accountType === 'distributor';
@@ -91,6 +92,7 @@ export default function AccountHubDemoRoute({ searchParams }: { searchParams: { 
       }}
       resellerClients={resellerClients}
       systems={systems}
+      preview={preview}
     />
   );
 }

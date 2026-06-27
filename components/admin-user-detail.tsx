@@ -320,6 +320,15 @@ export function AdminUserDetail({
               {user.isAdmin ? <span className="admin-badge">admin</span> : null}
               {user.suspended ? <span className="admin-badge admin-badge-warn">suspendu</span> : null}
             </p>
+            {user.accountType === 'client' ? (
+              <a
+                className="button button-light"
+                href={`/admin/users/${user.id}/preview`}
+                style={{ marginTop: 12, display: 'inline-flex', alignItems: 'center', gap: 6 }}
+              >
+                👁 Voir l’espace client
+              </a>
+            ) : null}
           </header>
 
           <div className="admin-detail-grid">
