@@ -368,6 +368,70 @@ const COPY: Record<Locale, Copy> = {
   },
 };
 
+// "À faire maintenant" hero copy — the single most important action.
+const HERO: Record<
+  Locale,
+  {
+    eyebrow: string;
+    eligibleTitle: (n: number) => string; eligibleSub: string; eligibleCta: string;
+    supportTitle: string; supportSub: string; supportCta: string;
+    resumeSub: string; resumeCta: string;
+    okTitle: string; okSub: string; okCta: string;
+    remSupportT: string; remSupportS: string; remResumeT: string;
+  }
+> = {
+  en: {
+    eyebrow: 'To do now',
+    eligibleTitle: (n) => `${n} press${n === 1 ? ' is' : 'es are'} eligible to connect`,
+    eligibleSub: 'Connect them to enable closed-loop color control and cut makeready waste from the next run.',
+    eligibleCta: 'Connect my presses',
+    supportTitle: 'Our team has replied to your ticket', supportSub: 'Pick up the conversation and keep your request moving.', supportCta: 'Open support',
+    resumeSub: 'Pick up your training where you left off.', resumeCta: 'Resume',
+    okTitle: 'You’re all set', okSub: 'Explore the Academy or request a console validation.', okCta: 'Explore Academy',
+    remSupportT: 'Support ticket', remSupportS: 'A reply is waiting for you', remResumeT: 'Resume your course',
+  },
+  fr: {
+    eyebrow: 'À faire maintenant',
+    eligibleTitle: (n) => `${n} presse${n === 1 ? '' : 's'} éligible${n === 1 ? '' : 's'} à la connexion`,
+    eligibleSub: 'Connectez-les pour activer le suivi couleur en boucle fermée et réduire la gâche au calage dès la prochaine série.',
+    eligibleCta: 'Connecter mes presses',
+    supportTitle: 'Notre équipe a répondu à votre ticket', supportSub: 'Reprenez la conversation pour faire avancer votre demande.', supportCta: 'Ouvrir le support',
+    resumeSub: 'Reprenez votre formation là où vous en étiez.', resumeCta: 'Reprendre',
+    okTitle: 'Tout est à jour', okSub: 'Explorez l’Academy ou demandez une validation console.', okCta: 'Découvrir l’Academy',
+    remSupportT: 'Ticket de support', remSupportS: 'Une réponse vous attend', remResumeT: 'Reprendre votre formation',
+  },
+  de: {
+    eyebrow: 'Jetzt zu erledigen',
+    eligibleTitle: (n) => `${n} ${n === 1 ? 'Maschine ist' : 'Maschinen sind'} verbindungsbereit`,
+    eligibleSub: 'Verbinden Sie sie für die Closed-Loop-Farbsteuerung und weniger Makulatur beim Einrichten ab dem nächsten Auftrag.',
+    eligibleCta: 'Maschinen verbinden',
+    supportTitle: 'Unser Team hat auf Ihr Ticket geantwortet', supportSub: 'Setzen Sie das Gespräch fort und bringen Sie Ihre Anfrage voran.', supportCta: 'Support öffnen',
+    resumeSub: 'Setzen Sie Ihre Schulung dort fort, wo Sie aufgehört haben.', resumeCta: 'Fortsetzen',
+    okTitle: 'Alles erledigt', okSub: 'Entdecken Sie die Academy oder fordern Sie eine Konsolenvalidierung an.', okCta: 'Academy entdecken',
+    remSupportT: 'Support-Ticket', remSupportS: 'Eine Antwort wartet auf Sie', remResumeT: 'Schulung fortsetzen',
+  },
+  it: {
+    eyebrow: 'Da fare ora',
+    eligibleTitle: (n) => `${n} macchin${n === 1 ? 'a idonea' : 'e idonee'} alla connessione`,
+    eligibleSub: 'Collegale per attivare il controllo colore closed-loop e ridurre lo scarto di avviamento dalla prossima tiratura.',
+    eligibleCta: 'Collega le mie macchine',
+    supportTitle: 'Il nostro team ha risposto al tuo ticket', supportSub: 'Riprendi la conversazione e fai avanzare la tua richiesta.', supportCta: 'Apri il support',
+    resumeSub: 'Riprendi la formazione da dove eri rimasto.', resumeCta: 'Riprendi',
+    okTitle: 'Tutto in regola', okSub: 'Esplora l’Academy o richiedi una validazione console.', okCta: 'Scopri l’Academy',
+    remSupportT: 'Ticket di supporto', remSupportS: 'Una risposta ti aspetta', remResumeT: 'Riprendi il corso',
+  },
+  es: {
+    eyebrow: 'Por hacer ahora',
+    eligibleTitle: (n) => `${n} prensa${n === 1 ? '' : 's'} apta${n === 1 ? '' : 's'} para conexión`,
+    eligibleSub: 'Conéctelas para activar el control del color closed-loop y reducir el desperdicio de puesta a punto desde la próxima tirada.',
+    eligibleCta: 'Conectar mis prensas',
+    supportTitle: 'Nuestro equipo respondió a su ticket', supportSub: 'Retome la conversación y haga avanzar su solicitud.', supportCta: 'Abrir soporte',
+    resumeSub: 'Retome su formación donde la dejó.', resumeCta: 'Continuar',
+    okTitle: 'Todo al día', okSub: 'Explore la Academy o solicite una validación de consola.', okCta: 'Descubrir Academy',
+    remSupportT: 'Ticket de soporte', remSupportS: 'Una respuesta le espera', remResumeT: 'Continuar su curso',
+  },
+};
+
 const ICON: Record<string, ReactNode> = {
   acad: <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 4 2.5 9 12 14l9.5-5L12 4z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round"/><path d="M6 11v4.5c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5V11" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/></svg>,
   console: <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" strokeWidth="1.7"/><path d="M3 9h18M7 14h5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/><circle cx="16.5" cy="14" r="1.3" fill="currentColor"/></svg>,
@@ -456,6 +520,22 @@ export function AccountHub(props: Props) {
       : accountType === 'distributor'
         ? [roleTile, consoleTile, academyTile, supportTile]
         : [academyTile, consoleTile, roleTile, supportTile];
+
+  // "À faire maintenant" — surface the single most important action.
+  const h = HERO[locale];
+  let hero: { title: string; sub: string; cta: string; href: string };
+  if (!preview && consoleStat.eligible > 0) {
+    hero = { title: h.eligibleTitle(consoleStat.eligible), sub: h.eligibleSub, cta: h.eligibleCta, href: '/account/console-validations' };
+  } else if (!preview && (supportStat.newMessage || supportStat.status === 'waiting_customer')) {
+    hero = { title: h.supportTitle, sub: h.supportSub, cta: h.supportCta, href: '/account/support' };
+  } else if (resume) {
+    hero = { title: resume.title, sub: h.resumeSub, cta: h.resumeCta, href: `/academy/${resume.slug}` };
+  } else {
+    hero = { title: h.okTitle, sub: h.okSub, cta: h.okCta, href: '/account/academy' };
+  }
+  const reminders: { ic: ReactNode; title: string; sub: string; href: string }[] = [];
+  if (supportStat.status) reminders.push({ ic: ICON.support, title: h.remSupportT, sub: h.remSupportS, href: '/account/support' });
+  if (resume) reminders.push({ ic: ICON.acad, title: h.remResumeT, sub: `${resume.title} · ${t.moduleWord} ${resume.moduleIndex + 1}`, href: `/academy/${resume.slug}` });
 
   return (
     <main className="page-shell" id="top">
@@ -555,17 +635,34 @@ export function AccountHub(props: Props) {
             </div>
           </div>
 
-          {/* Resume (Academy) — for every role when there is something to resume */}
-          {resume ? (
-            <a className="ah-resume" href={`/academy/${resume.slug}`}>
-              <span className="ah-resume-ic">{ICON.acad}</span>
-              <span className="ah-resume-main">
-                <span className="ah-resume-eb">{t.resumeKicker}</span>
-                <span className="ah-resume-t">{resume.title}</span>
-                <span className="ah-resume-s">{t.moduleWord} {resume.moduleIndex + 1} · {resume.moduleTitle}</span>
-              </span>
-              <span className="button button-accent ah-resume-cta">{t.resumeCta} →</span>
-            </a>
+          {/* À faire maintenant — top action + reminders (not in admin preview) */}
+          {!preview ? (
+            <>
+              <div className="ah-hero">
+                <div>
+                  <p className="ah-hero-eyebrow">{h.eyebrow}</p>
+                  <h2 className="ah-hero-title">{hero.title}</h2>
+                  <p className="ah-hero-sub">{hero.sub}</p>
+                </div>
+                <a className="ah-hero-cta" href={hero.href}>
+                  {hero.cta} <span aria-hidden="true">→</span>
+                </a>
+              </div>
+              {reminders.length ? (
+                <div className="ah-reminders">
+                  {reminders.map((r, i) => (
+                    <a className="ah-reminder" href={r.href} key={i}>
+                      <span className="ah-reminder-ic">{r.ic}</span>
+                      <span className="ah-reminder-main">
+                        <span className="ah-reminder-t">{r.title}</span>
+                        <span className="ah-reminder-s">{r.sub}</span>
+                      </span>
+                      <span className="ah-reminder-chev">{ICON.chevR}</span>
+                    </a>
+                  ))}
+                </div>
+              ) : null}
+            </>
           ) : null}
 
           {/* Quick access */}
