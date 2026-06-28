@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 import { SiteFooter } from '@/components/site-footer';
 import { SiteNav } from '@/components/site-nav';
 import { AccountSubnav } from '@/components/account-subnav';
@@ -17,6 +18,202 @@ const BANNER: Record<Locale, { title: (pct: number) => string; sub: string }> = 
   it: { title: (p) => `Profilo completato al ${p}%`, sub: 'Completa il tuo profilo per sbloccare tutte le funzionalità partner.' },
   es: { title: (p) => `Perfil completado al ${p}%`, sub: 'Complete su perfil para desbloquear todas las funciones de partner.' },
 };
+
+// Read-mode copy for the redesigned profile (identity card + info/company/security
+// cards). The editable form keeps using COPY below; this is the surrounding view.
+type View = {
+  eyebrow: string;
+  pageTitle: string;
+  pageSub: string;
+  editProfile: string;
+  back: string;
+  infoTitle: string;
+  companyTitle: string;
+  securityTitle: string;
+  edit: string;
+  notProvided: string;
+  funcLabel: string;
+  emailField: string;
+  notifField: string;
+  raisonLabel: string;
+  logoField: string;
+  logoEmpty: string;
+  passwordLabel: string;
+  passwordSub: string;
+  passwordBtn: string;
+  twoFaTitle: string;
+  twoFaSub: string;
+  twoFaOff: string;
+  twoFaOnLabel: string;
+  twoFaEnable: string;
+  twoFaManage: string;
+  chip2fa: string;
+};
+
+const VIEW: Record<Locale, View> = {
+  en: {
+    eyebrow: 'Partner area',
+    pageTitle: 'Profile',
+    pageSub: 'Your personal details, your company and your security.',
+    editProfile: 'Edit profile',
+    back: '← Back',
+    infoTitle: 'Personal information',
+    companyTitle: 'Company',
+    securityTitle: 'Security',
+    edit: 'Edit',
+    notProvided: 'Not provided',
+    funcLabel: 'Role',
+    emailField: 'Email',
+    notifField: 'Notification email',
+    raisonLabel: 'Company name',
+    logoField: 'Company logo',
+    logoEmpty: 'No logo',
+    passwordLabel: 'Password',
+    passwordSub: 'Set or change your sign-in password.',
+    passwordBtn: 'Change password',
+    twoFaTitle: 'Two-factor authentication (2FA)',
+    twoFaSub: 'Adds an extra layer of security to your partner account.',
+    twoFaOff: 'Not enabled',
+    twoFaOnLabel: 'Enabled',
+    twoFaEnable: 'Enable 2FA',
+    twoFaManage: 'Manage 2FA',
+    chip2fa: 'Two-factor (2FA)',
+  },
+  fr: {
+    eyebrow: 'Espace partenaire',
+    pageTitle: 'Profil',
+    pageSub: 'Vos informations personnelles, votre société et votre sécurité.',
+    editProfile: 'Modifier le profil',
+    back: '← Retour',
+    infoTitle: 'Informations personnelles',
+    companyTitle: 'Société',
+    securityTitle: 'Sécurité',
+    edit: 'Modifier',
+    notProvided: 'Non renseigné',
+    funcLabel: 'Fonction',
+    emailField: 'E-mail',
+    notifField: 'E-mail de notification',
+    raisonLabel: 'Raison sociale',
+    logoField: 'Logo de la société',
+    logoEmpty: 'Aucun logo',
+    passwordLabel: 'Mot de passe',
+    passwordSub: 'Définissez ou modifiez votre mot de passe de connexion.',
+    passwordBtn: 'Changer le mot de passe',
+    twoFaTitle: 'Authentification à deux facteurs (2FA)',
+    twoFaSub: 'Renforce la sécurité de votre compte partenaire.',
+    twoFaOff: 'Non activée',
+    twoFaOnLabel: 'Activée',
+    twoFaEnable: 'Activer la 2FA',
+    twoFaManage: 'Gérer la 2FA',
+    chip2fa: 'Authentification 2FA',
+  },
+  de: {
+    eyebrow: 'Partnerbereich',
+    pageTitle: 'Profil',
+    pageSub: 'Ihre persönlichen Daten, Ihr Unternehmen und Ihre Sicherheit.',
+    editProfile: 'Profil bearbeiten',
+    back: '← Zurück',
+    infoTitle: 'Persönliche Informationen',
+    companyTitle: 'Unternehmen',
+    securityTitle: 'Sicherheit',
+    edit: 'Bearbeiten',
+    notProvided: 'Nicht angegeben',
+    funcLabel: 'Funktion',
+    emailField: 'E-Mail',
+    notifField: 'Benachrichtigungs-E-Mail',
+    raisonLabel: 'Firmenname',
+    logoField: 'Firmenlogo',
+    logoEmpty: 'Kein Logo',
+    passwordLabel: 'Passwort',
+    passwordSub: 'Legen Sie Ihr Anmeldepasswort fest oder ändern Sie es.',
+    passwordBtn: 'Passwort ändern',
+    twoFaTitle: 'Zwei-Faktor-Authentifizierung (2FA)',
+    twoFaSub: 'Erhöht die Sicherheit Ihres Partnerkontos.',
+    twoFaOff: 'Nicht aktiviert',
+    twoFaOnLabel: 'Aktiviert',
+    twoFaEnable: '2FA aktivieren',
+    twoFaManage: '2FA verwalten',
+    chip2fa: 'Zwei-Faktor (2FA)',
+  },
+  it: {
+    eyebrow: 'Area partner',
+    pageTitle: 'Profilo',
+    pageSub: 'I suoi dati personali, la sua azienda e la sua sicurezza.',
+    editProfile: 'Modifica profilo',
+    back: '← Indietro',
+    infoTitle: 'Informazioni personali',
+    companyTitle: 'Azienda',
+    securityTitle: 'Sicurezza',
+    edit: 'Modifica',
+    notProvided: 'Non indicato',
+    funcLabel: 'Funzione',
+    emailField: 'E-mail',
+    notifField: 'E-mail di notifica',
+    raisonLabel: 'Ragione sociale',
+    logoField: 'Logo aziendale',
+    logoEmpty: 'Nessun logo',
+    passwordLabel: 'Password',
+    passwordSub: 'Imposti o modifichi la password di accesso.',
+    passwordBtn: 'Cambia password',
+    twoFaTitle: 'Autenticazione a due fattori (2FA)',
+    twoFaSub: 'Rafforza la sicurezza del suo account partner.',
+    twoFaOff: 'Non attiva',
+    twoFaOnLabel: 'Attiva',
+    twoFaEnable: 'Attiva la 2FA',
+    twoFaManage: 'Gestisci la 2FA',
+    chip2fa: 'Due fattori (2FA)',
+  },
+  es: {
+    eyebrow: 'Área de partner',
+    pageTitle: 'Perfil',
+    pageSub: 'Sus datos personales, su empresa y su seguridad.',
+    editProfile: 'Editar perfil',
+    back: '← Volver',
+    infoTitle: 'Información personal',
+    companyTitle: 'Empresa',
+    securityTitle: 'Seguridad',
+    edit: 'Editar',
+    notProvided: 'No indicado',
+    funcLabel: 'Función',
+    emailField: 'Correo',
+    notifField: 'Email de notificación',
+    raisonLabel: 'Razón social',
+    logoField: 'Logo de la empresa',
+    logoEmpty: 'Sin logo',
+    passwordLabel: 'Contraseña',
+    passwordSub: 'Establezca o cambie su contraseña de acceso.',
+    passwordBtn: 'Cambiar contraseña',
+    twoFaTitle: 'Autenticación de dos factores (2FA)',
+    twoFaSub: 'Refuerza la seguridad de su cuenta de partner.',
+    twoFaOff: 'No activada',
+    twoFaOnLabel: 'Activada',
+    twoFaEnable: 'Activar 2FA',
+    twoFaManage: 'Gestionar 2FA',
+    chip2fa: 'Doble factor (2FA)',
+  },
+};
+
+// Initials for the avatar circle — same convention as the header chip.
+function pfInitials(name: string, email: string): string {
+  const n = name.trim();
+  if (n) {
+    const parts = n.split(/\s+/).filter(Boolean);
+    if (parts.length >= 2) return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    return n.slice(0, 2).toUpperCase();
+  }
+  return (email.slice(0, 2) || '?').toUpperCase();
+}
+
+// One labelled value in an info/company card; missing values show red "Not provided".
+function ProfileField({ label, value, empty }: { label: string; value: string; empty: string }) {
+  const has = Boolean(value && value.trim());
+  return (
+    <div className="profile-field">
+      <span className="profile-field-k">{label}</span>
+      <span className={`profile-field-v${has ? '' : ' is-empty'}`}>{has ? value : empty}</span>
+    </div>
+  );
+}
 
 type Copy = {
   title: string;
@@ -310,6 +507,7 @@ type Props = {
 export function AccountProfile({ email, accountType, defaults }: Props) {
   const { locale } = useLanguage();
   const t = COPY[locale];
+  const v = VIEW[locale];
   // Internal team: company + country are fixed by the domain, so we hide those
   // fields and offer the internal role taxonomy instead of the printing roles.
   const isTeam = accountType === 'team';
@@ -323,6 +521,52 @@ export function AccountProfile({ email, accountType, defaults }: Props) {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  // Read view (cards) vs. edit view (the form). Defaults to the read view.
+  const [editing, setEditing] = useState(false);
+  const [logoUrl, setLogoUrl] = useState<string | null>(null);
+  // Real 2FA state, read straight from Supabase MFA factors.
+  const [twoFa, setTwoFa] = useState<'loading' | 'on' | 'off'>('loading');
+
+  // Co-brand / company logo (top-right of the Société card), same lookup as the subnav.
+  useEffect(() => {
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) return;
+    const supabase = createSupabaseBrowserClient();
+    let active = true;
+    (async () => {
+      const { data } = await supabase.auth.getUser();
+      if (!active || !data.user) return;
+      const { data: prof } = await supabase
+        .from('profiles')
+        .select('organization_id')
+        .eq('id', data.user.id)
+        .maybeSingle();
+      const orgId = (prof?.organization_id as string | null) ?? null;
+      if (!orgId) return;
+      const { data: org } = await supabase.from('organizations').select('logo_url').eq('id', orgId).maybeSingle();
+      if (active) setLogoUrl((org?.logo_url as string | null) ?? null);
+    })();
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  // Whether the account has an active TOTP factor — drives the security card + chip.
+  useEffect(() => {
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+      setTwoFa('off');
+      return;
+    }
+    const supabase = createSupabaseBrowserClient();
+    let active = true;
+    (async () => {
+      const { data, error } = await supabase.auth.mfa.listFactors();
+      if (!active) return;
+      setTwoFa(!error && (data?.totp?.length ?? 0) > 0 ? 'on' : 'off');
+    })();
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const handleDelete = async () => {
     setDeleting(true);
@@ -361,6 +605,7 @@ export function AccountProfile({ email, accountType, defaults }: Props) {
       });
       if (res.ok) {
         setStatus('saved');
+        setEditing(false);
         return;
       }
       if (res.status === 401) {
@@ -376,201 +621,314 @@ export function AccountProfile({ email, accountType, defaults }: Props) {
   };
 
   const banner = BANNER[locale];
-  const profileFields = [
-    { key: 'name', filled: Boolean(fullName.trim()), label: t.nameLabel },
-    { key: 'company', filled: Boolean(company.trim()), label: t.companyLabel },
-    { key: 'country', filled: Boolean(country.trim()), label: t.countryLabel },
-    { key: 'role', filled: Boolean(jobTitle.trim()), label: t.roleLabel },
+  const twoFaKnown = twoFa !== 'loading';
+  const twoFaOn = twoFa === 'on';
+  const roleLabel = jobTitle
+    ? isTeam
+      ? teamRoles[jobTitle as keyof typeof teamRoles] ?? ''
+      : t.roles[jobTitle as JobTitleKey] ?? ''
+    : '';
+  const displayName = fullName.trim() || email;
+  const identitySub = [roleLabel, !isTeam ? company.trim() : ''].filter(Boolean).join(' · ');
+
+  // Completion = filled personal/company fields + 2FA (email is always set).
+  type Item = { key: string; done: boolean; label: string; kind: 'edit' | 'security' };
+  const items: Item[] = [
+    { key: 'name', done: Boolean(fullName.trim()), label: t.nameLabel, kind: 'edit' },
+    ...(!isTeam
+      ? [
+          { key: 'company', done: Boolean(company.trim()), label: t.companyLabel, kind: 'edit' as const },
+          { key: 'country', done: Boolean(country.trim()), label: t.countryLabel, kind: 'edit' as const },
+        ]
+      : []),
+    { key: 'role', done: Boolean(jobTitle.trim()), label: t.roleLabel, kind: 'edit' },
+    ...(twoFaKnown ? [{ key: '2fa', done: twoFaOn, label: v.chip2fa, kind: 'security' as const }] : []),
   ];
-  const filledCount = 1 + profileFields.filter((f) => f.filled).length; // +1: email is always set
-  const completionPct = Math.round((filledCount / (profileFields.length + 1)) * 100);
-  const missingFields = profileFields.filter((f) => !f.filled);
+  const doneCount = 1 + items.filter((i) => i.done).length; // +1: email is always set
+  const completionPct = Math.round((doneCount / (items.length + 1)) * 100);
+  const missing = items.filter((i) => !i.done);
+
+  const openEdit = () => {
+    setStatus('idle');
+    setErrorMsg(null);
+    setEditing(true);
+  };
 
   return (
     <main className="page-shell" id="top">
       <SiteNav current="account" />
       <AccountSubnav current="profile" />
 
-      <section className="signin-section section">
-        <div className="container signin-shell">
-          <header className="signin-head">
-            <p className="section-kicker">Rutherford</p>
-            <h1>{t.title}</h1>
-            <p>{t.subtitle}</p>
-          </header>
+      <section className="section profile-section">
+        <div className="container profile-shell">
+          <div className="profile-head">
+            <p className="profile-eyebrow">{v.eyebrow}</p>
+            <h1 className="profile-h1">{v.pageTitle}</h1>
+            <p className="profile-sub">{v.pageSub}</p>
+          </div>
 
-          {completionPct < 100 ? (
-            <div className="profile-banner">
-              <div className="profile-banner-main">
-                <h2 className="profile-banner-title">{banner.title(completionPct)}</h2>
-                <p className="profile-banner-sub">{banner.sub}</p>
-                <div className="profile-banner-bar">
-                  <span style={{ width: `${completionPct}%` }} />
-                </div>
-              </div>
-              {missingFields.length ? (
-                <div className="profile-banner-chips">
-                  {missingFields.map((m) => (
-                    <span className="profile-chip" key={m.key}>
-                      {m.label}
-                    </span>
-                  ))}
-                </div>
-              ) : null}
-            </div>
+          {status === 'saved' && !editing ? (
+            <p className="signin-message signin-message-ok profile-msg">{t.saved}</p>
           ) : null}
 
-          <div className="signin-card">
-            <form className="signin-form" onSubmit={handleSubmit}>
-              <label htmlFor="pf-name" className="signin-label">
-                {t.nameLabel}
-              </label>
-              <input
-                id="pf-name"
-                type="text"
-                className="signin-input"
-                placeholder={t.namePlaceholder}
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-                required
-                disabled={status === 'saving'}
-              />
+          {editing ? (
+            <div className="profile-edit">
+              <button type="button" className="profile-back" onClick={() => setEditing(false)}>
+                {v.back}
+              </button>
+              <div className="signin-card">
+                <form className="signin-form" onSubmit={handleSubmit}>
+                  <label htmlFor="pf-name" className="signin-label">
+                    {t.nameLabel}
+                  </label>
+                  <input
+                    id="pf-name"
+                    type="text"
+                    className="signin-input"
+                    placeholder={t.namePlaceholder}
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    required
+                    disabled={status === 'saving'}
+                  />
 
-              {!isTeam ? (
-                <>
-                  <label htmlFor="pf-country" className="signin-label">
-                    {t.countryLabel}
+                  {!isTeam ? (
+                    <>
+                      <label htmlFor="pf-country" className="signin-label">
+                        {t.countryLabel}
+                      </label>
+                      <select
+                        id="pf-country"
+                        className="signin-input"
+                        value={country}
+                        onChange={(e) => setCountry(e.target.value)}
+                        required
+                        disabled={status === 'saving'}
+                      >
+                        <option value="" disabled>
+                          {t.selectCountry}
+                        </option>
+                        {COUNTRIES.map((c) => (
+                          <option key={c} value={c}>
+                            {c}
+                          </option>
+                        ))}
+                      </select>
+
+                      <label htmlFor="pf-company" className="signin-label">
+                        {t.companyLabel}
+                      </label>
+                      <input
+                        id="pf-company"
+                        type="text"
+                        className="signin-input"
+                        placeholder={t.companyPlaceholder}
+                        value={company}
+                        onChange={(e) => setCompany(e.target.value)}
+                        required
+                        disabled={status === 'saving'}
+                      />
+                    </>
+                  ) : null}
+
+                  <label htmlFor="pf-role" className="signin-label">
+                    {t.roleLabel}
                   </label>
                   <select
-                    id="pf-country"
+                    id="pf-role"
                     className="signin-input"
-                    value={country}
-                    onChange={(e) => setCountry(e.target.value)}
+                    value={jobTitle}
+                    onChange={(e) => setJobTitle(e.target.value)}
                     required
                     disabled={status === 'saving'}
                   >
                     <option value="" disabled>
-                      {t.selectCountry}
+                      {t.selectRole}
                     </option>
-                    {COUNTRIES.map((c) => (
-                      <option key={c} value={c}>
-                        {c}
-                      </option>
-                    ))}
+                    {isTeam
+                      ? TEAM_ROLE_KEYS.map((key) => (
+                          <option key={key} value={key}>
+                            {teamRoles[key]}
+                          </option>
+                        ))
+                      : JOB_TITLE_KEYS.map((key) => (
+                          <option key={key} value={key}>
+                            {t.roles[key]}
+                          </option>
+                        ))}
                   </select>
 
-                  <label htmlFor="pf-company" className="signin-label">
-                    {t.companyLabel}
+                  <label htmlFor="pf-notif" className="signin-label">
+                    {t.notifLabel}
                   </label>
                   <input
-                    id="pf-company"
-                    type="text"
+                    id="pf-notif"
+                    type="email"
                     className="signin-input"
-                    placeholder={t.companyPlaceholder}
-                    value={company}
-                    onChange={(e) => setCompany(e.target.value)}
-                    required
+                    placeholder={t.notifPlaceholder}
+                    value={notif}
+                    onChange={(e) => setNotif(e.target.value)}
                     disabled={status === 'saving'}
                   />
-                </>
+                  <p className="signin-fine signin-fine-tight">{t.notifHint}</p>
+
+                  <button
+                    type="submit"
+                    className="button button-accent signin-submit"
+                    disabled={status === 'saving'}
+                  >
+                    {status === 'saving' ? t.saving : t.submit}
+                  </button>
+                </form>
+
+                {status === 'error' && errorMsg ? (
+                  <p className="signin-message signin-message-error">{errorMsg}</p>
+                ) : null}
+              </div>
+            </div>
+          ) : (
+            <>
+              {completionPct < 100 ? (
+                <section className="profile-banner">
+                  <div className="profile-banner-row">
+                    <div className="profile-banner-main">
+                      <h2 className="profile-banner-title">{banner.title(completionPct)}</h2>
+                      <p className="profile-banner-sub">{banner.sub}</p>
+                    </div>
+                    {missing.length ? (
+                      <div className="profile-banner-chips">
+                        {missing.map((m) =>
+                          m.kind === 'security' ? (
+                            <a key={m.key} href="/account/security" className="profile-chip">
+                              <span className="profile-chip-plus">+</span>
+                              {m.label}
+                            </a>
+                          ) : (
+                            <button key={m.key} type="button" className="profile-chip" onClick={openEdit}>
+                              <span className="profile-chip-plus">+</span>
+                              {m.label}
+                            </button>
+                          ),
+                        )}
+                      </div>
+                    ) : null}
+                  </div>
+                  <div className="profile-banner-bar">
+                    <span style={{ width: `${completionPct}%` }} />
+                  </div>
+                </section>
               ) : null}
 
-              <label htmlFor="pf-role" className="signin-label">
-                {t.roleLabel}
-              </label>
-              <select
-                id="pf-role"
-                className="signin-input"
-                value={jobTitle}
-                onChange={(e) => setJobTitle(e.target.value)}
-                required
-                disabled={status === 'saving'}
-              >
-                <option value="" disabled>
-                  {t.selectRole}
-                </option>
-                {isTeam
-                  ? TEAM_ROLE_KEYS.map((key) => (
-                      <option key={key} value={key}>
-                        {teamRoles[key]}
-                      </option>
-                    ))
-                  : JOB_TITLE_KEYS.map((key) => (
-                      <option key={key} value={key}>
-                        {t.roles[key]}
-                      </option>
-                    ))}
-              </select>
-
-              <label htmlFor="pf-notif" className="signin-label">
-                {t.notifLabel}
-              </label>
-              <input
-                id="pf-notif"
-                type="email"
-                className="signin-input"
-                placeholder={t.notifPlaceholder}
-                value={notif}
-                onChange={(e) => setNotif(e.target.value)}
-                disabled={status === 'saving'}
-              />
-              <p className="signin-fine signin-fine-tight">{t.notifHint}</p>
-
-              <button
-                type="submit"
-                className="button button-accent signin-submit"
-                disabled={status === 'saving'}
-              >
-                {status === 'saving' ? t.saving : t.submit}
-              </button>
-            </form>
-
-            {status === 'saved' ? (
-              <p className="signin-message signin-message-ok">{t.saved}</p>
-            ) : null}
-            {status === 'error' && errorMsg ? (
-              <p className="signin-message signin-message-error">{errorMsg}</p>
-            ) : null}
-
-            <div className="account-profile-meta">
-              <div>
-                <span className="account-profile-meta-k">{t.loginEmailLabel}</span>
-                <span className="account-profile-meta-v">{email}</span>
-              </div>
-              <div>
-                <span className="account-profile-meta-k">{t.typeLabel}</span>
-                <span className="account-profile-meta-v">
-                  <span className={`account-type-badge account-type-${accountType}`}>
-                    {t.types[accountType]}
-                  </span>
+              <section className="profile-identity">
+                <span className="profile-avatar" aria-hidden="true">
+                  {pfInitials(fullName, email)}
+                  <span className="profile-avatar-dot" />
                 </span>
-                <span className="signin-fine signin-fine-tight">{t.typeHint}</span>
-              </div>
-            </div>
+                <div className="profile-identity-main">
+                  <h2 className="profile-identity-name">{displayName}</h2>
+                  {identitySub ? <p className="profile-identity-role">{identitySub}</p> : null}
+                </div>
+                <button type="button" className="profile-photo-btn" onClick={openEdit}>
+                  {v.editProfile}
+                </button>
+              </section>
 
-            <div className="account-profile-rgpd">
-              <div className="account-profile-meta-k">{t.rgpdTitle}</div>
-              <p className="signin-fine signin-fine-tight">{t.rgpdDesc}</p>
-              <div className="account-profile-rgpd-actions">
-                <a className="button button-light" href="/api/account/data">{t.exportBtn}</a>
-                {confirmDelete ? (
-                  <span className="account-profile-del-confirm">
-                    <span>{t.deleteConfirm}</span>
-                    <button type="button" className="button button-light" onClick={() => setConfirmDelete(false)} disabled={deleting}>
-                      {t.deleteCancel}
+              <div className="profile-grid">
+                <section className="profile-card">
+                  <div className="profile-card-h">
+                    <h3 className="profile-card-title">{v.infoTitle}</h3>
+                    <button type="button" className="profile-edit-link" onClick={openEdit}>
+                      {v.edit}
                     </button>
-                    <button type="button" className="account-btn-danger" onClick={handleDelete} disabled={deleting}>
-                      {deleting ? t.deleting : t.deleteYes}
+                  </div>
+                  <div className="profile-fields">
+                    <ProfileField label={t.nameLabel} value={fullName} empty={v.notProvided} />
+                    <ProfileField label={v.funcLabel} value={roleLabel} empty={v.notProvided} />
+                    <ProfileField label={v.emailField} value={email} empty={v.notProvided} />
+                    <ProfileField label={v.notifField} value={notif} empty={v.notProvided} />
+                  </div>
+                </section>
+
+                <section className="profile-card">
+                  <div className="profile-card-h">
+                    <h3 className="profile-card-title">{v.companyTitle}</h3>
+                    <button type="button" className="profile-edit-link" onClick={openEdit}>
+                      {v.edit}
                     </button>
-                  </span>
-                ) : (
-                  <button type="button" className="account-btn-danger-ghost" onClick={() => setConfirmDelete(true)}>
-                    {t.deleteBtn}
-                  </button>
-                )}
+                  </div>
+                  <div className="profile-fields">
+                    <ProfileField label={v.raisonLabel} value={company} empty={v.notProvided} />
+                    <ProfileField label={t.typeLabel} value={t.types[accountType]} empty={v.notProvided} />
+                    <ProfileField label={t.countryLabel} value={country} empty={v.notProvided} />
+                    <div className="profile-field">
+                      <span className="profile-field-k">{v.logoField}</span>
+                      <div className="profile-logo-box">
+                        {logoUrl ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img className="profile-logo-img" src={logoUrl} alt="" />
+                        ) : (
+                          <span className="profile-logo-empty">{v.logoEmpty}</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </section>
               </div>
-            </div>
-          </div>
+
+              <section className="profile-card profile-security">
+                <h3 className="profile-card-title">{v.securityTitle}</h3>
+                <div className="profile-sec-row">
+                  <div>
+                    <div className="profile-sec-k">{v.passwordLabel}</div>
+                    <div className="profile-sec-sub">{v.passwordSub}</div>
+                  </div>
+                  <a className="profile-sec-btn" href="/account/update-password">
+                    {v.passwordBtn}
+                  </a>
+                </div>
+                <div className="profile-sec-row profile-sec-row-last">
+                  <div className="profile-sec-2fa">
+                    <span className={`profile-2fa-pill${twoFaOn ? ' is-on' : ''}`}>
+                      <span className="profile-2fa-dot" />
+                      {twoFaOn ? v.twoFaOnLabel : v.twoFaOff}
+                    </span>
+                    <div>
+                      <div className="profile-sec-k">{v.twoFaTitle}</div>
+                      <div className="profile-sec-sub">{v.twoFaSub}</div>
+                    </div>
+                  </div>
+                  <a className="profile-sec-btn-accent" href="/account/security">
+                    {twoFaOn ? v.twoFaManage : v.twoFaEnable}
+                  </a>
+                </div>
+              </section>
+
+              <section className="profile-card profile-rgpd-card">
+                <h3 className="profile-card-title">{t.rgpdTitle}</h3>
+                <p className="profile-sec-sub profile-rgpd-desc">{t.rgpdDesc}</p>
+                <div className="account-profile-rgpd-actions">
+                  <a className="button button-light" href="/api/account/data">
+                    {t.exportBtn}
+                  </a>
+                  {confirmDelete ? (
+                    <span className="account-profile-del-confirm">
+                      <span>{t.deleteConfirm}</span>
+                      <button type="button" className="button button-light" onClick={() => setConfirmDelete(false)} disabled={deleting}>
+                        {t.deleteCancel}
+                      </button>
+                      <button type="button" className="account-btn-danger" onClick={handleDelete} disabled={deleting}>
+                        {deleting ? t.deleting : t.deleteYes}
+                      </button>
+                    </span>
+                  ) : (
+                    <button type="button" className="account-btn-danger-ghost" onClick={() => setConfirmDelete(true)}>
+                      {t.deleteBtn}
+                    </button>
+                  )}
+                </div>
+              </section>
+            </>
+          )}
         </div>
       </section>
 
