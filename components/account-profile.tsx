@@ -9,6 +9,15 @@ import { COUNTRIES, JOB_TITLE_KEYS, TEAM_ROLE_KEYS, type JobTitleKey } from '@/d
 import { TEAM_ROLE_LABELS } from '@/data/team-role-labels';
 import type { AccountType } from '@/data/account-types';
 
+// Profile-completion banner copy (the % is computed from the filled fields).
+const BANNER: Record<Locale, { title: (pct: number) => string; sub: string }> = {
+  en: { title: (p) => `Profile ${p}% complete`, sub: 'Complete your profile to unlock all partner features.' },
+  fr: { title: (p) => `Profil complété à ${p} %`, sub: 'Complétez votre profil pour débloquer toutes les fonctionnalités partenaire.' },
+  de: { title: (p) => `Profil zu ${p}% ausgefüllt`, sub: 'Vervollständigen Sie Ihr Profil, um alle Partnerfunktionen freizuschalten.' },
+  it: { title: (p) => `Profilo completato al ${p}%`, sub: 'Completa il tuo profilo per sbloccare tutte le funzionalità partner.' },
+  es: { title: (p) => `Perfil completado al ${p}%`, sub: 'Complete su perfil para desbloquear todas las funciones de partner.' },
+};
+
 type Copy = {
   title: string;
   subtitle: string;
@@ -366,6 +375,17 @@ export function AccountProfile({ email, accountType, defaults }: Props) {
     }
   };
 
+  const banner = BANNER[locale];
+  const profileFields = [
+    { key: 'name', filled: Boolean(fullName.trim()), label: t.nameLabel },
+    { key: 'company', filled: Boolean(company.trim()), label: t.companyLabel },
+    { key: 'country', filled: Boolean(country.trim()), label: t.countryLabel },
+    { key: 'role', filled: Boolean(jobTitle.trim()), label: t.roleLabel },
+  ];
+  const filledCount = 1 + profileFields.filter((f) => f.filled).length; // +1: email is always set
+  const completionPct = Math.round((filledCount / (profileFields.length + 1)) * 100);
+  const missingFields = profileFields.filter((f) => !f.filled);
+
   return (
     <main className="page-shell" id="top">
       <SiteNav current="account" />
@@ -378,6 +398,27 @@ export function AccountProfile({ email, accountType, defaults }: Props) {
             <h1>{t.title}</h1>
             <p>{t.subtitle}</p>
           </header>
+
+          {completionPct < 100 ? (
+            <div className="profile-banner">
+              <div className="profile-banner-main">
+                <h2 className="profile-banner-title">{banner.title(completionPct)}</h2>
+                <p className="profile-banner-sub">{banner.sub}</p>
+                <div className="profile-banner-bar">
+                  <span style={{ width: `${completionPct}%` }} />
+                </div>
+              </div>
+              {missingFields.length ? (
+                <div className="profile-banner-chips">
+                  {missingFields.map((m) => (
+                    <span className="profile-chip" key={m.key}>
+                      {m.label}
+                    </span>
+                  ))}
+                </div>
+              ) : null}
+            </div>
+          ) : null}
 
           <div className="signin-card">
             <form className="signin-form" onSubmit={handleSubmit}>

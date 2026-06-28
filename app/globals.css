@@ -13421,6 +13421,44 @@ a.blog-card-image:hover img {
 .acct-subnav-link:hover { color: #111; background: rgba(20, 19, 15, 0.04); }
 .acct-subnav-link.is-active { color: #111; background: #f4f6f8; font-weight: 600; }
 .acct-subnav-logo { margin-left: auto; height: 30px; width: auto; max-width: 140px; object-fit: contain; flex: 0 0 auto; }
+
+/* Profile completion banner */
+.profile-banner {
+  background: var(--accent);
+  color: #fff;
+  border-radius: 20px;
+  padding: 24px 28px;
+  margin-bottom: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+.profile-banner-main { min-width: 0; flex: 1 1 320px; }
+.profile-banner-title { margin: 0; font-size: 1.2rem; font-weight: 700; letter-spacing: -0.015em; }
+.profile-banner-sub { margin: 6px 0 0; font-size: 0.9rem; color: #d6e8ff; }
+.profile-banner-bar {
+  margin-top: 14px;
+  height: 8px;
+  max-width: 420px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.25);
+  overflow: hidden;
+}
+.profile-banner-bar span { display: block; height: 100%; background: #fff; border-radius: 999px; transition: width 0.3s ease; }
+.profile-banner-chips { display: flex; gap: 8px; flex-wrap: wrap; flex: 0 0 auto; }
+.profile-chip {
+  display: inline-flex;
+  align-items: center;
+  height: 34px;
+  padding: 0 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
 .ah-team-page { max-width: 760px; }
 
 /* X-Rite distributor co-brand strip — flush under the header */
