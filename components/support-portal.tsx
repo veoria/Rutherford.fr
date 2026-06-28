@@ -50,6 +50,7 @@ type SCopy = {
   updatedOn: string;
   openedOn: string;
   you: string;
+  client: string;
   ourTeam: string;
   convEmpty: string;
   send: string;
@@ -76,6 +77,7 @@ const COPY: Record<Locale, SCopy> = {
     updatedOn: 'updated',
     openedOn: 'opened',
     you: 'You',
+    client: 'Customer',
     ourTeam: 'Rutherford team',
     convEmpty: 'No messages yet — write below and our team will get it.',
     send: 'Send',
@@ -110,6 +112,7 @@ const COPY: Record<Locale, SCopy> = {
     updatedOn: 'mis à jour le',
     openedOn: 'ouvert le',
     you: 'Vous',
+    client: 'Client',
     ourTeam: 'Équipe Rutherford',
     convEmpty: 'Aucun message pour l’instant — écrivez ci-dessous et notre équipe le recevra.',
     send: 'Envoyer',
@@ -144,6 +147,7 @@ const COPY: Record<Locale, SCopy> = {
     updatedOn: 'aktualisiert am',
     openedOn: 'eröffnet am',
     you: 'Sie',
+    client: 'Kunde',
     ourTeam: 'Rutherford-Team',
     convEmpty: 'Noch keine Nachrichten — schreiben Sie unten, unser Team erhält sie.',
     send: 'Senden',
@@ -178,6 +182,7 @@ const COPY: Record<Locale, SCopy> = {
     updatedOn: 'aggiornato il',
     openedOn: 'aperto il',
     you: 'Lei',
+    client: 'Cliente',
     ourTeam: 'Team Rutherford',
     convEmpty: 'Ancora nessun messaggio — scriva qui sotto e il team lo riceverà.',
     send: 'Invia',
@@ -212,6 +217,7 @@ const COPY: Record<Locale, SCopy> = {
     updatedOn: 'actualizado el',
     openedOn: 'abierto el',
     you: 'Usted',
+    client: 'Cliente',
     ourTeam: 'Equipo Rutherford',
     convEmpty: 'Aún no hay mensajes — escriba abajo y nuestro equipo lo recibirá.',
     send: 'Enviar',
@@ -292,7 +298,7 @@ function StatusPill({ meta, lg }: { meta: StatusMeta; lg?: boolean }) {
   );
 }
 
-export function SupportPortal({ rows }: { rows: SupportRow[] }) {
+export function SupportPortal({ rows, viewerIsTeam = false }: { rows: SupportRow[]; viewerIsTeam?: boolean }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { locale } = useLanguage();
@@ -486,15 +492,19 @@ export function SupportPortal({ rows }: { rows: SupportRow[] }) {
                 {thread.length > 0 ? (
                   thread.map((msg, i) => {
                     const team = msg.author === 'team';
+                    // Customer side shows the client when a team member is viewing,
+                    // and "You" when the customer is viewing their own ticket.
+                    const customerName = viewerIsTeam ? selected.company || c.client : c.you;
+                    const name = team ? selected.assigneeName ?? c.ourTeam : customerName;
                     const av = team
                       ? (selected.assigneeName?.[0] ?? 'R').toUpperCase()
-                      : (selected.company?.[0] ?? c.you[0]).toUpperCase();
+                      : (customerName[0] ?? '?').toUpperCase();
                     return (
                       <div key={i} className="sup2-msg">
                         <span className={`sup2-av${team ? ' is-team' : ''}`}>{av}</span>
                         <div className="sup2-msg-main">
                           <div className="sup2-msg-h">
-                            <span className="sup2-name">{team ? selected.assigneeName ?? c.ourTeam : c.you}</span>
+                            <span className="sup2-name">{name}</span>
                             <span className="sup2-date">{fmt(msg.createdAt, locale)}</span>
                           </div>
                           <div className={`sup2-bubble${team ? ' is-team' : ''}`}>
