@@ -13415,14 +13415,12 @@ a.blog-card-image:hover img {
 
 /* Light account sub-navigation (My account + section tabs) */
 .acct-subnav { border-bottom: 1px solid var(--line); background: #fff; }
-.acct-subnav-inner { display: flex; align-items: center; gap: 10px; padding: 9px 0; overflow-x: auto; }
-.acct-subnav-home { display: inline-flex; align-items: center; gap: 5px; font-size: 13.5px; font-weight: 700; color: #16130f; text-decoration: none; white-space: nowrap; flex: 0 0 auto; }
-.acct-subnav-home:hover { opacity: 0.7; }
-.acct-subnav-sep { width: 1px; height: 18px; background: var(--line); flex: 0 0 auto; }
-.acct-subnav-links { display: flex; gap: 4px; align-items: center; }
-.acct-subnav-link { font-size: 13.5px; font-weight: 600; color: var(--muted); padding: 6px 12px; border-radius: 999px; white-space: nowrap; text-decoration: none; }
-.acct-subnav-link:hover { color: #16130f; background: rgba(20, 19, 15, 0.05); }
-.acct-subnav-link.is-active { color: #fff; background: #16130f; }
+.acct-subnav-inner { display: flex; align-items: center; gap: 16px; padding: 12px 0; }
+.acct-subnav-links { display: flex; gap: 6px; align-items: center; overflow-x: auto; min-width: 0; }
+.acct-subnav-link { font-size: 0.92rem; font-weight: 500; color: #676767; padding: 8px 14px; border-radius: 999px; white-space: nowrap; text-decoration: none; transition: background 0.15s ease, color 0.15s ease; }
+.acct-subnav-link:hover { color: #111; background: rgba(20, 19, 15, 0.04); }
+.acct-subnav-link.is-active { color: #111; background: #f4f6f8; font-weight: 600; }
+.acct-subnav-logo { margin-left: auto; height: 30px; width: auto; max-width: 140px; object-fit: contain; flex: 0 0 auto; }
 .ah-team-page { max-width: 760px; }
 
 /* X-Rite distributor co-brand strip — flush under the header */

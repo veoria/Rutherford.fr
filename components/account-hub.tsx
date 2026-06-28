@@ -8,6 +8,7 @@ import { SiteNav } from '@/components/site-nav';
 import { type Locale, useLanguage } from '@/components/language-provider';
 import type { AccountType } from '@/data/account-types';
 import { AccountSystems, type ClientSystem } from '@/components/account-systems';
+import { AccountSubnav } from '@/components/account-subnav';
 
 export type ResellerClient = {
   name: string;
@@ -471,7 +472,9 @@ export function AccountHub(props: Props) {
             <a className="button button-light" href={`/admin/users/${selfId}`}>← Fiche admin</a>
           </div>
         </div>
-      ) : null}
+      ) : (
+        <AccountSubnav current="dashboard" />
+      )}
       {accountType === 'distributor' ? (
         <div className="ah-cobrand-strip">
           <div className="container ah-cobrand">

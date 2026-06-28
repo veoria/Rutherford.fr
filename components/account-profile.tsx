@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { SiteFooter } from '@/components/site-footer';
 import { SiteNav } from '@/components/site-nav';
+import { AccountSubnav } from '@/components/account-subnav';
 import { type Locale, useLanguage } from '@/components/language-provider';
 import { COUNTRIES, JOB_TITLE_KEYS, TEAM_ROLE_KEYS, type JobTitleKey } from '@/data/onboarding-options';
 import { TEAM_ROLE_LABELS } from '@/data/team-role-labels';
@@ -368,6 +369,7 @@ export function AccountProfile({ email, accountType, defaults }: Props) {
   return (
     <main className="page-shell" id="top">
       <SiteNav current="account" />
+      <AccountSubnav current="profile" />
 
       <section className="signin-section section">
         <div className="container signin-shell">
