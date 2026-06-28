@@ -13675,10 +13675,72 @@ a.blog-card-image:hover img {
 .profile-rgpd-desc { margin-top: 4px; }
 .profile-rgpd-card .account-profile-rgpd-actions { margin-top: 16px; }
 
+/* Inline editing — fields become inputs in place, photo + logo uploadable. */
+.profile-field-edit { display: flex; flex-direction: column; }
+.profile-input {
+  width: 100%;
+  margin-top: 6px;
+  height: 40px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #fff;
+  font-family: inherit;
+  font-size: 0.9rem;
+  color: var(--text);
+}
+select.profile-input { padding-right: 28px; }
+.profile-input:focus { outline: none; border-color: var(--accent); }
+.profile-input:disabled { opacity: 0.6; }
+.profile-field-note { display: block; margin-top: 4px; font-size: 0.72rem; color: #9a9a94; }
+.profile-media-err { margin: 6px 0 0; font-size: 0.78rem; color: #c0392b; }
+
+.profile-avatar-edit { cursor: pointer; }
+.profile-avatar-img { position: absolute; inset: 0; width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+.profile-avatar-cam {
+  position: absolute;
+  right: -2px;
+  bottom: -2px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #fff;
+  font-size: 0.7rem;
+}
+.profile-avatar-cam svg { width: 14px; height: 14px; }
+
+.profile-logo-drop { position: relative; cursor: pointer; transition: border-color 0.15s ease; }
+.profile-logo-drop:hover { border-color: var(--accent); }
+.profile-logo-cam {
+  position: absolute;
+  right: 6px;
+  bottom: 6px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+}
+.profile-logo-cam svg { width: 12px; height: 12px; }
+
+.profile-edit-actions { display: flex; gap: 10px; flex: 0 0 auto; }
+.profile-edit-actions .button { height: 42px; display: inline-flex; align-items: center; }
+
 @media (max-width: 760px) {
   .profile-grid { grid-template-columns: 1fr; }
   .profile-identity { flex-wrap: wrap; }
   .profile-photo-btn { width: 100%; justify-content: center; }
+  .profile-edit-actions { width: 100%; }
+  .profile-edit-actions > * { flex: 1; justify-content: center; }
   .profile-sec-row { flex-wrap: wrap; }
   .profile-h1 { font-size: 1.85rem; }
 }
