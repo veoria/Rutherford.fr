@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { createSupabaseAdminClient, createSupabaseServerClient } from '@/lib/supabase/server';
 import { addSupportTaskComment } from '@/lib/asana';
 import { insertSupportMessage } from '@/lib/support-tickets';
+import { teamOrgFromEmail } from '@/lib/account-type';
 
 // Customer reply to a support ticket (the in-account "add details" form).
 // Verifies ownership via RLS, relays the comment + photos to the Asana task, and
@@ -100,7 +101,10 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
     .eq('id', row.id);
 
   // Keep the message in the conversation thread shown in the account.
-  await insertSupportMessage({ ticketId: String(row.id), author: 'customer', body: comment || null, photos: links });
+  // A Rutherford team member can reply from the same form — attribute it to the
+  // team side, not the customer, so the thread shows the right author.
+  const author = teamOrgFromEmail(user.email ?? '') ? 'team' : 'customer';
+  await insertSupportMessage({ ticketId: String(row.id), author, body: comment || null, photos: links });
 
   return NextResponse.json({ ok: true });
 }

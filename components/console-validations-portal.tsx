@@ -88,6 +88,7 @@ type CCopy = {
   convEmpty: string;
   ourTeam: string;
   you: string;
+  client: string;
   send: string;
   writeMsg: string;
   sent: string;
@@ -140,6 +141,7 @@ const COPY: Record<Locale, CCopy> = {
     convEmpty: 'No messages yet — write below and our team will get it.',
     ourTeam: 'Rutherford team',
     you: 'You',
+    client: 'Customer',
     send: 'Send',
     writeMsg: 'Write a message…',
     sent: 'Sent — our team has it ✓',
@@ -190,6 +192,7 @@ const COPY: Record<Locale, CCopy> = {
     convEmpty: 'Aucun message pour l’instant — écrivez ci-dessous et notre équipe le recevra.',
     ourTeam: 'Équipe Rutherford',
     you: 'Vous',
+    client: 'Client',
     send: 'Envoyer',
     writeMsg: 'Écrire un message…',
     sent: 'Envoyé — bien reçu ✓',
@@ -240,6 +243,7 @@ const COPY: Record<Locale, CCopy> = {
     convEmpty: 'Noch keine Nachrichten — schreiben Sie unten, unser Team erhält sie.',
     ourTeam: 'Rutherford-Team',
     you: 'Sie',
+    client: 'Kunde',
     send: 'Senden',
     writeMsg: 'Nachricht schreiben…',
     sent: 'Gesendet — beim Team angekommen ✓',
@@ -290,6 +294,7 @@ const COPY: Record<Locale, CCopy> = {
     convEmpty: 'Ancora nessun messaggio — scriva qui sotto e il team lo riceverà.',
     ourTeam: 'Team Rutherford',
     you: 'Lei',
+    client: 'Cliente',
     send: 'Invia',
     writeMsg: 'Scriva un messaggio…',
     sent: 'Inviato — il team l’ha ricevuto ✓',
@@ -340,6 +345,7 @@ const COPY: Record<Locale, CCopy> = {
     convEmpty: 'Aún no hay mensajes — escriba abajo y nuestro equipo lo recibirá.',
     ourTeam: 'Equipo Rutherford',
     you: 'Usted',
+    client: 'Cliente',
     send: 'Enviar',
     writeMsg: 'Escriba un mensaje…',
     sent: 'Enviado — el equipo lo tiene ✓',
@@ -410,12 +416,14 @@ export function ConsoleValidationsPortal({
   canInvite = false,
   invitations = [],
   messages = [],
+  viewerIsTeam = false,
 }: {
   rows: ConsoleValidationRow[];
   profileComplete: boolean;
   canInvite?: boolean;
   invitations?: CvInviteItem[];
   messages?: CvMessage[];
+  viewerIsTeam?: boolean;
 }) {
   const router = useRouter();
   const { locale } = useLanguage();
@@ -702,7 +710,11 @@ export function ConsoleValidationsPortal({
                     selectedMessages.map((msg, i) => (
                       <div key={i} className={`sup-msg sup-msg-${msg.author}`}>
                         <div className="sup-msg-h">
-                          {msg.author === 'team' ? c.ourTeam : c.you}
+                          {msg.author === 'team'
+                            ? c.ourTeam
+                            : viewerIsTeam
+                              ? selected.company || c.client
+                              : c.you}
                           <span className="cvp-mono"> · {fmt(msg.createdAt, locale)}</span>
                         </div>
                         {msg.body ? <p>{msg.body}</p> : null}

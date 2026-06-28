@@ -8,6 +8,7 @@ import {
 } from '@/components/console-validations-portal';
 import type { CvInviteItem } from '@/components/cv-invite';
 import { listCvInvitations } from '@/lib/console-invitations';
+import { teamOrgFromEmail } from '@/lib/account-type';
 
 export const metadata: Metadata = {
   title: 'Your console validations | Rutherford',
@@ -105,6 +106,7 @@ export default async function ConsoleValidationsRoute() {
       canInvite={canInvite}
       invitations={invitations}
       messages={messages}
+      viewerIsTeam={Boolean(teamOrgFromEmail(user.email ?? ''))}
     />
   );
 }
