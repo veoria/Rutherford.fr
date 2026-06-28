@@ -603,17 +603,8 @@ export function AccountHub(props: Props) {
                 <span className="ah-role"><span className="ah-role-dot" />{t.roles[accountType]}</span>
               </div>
               <div className="ah-co">
-                {profile.company || team.org?.logoUrl || team.myRole === 'owner' || team.myRole === 'admin' ? (
-                  <MediaUpload
-                    kind="logo"
-                    currentUrl={team.org?.logoUrl ?? null}
-                    fallback={initials(profile.company, profile.company || 'CO')}
-                    shape="square"
-                    editable={!preview && (team.myRole === 'owner' || team.myRole === 'admin')}
-                    bg="#f1efec"
-                    fg="#16130f"
-                  />
-                ) : null}
+                {/* Company logo lives in the account subnav (top-right) + the
+                    Profil › Société card now, so no logo tile here. */}
                 {profile.company ? <span className="ah-co-name">{profile.company}</span> : null}
                 <span className="ah-meta">
                   {email}
