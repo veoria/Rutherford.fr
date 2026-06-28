@@ -504,10 +504,62 @@ type Props = {
   };
 };
 
+// Media-upload copy (profile photo + company logo, edited inline on this page).
+const MEDIA: Record<
+  Locale,
+  { photoEdit: string; logoDrop: string; logoManaged: string; uploadError: string; loginNote: string }
+> = {
+  en: {
+    photoEdit: 'Change photo',
+    logoDrop: 'Upload a logo',
+    logoManaged: 'Managed by your administrator',
+    uploadError: 'Upload failed — use a PNG, JPG, WebP or SVG under 4 MB.',
+    loginNote: 'Used to sign in',
+  },
+  fr: {
+    photoEdit: 'Changer la photo',
+    logoDrop: 'Déposer un logo',
+    logoManaged: 'Géré par votre administrateur',
+    uploadError: 'Échec de l’envoi — utilisez un PNG, JPG, WebP ou SVG de moins de 4 Mo.',
+    loginNote: 'Sert à la connexion',
+  },
+  de: {
+    photoEdit: 'Foto ändern',
+    logoDrop: 'Logo hochladen',
+    logoManaged: 'Von Ihrem Administrator verwaltet',
+    uploadError: 'Upload fehlgeschlagen — PNG, JPG, WebP oder SVG unter 4 MB verwenden.',
+    loginNote: 'Für die Anmeldung',
+  },
+  it: {
+    photoEdit: 'Cambia foto',
+    logoDrop: 'Carica un logo',
+    logoManaged: 'Gestito dal suo amministratore',
+    uploadError: 'Caricamento non riuscito — usi un PNG, JPG, WebP o SVG sotto i 4 MB.',
+    loginNote: 'Per l’accesso',
+  },
+  es: {
+    photoEdit: 'Cambiar foto',
+    logoDrop: 'Subir un logo',
+    logoManaged: 'Gestionado por su administrador',
+    uploadError: 'Error al subir — use un PNG, JPG, WebP o SVG de menos de 4 MB.',
+    loginNote: 'Para iniciar sesión',
+  },
+};
+
+function CameraIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M4 8.5h3l1.2-2h7.6L17 8.5h3v10H4v-10z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
+      <circle cx="12" cy="13" r="3" stroke="currentColor" strokeWidth="1.7" />
+    </svg>
+  );
+}
+
 export function AccountProfile({ email, accountType, defaults }: Props) {
   const { locale } = useLanguage();
   const t = COPY[locale];
   const v = VIEW[locale];
+  const media = MEDIA[locale];
   // Internal team: company + country are fixed by the domain, so we hide those
   // fields and offer the internal role taxonomy instead of the printing roles.
   const isTeam = accountType === 'team';
@@ -521,13 +573,18 @@ export function AccountProfile({ email, accountType, defaults }: Props) {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [deleting, setDeleting] = useState(false);
-  // Read view (cards) vs. edit view (the form). Defaults to the read view.
+  // Read view (cards) vs. inline edit mode (same cards, fields become inputs).
   const [editing, setEditing] = useState(false);
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [canManageOrg, setCanManageOrg] = useState(false);
+  const [uploading, setUploading] = useState<'avatar' | 'logo' | null>(null);
+  const [mediaErr, setMediaErr] = useState<string | null>(null);
   // Real 2FA state, read straight from Supabase MFA factors.
   const [twoFa, setTwoFa] = useState<'loading' | 'on' | 'off'>('loading');
 
-  // Co-brand / company logo (top-right of the Société card), same lookup as the subnav.
+  // Profile photo (own), company logo, and whether the visitor may change the
+  // logo (owner/admin of the org). Same org lookup as the subnav.
   useEffect(() => {
     if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) return;
     const supabase = createSupabaseBrowserClient();
@@ -535,15 +592,23 @@ export function AccountProfile({ email, accountType, defaults }: Props) {
     (async () => {
       const { data } = await supabase.auth.getUser();
       if (!active || !data.user) return;
+      const uid = data.user.id;
       const { data: prof } = await supabase
         .from('profiles')
-        .select('organization_id')
-        .eq('id', data.user.id)
+        .select('organization_id, avatar_url')
+        .eq('id', uid)
         .maybeSingle();
+      if (active) setAvatarUrl((prof?.avatar_url as string | null) ?? null);
       const orgId = (prof?.organization_id as string | null) ?? null;
       if (!orgId) return;
-      const { data: org } = await supabase.from('organizations').select('logo_url').eq('id', orgId).maybeSingle();
-      if (active) setLogoUrl((org?.logo_url as string | null) ?? null);
+      const [{ data: org }, { data: mem }] = await Promise.all([
+        supabase.from('organizations').select('logo_url').eq('id', orgId).maybeSingle(),
+        supabase.from('organization_members').select('role').eq('org_id', orgId).eq('user_id', uid).maybeSingle(),
+      ]);
+      if (!active) return;
+      setLogoUrl((org?.logo_url as string | null) ?? null);
+      const role = (mem?.role as string | null) ?? null;
+      setCanManageOrg(role === 'owner' || role === 'admin');
     })();
     return () => {
       active = false;
@@ -582,8 +647,49 @@ export function AccountProfile({ email, accountType, defaults }: Props) {
     setDeleting(false);
   };
 
-  const handleSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
+  const uploadMedia = async (kind: 'avatar' | 'logo', file: File) => {
+    setUploading(kind);
+    setMediaErr(null);
+    try {
+      const fd = new FormData();
+      fd.append('file', file);
+      fd.append('kind', kind);
+      const res = await fetch('/api/account/media', { method: 'POST', body: fd });
+      if (!res.ok) {
+        setMediaErr(media.uploadError);
+        setUploading(null);
+        return;
+      }
+      const { url } = await res.json();
+      if (url) {
+        if (kind === 'avatar') setAvatarUrl(url as string);
+        else setLogoUrl(url as string);
+      }
+    } catch {
+      setMediaErr(media.uploadError);
+    }
+    setUploading(null);
+  };
+
+  const onPickFile = (kind: 'avatar' | 'logo') => (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.currentTarget.value = '';
+    if (file) void uploadMedia(kind, file);
+  };
+
+  const handleCancel = () => {
+    setFullName(defaults.fullName);
+    setCountry(defaults.country);
+    setCompany(defaults.company);
+    setJobTitle(defaults.jobTitle);
+    setNotif(defaults.notificationEmail);
+    setStatus('idle');
+    setErrorMsg(null);
+    setMediaErr(null);
+    setEditing(false);
+  };
+
+  const handleSave = async () => {
     if (!fullName.trim() || !jobTitle || (!isTeam && (!country || !company.trim()))) {
       setStatus('error');
       setErrorMsg(t.errorRequired);
@@ -671,197 +777,224 @@ export function AccountProfile({ email, accountType, defaults }: Props) {
             <p className="signin-message signin-message-ok profile-msg">{t.saved}</p>
           ) : null}
 
-          {editing ? (
-            <div className="profile-edit">
-              <button type="button" className="profile-back" onClick={() => setEditing(false)}>
-                {v.back}
-              </button>
-              <div className="signin-card">
-                <form className="signin-form" onSubmit={handleSubmit}>
-                  <label htmlFor="pf-name" className="signin-label">
-                    {t.nameLabel}
-                  </label>
-                  <input
-                    id="pf-name"
-                    type="text"
-                    className="signin-input"
-                    placeholder={t.namePlaceholder}
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                    required
-                    disabled={status === 'saving'}
-                  />
+          {!editing && completionPct < 100 ? (
+            <section className="profile-banner">
+              <div className="profile-banner-row">
+                <div className="profile-banner-main">
+                  <h2 className="profile-banner-title">{banner.title(completionPct)}</h2>
+                  <p className="profile-banner-sub">{banner.sub}</p>
+                </div>
+                {missing.length ? (
+                  <div className="profile-banner-chips">
+                    {missing.map((m) =>
+                      m.kind === 'security' ? (
+                        <a key={m.key} href="/account/security" className="profile-chip">
+                          <span className="profile-chip-plus">+</span>
+                          {m.label}
+                        </a>
+                      ) : (
+                        <button key={m.key} type="button" className="profile-chip" onClick={openEdit}>
+                          <span className="profile-chip-plus">+</span>
+                          {m.label}
+                        </button>
+                      ),
+                    )}
+                  </div>
+                ) : null}
+              </div>
+              <div className="profile-banner-bar">
+                <span style={{ width: `${completionPct}%` }} />
+              </div>
+            </section>
+          ) : null}
 
-                  {!isTeam ? (
-                    <>
-                      <label htmlFor="pf-country" className="signin-label">
-                        {t.countryLabel}
-                      </label>
+          <section className="profile-identity">
+            {editing ? (
+              <label className="profile-avatar profile-avatar-edit" title={media.photoEdit}>
+                <input type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" hidden onChange={onPickFile('avatar')} />
+                {avatarUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img className="profile-avatar-img" src={avatarUrl} alt="" />
+                ) : (
+                  pfInitials(fullName, email)
+                )}
+                <span className="profile-avatar-cam">{uploading === 'avatar' ? '…' : <CameraIcon />}</span>
+              </label>
+            ) : (
+              <span className="profile-avatar" aria-hidden="true">
+                {avatarUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img className="profile-avatar-img" src={avatarUrl} alt="" />
+                ) : (
+                  pfInitials(fullName, email)
+                )}
+                <span className="profile-avatar-dot" />
+              </span>
+            )}
+            <div className="profile-identity-main">
+              <h2 className="profile-identity-name">{displayName}</h2>
+              {identitySub ? <p className="profile-identity-role">{identitySub}</p> : null}
+              {mediaErr ? <p className="profile-media-err">{mediaErr}</p> : null}
+            </div>
+            {editing ? (
+              <div className="profile-edit-actions">
+                <button type="button" className="profile-photo-btn" onClick={handleCancel} disabled={status === 'saving'}>
+                  {t.deleteCancel}
+                </button>
+                <button type="button" className="button button-accent profile-save-btn" onClick={handleSave} disabled={status === 'saving'}>
+                  {status === 'saving' ? t.saving : t.submit}
+                </button>
+              </div>
+            ) : (
+              <button type="button" className="profile-photo-btn" onClick={openEdit}>
+                {v.editProfile}
+              </button>
+            )}
+          </section>
+
+          {editing && status === 'error' && errorMsg ? (
+            <p className="signin-message signin-message-error profile-msg">{errorMsg}</p>
+          ) : null}
+
+          <div className="profile-grid">
+            <section className="profile-card">
+              <div className="profile-card-h">
+                <h3 className="profile-card-title">{v.infoTitle}</h3>
+                {!editing ? (
+                  <button type="button" className="profile-edit-link" onClick={openEdit}>
+                    {v.edit}
+                  </button>
+                ) : null}
+              </div>
+              <div className="profile-fields">
+                {editing ? (
+                  <>
+                    <label className="profile-field profile-field-edit">
+                      <span className="profile-field-k">{t.nameLabel}</span>
+                      <input
+                        className="profile-input"
+                        type="text"
+                        value={fullName}
+                        placeholder={t.namePlaceholder}
+                        onChange={(e) => setFullName(e.target.value)}
+                        disabled={status === 'saving'}
+                      />
+                    </label>
+                    <label className="profile-field profile-field-edit">
+                      <span className="profile-field-k">{v.funcLabel}</span>
                       <select
-                        id="pf-country"
-                        className="signin-input"
-                        value={country}
-                        onChange={(e) => setCountry(e.target.value)}
-                        required
+                        className="profile-input"
+                        value={jobTitle}
+                        onChange={(e) => setJobTitle(e.target.value)}
                         disabled={status === 'saving'}
                       >
                         <option value="" disabled>
-                          {t.selectCountry}
+                          {t.selectRole}
                         </option>
-                        {COUNTRIES.map((c) => (
-                          <option key={c} value={c}>
-                            {c}
-                          </option>
-                        ))}
+                        {isTeam
+                          ? TEAM_ROLE_KEYS.map((key) => (
+                              <option key={key} value={key}>
+                                {teamRoles[key]}
+                              </option>
+                            ))
+                          : JOB_TITLE_KEYS.map((key) => (
+                              <option key={key} value={key}>
+                                {t.roles[key]}
+                              </option>
+                            ))}
                       </select>
-
-                      <label htmlFor="pf-company" className="signin-label">
-                        {t.companyLabel}
-                      </label>
+                    </label>
+                    <div className="profile-field">
+                      <span className="profile-field-k">{v.emailField}</span>
+                      <span className="profile-field-v">{email}</span>
+                      <span className="profile-field-note">{media.loginNote}</span>
+                    </div>
+                    <label className="profile-field profile-field-edit">
+                      <span className="profile-field-k">{v.notifField}</span>
                       <input
-                        id="pf-company"
-                        type="text"
-                        className="signin-input"
-                        placeholder={t.companyPlaceholder}
-                        value={company}
-                        onChange={(e) => setCompany(e.target.value)}
-                        required
+                        className="profile-input"
+                        type="email"
+                        value={notif}
+                        placeholder={t.notifPlaceholder}
+                        onChange={(e) => setNotif(e.target.value)}
                         disabled={status === 'saving'}
                       />
-                    </>
-                  ) : null}
-
-                  <label htmlFor="pf-role" className="signin-label">
-                    {t.roleLabel}
-                  </label>
-                  <select
-                    id="pf-role"
-                    className="signin-input"
-                    value={jobTitle}
-                    onChange={(e) => setJobTitle(e.target.value)}
-                    required
-                    disabled={status === 'saving'}
-                  >
-                    <option value="" disabled>
-                      {t.selectRole}
-                    </option>
-                    {isTeam
-                      ? TEAM_ROLE_KEYS.map((key) => (
-                          <option key={key} value={key}>
-                            {teamRoles[key]}
-                          </option>
-                        ))
-                      : JOB_TITLE_KEYS.map((key) => (
-                          <option key={key} value={key}>
-                            {t.roles[key]}
-                          </option>
-                        ))}
-                  </select>
-
-                  <label htmlFor="pf-notif" className="signin-label">
-                    {t.notifLabel}
-                  </label>
-                  <input
-                    id="pf-notif"
-                    type="email"
-                    className="signin-input"
-                    placeholder={t.notifPlaceholder}
-                    value={notif}
-                    onChange={(e) => setNotif(e.target.value)}
-                    disabled={status === 'saving'}
-                  />
-                  <p className="signin-fine signin-fine-tight">{t.notifHint}</p>
-
-                  <button
-                    type="submit"
-                    className="button button-accent signin-submit"
-                    disabled={status === 'saving'}
-                  >
-                    {status === 'saving' ? t.saving : t.submit}
-                  </button>
-                </form>
-
-                {status === 'error' && errorMsg ? (
-                  <p className="signin-message signin-message-error">{errorMsg}</p>
-                ) : null}
-              </div>
-            </div>
-          ) : (
-            <>
-              {completionPct < 100 ? (
-                <section className="profile-banner">
-                  <div className="profile-banner-row">
-                    <div className="profile-banner-main">
-                      <h2 className="profile-banner-title">{banner.title(completionPct)}</h2>
-                      <p className="profile-banner-sub">{banner.sub}</p>
-                    </div>
-                    {missing.length ? (
-                      <div className="profile-banner-chips">
-                        {missing.map((m) =>
-                          m.kind === 'security' ? (
-                            <a key={m.key} href="/account/security" className="profile-chip">
-                              <span className="profile-chip-plus">+</span>
-                              {m.label}
-                            </a>
-                          ) : (
-                            <button key={m.key} type="button" className="profile-chip" onClick={openEdit}>
-                              <span className="profile-chip-plus">+</span>
-                              {m.label}
-                            </button>
-                          ),
-                        )}
-                      </div>
-                    ) : null}
-                  </div>
-                  <div className="profile-banner-bar">
-                    <span style={{ width: `${completionPct}%` }} />
-                  </div>
-                </section>
-              ) : null}
-
-              <section className="profile-identity">
-                <span className="profile-avatar" aria-hidden="true">
-                  {pfInitials(fullName, email)}
-                  <span className="profile-avatar-dot" />
-                </span>
-                <div className="profile-identity-main">
-                  <h2 className="profile-identity-name">{displayName}</h2>
-                  {identitySub ? <p className="profile-identity-role">{identitySub}</p> : null}
-                </div>
-                <button type="button" className="profile-photo-btn" onClick={openEdit}>
-                  {v.editProfile}
-                </button>
-              </section>
-
-              <div className="profile-grid">
-                <section className="profile-card">
-                  <div className="profile-card-h">
-                    <h3 className="profile-card-title">{v.infoTitle}</h3>
-                    <button type="button" className="profile-edit-link" onClick={openEdit}>
-                      {v.edit}
-                    </button>
-                  </div>
-                  <div className="profile-fields">
+                    </label>
+                  </>
+                ) : (
+                  <>
                     <ProfileField label={t.nameLabel} value={fullName} empty={v.notProvided} />
                     <ProfileField label={v.funcLabel} value={roleLabel} empty={v.notProvided} />
                     <ProfileField label={v.emailField} value={email} empty={v.notProvided} />
                     <ProfileField label={v.notifField} value={notif} empty={v.notProvided} />
-                  </div>
-                </section>
+                  </>
+                )}
+              </div>
+            </section>
 
-                <section className="profile-card">
-                  <div className="profile-card-h">
-                    <h3 className="profile-card-title">{v.companyTitle}</h3>
-                    <button type="button" className="profile-edit-link" onClick={openEdit}>
-                      {v.edit}
-                    </button>
-                  </div>
-                  <div className="profile-fields">
-                    <ProfileField label={v.raisonLabel} value={company} empty={v.notProvided} />
-                    <ProfileField label={t.typeLabel} value={t.types[accountType]} empty={v.notProvided} />
-                    <ProfileField label={t.countryLabel} value={country} empty={v.notProvided} />
-                    <div className="profile-field">
-                      <span className="profile-field-k">{v.logoField}</span>
+            <section className="profile-card">
+              <div className="profile-card-h">
+                <h3 className="profile-card-title">{v.companyTitle}</h3>
+                {!editing ? (
+                  <button type="button" className="profile-edit-link" onClick={openEdit}>
+                    {v.edit}
+                  </button>
+                ) : null}
+              </div>
+              <div className="profile-fields">
+                {editing && !isTeam ? (
+                  <label className="profile-field profile-field-edit">
+                    <span className="profile-field-k">{v.raisonLabel}</span>
+                    <input
+                      className="profile-input"
+                      type="text"
+                      value={company}
+                      placeholder={t.companyPlaceholder}
+                      onChange={(e) => setCompany(e.target.value)}
+                      disabled={status === 'saving'}
+                    />
+                  </label>
+                ) : (
+                  <ProfileField label={v.raisonLabel} value={company} empty={v.notProvided} />
+                )}
+                <ProfileField label={t.typeLabel} value={t.types[accountType]} empty={v.notProvided} />
+                {editing && !isTeam ? (
+                  <label className="profile-field profile-field-edit">
+                    <span className="profile-field-k">{t.countryLabel}</span>
+                    <select
+                      className="profile-input"
+                      value={country}
+                      onChange={(e) => setCountry(e.target.value)}
+                      disabled={status === 'saving'}
+                    >
+                      <option value="" disabled>
+                        {t.selectCountry}
+                      </option>
+                      {COUNTRIES.map((co) => (
+                        <option key={co} value={co}>
+                          {co}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                ) : (
+                  <ProfileField label={t.countryLabel} value={country} empty={v.notProvided} />
+                )}
+                <div className="profile-field">
+                  <span className="profile-field-k">{v.logoField}</span>
+                  {editing && canManageOrg ? (
+                    <label className="profile-logo-box profile-logo-drop" title={media.logoDrop}>
+                      <input type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" hidden onChange={onPickFile('logo')} />
+                      {logoUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img className="profile-logo-img" src={logoUrl} alt="" />
+                      ) : (
+                        <span className="profile-logo-empty">{media.logoDrop}</span>
+                      )}
+                      <span className="profile-logo-cam">{uploading === 'logo' ? '…' : <CameraIcon />}</span>
+                    </label>
+                  ) : (
+                    <>
                       <div className="profile-logo-box">
                         {logoUrl ? (
                           // eslint-disable-next-line @next/next/no-img-element
@@ -870,65 +1003,68 @@ export function AccountProfile({ email, accountType, defaults }: Props) {
                           <span className="profile-logo-empty">{v.logoEmpty}</span>
                         )}
                       </div>
-                    </div>
-                  </div>
-                </section>
-              </div>
-
-              <section className="profile-card profile-security">
-                <h3 className="profile-card-title">{v.securityTitle}</h3>
-                <div className="profile-sec-row">
-                  <div>
-                    <div className="profile-sec-k">{v.passwordLabel}</div>
-                    <div className="profile-sec-sub">{v.passwordSub}</div>
-                  </div>
-                  <a className="profile-sec-btn" href="/account/update-password">
-                    {v.passwordBtn}
-                  </a>
-                </div>
-                <div className="profile-sec-row profile-sec-row-last">
-                  <div className="profile-sec-2fa">
-                    <span className={`profile-2fa-pill${twoFaOn ? ' is-on' : ''}`}>
-                      <span className="profile-2fa-dot" />
-                      {twoFaOn ? v.twoFaOnLabel : v.twoFaOff}
-                    </span>
-                    <div>
-                      <div className="profile-sec-k">{v.twoFaTitle}</div>
-                      <div className="profile-sec-sub">{v.twoFaSub}</div>
-                    </div>
-                  </div>
-                  <a className="profile-sec-btn-accent" href="/account/security">
-                    {twoFaOn ? v.twoFaManage : v.twoFaEnable}
-                  </a>
-                </div>
-              </section>
-
-              <section className="profile-card profile-rgpd-card">
-                <h3 className="profile-card-title">{t.rgpdTitle}</h3>
-                <p className="profile-sec-sub profile-rgpd-desc">{t.rgpdDesc}</p>
-                <div className="account-profile-rgpd-actions">
-                  <a className="button button-light" href="/api/account/data">
-                    {t.exportBtn}
-                  </a>
-                  {confirmDelete ? (
-                    <span className="account-profile-del-confirm">
-                      <span>{t.deleteConfirm}</span>
-                      <button type="button" className="button button-light" onClick={() => setConfirmDelete(false)} disabled={deleting}>
-                        {t.deleteCancel}
-                      </button>
-                      <button type="button" className="account-btn-danger" onClick={handleDelete} disabled={deleting}>
-                        {deleting ? t.deleting : t.deleteYes}
-                      </button>
-                    </span>
-                  ) : (
-                    <button type="button" className="account-btn-danger-ghost" onClick={() => setConfirmDelete(true)}>
-                      {t.deleteBtn}
-                    </button>
+                      {editing && !canManageOrg && logoUrl ? (
+                        <span className="profile-field-note">{media.logoManaged}</span>
+                      ) : null}
+                    </>
                   )}
                 </div>
-              </section>
-            </>
-          )}
+              </div>
+            </section>
+          </div>
+
+          <section className="profile-card profile-security">
+            <h3 className="profile-card-title">{v.securityTitle}</h3>
+            <div className="profile-sec-row">
+              <div>
+                <div className="profile-sec-k">{v.passwordLabel}</div>
+                <div className="profile-sec-sub">{v.passwordSub}</div>
+              </div>
+              <a className="profile-sec-btn" href="/account/update-password">
+                {v.passwordBtn}
+              </a>
+            </div>
+            <div className="profile-sec-row profile-sec-row-last">
+              <div className="profile-sec-2fa">
+                <span className={`profile-2fa-pill${twoFaOn ? ' is-on' : ''}`}>
+                  <span className="profile-2fa-dot" />
+                  {twoFaOn ? v.twoFaOnLabel : v.twoFaOff}
+                </span>
+                <div>
+                  <div className="profile-sec-k">{v.twoFaTitle}</div>
+                  <div className="profile-sec-sub">{v.twoFaSub}</div>
+                </div>
+              </div>
+              <a className="profile-sec-btn-accent" href="/account/security">
+                {twoFaOn ? v.twoFaManage : v.twoFaEnable}
+              </a>
+            </div>
+          </section>
+
+          <section className="profile-card profile-rgpd-card">
+            <h3 className="profile-card-title">{t.rgpdTitle}</h3>
+            <p className="profile-sec-sub profile-rgpd-desc">{t.rgpdDesc}</p>
+            <div className="account-profile-rgpd-actions">
+              <a className="button button-light" href="/api/account/data">
+                {t.exportBtn}
+              </a>
+              {confirmDelete ? (
+                <span className="account-profile-del-confirm">
+                  <span>{t.deleteConfirm}</span>
+                  <button type="button" className="button button-light" onClick={() => setConfirmDelete(false)} disabled={deleting}>
+                    {t.deleteCancel}
+                  </button>
+                  <button type="button" className="account-btn-danger" onClick={handleDelete} disabled={deleting}>
+                    {deleting ? t.deleting : t.deleteYes}
+                  </button>
+                </span>
+              ) : (
+                <button type="button" className="account-btn-danger-ghost" onClick={() => setConfirmDelete(true)}>
+                  {t.deleteBtn}
+                </button>
+              )}
+            </div>
+          </section>
         </div>
       </section>
 
