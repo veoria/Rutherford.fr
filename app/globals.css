@@ -14317,6 +14317,111 @@ a.blog-card-image:hover img {
   .acad-cert-grid { grid-template-columns: 1fr; }
 }
 
+/* ===== Redesigned Support (inbox + conversation + help) ===== */
+.cvx-pill svg { width: 11px; height: 11px; }
+.cvx-pill.cvx-t-neutral { background: #f1f1ec; color: #5c5c54; }
+.cvx-pill.cvx-t-neutral .cvx-pill-dot { background: #9a9a94; }
+
+.sup2-thread { margin-top: 24px; display: flex; flex-direction: column; gap: 18px; }
+.sup2-msg { display: flex; gap: 13px; }
+.sup2-av {
+  flex: 0 0 auto;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.81rem;
+  font-weight: 700;
+}
+.sup2-av.is-team { background: #111; }
+.sup2-msg-main { flex: 1; min-width: 0; }
+.sup2-msg-h { display: flex; align-items: baseline; gap: 8px; }
+.sup2-name { font-size: 0.875rem; font-weight: 700; color: var(--text); }
+.sup2-date { font-size: 0.75rem; color: #9a9a94; }
+.sup2-bubble {
+  margin-top: 6px;
+  background: #f4f8ff;
+  border-radius: 14px;
+  padding: 13px 16px;
+  font-size: 0.875rem;
+  line-height: 1.55;
+  color: #3a3a3a;
+}
+.sup2-bubble.is-team { background: #f7f8fa; }
+.sup2-bubble p { margin: 0; white-space: pre-wrap; }
+.sup2-bubble p + .sup-msg-photos { margin-top: 8px; }
+
+.sup2-reply { margin-top: 22px; border: 1px solid var(--line); border-radius: 16px; padding: 14px 16px; transition: border-color 0.15s ease, background 0.15s ease; }
+.sup2-reply.is-dragging { border-color: var(--accent); background: #f4f8ff; }
+.sup2-reply-text {
+  width: 100%;
+  border: 0;
+  outline: none;
+  resize: vertical;
+  font-family: inherit;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--text);
+  background: none;
+  min-height: 44px;
+}
+.sup2-reply-text::placeholder { color: #9a9a94; }
+.sup2-reply-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 10px; }
+.sup2-reply-attach {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: #676767;
+  cursor: pointer;
+}
+.sup2-reply-attach:hover { color: var(--accent); }
+.sup2-reply-attach svg { width: 17px; height: 17px; }
+.sup2-reply-send {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  height: 42px;
+  padding: 0 22px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.875rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.sup2-reply-send:hover { background: #005bb8; }
+.sup2-reply-send:disabled { opacity: 0.6; cursor: default; }
+
+.sup2-help-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 24px; }
+.sup2-help {
+  display: block;
+  background: #fff;
+  border: 1px solid #ececec;
+  border-radius: 20px;
+  padding: 22px 24px;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.sup2-help:hover { border-color: var(--accent); box-shadow: 0 6px 18px rgba(0, 113, 227, 0.1); }
+.sup2-help-icon { display: inline-flex; width: 42px; height: 42px; border-radius: 12px; background: #eaf2ff; align-items: center; justify-content: center; }
+.sup2-help-icon svg { width: 21px; height: 21px; }
+.sup2-help-title { margin: 13px 0 0; font-size: 0.97rem; font-weight: 700; }
+.sup2-help-desc { margin: 5px 0 0; font-size: 0.84rem; color: #8a8a84; line-height: 1.5; }
+
+@media (max-width: 880px) {
+  .sup2-help-grid { grid-template-columns: 1fr; }
+}
+
 .ah-team-page { max-width: 760px; }
 
 /* X-Rite distributor co-brand strip — flush under the header */
