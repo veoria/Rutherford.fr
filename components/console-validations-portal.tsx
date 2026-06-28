@@ -1,11 +1,12 @@
 'use client';
 
-import { ChangeEvent, DragEvent, Fragment, useEffect, useState } from 'react';
+import { ChangeEvent, DragEvent, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { SiteFooter } from '@/components/site-footer';
 import { SiteNav } from '@/components/site-nav';
 import { AccountSubnav } from '@/components/account-subnav';
 import { CvInvite, type CvInviteItem } from '@/components/cv-invite';
+import { type Locale, useLanguage } from '@/components/language-provider';
 import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 
 export type ConsoleValidationStatus =
@@ -39,8 +40,7 @@ export type CvMessage = {
 // Statuses where the customer can still add details (vs. a settled verdict).
 const CAN_REPLY: ConsoleValidationStatus[] = ['submitted', 'in_review', 'changes_requested'];
 
-// Board/group key (and tone) per status. `submitted` + `in_review` share the
-// "In review" group, mirroring the design.
+// Tone groups the five raw statuses into the four filter buckets in the design.
 type Tone = 'review' | 'action' | 'green' | 'red';
 
 const GROUP_OF: Record<ConsoleValidationStatus, Tone> = {
@@ -51,151 +51,356 @@ const GROUP_OF: Record<ConsoleValidationStatus, Tone> = {
   rejected: 'red',
 };
 
-type Meta = {
-  label: string;
-  pill: 'neutral' | 'review' | 'action' | 'green' | 'red';
-  step: 1 | 2;
-  desc: string;
-  action: string;
-};
-
-const META: Record<ConsoleValidationStatus, Meta> = {
-  submitted: {
-    label: 'Received',
-    pill: 'neutral',
-    step: 1,
-    desc: 'Your request is in the queue for review.',
-    action: 'Contact us',
-  },
-  in_review: {
-    label: 'In review',
-    pill: 'review',
-    step: 1,
-    desc: 'Our team is reviewing your console.',
-    action: 'Contact us',
-  },
-  changes_requested: {
-    label: 'Action needed',
-    pill: 'action',
-    step: 1,
-    desc: 'We need a few details before we can continue.',
-    action: 'Provide details',
-  },
-  can_be_connected: {
-    label: 'Connectable',
-    pill: 'green',
-    step: 2,
-    desc: "Your press is eligible — let's talk about the next steps.",
-    action: 'Talk to our team',
-  },
-  rejected: {
-    label: 'Not eligible',
-    pill: 'red',
-    step: 2,
-    desc: "This press isn't currently supported for closed-loop color.",
-    action: 'Talk to our team',
-  },
-};
-
-const GROUPS: { key: Tone; title: string }[] = [
-  { key: 'action', title: 'Action needed' },
-  { key: 'review', title: 'In review' },
-  { key: 'green', title: 'Connectable' },
-  { key: 'red', title: 'Not eligible' },
-];
-
 const SUPPORT = 'contact@rutherford.fr';
 
-function formatDate(iso: string): string {
+type StatusCopy = { short: string; long: string };
+
+type CCopy = {
+  title: string;
+  presses: (n: number) => string;
+  eligible: (n: number) => string;
+  all: string;
+  search: string;
+  newValidation: string;
+  st: Record<ConsoleValidationStatus, StatusCopy>;
+  grp: Record<Tone, string>;
+  openedOn: (d: string) => string;
+  ctaConnect: string;
+  ctaTalk: string;
+  ctaDetails: string;
+  mCountry: string;
+  mCompany: string;
+  mPress: string;
+  mRef: string;
+  trackTitle: string;
+  tlSubmitted: string;
+  tlReview: string;
+  tlReviewSub: string;
+  tlValidated: string;
+  tlValidatedSub: string;
+  tlEligible: string;
+  tlEligibleSub: string;
+  tlChanges: string;
+  tlChangesSub: string;
+  tlRejected: string;
+  tlRejectedSub: string;
+  convTitle: string;
+  convEmpty: string;
+  ourTeam: string;
+  you: string;
+  send: string;
+  writeMsg: string;
+  sent: string;
+  addComment: string;
+  uploadStart: string;
+  genericError: string;
+  promptStrong: string;
+  promptText: string;
+  emptyText: string;
+  emptyCta: string;
+};
+
+const COPY: Record<Locale, CCopy> = {
+  en: {
+    title: 'Console validations',
+    presses: (n) => `${n} press${n > 1 ? 'es' : ''}`,
+    eligible: (n) => `${n} eligible to connect`,
+    all: 'All',
+    search: 'Search a press…',
+    newValidation: 'New validation',
+    st: {
+      submitted: { short: 'In review', long: 'In review' },
+      in_review: { short: 'In review', long: 'In review' },
+      changes_requested: { short: 'Changes', long: 'Changes requested' },
+      can_be_connected: { short: 'Eligible', long: 'Eligible to connect' },
+      rejected: { short: 'Not eligible', long: 'Not eligible' },
+    },
+    grp: { action: 'Changes', review: 'In review', green: 'Eligible', red: 'Not eligible' },
+    openedOn: (d) => `Case opened ${d}`,
+    ctaConnect: 'Connect the press',
+    ctaTalk: 'Talk to our team',
+    ctaDetails: 'Provide details',
+    mCountry: 'Country',
+    mCompany: 'Company',
+    mPress: 'Press',
+    mRef: 'Reference',
+    trackTitle: 'Case timeline',
+    tlSubmitted: 'Request submitted',
+    tlReview: 'Under review by the Rutherford team',
+    tlReviewSub: 'checking the ICC profile and press conditions',
+    tlValidated: 'Profile validated',
+    tlValidatedSub: 'compliant — press ready to connect',
+    tlEligible: 'Eligible to connect',
+    tlEligibleSub: 'Final step — connect the press to activate closed-loop tracking.',
+    tlChanges: 'Changes requested',
+    tlChangesSub: 'A few details are needed before we can continue.',
+    tlRejected: 'Not eligible',
+    tlRejectedSub: "This press isn't currently supported for closed-loop color.",
+    convTitle: 'Conversation',
+    convEmpty: 'No messages yet — write below and our team will get it.',
+    ourTeam: 'Rutherford team',
+    you: 'You',
+    send: 'Send',
+    writeMsg: 'Write a message…',
+    sent: 'Sent — our team has it ✓',
+    addComment: 'Add a comment or at least one photo.',
+    uploadStart: 'Upload could not start, please retry.',
+    genericError: 'Something went wrong, please retry.',
+    promptStrong: 'Complete your profile',
+    promptText: 'add your name, company and role so we can tailor your support and reach you faster.',
+    emptyText: 'You have no console validation requests yet.',
+    emptyCta: 'Start a console validation',
+  },
+  fr: {
+    title: 'Validation console',
+    presses: (n) => `${n} presse${n > 1 ? 's' : ''}`,
+    eligible: (n) => `${n} éligible${n > 1 ? 's' : ''} à connecter`,
+    all: 'Tous',
+    search: 'Rechercher une presse…',
+    newValidation: 'Nouvelle validation',
+    st: {
+      submitted: { short: 'En revue', long: 'En revue' },
+      in_review: { short: 'En revue', long: 'En revue' },
+      changes_requested: { short: 'Modifs', long: 'Modifications demandées' },
+      can_be_connected: { short: 'Éligible', long: 'Éligible à la connexion' },
+      rejected: { short: 'Non éligible', long: 'Non éligible' },
+    },
+    grp: { action: 'Modifs', review: 'En cours', green: 'Éligibles', red: 'Non éligibles' },
+    openedOn: (d) => `Dossier ouvert le ${d}`,
+    ctaConnect: 'Connecter la presse',
+    ctaTalk: 'Parler à notre équipe',
+    ctaDetails: 'Fournir des détails',
+    mCountry: 'Pays',
+    mCompany: 'Société',
+    mPress: 'Presse',
+    mRef: 'Référence',
+    trackTitle: 'Suivi du dossier',
+    tlSubmitted: 'Demande soumise',
+    tlReview: 'En revue par l’équipe Rutherford',
+    tlReviewSub: 'vérification du profil ICC et des conditions presse',
+    tlValidated: 'Profil validé',
+    tlValidatedSub: 'conforme — presse prête à être connectée',
+    tlEligible: 'Éligible à la connexion',
+    tlEligibleSub: 'Dernière étape — connectez la presse pour activer le suivi en boucle fermée.',
+    tlChanges: 'Modifications demandées',
+    tlChangesSub: 'Quelques précisions sont nécessaires avant de continuer.',
+    tlRejected: 'Non éligible',
+    tlRejectedSub: 'Cette presse n’est pas prise en charge pour le closed-loop actuellement.',
+    convTitle: 'Conversation',
+    convEmpty: 'Aucun message pour l’instant — écrivez ci-dessous et notre équipe le recevra.',
+    ourTeam: 'Équipe Rutherford',
+    you: 'Vous',
+    send: 'Envoyer',
+    writeMsg: 'Écrire un message…',
+    sent: 'Envoyé — bien reçu ✓',
+    addComment: 'Ajoutez un commentaire ou au moins une photo.',
+    uploadStart: 'L’envoi n’a pas pu démarrer, veuillez réessayer.',
+    genericError: 'Une erreur est survenue, veuillez réessayer.',
+    promptStrong: 'Complétez votre profil',
+    promptText: 'ajoutez votre nom, votre société et votre poste pour un support adapté et un contact plus rapide.',
+    emptyText: 'Vous n’avez pas encore de demande de validation console.',
+    emptyCta: 'Démarrer une validation console',
+  },
+  de: {
+    title: 'Konsolenvalidierung',
+    presses: (n) => `${n} Druckmaschine${n > 1 ? 'n' : ''}`,
+    eligible: (n) => `${n} verbindungsbereit`,
+    all: 'Alle',
+    search: 'Maschine suchen…',
+    newValidation: 'Neue Validierung',
+    st: {
+      submitted: { short: 'In Prüfung', long: 'In Prüfung' },
+      in_review: { short: 'In Prüfung', long: 'In Prüfung' },
+      changes_requested: { short: 'Änderungen', long: 'Änderungen angefragt' },
+      can_be_connected: { short: 'Geeignet', long: 'Verbindungsbereit' },
+      rejected: { short: 'Nicht geeignet', long: 'Nicht geeignet' },
+    },
+    grp: { action: 'Änderungen', review: 'In Prüfung', green: 'Geeignet', red: 'Nicht geeignet' },
+    openedOn: (d) => `Fall eröffnet am ${d}`,
+    ctaConnect: 'Maschine verbinden',
+    ctaTalk: 'Mit unserem Team sprechen',
+    ctaDetails: 'Details angeben',
+    mCountry: 'Land',
+    mCompany: 'Unternehmen',
+    mPress: 'Druckmaschine',
+    mRef: 'Referenz',
+    trackTitle: 'Fallverlauf',
+    tlSubmitted: 'Anfrage eingereicht',
+    tlReview: 'In Prüfung durch das Rutherford-Team',
+    tlReviewSub: 'Prüfung des ICC-Profils und der Druckbedingungen',
+    tlValidated: 'Profil validiert',
+    tlValidatedSub: 'konform — Maschine bereit zur Verbindung',
+    tlEligible: 'Verbindungsbereit',
+    tlEligibleSub: 'Letzter Schritt — verbinden Sie die Maschine, um die Closed-Loop-Überwachung zu aktivieren.',
+    tlChanges: 'Änderungen angefragt',
+    tlChangesSub: 'Vor dem Weitermachen sind einige Angaben nötig.',
+    tlRejected: 'Nicht geeignet',
+    tlRejectedSub: 'Diese Maschine wird derzeit nicht für Closed-Loop unterstützt.',
+    convTitle: 'Konversation',
+    convEmpty: 'Noch keine Nachrichten — schreiben Sie unten, unser Team erhält sie.',
+    ourTeam: 'Rutherford-Team',
+    you: 'Sie',
+    send: 'Senden',
+    writeMsg: 'Nachricht schreiben…',
+    sent: 'Gesendet — beim Team angekommen ✓',
+    addComment: 'Fügen Sie einen Kommentar oder mindestens ein Foto hinzu.',
+    uploadStart: 'Der Upload konnte nicht starten, bitte erneut versuchen.',
+    genericError: 'Etwas ist schiefgelaufen, bitte erneut versuchen.',
+    promptStrong: 'Profil vervollständigen',
+    promptText: 'Name, Unternehmen und Rolle ergänzen, damit wir den Support anpassen und Sie schneller erreichen.',
+    emptyText: 'Sie haben noch keine Konsolenvalidierungs-Anfragen.',
+    emptyCta: 'Konsolenvalidierung starten',
+  },
+  it: {
+    title: 'Validazione console',
+    presses: (n) => `${n} macchina${n > 1 ? '/e' : ''}`,
+    eligible: (n) => `${n} idonea${n > 1 ? '/e' : ''} alla connessione`,
+    all: 'Tutte',
+    search: 'Cerca una macchina…',
+    newValidation: 'Nuova validazione',
+    st: {
+      submitted: { short: 'In revisione', long: 'In revisione' },
+      in_review: { short: 'In revisione', long: 'In revisione' },
+      changes_requested: { short: 'Modifiche', long: 'Modifiche richieste' },
+      can_be_connected: { short: 'Idonea', long: 'Idonea alla connessione' },
+      rejected: { short: 'Non idonea', long: 'Non idonea' },
+    },
+    grp: { action: 'Modifiche', review: 'In corso', green: 'Idonee', red: 'Non idonee' },
+    openedOn: (d) => `Pratica aperta il ${d}`,
+    ctaConnect: 'Connetti la macchina',
+    ctaTalk: 'Parla con il team',
+    ctaDetails: 'Fornisci dettagli',
+    mCountry: 'Paese',
+    mCompany: 'Azienda',
+    mPress: 'Macchina',
+    mRef: 'Riferimento',
+    trackTitle: 'Stato della pratica',
+    tlSubmitted: 'Richiesta inviata',
+    tlReview: 'In revisione dal team Rutherford',
+    tlReviewSub: 'verifica del profilo ICC e delle condizioni di stampa',
+    tlValidated: 'Profilo validato',
+    tlValidatedSub: 'conforme — macchina pronta alla connessione',
+    tlEligible: 'Idonea alla connessione',
+    tlEligibleSub: 'Ultimo passo — connetta la macchina per attivare il controllo in closed-loop.',
+    tlChanges: 'Modifiche richieste',
+    tlChangesSub: 'Servono alcuni dettagli prima di continuare.',
+    tlRejected: 'Non idonea',
+    tlRejectedSub: 'Questa macchina non è attualmente supportata per il closed-loop.',
+    convTitle: 'Conversazione',
+    convEmpty: 'Ancora nessun messaggio — scriva qui sotto e il team lo riceverà.',
+    ourTeam: 'Team Rutherford',
+    you: 'Lei',
+    send: 'Invia',
+    writeMsg: 'Scriva un messaggio…',
+    sent: 'Inviato — il team l’ha ricevuto ✓',
+    addComment: 'Aggiunga un commento o almeno una foto.',
+    uploadStart: 'Il caricamento non è partito, riprovi.',
+    genericError: 'Si è verificato un errore, riprovi.',
+    promptStrong: 'Completi il suo profilo',
+    promptText: 'aggiunga nome, azienda e ruolo per un supporto su misura e un contatto più rapido.',
+    emptyText: 'Non ha ancora richieste di validazione console.',
+    emptyCta: 'Avvia una validazione console',
+  },
+  es: {
+    title: 'Validación de consola',
+    presses: (n) => `${n} prensa${n > 1 ? 's' : ''}`,
+    eligible: (n) => `${n} apta${n > 1 ? 's' : ''} para conectar`,
+    all: 'Todas',
+    search: 'Buscar una prensa…',
+    newValidation: 'Nueva validación',
+    st: {
+      submitted: { short: 'En revisión', long: 'En revisión' },
+      in_review: { short: 'En revisión', long: 'En revisión' },
+      changes_requested: { short: 'Cambios', long: 'Cambios solicitados' },
+      can_be_connected: { short: 'Apta', long: 'Apta para conectar' },
+      rejected: { short: 'No apta', long: 'No apta' },
+    },
+    grp: { action: 'Cambios', review: 'En curso', green: 'Aptas', red: 'No aptas' },
+    openedOn: (d) => `Expediente abierto el ${d}`,
+    ctaConnect: 'Conectar la prensa',
+    ctaTalk: 'Hable con el equipo',
+    ctaDetails: 'Aportar detalles',
+    mCountry: 'País',
+    mCompany: 'Empresa',
+    mPress: 'Prensa',
+    mRef: 'Referencia',
+    trackTitle: 'Seguimiento del expediente',
+    tlSubmitted: 'Solicitud enviada',
+    tlReview: 'En revisión por el equipo Rutherford',
+    tlReviewSub: 'verificación del perfil ICC y las condiciones de prensa',
+    tlValidated: 'Perfil validado',
+    tlValidatedSub: 'conforme — prensa lista para conectar',
+    tlEligible: 'Apta para conectar',
+    tlEligibleSub: 'Último paso — conecte la prensa para activar el seguimiento en closed-loop.',
+    tlChanges: 'Cambios solicitados',
+    tlChangesSub: 'Necesitamos algunos detalles antes de continuar.',
+    tlRejected: 'No apta',
+    tlRejectedSub: 'Esta prensa no es compatible con closed-loop por el momento.',
+    convTitle: 'Conversación',
+    convEmpty: 'Aún no hay mensajes — escriba abajo y nuestro equipo lo recibirá.',
+    ourTeam: 'Equipo Rutherford',
+    you: 'Usted',
+    send: 'Enviar',
+    writeMsg: 'Escriba un mensaje…',
+    sent: 'Enviado — el equipo lo tiene ✓',
+    addComment: 'Añada un comentario o al menos una foto.',
+    uploadStart: 'No se pudo iniciar la subida, inténtelo de nuevo.',
+    genericError: 'Algo salió mal, inténtelo de nuevo.',
+    promptStrong: 'Complete su perfil',
+    promptText: 'añada su nombre, empresa y puesto para un soporte a medida y un contacto más rápido.',
+    emptyText: 'Aún no tiene solicitudes de validación de consola.',
+    emptyCta: 'Iniciar una validación de consola',
+  },
+};
+
+const FILTER_ORDER: Tone[] = ['green', 'review', 'action', 'red'];
+
+function fmt(iso: string, locale: Locale): string {
   try {
-    return new Date(iso).toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: 'numeric' });
+    return new Date(iso).toLocaleDateString(locale, { year: 'numeric', month: 'long', day: 'numeric' });
   } catch {
     return iso.slice(0, 10);
   }
 }
 
-const listTitle = (r: ConsoleValidationRow) =>
-  [r.company, r.machine].filter(Boolean).join(' · ') || 'Console validation';
-const fullTitle = (r: ConsoleValidationRow) =>
-  [r.country, r.company, r.machine].filter(Boolean).join(' · ') || 'Console validation';
+const listTitle = (r: ConsoleValidationRow) => r.machine || r.company || 'Console';
+const listSub = (r: ConsoleValidationRow) => [r.company, r.country].filter(Boolean).join(' · ');
 
-function StatusPill({ status }: { status: ConsoleValidationStatus }) {
-  const m = META[status];
+type TLState = 'done' | 'current' | 'amber' | 'rejected' | 'pending';
+
+function buildTimeline(r: ConsoleValidationRow, c: CCopy, locale: Locale): { label: string; sub: string; state: TLState }[] {
+  const steps: { label: string; sub: string; state: TLState }[] = [];
+  steps.push({ label: c.tlSubmitted, sub: fmt(r.createdAt, locale), state: 'done' });
+
+  const reviewState: TLState = r.status === 'submitted' ? 'pending' : r.status === 'in_review' ? 'current' : 'done';
+  const reviewSub =
+    reviewState === 'done' && r.reviewedAt ? `${fmt(r.reviewedAt, locale)} · ${c.tlReviewSub}` : c.tlReviewSub;
+  steps.push({ label: c.tlReview, sub: reviewSub, state: reviewState });
+
+  if (r.status === 'can_be_connected') {
+    steps.push({
+      label: c.tlValidated,
+      sub: r.reviewedAt ? `${fmt(r.reviewedAt, locale)} · ${c.tlValidatedSub}` : c.tlValidatedSub,
+      state: 'done',
+    });
+    steps.push({ label: c.tlEligible, sub: c.tlEligibleSub, state: 'current' });
+  } else if (r.status === 'changes_requested') {
+    steps.push({ label: c.tlChanges, sub: c.tlChangesSub, state: 'amber' });
+  } else if (r.status === 'rejected') {
+    steps.push({ label: c.tlRejected, sub: c.tlRejectedSub, state: 'rejected' });
+  } else {
+    steps.push({ label: c.tlEligible, sub: c.tlEligibleSub, state: 'pending' });
+  }
+  return steps;
+}
+
+function CardPill({ status, c }: { status: ConsoleValidationStatus; c: CCopy }) {
+  const tone = GROUP_OF[status];
   return (
-    <span className={`cvp-pill cvp-t-${m.pill}`}>
-      <span className="cvp-pdot" />
-      {m.label}
+    <span className={`cvx-pill cvx-t-${tone}`}>
+      <span className="cvx-pill-dot" />
+      {c.st[status].short}
     </span>
-  );
-}
-
-function Stepper({ status }: { status: ConsoleValidationStatus }) {
-  const step = META[status].step;
-  const nodeClass = (i: number) => {
-    let cls = 'cvp-snode';
-    if (i < step) cls += ' is-done';
-    else if (i === step) {
-      if (status === 'changes_requested') cls += ' is-current is-amber';
-      else if (status === 'can_be_connected') cls += ' is-done';
-      else if (status === 'rejected') cls += ' is-red';
-      else cls += ' is-current';
-    }
-    if (i === 2 && status === 'can_be_connected') cls = 'cvp-snode is-done';
-    if (i === 2 && status === 'rejected') cls = 'cvp-snode is-red';
-    return cls;
-  };
-  const resultLabel =
-    status === 'can_be_connected'
-      ? 'Connectable'
-      : status === 'rejected'
-        ? 'Not eligible'
-        : status === 'changes_requested'
-          ? 'Action needed'
-          : 'Pending';
-  const labels = ['Submitted', 'In review', resultLabel];
-  const conns = [step >= 1, step >= 2];
-  return (
-    <div className="cvp-steps">
-      {[0, 1, 2].map((i) => {
-        const cls = nodeClass(i);
-        const glyph = cls.includes('is-done') ? '✓' : cls.includes('is-red') ? '✕' : '';
-        return (
-          <Fragment key={i}>
-            <div className="cvp-step">
-              <span className={cls}>{glyph}</span>
-              <span className={`cvp-slabel${i === step ? ' is-active' : ''}`}>{labels[i]}</span>
-            </div>
-            {i < 2 ? <span className={`cvp-sconn${conns[i] ? ' is-on' : ''}`} /> : null}
-          </Fragment>
-        );
-      })}
-    </div>
-  );
-}
-
-function PageHead() {
-  return (
-    <div className="cvp-head">
-      <div className="cvp-eyebrow">Your account</div>
-      <h1 className="cvp-title">Your console validations</h1>
-      <p className="cvp-intro">
-        Track every console validation you have submitted and its current status. Our team reviews each request
-        and updates the status here as it progresses.
-      </p>
-    </div>
-  );
-}
-
-function ProfilePrompt() {
-  return (
-    <a href="/account/profile" className="cvp-profile-prompt">
-      <span className="cvp-profile-prompt-dot" />
-      <span className="cvp-profile-prompt-text">
-        <strong>Complete your profile</strong> — add your name, company and role so we can tailor your
-        support and reach you faster.
-      </span>
-      <span className="cvp-chev">›</span>
-    </a>
   );
 }
 
@@ -213,10 +418,13 @@ export function ConsoleValidationsPortal({
   messages?: CvMessage[];
 }) {
   const router = useRouter();
+  const { locale } = useLanguage();
+  const c = COPY[locale];
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [filter, setFilter] = useState<Tone | null>(null);
+  const [query, setQuery] = useState('');
 
-  // Conversation composer state.
+  // Conversation composer state (logic unchanged).
   const [replyFiles, setReplyFiles] = useState<File[]>([]);
   const [replyComment, setReplyComment] = useState('');
   const [sending, setSending] = useState(false);
@@ -229,13 +437,17 @@ export function ConsoleValidationsPortal({
     counts[GROUP_OF[r.status]] += 1;
   });
 
-  // Default selection = the first "Action needed" item, else the most recent.
-  const defaultSel = rows.find((r) => GROUP_OF[r.status] === 'action') ?? rows[0];
-  const selected = rows.find((r) => r.id === selectedId) ?? defaultSel;
+  const q = query.trim().toLowerCase();
+  const visibleRows = rows.filter((r) => {
+    if (filter && GROUP_OF[r.status] !== filter) return false;
+    if (q && !`${r.machine ?? ''} ${r.company ?? ''} ${r.country ?? ''}`.toLowerCase().includes(q)) return false;
+    return true;
+  });
 
-  const shownGroups = GROUPS.filter((g) => counts[g.key] && (!filter || filter === g.key));
+  // Default selection = first "Action needed", else most recent — within what's visible.
+  const defaultSel = visibleRows.find((r) => GROUP_OF[r.status] === 'action') ?? visibleRows[0] ?? rows[0];
+  const selected = visibleRows.find((r) => r.id === selectedId) ?? defaultSel;
 
-  // Reset the reply form whenever the selected dossier changes.
   useEffect(() => {
     setReplied(false);
     setReplyFiles([]);
@@ -253,7 +465,7 @@ export function ConsoleValidationsPortal({
   const handleReply = async () => {
     if (sending || !selected) return;
     if (!replyComment.trim() && replyFiles.length === 0) {
-      setReplyError('Add a comment or at least one photo.');
+      setReplyError(c.addComment);
       return;
     }
     setSending(true);
@@ -274,7 +486,7 @@ export function ConsoleValidationsPortal({
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ uploadId, field: `reply${i}`, ext, contentType: file.type }),
         });
-        if (!urlRes.ok) throw new Error('Upload could not start, please retry.');
+        if (!urlRes.ok) throw new Error(c.uploadStart);
         const { path, token } = await urlRes.json();
         const { error } = await supabase.storage.from('console-validations').uploadToSignedUrl(path, token, file);
         if (error) throw new Error(`Upload failed: ${error.message}`);
@@ -287,149 +499,211 @@ export function ConsoleValidationsPortal({
       });
       if (!res.ok) {
         const b = await res.json().catch(() => null);
-        throw new Error(b?.error ?? 'Something went wrong, please retry.');
+        throw new Error(b?.error ?? c.genericError);
       }
       setReplied(true);
       setReplyFiles([]);
       setReplyComment('');
       router.refresh();
     } catch (e) {
-      setReplyError(e instanceof Error ? e.message : 'Something went wrong, please retry.');
+      setReplyError(e instanceof Error ? e.message : c.genericError);
     } finally {
       setSending(false);
     }
   };
 
+  const prompt = !profileComplete ? (
+    <a href="/account/profile" className="cvp-profile-prompt">
+      <span className="cvp-profile-prompt-dot" />
+      <span className="cvp-profile-prompt-text">
+        <strong>{c.promptStrong}</strong> — {c.promptText}
+      </span>
+      <span className="cvp-chev">›</span>
+    </a>
+  ) : null;
+
   if (rows.length === 0) {
     return (
       <main className="page-shell">
         <SiteNav current="account" />
-          <AccountSubnav current="console" />
-        <div className="cvp">
-          <div className="cvp-wrap">
-            <PageHead />
-            {!profileComplete ? <ProfilePrompt /> : null}
+        <AccountSubnav current="console" />
+        <section className="section profile-section">
+          <div className="container cvx-shell">
+            <div className="cvx-head">
+              <h1 className="profile-h1">{c.title}</h1>
+            </div>
+            {prompt}
             {canInvite ? <CvInvite invitations={invitations} /> : null}
-            <div className="cvp-empty">
-              <p style={{ margin: 0, color: '#6A6A6A' }}>You have no console validation requests yet.</p>
-              <a className="button button-dark" href="/console-validation" style={{ marginTop: 16 }}>
-                Start a console validation
+            <div className="cvx-empty">
+              <p>{c.emptyText}</p>
+              <a className="button button-accent" href="/console-validation">
+                {c.emptyCta}
               </a>
             </div>
           </div>
-        </div>
+        </section>
         <SiteFooter />
       </main>
     );
   }
 
-  const m = META[selected.status];
-  const tone = GROUP_OF[selected.status];
   const selectedMessages = messages.filter((msg) => msg.validationId === selected.id);
   const canReply = CAN_REPLY.includes(selected.status);
+  const tone = GROUP_OF[selected.status];
+  const timeline = buildTimeline(selected, c, locale);
+  const headerCta =
+    selected.status === 'can_be_connected'
+      ? c.ctaConnect
+      : selected.status === 'changes_requested'
+        ? c.ctaDetails
+        : c.ctaTalk;
+  const mailto = `mailto:${SUPPORT}?subject=${encodeURIComponent(
+    `${c.title} — ${selected.reference || listTitle(selected)}`
+  )}`;
 
   return (
     <main className="page-shell">
       <SiteNav current="account" />
-          <AccountSubnav current="console" />
-      <div className="cvp">
-        <div className="cvp-wrap">
-          <PageHead />
-          {!profileComplete ? <ProfilePrompt /> : null}
-          {canInvite ? <CvInvite invitations={invitations} /> : null}
-
-          <div className="cvp-summary">
-            {GROUPS.map((g) => (
-              <button
-                key={g.key}
-                type="button"
-                className={`cvp-sum-cell cvp-t-${g.key}${filter === g.key ? ' is-on' : ''}`}
-                onClick={() => setFilter(filter === g.key ? null : g.key)}
-              >
-                <div className="cvp-sum-n">{counts[g.key]}</div>
-                <div className="cvp-sum-l">{g.title}</div>
-              </button>
-            ))}
+      <AccountSubnav current="console" />
+      <section className="section profile-section">
+        <div className="container cvx-shell">
+          <div className="cvx-head">
+            <h1 className="profile-h1">{c.title}</h1>
+            <p className="cvx-count">
+              {c.presses(rows.length)}
+              {counts.green ? (
+                <>
+                  {' · '}
+                  <strong className="cvx-count-ok">{c.eligible(counts.green)}</strong>
+                </>
+              ) : null}
+            </p>
           </div>
 
-          <div className="cvp-main">
-            <aside className="cvp-col">
-              {shownGroups.map((g) => (
-                <div key={g.key} className="cvp-group">
-                  <div className={`cvp-cghead cvp-t-${g.key}`}>
-                    <span className="cvp-cgdot" />
-                    {g.title}
-                    <span className="cvp-cgcount">{counts[g.key]}</span>
-                  </div>
-                  {rows
-                    .filter((r) => GROUP_OF[r.status] === g.key)
-                    .map((r) => (
-                      <button
-                        key={r.id}
-                        type="button"
-                        className={`cvp-item cvp-t-${g.key}${r.id === selected.id ? ' is-active' : ''}`}
-                        onClick={() => setSelectedId(r.id)}
-                      >
-                        <span className="cvp-itbody">
-                          <span className="cvp-ittitle">{listTitle(r)}</span>
-                          <span className="cvp-itmeta">
-                            {r.reference ? <span className="cvp-mono">{r.reference}</span> : null}
-                            {r.reference ? ' · ' : ''}
-                            {formatDate(r.createdAt)}
-                          </span>
-                        </span>
-                        <span className="cvp-chev">›</span>
-                      </button>
-                    ))}
-                </div>
+          {prompt}
+          {canInvite ? <CvInvite invitations={invitations} /> : null}
+
+          <div className="cvx-toolbar">
+            <div className="cvx-filters">
+              <button
+                type="button"
+                className={`cvx-filter${filter === null ? ' is-on' : ''}`}
+                onClick={() => setFilter(null)}
+              >
+                {c.all} · {rows.length}
+              </button>
+              {FILTER_ORDER.filter((g) => counts[g]).map((g) => (
+                <button
+                  key={g}
+                  type="button"
+                  className={`cvx-filter cvx-t-${g}${filter === g ? ' is-on' : ''}`}
+                  onClick={() => setFilter(filter === g ? null : g)}
+                >
+                  <span className="cvx-filter-dot" />
+                  {c.grp[g]} · {counts[g]}
+                </button>
+              ))}
+            </div>
+            <div className="cvx-tools">
+              <div className="cvx-search">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="11" cy="11" r="7" />
+                  <path d="m20 20-3.2-3.2" />
+                </svg>
+                <input
+                  type="search"
+                  placeholder={c.search}
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  aria-label={c.search}
+                />
+              </div>
+              <a className="cvx-new" href="/console-validation">
+                <span className="cvx-new-plus">+</span> {c.newValidation}
+              </a>
+            </div>
+          </div>
+
+          <div className="cvx-main">
+            <aside className="cvx-list">
+              {visibleRows.map((r) => (
+                <button
+                  key={r.id}
+                  type="button"
+                  className={`cvx-item${r.id === selected.id ? ' is-active' : ''}`}
+                  onClick={() => setSelectedId(r.id)}
+                >
+                  <span className="cvx-item-top">
+                    <span className="cvx-item-name">{listTitle(r)}</span>
+                    <CardPill status={r.status} c={c} />
+                  </span>
+                  <span className="cvx-item-sub">{listSub(r)}</span>
+                </button>
               ))}
             </aside>
 
-            <section className="cvp-detail">
-              <div className="cvp-dhead">
-                <div>
-                  <div className="cvp-dtitle">{fullTitle(selected)}</div>
-                  <div className="cvp-dsub">
-                    {selected.reference ? <span className="cvp-mono">{selected.reference}</span> : null}
-                    {selected.reference ? ' · ' : ''}
-                    Submitted {formatDate(selected.createdAt)}
-                  </div>
+            <section className="cvx-detail">
+              <div className="cvx-dhead">
+                <div className="cvx-dhead-main">
+                  <h2 className="cvx-dtitle">{listTitle(selected)}</h2>
+                  <span className={`cvx-pill cvx-t-${tone} cvx-pill-lg`}>
+                    <span className="cvx-pill-dot" />
+                    {c.st[selected.status].long}
+                  </span>
+                  <p className="cvx-dsub">
+                    {[selected.company, selected.country].filter(Boolean).join(' · ')}
+                    {selected.company || selected.country ? ' · ' : ''}
+                    {c.openedOn(fmt(selected.createdAt, locale))}
+                  </p>
                 </div>
-                <StatusPill status={selected.status} />
+                <a className="cvx-connect" href={mailto}>
+                  {headerCta}
+                  <span className="cvx-connect-arrow">→</span>
+                </a>
               </div>
 
-              <div className={`cvp-banner cvp-t-${tone}`}>
-                <span className="cvp-bsq" />
-                <span className="cvp-blabel">{m.label}</span>
-                <span className="cvp-bdesc">{m.desc}</span>
-              </div>
-
-              <div className="cvp-stepper">
-                <Stepper status={selected.status} />
-              </div>
-
-              <div className="cvp-sumbox">
+              <div className="cvx-meta">
                 {[
-                  ['Company', selected.company],
-                  ['Country', selected.country],
-                  ['Press', selected.machine],
+                  [c.mCountry, selected.country],
+                  [c.mCompany, selected.company],
+                  [c.mPress, selected.machine],
+                  [c.mRef, selected.reference],
                 ].map(([k, v]) => (
-                  <div key={k} className="cvp-cell">
-                    <div className="cvp-k">{k}</div>
-                    <div className="cvp-v">{v || '—'}</div>
+                  <div key={k} className="cvx-meta-cell">
+                    <span className="cvx-meta-k">{k}</span>
+                    <span className="cvx-meta-v">{v || '—'}</span>
                   </div>
                 ))}
               </div>
 
-              <div className="sup-chat cvp-chat">
-                <div className="sup-chat-h">Conversation</div>
+              <h3 className="cvx-track-h">{c.trackTitle}</h3>
+              <div className="cvx-timeline">
+                {timeline.map((s, i) => {
+                  const last = i === timeline.length - 1;
+                  return (
+                    <div key={i} className="cvx-tl-row">
+                      <div className="cvx-tl-rail">
+                        <span className={`cvx-tl-dot is-${s.state}`} />
+                        {!last ? <span className={`cvx-tl-line${s.state === 'done' ? ' is-on' : ''}`} /> : null}
+                      </div>
+                      <div className={`cvx-tl-body${last ? ' is-last' : ''}`}>
+                        <div className={`cvx-tl-label is-${s.state}`}>{s.label}</div>
+                        <div className="cvx-tl-sub">{s.sub}</div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div className="sup-chat cvx-chat">
+                <div className="sup-chat-h">{c.convTitle}</div>
                 <div className="sup-chat-body">
                   {selectedMessages.length > 0 ? (
                     selectedMessages.map((msg, i) => (
                       <div key={i} className={`sup-msg sup-msg-${msg.author}`}>
                         <div className="sup-msg-h">
-                          {msg.author === 'team' ? 'Our team' : 'You'}
-                          <span className="cvp-mono"> · {formatDate(msg.createdAt)}</span>
+                          {msg.author === 'team' ? c.ourTeam : c.you}
+                          <span className="cvp-mono"> · {fmt(msg.createdAt, locale)}</span>
                         </div>
                         {msg.body ? <p>{msg.body}</p> : null}
                         {msg.photos.length > 0 ? (
@@ -445,7 +719,7 @@ export function ConsoleValidationsPortal({
                       </div>
                     ))
                   ) : (
-                    <p className="sup-chat-empty">No messages yet — write below and our team will get it.</p>
+                    <p className="sup-chat-empty">{c.convEmpty}</p>
                   )}
                 </div>
 
@@ -466,7 +740,7 @@ export function ConsoleValidationsPortal({
                       addReplyFiles(e.dataTransfer.files);
                     }}
                   >
-                    {replied ? <p className="sup-compose-sent">Sent — our team has it ✓</p> : null}
+                    {replied ? <p className="sup-compose-sent">{c.sent}</p> : null}
                     {replyFiles.length > 0 ? (
                       <div className="sup-compose-files">
                         {replyFiles.map((f, i) => (
@@ -489,7 +763,7 @@ export function ConsoleValidationsPortal({
                       </p>
                     ) : null}
                     <div className="sup-compose-row">
-                      <label className="sup-compose-attach" title="Add an image">
+                      <label className="sup-compose-attach" title={c.writeMsg}>
                         <input
                           type="file"
                           accept="image/*"
@@ -507,7 +781,7 @@ export function ConsoleValidationsPortal({
                       <textarea
                         className="sup-compose-text"
                         rows={1}
-                        placeholder="Write a message…"
+                        placeholder={c.writeMsg}
                         value={replyComment}
                         onChange={(e) => setReplyComment(e.target.value)}
                         onKeyDown={(e) => {
@@ -519,27 +793,21 @@ export function ConsoleValidationsPortal({
                         disabled={sending}
                       />
                       <button type="button" className="sup-compose-send" disabled={sending} onClick={handleReply}>
-                        {sending ? '…' : 'Send'}
+                        {sending ? '…' : c.send}
                       </button>
                     </div>
                   </div>
                 ) : (
                   <div className="sup-chat-closed">
-                    {m.desc}{' '}
-                    <a
-                      href={`mailto:${SUPPORT}?subject=${encodeURIComponent(
-                        `Console validation ${selected.reference || listTitle(selected)}`,
-                      )}`}
-                    >
-                      {m.action} →
-                    </a>
+                    {c.st[selected.status].long}{' '}
+                    <a href={mailto}>{headerCta} →</a>
                   </div>
                 )}
               </div>
             </section>
           </div>
         </div>
-      </div>
+      </section>
       <SiteFooter />
     </main>
   );
