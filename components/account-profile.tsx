@@ -495,6 +495,9 @@ const COPY: Record<Locale, Copy> = {
 type Props = {
   email: string;
   accountType: AccountType;
+  avatarUrl: string | null;
+  logoUrl: string | null;
+  canManageLogo: boolean;
   defaults: {
     fullName: string;
     country: string;
@@ -507,42 +510,60 @@ type Props = {
 // Media-upload copy (profile photo + company logo, edited inline on this page).
 const MEDIA: Record<
   Locale,
-  { photoEdit: string; logoDrop: string; logoManaged: string; uploadError: string; loginNote: string }
+  {
+    photoEdit: string;
+    logoDrop: string;
+    logoManaged: string;
+    logoForbidden: string;
+    uploadError: string;
+    loginNote: string;
+    teamFixed: string;
+  }
 > = {
   en: {
     photoEdit: 'Change photo',
     logoDrop: 'Upload a logo',
     logoManaged: 'Managed by your administrator',
+    logoForbidden: 'Only an organization owner or admin can change the logo.',
     uploadError: 'Upload failed — use a PNG, JPG, WebP or SVG under 4 MB.',
     loginNote: 'Used to sign in',
+    teamFixed: 'Company name and country are set by your Rutherford domain.',
   },
   fr: {
     photoEdit: 'Changer la photo',
     logoDrop: 'Déposer un logo',
     logoManaged: 'Géré par votre administrateur',
+    logoForbidden: 'Seul un propriétaire ou administrateur de l’organisation peut changer le logo.',
     uploadError: 'Échec de l’envoi — utilisez un PNG, JPG, WebP ou SVG de moins de 4 Mo.',
     loginNote: 'Sert à la connexion',
+    teamFixed: 'La raison sociale et le pays sont définis par votre domaine Rutherford.',
   },
   de: {
     photoEdit: 'Foto ändern',
     logoDrop: 'Logo hochladen',
     logoManaged: 'Von Ihrem Administrator verwaltet',
+    logoForbidden: 'Nur ein Inhaber oder Administrator der Organisation kann das Logo ändern.',
     uploadError: 'Upload fehlgeschlagen — PNG, JPG, WebP oder SVG unter 4 MB verwenden.',
     loginNote: 'Für die Anmeldung',
+    teamFixed: 'Firmenname und Land werden durch Ihre Rutherford-Domain festgelegt.',
   },
   it: {
     photoEdit: 'Cambia foto',
     logoDrop: 'Carica un logo',
     logoManaged: 'Gestito dal suo amministratore',
+    logoForbidden: 'Solo un proprietario o amministratore dell’organizzazione può cambiare il logo.',
     uploadError: 'Caricamento non riuscito — usi un PNG, JPG, WebP o SVG sotto i 4 MB.',
     loginNote: 'Per l’accesso',
+    teamFixed: 'Ragione sociale e paese sono definiti dal suo dominio Rutherford.',
   },
   es: {
     photoEdit: 'Cambiar foto',
     logoDrop: 'Subir un logo',
     logoManaged: 'Gestionado por su administrador',
+    logoForbidden: 'Solo un propietario o administrador de la organización puede cambiar el logo.',
     uploadError: 'Error al subir — use un PNG, JPG, WebP o SVG de menos de 4 MB.',
     loginNote: 'Para iniciar sesión',
+    teamFixed: 'La razón social y el país los define su dominio Rutherford.',
   },
 };
 
@@ -555,7 +576,14 @@ function CameraIcon() {
   );
 }
 
-export function AccountProfile({ email, accountType, defaults }: Props) {
+export function AccountProfile({
+  email,
+  accountType,
+  avatarUrl: avatarUrl0,
+  logoUrl: logoUrl0,
+  canManageLogo,
+  defaults,
+}: Props) {
   const { locale } = useLanguage();
   const t = COPY[locale];
   const v = VIEW[locale];
@@ -575,45 +603,13 @@ export function AccountProfile({ email, accountType, defaults }: Props) {
   const [deleting, setDeleting] = useState(false);
   // Read view (cards) vs. inline edit mode (same cards, fields become inputs).
   const [editing, setEditing] = useState(false);
-  const [logoUrl, setLogoUrl] = useState<string | null>(null);
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
-  const [canManageOrg, setCanManageOrg] = useState(false);
+  // Photo / logo + manage rights come from the server (reliable under RLS).
+  const [logoUrl, setLogoUrl] = useState<string | null>(logoUrl0);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(avatarUrl0);
   const [uploading, setUploading] = useState<'avatar' | 'logo' | null>(null);
   const [mediaErr, setMediaErr] = useState<string | null>(null);
   // Real 2FA state, read straight from Supabase MFA factors.
   const [twoFa, setTwoFa] = useState<'loading' | 'on' | 'off'>('loading');
-
-  // Profile photo (own), company logo, and whether the visitor may change the
-  // logo (owner/admin of the org). Same org lookup as the subnav.
-  useEffect(() => {
-    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) return;
-    const supabase = createSupabaseBrowserClient();
-    let active = true;
-    (async () => {
-      const { data } = await supabase.auth.getUser();
-      if (!active || !data.user) return;
-      const uid = data.user.id;
-      const { data: prof } = await supabase
-        .from('profiles')
-        .select('organization_id, avatar_url')
-        .eq('id', uid)
-        .maybeSingle();
-      if (active) setAvatarUrl((prof?.avatar_url as string | null) ?? null);
-      const orgId = (prof?.organization_id as string | null) ?? null;
-      if (!orgId) return;
-      const [{ data: org }, { data: mem }] = await Promise.all([
-        supabase.from('organizations').select('logo_url').eq('id', orgId).maybeSingle(),
-        supabase.from('organization_members').select('role').eq('org_id', orgId).eq('user_id', uid).maybeSingle(),
-      ]);
-      if (!active) return;
-      setLogoUrl((org?.logo_url as string | null) ?? null);
-      const role = (mem?.role as string | null) ?? null;
-      setCanManageOrg(role === 'owner' || role === 'admin');
-    })();
-    return () => {
-      active = false;
-    };
-  }, []);
 
   // Whether the account has an active TOTP factor — drives the security card + chip.
   useEffect(() => {
@@ -656,7 +652,7 @@ export function AccountProfile({ email, accountType, defaults }: Props) {
       fd.append('kind', kind);
       const res = await fetch('/api/account/media', { method: 'POST', body: fd });
       if (!res.ok) {
-        setMediaErr(media.uploadError);
+        setMediaErr(kind === 'logo' && res.status === 403 ? media.logoForbidden : media.uploadError);
         setUploading(null);
         return;
       }
@@ -982,7 +978,7 @@ export function AccountProfile({ email, accountType, defaults }: Props) {
                 )}
                 <div className="profile-field">
                   <span className="profile-field-k">{v.logoField}</span>
-                  {editing && canManageOrg ? (
+                  {editing && canManageLogo ? (
                     <label className="profile-logo-box profile-logo-drop" title={media.logoDrop}>
                       <input type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" hidden onChange={onPickFile('logo')} />
                       {logoUrl ? (
@@ -1003,13 +999,14 @@ export function AccountProfile({ email, accountType, defaults }: Props) {
                           <span className="profile-logo-empty">{v.logoEmpty}</span>
                         )}
                       </div>
-                      {editing && !canManageOrg && logoUrl ? (
+                      {editing && !canManageLogo && logoUrl ? (
                         <span className="profile-field-note">{media.logoManaged}</span>
                       ) : null}
                     </>
                   )}
                 </div>
               </div>
+              {editing && isTeam ? <p className="profile-field-note profile-team-note">{media.teamFixed}</p> : null}
             </section>
           </div>
 

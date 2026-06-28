@@ -13693,6 +13693,7 @@ select.profile-input { padding-right: 28px; }
 .profile-input:focus { outline: none; border-color: var(--accent); }
 .profile-input:disabled { opacity: 0.6; }
 .profile-field-note { display: block; margin-top: 4px; font-size: 0.72rem; color: #9a9a94; }
+.profile-team-note { margin: 14px 0 0; }
 .profile-media-err { margin: 6px 0 0; font-size: 0.78rem; color: #c0392b; }
 
 .profile-avatar-edit { cursor: pointer; }
