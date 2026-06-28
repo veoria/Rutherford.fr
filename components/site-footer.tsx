@@ -1,9 +1,21 @@
 'use client';
 
 import Image from 'next/image';
+import { usePathname, useRouter } from 'next/navigation';
 import { useLanguage, type Locale } from '@/components/language-provider';
 import { SocialLinks } from '@/components/social-links';
 import type { SocialLink } from '@/components/social-links';
+
+// The language selector lives in the footer now (country is auto-detected, so
+// the header no longer needs it). FR first to match the design.
+const NAV_PREFIX_LOCALES = ['fr', 'de', 'it', 'es'];
+const FOOTER_LANGS: { code: Locale; label: string }[] = [
+  { code: 'fr', label: 'FR' },
+  { code: 'en', label: 'EN' },
+  { code: 'de', label: 'DE' },
+  { code: 'it', label: 'IT' },
+  { code: 'es', label: 'ES' },
+];
 
 const socialLinks: SocialLink[] = [
   { label: 'LinkedIn', href: 'https://www.linkedin.com/company/rutherford-graphic-products-llc' },
@@ -28,6 +40,7 @@ type Copy = {
   company: string;
   follow: string;
   rights: string;
+  langAuto: string;
   resourceLabels: Record<ResourceKey, string>;
   companyLabels: Record<CompanyKey, string>;
 };
@@ -40,6 +53,7 @@ const COPY: Record<Locale, Copy> = {
     company: 'Company',
     follow: 'Follow',
     rights: 'All rights reserved',
+    langAuto: 'Language · auto-detected',
     resourceLabels: { blog: 'Blog', support: 'Support', console: 'Console Validation', contact: 'Contact' },
     companyLabels: { about: 'About Rutherford', colorloop: 'ColorLoop', offset360: 'Offset360', cases: 'Case Studies' },
   },
@@ -50,6 +64,7 @@ const COPY: Record<Locale, Copy> = {
     company: 'Entreprise',
     follow: 'Suivre',
     rights: 'Tous droits réservés',
+    langAuto: 'Langue · détectée automatiquement',
     resourceLabels: { blog: 'Blog', support: 'Support', console: 'Validation console', contact: 'Contact' },
     companyLabels: { about: 'À propos', colorloop: 'ColorLoop', offset360: 'Offset360', cases: 'Cas clients' },
   },
@@ -60,6 +75,7 @@ const COPY: Record<Locale, Copy> = {
     company: 'Unternehmen',
     follow: 'Folgen',
     rights: 'Alle Rechte vorbehalten',
+    langAuto: 'Sprache · automatisch erkannt',
     resourceLabels: { blog: 'Blog', support: 'Support', console: 'Konsolenvalidierung', contact: 'Kontakt' },
     companyLabels: { about: 'Über Rutherford', colorloop: 'ColorLoop', offset360: 'Offset360', cases: 'Referenzen' },
   },
@@ -70,6 +86,7 @@ const COPY: Record<Locale, Copy> = {
     company: 'Azienda',
     follow: 'Seguici',
     rights: 'Tutti i diritti riservati',
+    langAuto: 'Lingua · rilevata automaticamente',
     resourceLabels: { blog: 'Blog', support: 'Supporto', console: 'Validazione console', contact: 'Contatti' },
     companyLabels: { about: 'Chi è Rutherford', colorloop: 'ColorLoop', offset360: 'Offset360', cases: 'Case Study' },
   },
@@ -80,15 +97,26 @@ const COPY: Record<Locale, Copy> = {
     company: 'Empresa',
     follow: 'Seguir',
     rights: 'Todos los derechos reservados',
+    langAuto: 'Idioma · detección automática',
     resourceLabels: { blog: 'Blog', support: 'Soporte', console: 'Validación de consola', contact: 'Contacto' },
     companyLabels: { about: 'Sobre Rutherford', colorloop: 'ColorLoop', offset360: 'Offset360', cases: 'Casos prácticos' },
   },
 };
 
 export function SiteFooter() {
-  const { locale } = useLanguage();
+  const { locale, setLocale } = useLanguage();
+  const router = useRouter();
+  const pathname = usePathname() || '/';
   const t = COPY[locale];
   const year = new Date().getFullYear();
+
+  const navSeg = pathname.split('/')[1];
+  const basePath = NAV_PREFIX_LOCALES.includes(navSeg) ? pathname.slice(navSeg.length + 1) || '/' : pathname;
+  const switchLocale = (code: Locale) => {
+    const target = code === 'en' ? basePath || '/' : `/${code}${basePath === '/' ? '' : basePath}`;
+    setLocale(code);
+    router.push(target);
+  };
 
   const resourceLinks: { key: ResourceKey; href: string }[] = [
     { key: 'blog', href: '/blog' },
@@ -170,6 +198,40 @@ export function SiteFooter() {
                 </ul>
               </section>
             </nav>
+          </div>
+
+          <div className="footer-lang">
+            <span className="footer-lang-label">
+              <svg
+                viewBox="0 0 24 24"
+                width="16"
+                height="16"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.6"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <circle cx="12" cy="12" r="9" />
+                <path d="M3 12h18" />
+                <path d="M12 3a14 14 0 0 1 3.6 9 14 14 0 0 1-3.6 9 14 14 0 0 1-3.6-9 14 14 0 0 1 3.6-9z" />
+              </svg>
+              {t.langAuto}
+            </span>
+            <div className="footer-lang-pills">
+              {FOOTER_LANGS.map((option) => (
+                <button
+                  key={option.code}
+                  type="button"
+                  className={`footer-lang-pill ${option.code === locale ? 'is-active' : ''}`}
+                  aria-pressed={option.code === locale}
+                  onClick={() => switchLocale(option.code)}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
           </div>
 
           <div className="footer-bottom">
