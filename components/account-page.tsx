@@ -512,49 +512,7 @@ const COPY: Record<Locale, AccountCopy> = {
   },
 };
 
-/* --- Scoped, filled icons (the global svg{} rule is overridden by .gicon) --- */
-function IconSpark() {
-  return (
-    <svg className="gicon" viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M12 2l1.8 5.4a4 4 0 0 0 2.8 2.8L22 12l-5.4 1.8a4 4 0 0 0-2.8 2.8L12 22l-1.8-5.4a4 4 0 0 0-2.8-2.8L2 12l5.4-1.8a4 4 0 0 0 2.8-2.8L12 2z" />
-    </svg>
-  );
-}
-function IconTrophy() {
-  return (
-    <svg className="gicon" viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M6 4h12v2h3v3a4 4 0 0 1-4 4h-.4A6 6 0 0 1 13 16.9V19h3v2H8v-2h3v-2.1A6 6 0 0 1 7.4 13H7a4 4 0 0 1-4-4V6h3V4Zm0 4H5v1a2 2 0 0 0 1 1.7V8Zm12 0v2.7A2 2 0 0 0 19 9V8h-1Z" />
-    </svg>
-  );
-}
-function IconFlame() {
-  return (
-    <svg className="gicon" viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M12 2c2 3 6 5 6 9a6 6 0 1 1-12 0c0-1.6.7-2.8 1.6-3.8.3 1 1 1.8 2 1.8 1.2 0 1.6-1.2 1-2.6-.7-1.7-.3-3.4 1.4-4.4Z" />
-    </svg>
-  );
-}
-function IconLayers() {
-  return (
-    <svg className="gicon" viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M12 2 2 7l10 5 10-5-10-5Zm-8 9 8 4 8-4 2 1-10 5L2 12l2-1Zm0 5 8 4 8-4 2 1-10 5L2 17l2-1Z" />
-    </svg>
-  );
-}
-function IconStar() {
-  return (
-    <svg className="gicon" viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M12 2l2.9 6.1 6.6.9-4.8 4.6 1.2 6.6L12 18.9 6.1 21.8l1.2-6.6L2.5 9l6.6-.9L12 2Z" />
-    </svg>
-  );
-}
-function IconMedal() {
-  return (
-    <svg className="gicon" viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M8 2h8l-2.2 5.2a6 6 0 1 1-3.6 0L8 2Zm4 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8Zm0 2.2 1 2 2.2.2-1.7 1.5.5 2.1L12 17l-2 1 .5-2.1-1.7-1.5 2.2-.2 1-2Z" />
-    </svg>
-  );
-}
+/* --- Scoped, filled icon (the global svg{} rule is overridden by .gicon) --- */
 function IconSeal() {
   return (
     <svg className="gicon" viewBox="0 0 24 24" aria-hidden="true">
@@ -563,15 +521,92 @@ function IconSeal() {
   );
 }
 
-const BADGE_ICONS: Record<BadgeId, () => JSX.Element> = {
-  'first-module': IconSpark,
-  'first-course': IconTrophy,
-  certified: IconSeal,
-  streak: IconFlame,
-  foundations: IconLayers,
-  flagship: IconStar,
-  completionist: IconMedal,
+// Redesigned-Academy copy (heading, catalogue + certificate sections). The big
+// COPY map above still drives the level/XP, pass and celebration strings.
+const EXTRA: Record<
+  Locale,
+  {
+    eyebrow: string;
+    academyTitle: string;
+    academySub: string;
+    resumeWord: string;
+    catalogTitle: string;
+    coursesCount: (n: number) => string;
+    certified: string;
+    certsCount: (n: number) => string;
+    download: string;
+    of: string;
+  }
+> = {
+  en: {
+    eyebrow: 'Partner area',
+    academyTitle: 'Academy',
+    academySub: 'Offset & ColorLoop training — learn at your own pace and earn your certificates.',
+    resumeWord: 'Resume',
+    catalogTitle: 'All courses',
+    coursesCount: (n) => `${n} course${n > 1 ? 's' : ''}`,
+    certified: 'Certified',
+    certsCount: (n) => `${n} earned`,
+    download: 'Download',
+    of: 'of',
+  },
+  fr: {
+    eyebrow: 'Espace partenaire',
+    academyTitle: 'Academy',
+    academySub: 'Formations offset & ColorLoop — progressez à votre rythme et obtenez vos certificats.',
+    resumeWord: 'Reprendre',
+    catalogTitle: 'Tous les parcours',
+    coursesCount: (n) => `${n} parcours`,
+    certified: 'Certifié',
+    certsCount: (n) => `${n} obtenu${n > 1 ? 's' : ''}`,
+    download: 'Télécharger',
+    of: 'sur',
+  },
+  de: {
+    eyebrow: 'Partnerbereich',
+    academyTitle: 'Academy',
+    academySub: 'Offset- & ColorLoop-Schulungen — lernen Sie in Ihrem Tempo und erwerben Sie Ihre Zertifikate.',
+    resumeWord: 'Fortsetzen',
+    catalogTitle: 'Alle Kurse',
+    coursesCount: (n) => `${n} Kurs${n > 1 ? 'e' : ''}`,
+    certified: 'Zertifiziert',
+    certsCount: (n) => `${n} erhalten`,
+    download: 'Herunterladen',
+    of: 'von',
+  },
+  it: {
+    eyebrow: 'Area partner',
+    academyTitle: 'Academy',
+    academySub: 'Formazione offset & ColorLoop — avanzi al suo ritmo e ottenga i suoi certificati.',
+    resumeWord: 'Riprendi',
+    catalogTitle: 'Tutti i percorsi',
+    coursesCount: (n) => `${n} percors${n > 1 ? 'i' : 'o'}`,
+    certified: 'Certificato',
+    certsCount: (n) => `${n} ottenut${n > 1 ? 'i' : 'o'}`,
+    download: 'Scarica',
+    of: 'di',
+  },
+  es: {
+    eyebrow: 'Área de partner',
+    academyTitle: 'Academy',
+    academySub: 'Formación offset & ColorLoop — avance a su ritmo y obtenga sus certificados.',
+    resumeWord: 'Reanudar',
+    catalogTitle: 'Todos los cursos',
+    coursesCount: (n) => `${n} curso${n > 1 ? 's' : ''}`,
+    certified: 'Certificado',
+    certsCount: (n) => `${n} obtenido${n > 1 ? 's' : ''}`,
+    download: 'Descargar',
+    of: 'de',
+  },
 };
+
+function IconCheck() {
+  return (
+    <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M20 6 9 17l-5-5" />
+    </svg>
+  );
+}
 
 function formatDate(value: string | null, locale: Locale) {
   if (!value) return null;
@@ -587,15 +622,13 @@ export function AccountPage({
   enrolledCourses,
   passSubscription,
   streak,
-  streakBest,
   daily,
-  weekly,
-  activeDays,
   resume,
   catalog,
 }: Props) {
   const { locale } = useLanguage();
   const t = COPY[locale];
+  const x = EXTRA[locale];
   const hasActivePass = passSubscription?.status === 'active';
   const [celebration, setCelebration] = useState<CelebrationContent | null>(null);
   const celebrationSeq = useRef(0);
@@ -685,243 +718,208 @@ export function AccountPage({
 
   const hasCourses = enrolledCourses.length > 0;
 
-  // Daily goal ring.
+  // Daily goal ring (kept for the mobile quick-resume bar).
   const dailyPct = daily.goalXp > 0 ? Math.min(100, Math.round((daily.todayXp / daily.goalXp) * 100)) : 0;
   const dailyMet = daily.todayXp >= daily.goalXp && daily.goalXp > 0;
 
-  // Streak calendar: the last 14 UTC days, flagged active from the server set.
-  const DAY_MS = 24 * 60 * 60 * 1000;
-  const activeSet = new Set(activeDays);
-  const todayIso = new Date().toISOString().slice(0, 10);
-  const calendar = Array.from({ length: 14 }, (_, i) => {
-    const d = new Date(Date.now() - (13 - i) * DAY_MS);
-    const iso = d.toISOString().slice(0, 10);
-    return { iso, dayNum: d.getUTCDate(), active: activeSet.has(iso), isToday: iso === todayIso };
-  });
-
-  // Weekly XP chart scale.
-  const weeklyMax = Math.max(1, ...weekly.map((w) => w.xp));
-  const weekdayLabel = (iso: string) => {
-    try {
-      return new Date(`${iso}T00:00:00Z`).toLocaleDateString(locale, { weekday: 'narrow' });
-    } catch {
-      return '';
-    }
-  };
+  // Course that "Resume" points at — for its progress bar in the hero.
+  const resumeCourse = resume ? enrolledCourses.find((co) => co.slug === resume.slug) ?? null : null;
+  const resumePct = resumeCourse
+    ? coursePercent({ completedCount: resumeCourse.completedCount, total: resumeCourse.modules })
+    : 0;
 
   return (
     <main className="page-shell account-shell" id="top">
-      <SiteNav />
+      <SiteNav current="account" />
       <AccountSubnav current="academy" />
 
-      <section className="account-hero section">
-        <div className="container account-hero-shell">
-          <div className="account-hero-identity">
-            {user.avatarUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img className="account-hero-avatar" src={user.avatarUrl} alt="" />
-            ) : (
-              <div className="account-hero-avatar account-hero-avatar-placeholder" aria-hidden="true">
-                {(user.fullName || user.email).slice(0, 1).toUpperCase()}
-              </div>
-            )}
+      <section className="section profile-section">
+        <div className="container acad-shell">
+          <div className="acad-head">
             <div>
-              <p className="section-kicker">{t.accountKicker}</p>
-              <h1 className="account-hero-title">{user.fullName ?? user.email}</h1>
-              <p className="account-hero-sub">{user.email}</p>
+              <p className="profile-eyebrow">{x.eyebrow}</p>
+              <h1 className="profile-h1">{x.academyTitle}</h1>
+              <p className="profile-sub">{x.academySub}</p>
+            </div>
+            <div className="acad-head-actions">
+              {CONSOLE_TRACKING_ENABLED ? (
+                <a className="button button-light" href="/account/console-validations">
+                  {t.consoleValidations}
+                </a>
+              ) : null}
+              <form action="/api/auth/sign-out" method="post">
+                <button type="submit" className="button button-light account-signout">
+                  {t.signOut}
+                </button>
+              </form>
             </div>
           </div>
-          <div className="account-hero-actions">
-            {CONSOLE_TRACKING_ENABLED ? (
-              <a className="button button-light" href="/account/console-validations">
-                {t.consoleValidations}
-              </a>
-            ) : null}
-            <form action="/api/auth/sign-out" method="post">
-              <button type="submit" className="button button-light account-signout">
-                {t.signOut}
-              </button>
-            </form>
-          </div>
-        </div>
-      </section>
 
-      {resume ? (
-        <section className="account-resume section">
-          <div className="container">
-            <a
-              className="account-resume-card"
-              href={`/academy/${resume.slug}?m=${resume.moduleIndex}#course-content`}
-            >
-              <div className="account-resume-text">
-                <p className="section-kicker">{t.resumeKicker}</p>
-                <h2 className="account-resume-title">{resume.title}</h2>
-                <p className="account-resume-module">
-                  {t.moduleWord} {String(resume.moduleIndex + 1).padStart(2, '0')} · {resume.moduleTitle}
-                </p>
-              </div>
-              <span className="button button-accent account-resume-cta">
-                {t.continueCta} <span aria-hidden="true">→</span>
-              </span>
-            </a>
-          </div>
-        </section>
-      ) : null}
-
-      {hasCourses ? (
-        <section className="account-progress section">
-          <div className="container">
-            <header className="account-section-head">
-              <p className="section-kicker">{t.progressKicker}</p>
-              <h2>{t.progressTitle}</h2>
-            </header>
-
-            <div className="account-rhythm-grid">
-              <div className="account-daily">
+          {hasCourses ? (
+            <>
+              {/* Level / XP banner */}
+              <section className="acad-level">
                 <div
-                  className="account-daily-ring"
-                  style={{ background: `conic-gradient(var(--accent) ${dailyPct}%, #e7e7e0 ${dailyPct}%)` }}
+                  className="acad-ring"
+                  style={{ background: `conic-gradient(var(--accent) ${ringPct}%, #eef0f2 ${ringPct}%)` }}
                   aria-hidden="true"
                 >
-                  <div className="account-daily-ring-inner">
-                    <span className="account-daily-pct">{dailyPct}%</span>
+                  <div className="acad-ring-inner">
+                    <span className="acad-ring-lvl">
+                      {t.levelWord} {stats.level.level}
+                    </span>
+                    <span className="acad-ring-pct">{ringPct}%</span>
                   </div>
                 </div>
-                <div className="account-daily-info">
-                  <p className="account-daily-label">{t.dailyGoalLabel}</p>
-                  <p className="account-daily-value">
-                    {dailyMet
-                      ? `${daily.todayXp} ${t.xpUnit}`
-                      : `${daily.todayXp} / ${daily.goalXp} ${t.xpUnit}`}
-                  </p>
-                  {dailyMet ? <p className="account-daily-met">✓ {t.goalReached}</p> : null}
-                </div>
-              </div>
-
-              <div className="account-streakblock">
-                <div className="account-streak-head">
-                  <span className={`account-streak-flame ${streak > 0 ? 'is-active' : ''}`} aria-hidden="true">
-                    <IconFlame />
-                  </span>
-                  <span className="account-streak-num">{streak}</span>
-                  <span className="account-streak-meta">
-                    <span className="account-streak-label">{t.statStreak}</span>
-                    <span className="account-streak-best">
-                      {t.bestLabel} · {streakBest}
-                    </span>
-                  </span>
-                </div>
-                <p className="account-cal-label">{t.calendarLabel}</p>
-                <div className="account-cal">
-                  {calendar.map((d) => (
-                    <span
-                      key={d.iso}
-                      className={`account-cal-day ${d.active ? 'is-active' : ''} ${d.isToday ? 'is-today' : ''}`}
-                      title={d.iso}
-                    >
-                      {d.dayNum}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              <div className="account-weekly">
-                <p className="account-weekly-label">{t.weeklyLabel}</p>
-                <div className="account-weekly-bars">
-                  {weekly.map((w) => (
-                    <div key={w.iso} className="account-weekly-col">
-                      <span className="account-weekly-track" aria-hidden="true">
-                        <span
-                          className={`account-weekly-bar ${w.xp > 0 ? 'is-on' : ''}`}
-                          style={{ height: `${Math.round((w.xp / weeklyMax) * 100)}%` }}
-                        />
-                      </span>
-                      <span className={`account-weekly-day ${w.iso === todayIso ? 'is-today' : ''}`}>
-                        {weekdayLabel(w.iso)}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            <div className="account-level-card">
-              <div
-                className="account-level-ring"
-                style={{ background: `conic-gradient(var(--accent) ${ringPct}%, #e7e7e0 ${ringPct}%)` }}
-                aria-hidden="true"
-              >
-                <div className="account-level-ring-inner">
-                  <span className="account-level-num">{stats.level.level}</span>
-                  <span className="account-level-word">{t.levelWord}</span>
-                </div>
-              </div>
-              <div className="account-level-info">
-                <p className="account-level-rank">{rankName}</p>
-                <div className="account-xp-row">
-                  <span className="account-xp-value">
+                <div className="acad-level-main">
+                  <div className="acad-xp">
                     {stats.xp} {t.xpUnit}
-                  </span>
-                  <span className="account-xp-next">
+                  </div>
+                  <div className="acad-xp-sub">
                     {stats.level.isMax ? t.maxLevelReached : t.xpToNext(stats.level.xpToNext, nextRankName)}
-                  </span>
+                  </div>
+                  <div className="acad-xp-bar">
+                    <span style={{ width: `${ringPct}%` }} />
+                  </div>
                 </div>
-                <div
-                  className="account-xp-track"
-                  role="progressbar"
-                  aria-valuenow={ringPct}
-                  aria-valuemin={0}
-                  aria-valuemax={100}
+                <div className="acad-stats">
+                  <div className="acad-stat">
+                    <span className="acad-stat-n">{stats.completedModules}</span>
+                    <span className="acad-stat-l">{t.statModules}</span>
+                  </div>
+                  <div className="acad-stat">
+                    <span className="acad-stat-n acad-stat-ok">{certificates.length}</span>
+                    <span className="acad-stat-l">{t.statCertificates}</span>
+                  </div>
+                  <div className="acad-stat">
+                    <span className="acad-stat-n">{streak}</span>
+                    <span className="acad-stat-l">{t.statStreak}</span>
+                  </div>
+                </div>
+              </section>
+
+              {/* Resume hero */}
+              {resume ? (
+                <a
+                  className="acad-resume"
+                  href={`/academy/${resume.slug}?m=${resume.moduleIndex}#course-content`}
                 >
-                  <span className="account-xp-fill" style={{ width: `${ringPct}%` }} />
+                  <span className={`acad-resume-thumb acad-thumb-${resumeCourse?.tone ?? 'free'}`} aria-hidden="true" />
+                  <div className="acad-resume-main">
+                    <p className="acad-resume-eyebrow">{x.resumeWord}</p>
+                    <h2 className="acad-resume-title">{resume.title}</h2>
+                    <p className="acad-resume-mod">
+                      {t.moduleWord} {resume.moduleIndex + 1} {x.of} {resumeCourse?.modules ?? '—'} ·{' '}
+                      {resume.moduleTitle}
+                    </p>
+                    <div className="acad-resume-bar">
+                      <span style={{ width: `${resumePct}%` }} />
+                    </div>
+                  </div>
+                  <span className="acad-resume-cta">
+                    {x.resumeWord} <span aria-hidden="true">→</span>
+                  </span>
+                </a>
+              ) : null}
+
+              {/* Catalogue */}
+              <div className="acad-sec-head">
+                <h2 className="acad-sec-title">{x.catalogTitle}</h2>
+                <span className="acad-sec-count">{x.coursesCount(enrolledCourses.length)}</span>
+              </div>
+              <div className="acad-grid">
+                {enrolledCourses.map((course) => {
+                  const pct = coursePercent({ completedCount: course.completedCount, total: course.modules });
+                  const complete = isCourseComplete({
+                    completedCount: course.completedCount,
+                    total: course.modules,
+                  });
+                  const assessmentPending = course.hasQuiz && complete && !course.quizPassed;
+                  let pillKind: 'done' | 'progress' | 'new';
+                  let pillLabel: string;
+                  if (course.certified) {
+                    pillKind = 'done';
+                    pillLabel = x.certified;
+                  } else if (course.completedCount > 0 || assessmentPending) {
+                    pillKind = 'progress';
+                    pillLabel = t.inProgress;
+                  } else {
+                    pillKind = 'new';
+                    pillLabel = t.notStarted;
+                  }
+                  return (
+                    <a key={course.slug} className="acad-card" href={`/academy/${course.slug}`}>
+                      <span className={`acad-card-top acad-thumb-${course.tone}`} aria-hidden="true" />
+                      <div className="acad-card-body">
+                        <div className="acad-card-meta">
+                          <span className="acad-card-source">{t.sourceLabel[course.source]}</span>
+                          <span className={`acad-pill acad-pill-${pillKind}`}>
+                            {pillKind === 'done' ? <IconCheck /> : null}
+                            {pillLabel}
+                          </span>
+                        </div>
+                        <h3 className="acad-card-title">{course.title}</h3>
+                        <div className="acad-card-bar">
+                          <span className={pillKind === 'done' ? 'is-done' : ''} style={{ width: `${pct}%` }} />
+                        </div>
+                        <p className="acad-card-modules">
+                          {course.completedCount} / {course.modules} {t.modules}
+                        </p>
+                      </div>
+                    </a>
+                  );
+                })}
+              </div>
+
+              {/* Certificates */}
+              <div className="acad-sec-head acad-sec-head-2">
+                <h2 className="acad-sec-title">{t.certificatesTitle}</h2>
+                <span className="acad-sec-count">{x.certsCount(certificates.length)}</span>
+              </div>
+              {certificates.length === 0 ? (
+                <p className="account-cert-empty">{t.noCertificates}</p>
+              ) : (
+                <div className="acad-cert-grid">
+                  {certificates.map((cert) => (
+                    <section key={cert.slug} className="acad-cert">
+                      <span className="acad-cert-icon" aria-hidden="true">
+                        <IconSeal />
+                      </span>
+                      <div className="acad-cert-body">
+                        <h3 className="acad-cert-title">{cert.title}</h3>
+                        <p className="acad-cert-date">{t.certIssued(formatDate(cert.certifiedAt, locale) ?? '')}</p>
+                      </div>
+                      <a
+                        className="acad-cert-dl"
+                        href={`/account/certificate/${cert.slug}/pdf`}
+                        target="_blank"
+                        rel="noopener"
+                      >
+                        {x.download}
+                      </a>
+                    </section>
+                  ))}
                 </div>
+              )}
+            </>
+          ) : (
+            <div className="account-empty acad-empty">
+              <p>{t.emptyBody}</p>
+              <div className="account-empty-actions">
+                <a className="button button-dark" href="/academy#free">
+                  {t.freeCourses}
+                </a>
+                <a className="button button-accent" href="/academy#premium">
+                  {t.premiumMasterclasses}
+                </a>
               </div>
             </div>
+          )}
 
-            <ul className="account-stat-grid">
-              <li className="account-stat">
-                <span className="account-stat-icon" aria-hidden="true">
-                  <IconLayers />
-                </span>
-                <span className="account-stat-value">
-                  {stats.completedModules} / {stats.totalModules}
-                </span>
-                <span className="account-stat-label">{t.statModules}</span>
-              </li>
-              <li className="account-stat">
-                <span className="account-stat-icon" aria-hidden="true">
-                  <IconTrophy />
-                </span>
-                <span className="account-stat-value">
-                  {stats.coursesCompleted} / {enrolledCourses.length}
-                </span>
-                <span className="account-stat-label">{t.statCourses}</span>
-              </li>
-              <li className="account-stat">
-                <span className="account-stat-icon" aria-hidden="true">
-                  <IconSeal />
-                </span>
-                <span className="account-stat-value">{certificates.length}</span>
-                <span className="account-stat-label">{t.statCertificates}</span>
-              </li>
-              <li className={`account-stat account-stat-streak ${streak > 0 ? 'is-active' : ''}`}>
-                <span className="account-stat-icon" aria-hidden="true">
-                  <IconFlame />
-                </span>
-                <span className="account-stat-value">{streak}</span>
-                <span className="account-stat-label">{t.statStreak}</span>
-              </li>
-            </ul>
+          {/* Academy Pass — kept (subscription status / upsell) */}
+          <div className="acad-sec-head acad-sec-head-2">
+            <h2 className="acad-sec-title">{hasActivePass ? t.passActiveTitle : t.passKicker}</h2>
           </div>
-        </section>
-      ) : null}
-
-      <section className="account-pass section">
-        <div className="container">
-          <header className="account-section-head">
-            <p className="section-kicker">{t.passKicker}</p>
-            <h2>{hasActivePass ? t.passActiveTitle : t.passInactiveTitle}</h2>
-          </header>
           {hasActivePass ? (
             <div className="account-pass-card">
               <div>
@@ -953,179 +951,6 @@ export function AccountPage({
         </div>
       </section>
 
-      <section className="account-courses section">
-        <div className="container">
-          <header className="account-section-head">
-            <p className="section-kicker">{t.coursesKicker}</p>
-            <h2>{hasCourses ? t.continueLearning : t.noCourses}</h2>
-          </header>
-          {!hasCourses ? (
-            <div className="account-empty">
-              <p>{t.emptyBody}</p>
-              <div className="account-empty-actions">
-                <a className="button button-dark" href="/academy#free">
-                  {t.freeCourses}
-                </a>
-                <a className="button button-accent" href="/academy#premium">
-                  {t.premiumMasterclasses}
-                </a>
-              </div>
-            </div>
-          ) : (
-            <ul className="account-course-list">
-              {enrolledCourses.map((course) => {
-                const pct = coursePercent({ completedCount: course.completedCount, total: course.modules });
-                const complete = isCourseComplete({
-                  completedCount: course.completedCount,
-                  total: course.modules,
-                });
-                // Modules done but the assessment is still pending.
-                const assessmentPending = course.hasQuiz && complete && !course.quizPassed;
-                let statusKind: 'done' | 'progress' | 'new';
-                let statusLabel: string;
-                if (course.certified) {
-                  statusKind = 'done';
-                  statusLabel = t.completed;
-                } else if (assessmentPending) {
-                  statusKind = 'progress';
-                  statusLabel = t.assessmentToPass;
-                } else if (course.completedCount > 0) {
-                  statusKind = 'progress';
-                  statusLabel = t.inProgress;
-                } else {
-                  statusKind = 'new';
-                  statusLabel = t.notStarted;
-                }
-                return (
-                  <li
-                    key={course.slug}
-                    className={`account-course-card ${course.certified ? 'is-complete' : ''}`}
-                  >
-                    <div className="account-course-meta">
-                      <span className="account-course-source">{t.sourceLabel[course.source]}</span>
-                      <span className={`account-course-status account-course-status-${statusKind}`}>
-                        {statusLabel}
-                      </span>
-                    </div>
-                    <h3 className="account-course-title">
-                      <a href={`/academy/${course.slug}`}>{course.title}</a>
-                    </h3>
-                    <div className="account-course-progress">
-                      <div
-                        className="account-course-track"
-                        role="progressbar"
-                        aria-valuenow={pct}
-                        aria-valuemin={0}
-                        aria-valuemax={100}
-                      >
-                        <span className="account-course-fill" style={{ width: `${pct}%` }} />
-                      </div>
-                      <span className="account-course-progress-text">
-                        {course.completedCount} / {course.modules} {t.modules} · {pct}%
-                      </span>
-                    </div>
-                    {course.certified && course.certifiedAt ? (
-                      <a
-                        className="account-course-cert"
-                        href={`/account/certificate/${course.slug}`}
-                        target="_blank"
-                        rel="noopener"
-                      >
-                        <span className="account-course-cert-icon" aria-hidden="true">
-                          <IconSeal />
-                        </span>
-                        {t.viewCertificate}
-                      </a>
-                    ) : assessmentPending ? (
-                      <a className="account-course-cert" href={`/academy/${course.slug}#assessment`}>
-                        <span className="account-course-cert-icon" aria-hidden="true">
-                          <IconSeal />
-                        </span>
-                        {t.takeAssessment}
-                      </a>
-                    ) : null}
-                    <a className="account-course-cta" href={`/academy/${course.slug}`}>
-                      {course.certified ? t.reviewCta : t.continueCta} <span aria-hidden="true">→</span>
-                    </a>
-                  </li>
-                );
-              })}
-            </ul>
-          )}
-        </div>
-      </section>
-
-      {hasCourses ? (
-        <section className="account-rewards section">
-          <div className="container">
-            <header className="account-section-head">
-              <p className="section-kicker">{t.rewardsKicker}</p>
-              <h2>{t.rewardsTitle}</h2>
-            </header>
-            <ul className="account-badge-grid">
-              {badges.map((b) => {
-                const meta = t.badges[b.id];
-                const Icon = BADGE_ICONS[b.id];
-                return (
-                  <li key={b.id} className={`account-badge ${b.earned ? 'is-earned' : 'is-locked'}`}>
-                    <span className="account-badge-icon" aria-hidden="true">
-                      <Icon />
-                    </span>
-                    <span className="account-badge-name">{meta.name}</span>
-                    <span className="account-badge-desc">{meta.desc}</span>
-                    <span className="account-badge-state">{b.earned ? t.earnedLabel : t.rewardsLocked}</span>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-        </section>
-      ) : null}
-
-      {hasCourses ? (
-        <section className="account-certificates section">
-          <div className="container">
-            <header className="account-section-head">
-              <p className="section-kicker">{t.certificatesKicker}</p>
-              <h2>{t.certificatesTitle}</h2>
-            </header>
-            {certificates.length === 0 ? (
-              <p className="account-cert-empty">{t.noCertificates}</p>
-            ) : (
-              <ul className="account-cert-grid">
-                {certificates.map((c) => (
-                  <li key={c.slug} className="account-cert-card">
-                    <span className="account-cert-seal" aria-hidden="true">
-                      <IconSeal />
-                    </span>
-                    <div className="account-cert-body">
-                      <p className="account-cert-course">{c.title}</p>
-                      {c.certificateLabel ? (
-                        <p className="account-cert-distinction">{c.certificateLabel}</p>
-                      ) : null}
-                      {c.hasQuiz && c.quizScore != null && c.quizTotal ? (
-                        <p className="account-cert-score">
-                          {t.certScoreLine(Math.round((c.quizScore / c.quizTotal) * 100))}
-                        </p>
-                      ) : null}
-                      <p className="account-cert-date">{t.certIssued(formatDate(c.certifiedAt, locale) ?? '')}</p>
-                    </div>
-                    <a
-                      className="button button-light account-cert-view"
-                      href={`/account/certificate/${c.slug}`}
-                      target="_blank"
-                      rel="noopener"
-                    >
-                      {t.viewCertificate}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-        </section>
-      ) : null}
-
       <Celebration content={celebration} onDismiss={() => setCelebration(null)} />
 
       {hasCourses ? (
@@ -1142,11 +967,7 @@ export function AccountPage({
           </span>
           <a
             className="button button-accent account-mobilebar-cta"
-            href={
-              resume
-                ? `/academy/${resume.slug}?m=${resume.moduleIndex}#course-content`
-                : '/academy#free'
-            }
+            href={resume ? `/academy/${resume.slug}?m=${resume.moduleIndex}#course-content` : '/academy#free'}
           >
             {t.continueCta}
           </a>
