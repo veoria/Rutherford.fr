@@ -1,12 +1,219 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 import { SiteFooter } from '@/components/site-footer';
 import { SiteNav } from '@/components/site-nav';
+import { AccountSubnav } from '@/components/account-subnav';
 import { type Locale, useLanguage } from '@/components/language-provider';
 import { COUNTRIES, JOB_TITLE_KEYS, TEAM_ROLE_KEYS, type JobTitleKey } from '@/data/onboarding-options';
 import { TEAM_ROLE_LABELS } from '@/data/team-role-labels';
 import type { AccountType } from '@/data/account-types';
+
+// Profile-completion banner copy (the % is computed from the filled fields).
+const BANNER: Record<Locale, { title: (pct: number) => string; sub: string }> = {
+  en: { title: (p) => `Profile ${p}% complete`, sub: 'Complete your profile to unlock all partner features.' },
+  fr: { title: (p) => `Profil complété à ${p} %`, sub: 'Complétez votre profil pour débloquer toutes les fonctionnalités partenaire.' },
+  de: { title: (p) => `Profil zu ${p}% ausgefüllt`, sub: 'Vervollständigen Sie Ihr Profil, um alle Partnerfunktionen freizuschalten.' },
+  it: { title: (p) => `Profilo completato al ${p}%`, sub: 'Completa il tuo profilo per sbloccare tutte le funzionalità partner.' },
+  es: { title: (p) => `Perfil completado al ${p}%`, sub: 'Complete su perfil para desbloquear todas las funciones de partner.' },
+};
+
+// Read-mode copy for the redesigned profile (identity card + info/company/security
+// cards). The editable form keeps using COPY below; this is the surrounding view.
+type View = {
+  eyebrow: string;
+  pageTitle: string;
+  pageSub: string;
+  editProfile: string;
+  back: string;
+  infoTitle: string;
+  companyTitle: string;
+  securityTitle: string;
+  edit: string;
+  notProvided: string;
+  funcLabel: string;
+  emailField: string;
+  notifField: string;
+  raisonLabel: string;
+  logoField: string;
+  logoEmpty: string;
+  passwordLabel: string;
+  passwordSub: string;
+  passwordBtn: string;
+  twoFaTitle: string;
+  twoFaSub: string;
+  twoFaOff: string;
+  twoFaOnLabel: string;
+  twoFaEnable: string;
+  twoFaManage: string;
+  chip2fa: string;
+};
+
+const VIEW: Record<Locale, View> = {
+  en: {
+    eyebrow: 'Partner area',
+    pageTitle: 'Profile',
+    pageSub: 'Your personal details, your company and your security.',
+    editProfile: 'Edit profile',
+    back: '← Back',
+    infoTitle: 'Personal information',
+    companyTitle: 'Company',
+    securityTitle: 'Security',
+    edit: 'Edit',
+    notProvided: 'Not provided',
+    funcLabel: 'Role',
+    emailField: 'Email',
+    notifField: 'Notification email',
+    raisonLabel: 'Company name',
+    logoField: 'Company logo',
+    logoEmpty: 'No logo',
+    passwordLabel: 'Password',
+    passwordSub: 'Set or change your sign-in password.',
+    passwordBtn: 'Change password',
+    twoFaTitle: 'Two-factor authentication (2FA)',
+    twoFaSub: 'Adds an extra layer of security to your partner account.',
+    twoFaOff: 'Not enabled',
+    twoFaOnLabel: 'Enabled',
+    twoFaEnable: 'Enable 2FA',
+    twoFaManage: 'Manage 2FA',
+    chip2fa: 'Two-factor (2FA)',
+  },
+  fr: {
+    eyebrow: 'Espace partenaire',
+    pageTitle: 'Profil',
+    pageSub: 'Vos informations personnelles, votre société et votre sécurité.',
+    editProfile: 'Modifier le profil',
+    back: '← Retour',
+    infoTitle: 'Informations personnelles',
+    companyTitle: 'Société',
+    securityTitle: 'Sécurité',
+    edit: 'Modifier',
+    notProvided: 'Non renseigné',
+    funcLabel: 'Fonction',
+    emailField: 'E-mail',
+    notifField: 'E-mail de notification',
+    raisonLabel: 'Raison sociale',
+    logoField: 'Logo de la société',
+    logoEmpty: 'Aucun logo',
+    passwordLabel: 'Mot de passe',
+    passwordSub: 'Définissez ou modifiez votre mot de passe de connexion.',
+    passwordBtn: 'Changer le mot de passe',
+    twoFaTitle: 'Authentification à deux facteurs (2FA)',
+    twoFaSub: 'Renforce la sécurité de votre compte partenaire.',
+    twoFaOff: 'Non activée',
+    twoFaOnLabel: 'Activée',
+    twoFaEnable: 'Activer la 2FA',
+    twoFaManage: 'Gérer la 2FA',
+    chip2fa: 'Authentification 2FA',
+  },
+  de: {
+    eyebrow: 'Partnerbereich',
+    pageTitle: 'Profil',
+    pageSub: 'Ihre persönlichen Daten, Ihr Unternehmen und Ihre Sicherheit.',
+    editProfile: 'Profil bearbeiten',
+    back: '← Zurück',
+    infoTitle: 'Persönliche Informationen',
+    companyTitle: 'Unternehmen',
+    securityTitle: 'Sicherheit',
+    edit: 'Bearbeiten',
+    notProvided: 'Nicht angegeben',
+    funcLabel: 'Funktion',
+    emailField: 'E-Mail',
+    notifField: 'Benachrichtigungs-E-Mail',
+    raisonLabel: 'Firmenname',
+    logoField: 'Firmenlogo',
+    logoEmpty: 'Kein Logo',
+    passwordLabel: 'Passwort',
+    passwordSub: 'Legen Sie Ihr Anmeldepasswort fest oder ändern Sie es.',
+    passwordBtn: 'Passwort ändern',
+    twoFaTitle: 'Zwei-Faktor-Authentifizierung (2FA)',
+    twoFaSub: 'Erhöht die Sicherheit Ihres Partnerkontos.',
+    twoFaOff: 'Nicht aktiviert',
+    twoFaOnLabel: 'Aktiviert',
+    twoFaEnable: '2FA aktivieren',
+    twoFaManage: '2FA verwalten',
+    chip2fa: 'Zwei-Faktor (2FA)',
+  },
+  it: {
+    eyebrow: 'Area partner',
+    pageTitle: 'Profilo',
+    pageSub: 'I suoi dati personali, la sua azienda e la sua sicurezza.',
+    editProfile: 'Modifica profilo',
+    back: '← Indietro',
+    infoTitle: 'Informazioni personali',
+    companyTitle: 'Azienda',
+    securityTitle: 'Sicurezza',
+    edit: 'Modifica',
+    notProvided: 'Non indicato',
+    funcLabel: 'Funzione',
+    emailField: 'E-mail',
+    notifField: 'E-mail di notifica',
+    raisonLabel: 'Ragione sociale',
+    logoField: 'Logo aziendale',
+    logoEmpty: 'Nessun logo',
+    passwordLabel: 'Password',
+    passwordSub: 'Imposti o modifichi la password di accesso.',
+    passwordBtn: 'Cambia password',
+    twoFaTitle: 'Autenticazione a due fattori (2FA)',
+    twoFaSub: 'Rafforza la sicurezza del suo account partner.',
+    twoFaOff: 'Non attiva',
+    twoFaOnLabel: 'Attiva',
+    twoFaEnable: 'Attiva la 2FA',
+    twoFaManage: 'Gestisci la 2FA',
+    chip2fa: 'Due fattori (2FA)',
+  },
+  es: {
+    eyebrow: 'Área de partner',
+    pageTitle: 'Perfil',
+    pageSub: 'Sus datos personales, su empresa y su seguridad.',
+    editProfile: 'Editar perfil',
+    back: '← Volver',
+    infoTitle: 'Información personal',
+    companyTitle: 'Empresa',
+    securityTitle: 'Seguridad',
+    edit: 'Editar',
+    notProvided: 'No indicado',
+    funcLabel: 'Función',
+    emailField: 'Correo',
+    notifField: 'Email de notificación',
+    raisonLabel: 'Razón social',
+    logoField: 'Logo de la empresa',
+    logoEmpty: 'Sin logo',
+    passwordLabel: 'Contraseña',
+    passwordSub: 'Establezca o cambie su contraseña de acceso.',
+    passwordBtn: 'Cambiar contraseña',
+    twoFaTitle: 'Autenticación de dos factores (2FA)',
+    twoFaSub: 'Refuerza la seguridad de su cuenta de partner.',
+    twoFaOff: 'No activada',
+    twoFaOnLabel: 'Activada',
+    twoFaEnable: 'Activar 2FA',
+    twoFaManage: 'Gestionar 2FA',
+    chip2fa: 'Doble factor (2FA)',
+  },
+};
+
+// Initials for the avatar circle — same convention as the header chip.
+function pfInitials(name: string, email: string): string {
+  const n = name.trim();
+  if (n) {
+    const parts = n.split(/\s+/).filter(Boolean);
+    if (parts.length >= 2) return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    return n.slice(0, 2).toUpperCase();
+  }
+  return (email.slice(0, 2) || '?').toUpperCase();
+}
+
+// One labelled value in an info/company card; missing values show red "Not provided".
+function ProfileField({ label, value, empty }: { label: string; value: string; empty: string }) {
+  const has = Boolean(value && value.trim());
+  return (
+    <div className="profile-field">
+      <span className="profile-field-k">{label}</span>
+      <span className={`profile-field-v${has ? '' : ' is-empty'}`}>{has ? value : empty}</span>
+    </div>
+  );
+}
 
 type Copy = {
   title: string;
@@ -288,6 +495,9 @@ const COPY: Record<Locale, Copy> = {
 type Props = {
   email: string;
   accountType: AccountType;
+  avatarUrl: string | null;
+  logoUrl: string | null;
+  canManageLogo: boolean;
   defaults: {
     fullName: string;
     country: string;
@@ -297,9 +507,87 @@ type Props = {
   };
 };
 
-export function AccountProfile({ email, accountType, defaults }: Props) {
+// Media-upload copy (profile photo + company logo, edited inline on this page).
+const MEDIA: Record<
+  Locale,
+  {
+    photoEdit: string;
+    logoDrop: string;
+    logoManaged: string;
+    logoForbidden: string;
+    uploadError: string;
+    loginNote: string;
+    teamFixed: string;
+  }
+> = {
+  en: {
+    photoEdit: 'Change photo',
+    logoDrop: 'Upload a logo',
+    logoManaged: 'Managed by your administrator',
+    logoForbidden: 'Only an organization owner or admin can change the logo.',
+    uploadError: 'Upload failed — use a PNG, JPG, WebP or SVG under 4 MB.',
+    loginNote: 'Used to sign in',
+    teamFixed: 'Company name and country are set by your Rutherford domain.',
+  },
+  fr: {
+    photoEdit: 'Changer la photo',
+    logoDrop: 'Déposer un logo',
+    logoManaged: 'Géré par votre administrateur',
+    logoForbidden: 'Seul un propriétaire ou administrateur de l’organisation peut changer le logo.',
+    uploadError: 'Échec de l’envoi — utilisez un PNG, JPG, WebP ou SVG de moins de 4 Mo.',
+    loginNote: 'Sert à la connexion',
+    teamFixed: 'La raison sociale et le pays sont définis par votre domaine Rutherford.',
+  },
+  de: {
+    photoEdit: 'Foto ändern',
+    logoDrop: 'Logo hochladen',
+    logoManaged: 'Von Ihrem Administrator verwaltet',
+    logoForbidden: 'Nur ein Inhaber oder Administrator der Organisation kann das Logo ändern.',
+    uploadError: 'Upload fehlgeschlagen — PNG, JPG, WebP oder SVG unter 4 MB verwenden.',
+    loginNote: 'Für die Anmeldung',
+    teamFixed: 'Firmenname und Land werden durch Ihre Rutherford-Domain festgelegt.',
+  },
+  it: {
+    photoEdit: 'Cambia foto',
+    logoDrop: 'Carica un logo',
+    logoManaged: 'Gestito dal suo amministratore',
+    logoForbidden: 'Solo un proprietario o amministratore dell’organizzazione può cambiare il logo.',
+    uploadError: 'Caricamento non riuscito — usi un PNG, JPG, WebP o SVG sotto i 4 MB.',
+    loginNote: 'Per l’accesso',
+    teamFixed: 'Ragione sociale e paese sono definiti dal suo dominio Rutherford.',
+  },
+  es: {
+    photoEdit: 'Cambiar foto',
+    logoDrop: 'Subir un logo',
+    logoManaged: 'Gestionado por su administrador',
+    logoForbidden: 'Solo un propietario o administrador de la organización puede cambiar el logo.',
+    uploadError: 'Error al subir — use un PNG, JPG, WebP o SVG de menos de 4 MB.',
+    loginNote: 'Para iniciar sesión',
+    teamFixed: 'La razón social y el país los define su dominio Rutherford.',
+  },
+};
+
+function CameraIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M4 8.5h3l1.2-2h7.6L17 8.5h3v10H4v-10z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
+      <circle cx="12" cy="13" r="3" stroke="currentColor" strokeWidth="1.7" />
+    </svg>
+  );
+}
+
+export function AccountProfile({
+  email,
+  accountType,
+  avatarUrl: avatarUrl0,
+  logoUrl: logoUrl0,
+  canManageLogo,
+  defaults,
+}: Props) {
   const { locale } = useLanguage();
   const t = COPY[locale];
+  const v = VIEW[locale];
+  const media = MEDIA[locale];
   // Internal team: company + country are fixed by the domain, so we hide those
   // fields and offer the internal role taxonomy instead of the printing roles.
   const isTeam = accountType === 'team';
@@ -313,6 +601,33 @@ export function AccountProfile({ email, accountType, defaults }: Props) {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  // Read view (cards) vs. inline edit mode (same cards, fields become inputs).
+  const [editing, setEditing] = useState(false);
+  // Photo / logo + manage rights come from the server (reliable under RLS).
+  const [logoUrl, setLogoUrl] = useState<string | null>(logoUrl0);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(avatarUrl0);
+  const [uploading, setUploading] = useState<'avatar' | 'logo' | null>(null);
+  const [mediaErr, setMediaErr] = useState<string | null>(null);
+  // Real 2FA state, read straight from Supabase MFA factors.
+  const [twoFa, setTwoFa] = useState<'loading' | 'on' | 'off'>('loading');
+
+  // Whether the account has an active TOTP factor — drives the security card + chip.
+  useEffect(() => {
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+      setTwoFa('off');
+      return;
+    }
+    const supabase = createSupabaseBrowserClient();
+    let active = true;
+    (async () => {
+      const { data, error } = await supabase.auth.mfa.listFactors();
+      if (!active) return;
+      setTwoFa(!error && (data?.totp?.length ?? 0) > 0 ? 'on' : 'off');
+    })();
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const handleDelete = async () => {
     setDeleting(true);
@@ -328,8 +643,49 @@ export function AccountProfile({ email, accountType, defaults }: Props) {
     setDeleting(false);
   };
 
-  const handleSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
+  const uploadMedia = async (kind: 'avatar' | 'logo', file: File) => {
+    setUploading(kind);
+    setMediaErr(null);
+    try {
+      const fd = new FormData();
+      fd.append('file', file);
+      fd.append('kind', kind);
+      const res = await fetch('/api/account/media', { method: 'POST', body: fd });
+      if (!res.ok) {
+        setMediaErr(kind === 'logo' && res.status === 403 ? media.logoForbidden : media.uploadError);
+        setUploading(null);
+        return;
+      }
+      const { url } = await res.json();
+      if (url) {
+        if (kind === 'avatar') setAvatarUrl(url as string);
+        else setLogoUrl(url as string);
+      }
+    } catch {
+      setMediaErr(media.uploadError);
+    }
+    setUploading(null);
+  };
+
+  const onPickFile = (kind: 'avatar' | 'logo') => (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.currentTarget.value = '';
+    if (file) void uploadMedia(kind, file);
+  };
+
+  const handleCancel = () => {
+    setFullName(defaults.fullName);
+    setCountry(defaults.country);
+    setCompany(defaults.company);
+    setJobTitle(defaults.jobTitle);
+    setNotif(defaults.notificationEmail);
+    setStatus('idle');
+    setErrorMsg(null);
+    setMediaErr(null);
+    setEditing(false);
+  };
+
+  const handleSave = async () => {
     if (!fullName.trim() || !jobTitle || (!isTeam && (!country || !company.trim()))) {
       setStatus('error');
       setErrorMsg(t.errorRequired);
@@ -351,6 +707,7 @@ export function AccountProfile({ email, accountType, defaults }: Props) {
       });
       if (res.ok) {
         setStatus('saved');
+        setEditing(false);
         return;
       }
       if (res.status === 401) {
@@ -365,169 +722,346 @@ export function AccountProfile({ email, accountType, defaults }: Props) {
     }
   };
 
+  const banner = BANNER[locale];
+  const twoFaKnown = twoFa !== 'loading';
+  const twoFaOn = twoFa === 'on';
+  const roleLabel = jobTitle
+    ? isTeam
+      ? teamRoles[jobTitle as keyof typeof teamRoles] ?? ''
+      : t.roles[jobTitle as JobTitleKey] ?? ''
+    : '';
+  const displayName = fullName.trim() || email;
+  const identitySub = [roleLabel, !isTeam ? company.trim() : ''].filter(Boolean).join(' · ');
+
+  // Completion = filled personal/company fields + 2FA (email is always set).
+  type Item = { key: string; done: boolean; label: string; kind: 'edit' | 'security' };
+  const items: Item[] = [
+    { key: 'name', done: Boolean(fullName.trim()), label: t.nameLabel, kind: 'edit' },
+    ...(!isTeam
+      ? [
+          { key: 'company', done: Boolean(company.trim()), label: t.companyLabel, kind: 'edit' as const },
+          { key: 'country', done: Boolean(country.trim()), label: t.countryLabel, kind: 'edit' as const },
+        ]
+      : []),
+    { key: 'role', done: Boolean(jobTitle.trim()), label: t.roleLabel, kind: 'edit' },
+    ...(twoFaKnown ? [{ key: '2fa', done: twoFaOn, label: v.chip2fa, kind: 'security' as const }] : []),
+  ];
+  const doneCount = 1 + items.filter((i) => i.done).length; // +1: email is always set
+  const completionPct = Math.round((doneCount / (items.length + 1)) * 100);
+  const missing = items.filter((i) => !i.done);
+
+  const openEdit = () => {
+    setStatus('idle');
+    setErrorMsg(null);
+    setEditing(true);
+  };
+
   return (
     <main className="page-shell" id="top">
       <SiteNav current="account" />
+      <AccountSubnav current="profile" />
 
-      <section className="signin-section section">
-        <div className="container signin-shell">
-          <header className="signin-head">
-            <p className="section-kicker">Rutherford</p>
-            <h1>{t.title}</h1>
-            <p>{t.subtitle}</p>
-          </header>
+      <section className="section profile-section">
+        <div className="container profile-shell">
+          <div className="profile-head">
+            <p className="profile-eyebrow">{v.eyebrow}</p>
+            <h1 className="profile-h1">{v.pageTitle}</h1>
+            <p className="profile-sub">{v.pageSub}</p>
+          </div>
 
-          <div className="signin-card">
-            <form className="signin-form" onSubmit={handleSubmit}>
-              <label htmlFor="pf-name" className="signin-label">
-                {t.nameLabel}
-              </label>
-              <input
-                id="pf-name"
-                type="text"
-                className="signin-input"
-                placeholder={t.namePlaceholder}
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-                required
-                disabled={status === 'saving'}
-              />
+          {status === 'saved' && !editing ? (
+            <p className="signin-message signin-message-ok profile-msg">{t.saved}</p>
+          ) : null}
 
-              {!isTeam ? (
-                <>
-                  <label htmlFor="pf-country" className="signin-label">
-                    {t.countryLabel}
-                  </label>
-                  <select
-                    id="pf-country"
-                    className="signin-input"
-                    value={country}
-                    onChange={(e) => setCountry(e.target.value)}
-                    required
-                    disabled={status === 'saving'}
-                  >
-                    <option value="" disabled>
-                      {t.selectCountry}
-                    </option>
-                    {COUNTRIES.map((c) => (
-                      <option key={c} value={c}>
-                        {c}
-                      </option>
-                    ))}
-                  </select>
-
-                  <label htmlFor="pf-company" className="signin-label">
-                    {t.companyLabel}
-                  </label>
-                  <input
-                    id="pf-company"
-                    type="text"
-                    className="signin-input"
-                    placeholder={t.companyPlaceholder}
-                    value={company}
-                    onChange={(e) => setCompany(e.target.value)}
-                    required
-                    disabled={status === 'saving'}
-                  />
-                </>
-              ) : null}
-
-              <label htmlFor="pf-role" className="signin-label">
-                {t.roleLabel}
-              </label>
-              <select
-                id="pf-role"
-                className="signin-input"
-                value={jobTitle}
-                onChange={(e) => setJobTitle(e.target.value)}
-                required
-                disabled={status === 'saving'}
-              >
-                <option value="" disabled>
-                  {t.selectRole}
-                </option>
-                {isTeam
-                  ? TEAM_ROLE_KEYS.map((key) => (
-                      <option key={key} value={key}>
-                        {teamRoles[key]}
-                      </option>
-                    ))
-                  : JOB_TITLE_KEYS.map((key) => (
-                      <option key={key} value={key}>
-                        {t.roles[key]}
-                      </option>
-                    ))}
-              </select>
-
-              <label htmlFor="pf-notif" className="signin-label">
-                {t.notifLabel}
-              </label>
-              <input
-                id="pf-notif"
-                type="email"
-                className="signin-input"
-                placeholder={t.notifPlaceholder}
-                value={notif}
-                onChange={(e) => setNotif(e.target.value)}
-                disabled={status === 'saving'}
-              />
-              <p className="signin-fine signin-fine-tight">{t.notifHint}</p>
-
-              <button
-                type="submit"
-                className="button button-accent signin-submit"
-                disabled={status === 'saving'}
-              >
-                {status === 'saving' ? t.saving : t.submit}
-              </button>
-            </form>
-
-            {status === 'saved' ? (
-              <p className="signin-message signin-message-ok">{t.saved}</p>
-            ) : null}
-            {status === 'error' && errorMsg ? (
-              <p className="signin-message signin-message-error">{errorMsg}</p>
-            ) : null}
-
-            <div className="account-profile-meta">
-              <div>
-                <span className="account-profile-meta-k">{t.loginEmailLabel}</span>
-                <span className="account-profile-meta-v">{email}</span>
+          {!editing && completionPct < 100 ? (
+            <section className="profile-banner">
+              <div className="profile-banner-row">
+                <div className="profile-banner-main">
+                  <h2 className="profile-banner-title">{banner.title(completionPct)}</h2>
+                  <p className="profile-banner-sub">{banner.sub}</p>
+                </div>
+                {missing.length ? (
+                  <div className="profile-banner-chips">
+                    {missing.map((m) =>
+                      m.kind === 'security' ? (
+                        <a key={m.key} href="/account/security" className="profile-chip">
+                          <span className="profile-chip-plus">+</span>
+                          {m.label}
+                        </a>
+                      ) : (
+                        <button key={m.key} type="button" className="profile-chip" onClick={openEdit}>
+                          <span className="profile-chip-plus">+</span>
+                          {m.label}
+                        </button>
+                      ),
+                    )}
+                  </div>
+                ) : null}
               </div>
-              <div>
-                <span className="account-profile-meta-k">{t.typeLabel}</span>
-                <span className="account-profile-meta-v">
-                  <span className={`account-type-badge account-type-${accountType}`}>
-                    {t.types[accountType]}
-                  </span>
-                </span>
-                <span className="signin-fine signin-fine-tight">{t.typeHint}</span>
+              <div className="profile-banner-bar">
+                <span style={{ width: `${completionPct}%` }} />
               </div>
-            </div>
+            </section>
+          ) : null}
 
-            <div className="account-profile-rgpd">
-              <div className="account-profile-meta-k">{t.rgpdTitle}</div>
-              <p className="signin-fine signin-fine-tight">{t.rgpdDesc}</p>
-              <div className="account-profile-rgpd-actions">
-                <a className="button button-light" href="/api/account/data">{t.exportBtn}</a>
-                {confirmDelete ? (
-                  <span className="account-profile-del-confirm">
-                    <span>{t.deleteConfirm}</span>
-                    <button type="button" className="button button-light" onClick={() => setConfirmDelete(false)} disabled={deleting}>
-                      {t.deleteCancel}
-                    </button>
-                    <button type="button" className="account-btn-danger" onClick={handleDelete} disabled={deleting}>
-                      {deleting ? t.deleting : t.deleteYes}
-                    </button>
-                  </span>
+          <section className="profile-identity">
+            {editing ? (
+              <label className="profile-avatar profile-avatar-edit" title={media.photoEdit}>
+                <input type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" hidden onChange={onPickFile('avatar')} />
+                {avatarUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img className="profile-avatar-img" src={avatarUrl} alt="" />
                 ) : (
-                  <button type="button" className="account-btn-danger-ghost" onClick={() => setConfirmDelete(true)}>
-                    {t.deleteBtn}
+                  pfInitials(fullName, email)
+                )}
+                <span className="profile-avatar-cam">{uploading === 'avatar' ? '…' : <CameraIcon />}</span>
+              </label>
+            ) : (
+              <span className="profile-avatar" aria-hidden="true">
+                {avatarUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img className="profile-avatar-img" src={avatarUrl} alt="" />
+                ) : (
+                  pfInitials(fullName, email)
+                )}
+                <span className="profile-avatar-dot" />
+              </span>
+            )}
+            <div className="profile-identity-main">
+              <h2 className="profile-identity-name">{displayName}</h2>
+              {identitySub ? <p className="profile-identity-role">{identitySub}</p> : null}
+              {mediaErr ? <p className="profile-media-err">{mediaErr}</p> : null}
+            </div>
+            {editing ? (
+              <div className="profile-edit-actions">
+                <button type="button" className="profile-photo-btn" onClick={handleCancel} disabled={status === 'saving'}>
+                  {t.deleteCancel}
+                </button>
+                <button type="button" className="button button-accent profile-save-btn" onClick={handleSave} disabled={status === 'saving'}>
+                  {status === 'saving' ? t.saving : t.submit}
+                </button>
+              </div>
+            ) : (
+              <button type="button" className="profile-photo-btn" onClick={openEdit}>
+                {v.editProfile}
+              </button>
+            )}
+          </section>
+
+          {editing && status === 'error' && errorMsg ? (
+            <p className="signin-message signin-message-error profile-msg">{errorMsg}</p>
+          ) : null}
+
+          <div className="profile-grid">
+            <section className="profile-card">
+              <div className="profile-card-h">
+                <h3 className="profile-card-title">{v.infoTitle}</h3>
+                {!editing ? (
+                  <button type="button" className="profile-edit-link" onClick={openEdit}>
+                    {v.edit}
                   </button>
+                ) : null}
+              </div>
+              <div className="profile-fields">
+                {editing ? (
+                  <>
+                    <label className="profile-field profile-field-edit">
+                      <span className="profile-field-k">{t.nameLabel}</span>
+                      <input
+                        className="profile-input"
+                        type="text"
+                        value={fullName}
+                        placeholder={t.namePlaceholder}
+                        onChange={(e) => setFullName(e.target.value)}
+                        disabled={status === 'saving'}
+                      />
+                    </label>
+                    <label className="profile-field profile-field-edit">
+                      <span className="profile-field-k">{v.funcLabel}</span>
+                      <select
+                        className="profile-input"
+                        value={jobTitle}
+                        onChange={(e) => setJobTitle(e.target.value)}
+                        disabled={status === 'saving'}
+                      >
+                        <option value="" disabled>
+                          {t.selectRole}
+                        </option>
+                        {isTeam
+                          ? TEAM_ROLE_KEYS.map((key) => (
+                              <option key={key} value={key}>
+                                {teamRoles[key]}
+                              </option>
+                            ))
+                          : JOB_TITLE_KEYS.map((key) => (
+                              <option key={key} value={key}>
+                                {t.roles[key]}
+                              </option>
+                            ))}
+                      </select>
+                    </label>
+                    <div className="profile-field">
+                      <span className="profile-field-k">{v.emailField}</span>
+                      <span className="profile-field-v">{email}</span>
+                      <span className="profile-field-note">{media.loginNote}</span>
+                    </div>
+                    <label className="profile-field profile-field-edit">
+                      <span className="profile-field-k">{v.notifField}</span>
+                      <input
+                        className="profile-input"
+                        type="email"
+                        value={notif}
+                        placeholder={t.notifPlaceholder}
+                        onChange={(e) => setNotif(e.target.value)}
+                        disabled={status === 'saving'}
+                      />
+                    </label>
+                  </>
+                ) : (
+                  <>
+                    <ProfileField label={t.nameLabel} value={fullName} empty={v.notProvided} />
+                    <ProfileField label={v.funcLabel} value={roleLabel} empty={v.notProvided} />
+                    <ProfileField label={v.emailField} value={email} empty={v.notProvided} />
+                    <ProfileField label={v.notifField} value={notif} empty={v.notProvided} />
+                  </>
                 )}
               </div>
-            </div>
+            </section>
+
+            <section className="profile-card">
+              <div className="profile-card-h">
+                <h3 className="profile-card-title">{v.companyTitle}</h3>
+                {!editing ? (
+                  <button type="button" className="profile-edit-link" onClick={openEdit}>
+                    {v.edit}
+                  </button>
+                ) : null}
+              </div>
+              <div className="profile-fields">
+                {editing && !isTeam ? (
+                  <label className="profile-field profile-field-edit">
+                    <span className="profile-field-k">{v.raisonLabel}</span>
+                    <input
+                      className="profile-input"
+                      type="text"
+                      value={company}
+                      placeholder={t.companyPlaceholder}
+                      onChange={(e) => setCompany(e.target.value)}
+                      disabled={status === 'saving'}
+                    />
+                  </label>
+                ) : (
+                  <ProfileField label={v.raisonLabel} value={company} empty={v.notProvided} />
+                )}
+                <ProfileField label={t.typeLabel} value={t.types[accountType]} empty={v.notProvided} />
+                {editing && !isTeam ? (
+                  <label className="profile-field profile-field-edit">
+                    <span className="profile-field-k">{t.countryLabel}</span>
+                    <select
+                      className="profile-input"
+                      value={country}
+                      onChange={(e) => setCountry(e.target.value)}
+                      disabled={status === 'saving'}
+                    >
+                      <option value="" disabled>
+                        {t.selectCountry}
+                      </option>
+                      {COUNTRIES.map((co) => (
+                        <option key={co} value={co}>
+                          {co}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                ) : (
+                  <ProfileField label={t.countryLabel} value={country} empty={v.notProvided} />
+                )}
+                <div className="profile-field">
+                  <span className="profile-field-k">{v.logoField}</span>
+                  {editing && canManageLogo ? (
+                    <label className="profile-logo-box profile-logo-drop" title={media.logoDrop}>
+                      <input type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" hidden onChange={onPickFile('logo')} />
+                      {logoUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img className="profile-logo-img" src={logoUrl} alt="" />
+                      ) : (
+                        <span className="profile-logo-empty">{media.logoDrop}</span>
+                      )}
+                      <span className="profile-logo-cam">{uploading === 'logo' ? '…' : <CameraIcon />}</span>
+                    </label>
+                  ) : (
+                    <>
+                      <div className="profile-logo-box">
+                        {logoUrl ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img className="profile-logo-img" src={logoUrl} alt="" />
+                        ) : (
+                          <span className="profile-logo-empty">{v.logoEmpty}</span>
+                        )}
+                      </div>
+                      {editing && !canManageLogo && logoUrl ? (
+                        <span className="profile-field-note">{media.logoManaged}</span>
+                      ) : null}
+                    </>
+                  )}
+                </div>
+              </div>
+              {editing && isTeam ? <p className="profile-field-note profile-team-note">{media.teamFixed}</p> : null}
+            </section>
           </div>
+
+          <section className="profile-card profile-security">
+            <h3 className="profile-card-title">{v.securityTitle}</h3>
+            <div className="profile-sec-row">
+              <div>
+                <div className="profile-sec-k">{v.passwordLabel}</div>
+                <div className="profile-sec-sub">{v.passwordSub}</div>
+              </div>
+              <a className="profile-sec-btn" href="/account/update-password">
+                {v.passwordBtn}
+              </a>
+            </div>
+            <div className="profile-sec-row profile-sec-row-last">
+              <div className="profile-sec-2fa">
+                <span className={`profile-2fa-pill${twoFaOn ? ' is-on' : ''}`}>
+                  <span className="profile-2fa-dot" />
+                  {twoFaOn ? v.twoFaOnLabel : v.twoFaOff}
+                </span>
+                <div>
+                  <div className="profile-sec-k">{v.twoFaTitle}</div>
+                  <div className="profile-sec-sub">{v.twoFaSub}</div>
+                </div>
+              </div>
+              <a className="profile-sec-btn-accent" href="/account/security">
+                {twoFaOn ? v.twoFaManage : v.twoFaEnable}
+              </a>
+            </div>
+          </section>
+
+          <section className="profile-card profile-rgpd-card">
+            <h3 className="profile-card-title">{t.rgpdTitle}</h3>
+            <p className="profile-sec-sub profile-rgpd-desc">{t.rgpdDesc}</p>
+            <div className="account-profile-rgpd-actions">
+              <a className="button button-light" href="/api/account/data">
+                {t.exportBtn}
+              </a>
+              {confirmDelete ? (
+                <span className="account-profile-del-confirm">
+                  <span>{t.deleteConfirm}</span>
+                  <button type="button" className="button button-light" onClick={() => setConfirmDelete(false)} disabled={deleting}>
+                    {t.deleteCancel}
+                  </button>
+                  <button type="button" className="account-btn-danger" onClick={handleDelete} disabled={deleting}>
+                    {deleting ? t.deleting : t.deleteYes}
+                  </button>
+                </span>
+              ) : (
+                <button type="button" className="account-btn-danger-ghost" onClick={() => setConfirmDelete(true)}>
+                  {t.deleteBtn}
+                </button>
+              )}
+            </div>
+          </section>
         </div>
       </section>
 

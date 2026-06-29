@@ -63,11 +63,17 @@ export async function createConsoleValidationTask(task: ConsoleValidationTask): 
   if (!TOKEN) return null;
   try {
     const lines = [`e-mail : ${task.email}`];
-    for (const [field, label] of PHOTO_LABELS) {
-      const link = task.photoLinks[field];
-      if (link) lines.push(`${label} : ${link}`);
+    if (task.folderLink) {
+      // Lightweight previews are attached to the task (viewable inline); the
+      // full-resolution originals live in Dropbox — no Supabase links needed.
+      lines.push(`Machine previews attached · full-resolution photos on Dropbox : ${task.folderLink}`);
+    } else {
+      // No Dropbox folder (integration off): fall back to the signed Supabase links.
+      for (const [field, label] of PHOTO_LABELS) {
+        const link = task.photoLinks[field];
+        if (link) lines.push(`${label} : ${link}`);
+      }
     }
-    if (task.folderLink) lines.push(`All photos : ${task.folderLink}`);
     if (task.notes) lines.push(`Notes : ${task.notes}`);
     lines.push('Source : rutherford.fr/console-validation');
 
@@ -114,6 +120,11 @@ export type AsanaTaskState = {
   approvalStatus: string | null;
   completedByName: string | null;
   completedAt: string | null;
+  // Who currently handles the request: the Asana assignee, plus its followers
+  // (the board adds Shajith as a follower on every request). Surfaced in the
+  // admin so "validations X handles" is filterable, not just "validated by X".
+  assigneeName: string | null;
+  followerNames: string[];
 };
 
 /**
@@ -126,7 +137,7 @@ export async function getConsoleValidationTaskState(taskGid: string): Promise<As
   try {
     const res = await asana(
       'GET',
-      `/tasks/${taskGid}?opt_fields=name,notes,approval_status,completed_at,completed_by.name,memberships.section.name,memberships.project.gid`
+      `/tasks/${taskGid}?opt_fields=name,notes,approval_status,completed_at,completed_by.name,assignee.name,followers.name,memberships.section.name,memberships.project.gid`
     );
     const data = res?.data;
     if (!data) return null;
@@ -138,6 +149,8 @@ export async function getConsoleValidationTaskState(taskGid: string): Promise<As
       approvalStatus: data.approval_status ?? null,
       completedByName: data.completed_by?.name ?? null,
       completedAt: data.completed_at ?? null,
+      assigneeName: data.assignee?.name ?? null,
+      followerNames: (data.followers ?? []).map((f: any) => f?.name).filter(Boolean) as string[],
     };
   } catch (error) {
     console.error('Asana task fetch failed:', error);
@@ -245,10 +258,11 @@ export async function addSupportTaskComment(taskGid: string, text: string): Prom
   }
 }
 
-/** Attach an actual image file (not a link) to a support task. The bytes are
- * read server-side and streamed to Asana's multipart endpoint, so this isn't
- * bound by the request body limit. No-op without a token; never throws. */
-export async function addSupportTaskAttachment(
+/** Attach an actual file (not a link) to any Asana task. The bytes are read
+ * server-side and streamed to Asana's multipart endpoint, so this isn't bound
+ * by the request body limit. Used for support photos and console-validation
+ * machine previews. No-op without a token; never throws. */
+export async function addTaskAttachment(
   taskGid: string,
   filename: string,
   file: Blob
@@ -267,14 +281,32 @@ export async function addSupportTaskAttachment(
       cache: 'no-store',
     });
     if (!res.ok) {
-      console.error('Asana support attachment failed:', res.status, await res.text().catch(() => ''));
+      console.error('Asana attachment failed:', res.status, await res.text().catch(() => ''));
       return false;
     }
     return true;
   } catch (error) {
-    console.error('Asana support attachment threw:', error);
+    console.error('Asana attachment threw:', error);
     return false;
   }
+}
+
+/** Attach lightweight machine previews to a console-validation task, each named
+ * after its role (Console photo, Number of keys, …) so the team sees them
+ * inline. Best-effort; returns how many attached. */
+export async function addConsoleValidationPreviews(
+  taskGid: string,
+  previews: { field: string; file: Blob }[]
+): Promise<number> {
+  if (!TOKEN || !taskGid) return 0;
+  const labels = new Map(PHOTO_LABELS);
+  let attached = 0;
+  for (const { field, file } of previews) {
+    const label = labels.get(field) || field;
+    const ext = file.type.includes('webp') ? 'webp' : file.type.includes('png') ? 'png' : 'jpg';
+    if (await addTaskAttachment(taskGid, `${label}.${ext}`, file)) attached += 1;
+  }
+  return attached;
 }
 
 export type AsanaStory = { text: string; isComment: boolean; createdByName: string | null };

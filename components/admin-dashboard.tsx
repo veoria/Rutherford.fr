@@ -6,7 +6,7 @@ import { SiteFooter } from '@/components/site-footer';
 import { SiteNav } from '@/components/site-nav';
 import { COUNTRIES, JOB_TITLE_KEYS, isJobTitleKey, type JobTitleKey } from '@/data/onboarding-options';
 import { ACCOUNT_TYPES, type AccountType } from '@/data/account-types';
-import type { AdminConsoleValidation, AdminOverview, AdminUser } from '@/lib/admin';
+import type { AdminConsoleValidation, AdminOverview, AdminSupportTicket, AdminUser } from '@/lib/admin';
 import type { AdminOrg, AdminOrgFull, MemberRole, OrgMember, PendingInvite } from '@/lib/organizations';
 
 const ROLE_LABELS: Record<JobTitleKey, string> = {
@@ -50,6 +50,22 @@ const CV_STATUS_TONE: Record<string, string> = {
   rejected: 'red',
 };
 
+const SUPPORT_STATUS_LABELS: Record<string, string> = {
+  new: 'Nouveau',
+  in_progress: 'En cours',
+  waiting_customer: 'Attente client',
+  resolved: 'Résolu',
+  closed: 'Fermé',
+};
+
+const SUPPORT_STATUS_TONE: Record<string, string> = {
+  new: 'review',
+  in_progress: 'review',
+  waiting_customer: 'action',
+  resolved: 'green',
+  closed: 'green',
+};
+
 const ERROR_LABELS: Record<string, string> = {
   cannot_self_demote: 'Vous ne pouvez pas retirer votre propre accès admin.',
   cannot_delete_self: 'Vous ne pouvez pas supprimer votre propre compte.',
@@ -69,6 +85,44 @@ function fmtDate(value: string | null): string {
     return '—';
   }
 }
+
+type AdminTab = 'overview' | 'accounts' | 'validations' | 'support' | 'orgs' | 'courses';
+type AccountSortKey = 'name' | 'company' | 'country' | 'signup' | 'activity' | 'level';
+
+// A saved view = a named snapshot of the accounts filter/sort, kept in
+// localStorage so each admin builds their own (no backend needed).
+type SavedView = {
+  name: string;
+  segment: string;
+  countryFilter: string;
+  activityFilter: string;
+  query: string;
+  sortKey: AccountSortKey;
+  sortDir: 'asc' | 'desc';
+};
+const SAVED_VIEWS_KEY = 'rf-admin-saved-views';
+
+const ACCOUNT_ACTIVE_DAYS = 30;
+
+function withinDays(iso: string | null, days: number): boolean {
+  if (!iso) return false;
+  const ts = new Date(iso).getTime();
+  return Number.isFinite(ts) && Date.now() - ts <= days * 86400000;
+}
+
+const isAccountActive = (u: AdminUser): boolean => withinDays(u.lastActiveAt, ACCOUNT_ACTIVE_DAYS);
+
+// One-click segments for the accounts view: the four account types plus the two
+// status flags worth isolating. Counts are shown on each chip.
+const ACCOUNT_SEGMENTS: { key: string; label: string; match: (u: AdminUser) => boolean }[] = [
+  { key: 'all', label: 'Tous', match: () => true },
+  { key: 'client', label: 'Clients', match: (u) => u.accountType === 'client' },
+  { key: 'reseller', label: 'Revendeurs', match: (u) => u.accountType === 'reseller' },
+  { key: 'distributor', label: 'Distributeurs', match: (u) => u.accountType === 'distributor' },
+  { key: 'team', label: 'Équipe', match: (u) => u.accountType === 'team' },
+  { key: 'admin', label: 'Admins', match: (u) => u.isAdmin },
+  { key: 'suspended', label: 'Suspendus', match: (u) => u.suspended },
+];
 
 function toCsv(users: AdminUser[]): string {
   const headers = [
@@ -778,37 +832,194 @@ export function AdminDashboard({
   selfId: string;
   canManage: boolean;
 }) {
-  const { users, courses, consoleValidations, totals } = overview;
+  const { users, courses, consoleValidations, supportTickets, totals } = overview;
+  const [tab, setTab] = useState<AdminTab>('overview');
   const [query, setQuery] = useState('');
   const [editing, setEditing] = useState<AdminUser | null>(null);
+  const [segment, setSegment] = useState('all');
+  const [countryFilter, setCountryFilter] = useState('');
+  const [activityFilter, setActivityFilter] = useState('');
+  const [sortKey, setSortKey] = useState<AccountSortKey>('signup');
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
   const [cvFilter, setCvFilter] = useState('');
+  const [cvQuery, setCvQuery] = useState('');
+  const [supportFilter, setSupportFilter] = useState('');
+  const [supportQuery, setSupportQuery] = useState('');
   const [editingOrg, setEditingOrg] = useState<AdminOrgFull | null>(null);
   const [creatingOrg, setCreatingOrg] = useState(false);
 
-  const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return users;
-    return users.filter((u) =>
-      [u.name, u.email, u.company, u.country, u.jobTitle].some((f) => (f ?? '').toLowerCase().includes(q))
-    );
-  }, [users, query]);
-
-  const filteredCv = useMemo(
-    () => (cvFilter ? consoleValidations.filter((c) => c.status === cvFilter) : consoleValidations),
-    [consoleValidations, cvFilter]
+  const countryOptions = useMemo(
+    () => (Array.from(new Set(users.map((u) => u.country).filter(Boolean))) as string[]).sort(),
+    [users]
   );
 
+  // Counts for the segment chips (computed over the full set, not the filtered one).
+  const segmentCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const s of ACCOUNT_SEGMENTS) counts[s.key] = users.filter(s.match).length;
+    return counts;
+  }, [users]);
+
+  const filteredAccounts = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    const match = ACCOUNT_SEGMENTS.find((s) => s.key === segment)?.match ?? (() => true);
+    const list = users.filter((u) => {
+      if (!match(u)) return false;
+      if (countryFilter && u.country !== countryFilter) return false;
+      if (activityFilter === 'active' && !isAccountActive(u)) return false;
+      if (activityFilter === 'inactive' && (isAccountActive(u) || !u.onboarded)) return false;
+      if (
+        q &&
+        ![u.name, u.email, u.company, u.country, u.jobTitle].some((f) => (f ?? '').toLowerCase().includes(q))
+      )
+        return false;
+      return true;
+    });
+    const dir = sortDir === 'asc' ? 1 : -1;
+    const val = (u: AdminUser): string | number => {
+      switch (sortKey) {
+        case 'name':
+          return (u.name ?? u.email ?? '').toLowerCase();
+        case 'company':
+          return (u.company ?? '').toLowerCase();
+        case 'country':
+          return (u.country ?? '').toLowerCase();
+        case 'activity':
+          return u.lastSignInAt ?? '';
+        case 'level':
+          return u.level;
+        default:
+          return u.signupAt ?? '';
+      }
+    };
+    return [...list].sort((a, b) => {
+      const va = val(a);
+      const vb = val(b);
+      if (va < vb) return -dir;
+      if (va > vb) return dir;
+      return 0;
+    });
+  }, [users, segment, countryFilter, activityFilter, query, sortKey, sortDir]);
+
+  const newThisWeek = useMemo(() => users.filter((u) => withinDays(u.signupAt, 7)).slice(0, 8), [users]);
+  const toReengage = useMemo(
+    () => users.filter((u) => u.onboarded && !isAccountActive(u)).slice(0, 8),
+    [users]
+  );
+
+  const toggleSort = (key: AccountSortKey) => {
+    if (sortKey === key) {
+      setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'));
+    } else {
+      setSortKey(key);
+      setSortDir(key === 'name' || key === 'company' || key === 'country' ? 'asc' : 'desc');
+    }
+  };
+
+  const [savedViews, setSavedViews] = useState<SavedView[]>([]);
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(SAVED_VIEWS_KEY);
+      if (raw) setSavedViews(JSON.parse(raw) as SavedView[]);
+    } catch {
+      /* ignore */
+    }
+  }, []);
+  const persistViews = (views: SavedView[]) => {
+    setSavedViews(views);
+    try {
+      localStorage.setItem(SAVED_VIEWS_KEY, JSON.stringify(views));
+    } catch {
+      /* ignore */
+    }
+  };
+  const saveCurrentView = () => {
+    const name = window.prompt('Nom de la vue enregistrée ?')?.trim();
+    if (!name) return;
+    persistViews([
+      ...savedViews.filter((v) => v.name !== name),
+      { name, segment, countryFilter, activityFilter, query, sortKey, sortDir },
+    ]);
+  };
+  const applyView = (v: SavedView) => {
+    setSegment(v.segment);
+    setCountryFilter(v.countryFilter);
+    setActivityFilter(v.activityFilter);
+    setQuery(v.query);
+    setSortKey(v.sortKey);
+    setSortDir(v.sortDir);
+  };
+
+  const filteredCv = useMemo(() => {
+    const q = cvQuery.trim().toLowerCase();
+    return consoleValidations.filter((c) => {
+      if (cvFilter && c.status !== cvFilter) return false;
+      if (!q) return true;
+      // Match a person across both the submission email and the account email
+      // (so requests sent before the account existed — user_id still null — are
+      // found too), plus reviewer, company, press and the deal/ref id.
+      return [
+        c.company,
+        c.country,
+        c.machine,
+        c.email,
+        c.userEmail,
+        c.reviewedBy,
+        c.assignee,
+        (c.followers ?? []).join(' '),
+        c.refCode,
+        c.pipedriveDealId != null ? `id ${c.pipedriveDealId}` : null,
+        c.pipedriveDealId != null ? String(c.pipedriveDealId) : null,
+      ].some((f) => (f ?? '').toString().toLowerCase().includes(q));
+    });
+  }, [consoleValidations, cvFilter, cvQuery]);
+
+  const orgById = useMemo(() => new Map(orgsFull.map((o) => [o.id, o] as const)), [orgsFull]);
+
+  const filteredSupport = useMemo(() => {
+    const q = supportQuery.trim().toLowerCase();
+    return supportTickets.filter((t) => {
+      if (supportFilter && t.status !== supportFilter) return false;
+      if (!q) return true;
+      return [t.name, t.email, t.userEmail, t.assignee].some((f) => (f ?? '').toLowerCase().includes(q));
+    });
+  }, [supportTickets, supportFilter, supportQuery]);
+
   const downloadCsv = () => {
-    const blob = new Blob(['﻿' + toCsv(users)], { type: 'text/csv;charset=utf-8;' });
+    const blob = new Blob(['﻿' + toCsv(filteredAccounts)], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `rutherford-academy-utilisateurs-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.download = `rutherford-academy-comptes-${new Date().toISOString().slice(0, 10)}.csv`;
     document.body.appendChild(a);
     a.click();
     a.remove();
     URL.revokeObjectURL(url);
   };
+
+  const ADMIN_TABS: { key: AdminTab; label: string; count: number | null }[] = [
+    { key: 'overview', label: 'Vue d’ensemble', count: null },
+    { key: 'accounts', label: 'Comptes', count: totals.users },
+    { key: 'validations', label: 'Validations', count: consoleValidations.length },
+    { key: 'support', label: 'Support', count: supportTickets.length },
+    { key: 'orgs', label: 'Organisations', count: orgsFull.length },
+    { key: 'courses', label: 'Cours', count: courses.length },
+  ];
+
+  const sortTh = (key: AccountSortKey, label: string) => (
+    <th>
+      <button
+        type="button"
+        className={`admin-sort${sortKey === key ? ' is-active' : ''}`}
+        onClick={() => toggleSort(key)}
+      >
+        {label}
+        <span className="admin-sort-arrow" aria-hidden="true">
+          {sortKey === key ? (sortDir === 'asc' ? ' ↑' : ' ↓') : ''}
+        </span>
+      </button>
+    </th>
+  );
 
   return (
     <main className="page-shell" id="top">
@@ -823,306 +1034,566 @@ export function AdminDashboard({
                 Tableau de bord{!canManage ? <span className="admin-badge">Lecture seule</span> : null}
               </h1>
             </div>
-            <button type="button" className="button button-light" onClick={downloadCsv}>
-              Exporter en CSV
-            </button>
+            {tab === 'accounts' ? (
+              <button type="button" className="button button-light" onClick={downloadCsv}>
+                Exporter en CSV ({filteredAccounts.length})
+              </button>
+            ) : null}
           </header>
 
-          <ul className="admin-totals">
-            <li className="admin-total">
-              <span className="admin-total-value">{totals.users}</span>
-              <span className="admin-total-label">Comptes</span>
-            </li>
-            <li className="admin-total">
-              <span className="admin-total-value">{totals.onboarded}</span>
-              <span className="admin-total-label">Onboardés (leads)</span>
-            </li>
-            <li className="admin-total">
-              <span className="admin-total-value">{totals.consoleOpen}</span>
-              <span className="admin-total-label">Validations ouvertes</span>
-            </li>
-            <li className="admin-total">
-              <span className="admin-total-value">{totals.certificates}</span>
-              <span className="admin-total-label">Certificats délivrés</span>
-            </li>
-            <li className="admin-total">
-              <span className="admin-total-value">{totals.activePass}</span>
-              <span className="admin-total-label">Academy Pass actifs</span>
-            </li>
-          </ul>
-
-          <div className="admin-block">
-            <div className="admin-block-head">
-              <h2>Utilisateurs ({filtered.length})</h2>
-              <input
-                type="search"
-                className="admin-search"
-                placeholder="Rechercher (nom, e-mail, société…)"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-              />
-            </div>
-            <div className="admin-table-wrap">
-              <table className="admin-table">
-                <thead>
-                  <tr>
-                    <th>Nom</th>
-                    <th>E-mail</th>
-                    <th>Société</th>
-                    <th>Pays</th>
-                    <th>Poste</th>
-                    <th>Type</th>
-                    <th>Inscrit</th>
-                    <th>Dern. activité</th>
-                    <th className="admin-num">Modules</th>
-                    <th className="admin-num">Cours</th>
-                    <th className="admin-num">Certif.</th>
-                    <th className="admin-num">Niv.</th>
-                    <th>Accès</th>
-                    <th />
-                  </tr>
-                </thead>
-                <tbody>
-                  {filtered.map((u) => (
-                    <tr key={u.id}>
-                      <td>
-                        {u.name ?? '—'}
-                        {u.isAdmin ? <span className="admin-badge">admin</span> : null}
-                        {u.suspended ? <span className="admin-badge admin-badge-warn">suspendu</span> : null}
-                      </td>
-                      <td className="admin-email">{u.email}</td>
-                      <td>{u.company ?? '—'}</td>
-                      <td>{u.country ?? '—'}</td>
-                      <td>{u.jobTitle ? ROLE_LABELS[u.jobTitle as JobTitleKey] ?? u.jobTitle : '—'}</td>
-                      <td>
-                        <AccountTypeBadge type={u.accountType} />
-                      </td>
-                      <td>{fmtDate(u.signupAt)}</td>
-                      <td>{fmtDate(u.lastActiveAt)}</td>
-                      <td className="admin-num">{u.modulesCompleted}</td>
-                      <td className="admin-num">{u.coursesCompleted}</td>
-                      <td className="admin-num">{u.certificates}</td>
-                      <td className="admin-num">{u.level}</td>
-                      <td>
-                        {u.activePass ? 'Pass' : u.purchases > 0 ? `${u.purchases} achat(s)` : u.onboarded ? 'Gratuit' : '—'}
-                      </td>
-                      <td>
-                        {canManage ? (
-                          <button type="button" className="admin-link-btn" onClick={() => setEditing(u)}>
-                            Gérer
-                          </button>
-                        ) : null}
-                      </td>
-                    </tr>
-                  ))}
-                  {filtered.length === 0 ? (
-                    <tr>
-                      <td colSpan={14} className="admin-empty">
-                        Aucun utilisateur.
-                      </td>
-                    </tr>
-                  ) : null}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <div className="admin-block">
-            <div className="admin-block-head">
-              <h2>Console validations ({filteredCv.length})</h2>
-              <select
-                className="admin-search"
-                value={cvFilter}
-                onChange={(e) => setCvFilter(e.target.value)}
-                aria-label="Filtrer par statut"
+          <nav className="admin-subnav" aria-label="Sections du back-office">
+            {ADMIN_TABS.map((t) => (
+              <button
+                key={t.key}
+                type="button"
+                className={`admin-subnav-link${tab === t.key ? ' is-active' : ''}`}
+                aria-current={tab === t.key ? 'page' : undefined}
+                onClick={() => setTab(t.key)}
               >
-                <option value="">Tous les statuts</option>
-                {Object.keys(CV_STATUS_LABELS).map((s) => (
-                  <option key={s} value={s}>
-                    {CV_STATUS_LABELS[s]}
-                  </option>
+                {t.label}
+                {t.count != null ? <span className="admin-subnav-count">{t.count}</span> : null}
+              </button>
+            ))}
+          </nav>
+
+          {tab === 'overview' ? (
+            <>
+              <ul className="admin-totals">
+                <li>
+                  <button type="button" className="admin-total admin-total-btn" onClick={() => setTab('accounts')}>
+                    <span className="admin-total-value">{totals.users}</span>
+                    <span className="admin-total-label">Comptes</span>
+                  </button>
+                </li>
+                <li>
+                  <button
+                    type="button"
+                    className="admin-total admin-total-btn"
+                    onClick={() => {
+                      setSegment('all');
+                      setActivityFilter('');
+                      setTab('accounts');
+                    }}
+                  >
+                    <span className="admin-total-value">{totals.onboarded}</span>
+                    <span className="admin-total-label">Onboardés (leads)</span>
+                  </button>
+                </li>
+                <li>
+                  <button type="button" className="admin-total admin-total-btn" onClick={() => setTab('validations')}>
+                    <span className="admin-total-value">{totals.consoleOpen}</span>
+                    <span className="admin-total-label">Validations ouvertes</span>
+                  </button>
+                </li>
+                <li>
+                  <button type="button" className="admin-total admin-total-btn" onClick={() => setTab('support')}>
+                    <span className="admin-total-value">{totals.supportOpen}</span>
+                    <span className="admin-total-label">Tickets ouverts</span>
+                  </button>
+                </li>
+                <li>
+                  <button type="button" className="admin-total admin-total-btn" onClick={() => setTab('courses')}>
+                    <span className="admin-total-value">{totals.certificates}</span>
+                    <span className="admin-total-label">Certificats délivrés</span>
+                  </button>
+                </li>
+                <li>
+                  <button type="button" className="admin-total admin-total-btn" onClick={() => setTab('accounts')}>
+                    <span className="admin-total-value">{totals.activePass}</span>
+                    <span className="admin-total-label">Academy Pass actifs</span>
+                  </button>
+                </li>
+              </ul>
+
+              <div className="admin-overview-grid">
+                <div className="admin-block">
+                  <div className="admin-block-head">
+                    <h2>Nouveaux comptes · 7 j ({newThisWeek.length})</h2>
+                  </div>
+                  {newThisWeek.length ? (
+                    <ul className="admin-mini-list">
+                      {newThisWeek.map((u) => (
+                        <li key={u.id}>
+                          <a className="admin-mini-row" href={`/admin/users/${u.id}`}>
+                            <span className="admin-mini-name">{u.name || u.email}</span>
+                            <span className="admin-mini-meta">{(u.company ?? '—') + ' · ' + fmtDate(u.signupAt)}</span>
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="admin-modal-section-status">Aucun nouveau compte cette semaine.</p>
+                  )}
+                </div>
+
+                <div className="admin-block">
+                  <div className="admin-block-head">
+                    <h2>À relancer · inactifs 30 j+ ({toReengage.length})</h2>
+                  </div>
+                  {toReengage.length ? (
+                    <ul className="admin-mini-list">
+                      {toReengage.map((u) => (
+                        <li key={u.id}>
+                          <a className="admin-mini-row" href={`/admin/users/${u.id}`}>
+                            <span className="admin-mini-name">{u.name || u.email}</span>
+                            <span className="admin-mini-meta">{(u.company ?? '—') + ' · vu ' + fmtDate(u.lastActiveAt)}</span>
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="admin-modal-section-status">Tous les comptes onboardés sont actifs.</p>
+                  )}
+                </div>
+              </div>
+            </>
+          ) : null}
+
+          {tab === 'accounts' ? (
+            <div className="admin-block">
+              <div className="admin-block-head">
+                <h2>Comptes ({filteredAccounts.length})</h2>
+                <div className="admin-block-controls">
+                  <input
+                    type="search"
+                    className="admin-search"
+                    placeholder="Rechercher (nom, e-mail, société…)"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                  />
+                  <select
+                    className="admin-search"
+                    value={countryFilter}
+                    onChange={(e) => setCountryFilter(e.target.value)}
+                    aria-label="Filtrer par pays"
+                  >
+                    <option value="">Tous les pays</option>
+                    {countryOptions.map((c) => (
+                      <option key={c} value={c}>
+                        {c}
+                      </option>
+                    ))}
+                  </select>
+                  <select
+                    className="admin-search"
+                    value={activityFilter}
+                    onChange={(e) => setActivityFilter(e.target.value)}
+                    aria-label="Filtrer par activité"
+                  >
+                    <option value="">Toute activité</option>
+                    <option value="active">Actifs (30 j)</option>
+                    <option value="inactive">Inactifs à relancer</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="admin-segments">
+                {ACCOUNT_SEGMENTS.map((s) => (
+                  <button
+                    key={s.key}
+                    type="button"
+                    className={`admin-chip${segment === s.key ? ' is-active' : ''}`}
+                    onClick={() => setSegment(s.key)}
+                  >
+                    {s.label}
+                    <span className="admin-chip-count">{segmentCounts[s.key] ?? 0}</span>
+                  </button>
                 ))}
-              </select>
-            </div>
-            <div className="admin-table-wrap">
-              <table className="admin-table">
-                <thead>
-                  <tr>
-                    <th>Date</th>
-                    <th>Société</th>
-                    <th>Pays</th>
-                    <th>Presse</th>
-                    <th>Statut</th>
-                    <th>Réf</th>
-                    <th>E-mail</th>
-                    <th>Compte</th>
-                    <th>Validé par</th>
-                    <th>Liens</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredCv.map((c) => (
-                    <tr key={c.id}>
-                      <td>{fmtDate(c.createdAt)}</td>
-                      <td>{c.company ?? '—'}</td>
-                      <td>{c.country ?? '—'}</td>
-                      <td>{c.machine ?? '—'}</td>
-                      <td>
-                        <span className={`admin-status admin-status-${CV_STATUS_TONE[c.status] ?? 'review'}`}>
-                          {CV_STATUS_LABELS[c.status] ?? c.status}
-                        </span>
-                      </td>
-                      <td>{c.pipedriveDealId ? `ID ${c.pipedriveDealId}` : '—'}</td>
-                      <td className="admin-email">{c.email}</td>
-                      <td className="admin-email">{c.userEmail ?? '—'}</td>
-                      <td>{c.reviewedBy ?? '—'}</td>
-                      <td className="admin-cv-links">
-                        {c.asanaUrl ? (
-                          <a href={c.asanaUrl} target="_blank" rel="noreferrer">
-                            Asana
-                          </a>
-                        ) : null}
-                        {c.pipedriveUrl ? (
-                          <a href={c.pipedriveUrl} target="_blank" rel="noreferrer">
-                            Pipedrive
-                          </a>
-                        ) : null}
-                        {!c.asanaUrl && !c.pipedriveUrl ? '—' : null}
-                      </td>
-                    </tr>
-                  ))}
-                  {filteredCv.length === 0 ? (
-                    <tr>
-                      <td colSpan={10} className="admin-empty">
-                        Aucune demande.
-                      </td>
-                    </tr>
-                  ) : null}
-                </tbody>
-              </table>
-            </div>
-          </div>
+              </div>
 
-          <div className="admin-block">
-            <div className="admin-block-head">
-              <h2>Organisations ({orgsFull.length})</h2>
-              {canManage ? (
-                <button type="button" className="button button-light" onClick={() => setCreatingOrg(true)}>
-                  Créer une organisation
+              <div className="admin-saved-views">
+                {savedViews.map((v) => (
+                  <span key={v.name} className="admin-saved-view">
+                    <button type="button" className="admin-saved-view-apply" onClick={() => applyView(v)}>
+                      {v.name}
+                    </button>
+                    <button
+                      type="button"
+                      className="admin-saved-view-del"
+                      onClick={() => persistViews(savedViews.filter((x) => x.name !== v.name))}
+                      aria-label={`Supprimer la vue ${v.name}`}
+                    >
+                      ×
+                    </button>
+                  </span>
+                ))}
+                <button type="button" className="admin-saved-view-add" onClick={saveCurrentView}>
+                  + Enregistrer la vue
                 </button>
-              ) : null}
-            </div>
-            <div className="admin-table-wrap">
-              <table className="admin-table">
-                <thead>
-                  <tr>
-                    <th>Logo</th>
-                    <th>Nom</th>
-                    <th>Type</th>
-                    <th>Ville</th>
-                    <th>Pays</th>
-                    <th className="admin-num">Membres</th>
-                    <th>Rattaché à</th>
-                    <th />
-                  </tr>
-                </thead>
-                <tbody>
-                  {orgsFull.map((o) => (
-                    <tr key={o.id}>
-                      <td>
-                        {o.logoUrl ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img src={o.logoUrl} alt="" className="admin-logo-thumb" />
-                        ) : (
-                          <span className="admin-logo-empty">—</span>
-                        )}
-                      </td>
-                      <td>{o.name}</td>
-                      <td>
-                        <AccountTypeBadge type={o.type as AccountType} />
-                      </td>
-                      <td>{o.city ?? '—'}</td>
-                      <td>{o.country ?? '—'}</td>
-                      <td className="admin-num">{o.memberCount}</td>
-                      <td>{o.resellerName ?? o.distributorName ?? '—'}</td>
-                      <td>
-                        {canManage ? (
-                          <button type="button" className="admin-link-btn" onClick={() => setEditingOrg(o)}>
-                            Gérer
-                          </button>
-                        ) : null}
-                      </td>
-                    </tr>
-                  ))}
-                  {orgsFull.length === 0 ? (
-                    <tr>
-                      <td colSpan={8} className="admin-empty">
-                        Aucune organisation.
-                      </td>
-                    </tr>
-                  ) : null}
-                </tbody>
-              </table>
-            </div>
-          </div>
+              </div>
 
-          <div className="admin-block">
-            <div className="admin-block-head">
-              <h2>Attribution clients ({orgs.clients.length})</h2>
-            </div>
-            <div className="admin-table-wrap">
-              <table className="admin-table">
-                <thead>
-                  <tr>
-                    <th>Client</th>
-                    <th>Revendeur</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {orgs.clients.map((c) => (
-                    <OrgRow key={c.id} client={c} resellers={orgs.resellers} canManage={canManage} />
-                  ))}
-                  {orgs.clients.length === 0 ? (
+              <div className="admin-table-wrap">
+                <table className="admin-table">
+                  <thead>
                     <tr>
-                      <td colSpan={2} className="admin-empty">
-                        Aucune organisation cliente.
-                      </td>
+                      {sortTh('name', 'Nom')}
+                      {sortTh('company', 'Société')}
+                      {sortTh('country', 'Pays')}
+                      <th>Type</th>
+                      {sortTh('signup', 'Inscrit')}
+                      {sortTh('activity', 'Dernière connexion')}
+                      <th>Accès</th>
+                      <th />
                     </tr>
-                  ) : null}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {filteredAccounts.map((u) => {
+                      const org = u.orgId ? orgById.get(u.orgId) : undefined;
+                      return (
+                        <tr key={u.id}>
+                          <td>
+                            <a className="admin-name-link" href={`/admin/users/${u.id}`}>
+                              {u.name || u.email}
+                            </a>
+                            {u.isAdmin ? <span className="admin-badge">admin</span> : null}
+                            {u.suspended ? <span className="admin-badge admin-badge-warn">suspendu</span> : null}
+                            {u.name ? <span className="admin-cv-sub">{u.email}</span> : null}
+                          </td>
+                          <td>
+                            {org ? (
+                              <button type="button" className="admin-company-link" onClick={() => setEditingOrg(org)}>
+                                {org.logoUrl ? (
+                                  // eslint-disable-next-line @next/next/no-img-element
+                                  <img src={org.logoUrl} alt="" className="admin-company-logo" />
+                                ) : null}
+                                <span>{u.company ?? org.name}</span>
+                              </button>
+                            ) : (
+                              u.company ?? '—'
+                            )}
+                          </td>
+                          <td>{u.country ?? '—'}</td>
+                          <td>
+                            <AccountTypeBadge type={u.accountType} />
+                          </td>
+                          <td>{fmtDate(u.signupAt)}</td>
+                          <td>{fmtDate(u.lastSignInAt)}</td>
+                          <td>
+                            {u.activePass ? 'Pass' : u.purchases > 0 ? `${u.purchases} achat(s)` : u.onboarded ? 'Gratuit' : '—'}
+                          </td>
+                          <td>
+                            {canManage ? (
+                              <button type="button" className="admin-link-btn" onClick={() => setEditing(u)}>
+                                Gérer
+                              </button>
+                            ) : null}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                    {filteredAccounts.length === 0 ? (
+                      <tr>
+                        <td colSpan={8} className="admin-empty">
+                          Aucun compte pour ce filtre.
+                        </td>
+                      </tr>
+                    ) : null}
+                  </tbody>
+                </table>
+              </div>
             </div>
-          </div>
+          ) : null}
 
-          <div className="admin-block">
-            <div className="admin-block-head">
-              <h2>Par cours</h2>
-            </div>
-            <div className="admin-table-wrap">
-              <table className="admin-table">
-                <thead>
-                  <tr>
-                    <th>Cours</th>
-                    <th>Type</th>
-                    <th className="admin-num">Apprenants</th>
-                    <th className="admin-num">Certifiés</th>
-                    <th className="admin-num">Score moyen QCM</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {courses.map((c) => (
-                    <tr key={c.slug}>
-                      <td>{c.title}</td>
-                      <td>{c.tone === 'premium' ? 'Premium' : 'Gratuit'}</td>
-                      <td className="admin-num">{c.learners}</td>
-                      <td className="admin-num">{c.certified}</td>
-                      <td className="admin-num">{c.avgQuizPct != null ? `${c.avgQuizPct}%` : '—'}</td>
+          {tab === 'validations' ? (
+            <div className="admin-block">
+              <div className="admin-block-head">
+                <h2>Console validations ({filteredCv.length})</h2>
+                <div className="admin-block-controls">
+                  <input
+                    type="search"
+                    className="admin-search"
+                    placeholder="Rechercher (e-mail, société, presse, validé par, ID…)"
+                    value={cvQuery}
+                    onChange={(e) => setCvQuery(e.target.value)}
+                    aria-label="Rechercher une validation"
+                  />
+                  <select
+                    className="admin-search"
+                    value={cvFilter}
+                    onChange={(e) => setCvFilter(e.target.value)}
+                    aria-label="Filtrer par statut"
+                  >
+                    <option value="">Tous les statuts</option>
+                    {Object.keys(CV_STATUS_LABELS).map((s) => (
+                      <option key={s} value={s}>
+                        {CV_STATUS_LABELS[s]}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              <div className="admin-table-wrap">
+                <table className="admin-table">
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>Société</th>
+                      <th>Pays</th>
+                      <th>Presse</th>
+                      <th>Statut</th>
+                      <th>Réf</th>
+                      <th>E-mail</th>
+                      <th>Compte</th>
+                      <th>Assigné</th>
+                      <th>Validé par</th>
+                      <th>Liens</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {filteredCv.map((c) => (
+                      <tr key={c.id}>
+                        <td>{fmtDate(c.createdAt)}</td>
+                        <td>{c.company ?? '—'}</td>
+                        <td>{c.country ?? '—'}</td>
+                        <td>{c.machine ?? '—'}</td>
+                        <td>
+                          <span className={`admin-status admin-status-${CV_STATUS_TONE[c.status] ?? 'review'}`}>
+                            {CV_STATUS_LABELS[c.status] ?? c.status}
+                          </span>
+                        </td>
+                        <td>{c.pipedriveDealId ? `ID ${c.pipedriveDealId}` : '—'}</td>
+                        <td className="admin-email">{c.email}</td>
+                        <td className="admin-email">{c.userEmail ?? '—'}</td>
+                        <td>
+                          {c.assignee ?? '—'}
+                          {c.followers && c.followers.length ? (
+                            <span className="admin-cv-sub">Suivi : {c.followers.join(', ')}</span>
+                          ) : null}
+                        </td>
+                        <td>{c.reviewedBy ?? '—'}</td>
+                        <td className="admin-cv-links">
+                          {c.asanaUrl ? (
+                            <a href={c.asanaUrl} target="_blank" rel="noreferrer">
+                              Asana
+                            </a>
+                          ) : null}
+                          {c.pipedriveUrl ? (
+                            <a href={c.pipedriveUrl} target="_blank" rel="noreferrer">
+                              Pipedrive
+                            </a>
+                          ) : null}
+                          {!c.asanaUrl && !c.pipedriveUrl ? '—' : null}
+                        </td>
+                      </tr>
+                    ))}
+                    {filteredCv.length === 0 ? (
+                      <tr>
+                        <td colSpan={11} className="admin-empty">
+                          Aucune demande.
+                        </td>
+                      </tr>
+                    ) : null}
+                  </tbody>
+                </table>
+              </div>
             </div>
-          </div>
+          ) : null}
+
+          {tab === 'support' ? (
+            <div className="admin-block">
+              <div className="admin-block-head">
+                <h2>Support ({filteredSupport.length})</h2>
+                <div className="admin-block-controls">
+                  <input
+                    type="search"
+                    className="admin-search"
+                    placeholder="Rechercher (nom, e-mail, assigné…)"
+                    value={supportQuery}
+                    onChange={(e) => setSupportQuery(e.target.value)}
+                    aria-label="Rechercher un ticket"
+                  />
+                  <select
+                    className="admin-search"
+                    value={supportFilter}
+                    onChange={(e) => setSupportFilter(e.target.value)}
+                    aria-label="Filtrer par statut"
+                  >
+                    <option value="">Tous les statuts</option>
+                    {Object.keys(SUPPORT_STATUS_LABELS).map((s) => (
+                      <option key={s} value={s}>
+                        {SUPPORT_STATUS_LABELS[s]}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              <div className="admin-table-wrap">
+                <table className="admin-table">
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>Demandeur</th>
+                      <th>Compte</th>
+                      <th>Statut</th>
+                      <th>Assigné</th>
+                      <th>Lien</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredSupport.map((t) => (
+                      <tr key={t.id}>
+                        <td>{fmtDate(t.createdAt)}</td>
+                        <td>
+                          {t.name ?? '—'}
+                          <span className="admin-cv-sub">{t.email}</span>
+                        </td>
+                        <td className="admin-email">{t.userEmail ?? '—'}</td>
+                        <td>
+                          <span className={`admin-status admin-status-${SUPPORT_STATUS_TONE[t.status] ?? 'review'}`}>
+                            {SUPPORT_STATUS_LABELS[t.status] ?? t.status}
+                          </span>
+                        </td>
+                        <td>{t.assignee ?? '—'}</td>
+                        <td className="admin-cv-links">
+                          {t.asanaUrl ? (
+                            <a href={t.asanaUrl} target="_blank" rel="noreferrer">
+                              Asana
+                            </a>
+                          ) : (
+                            '—'
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                    {filteredSupport.length === 0 ? (
+                      <tr>
+                        <td colSpan={6} className="admin-empty">
+                          Aucun ticket.
+                        </td>
+                      </tr>
+                    ) : null}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          ) : null}
+
+          {tab === 'orgs' ? (
+            <>
+              <div className="admin-block">
+                <div className="admin-block-head">
+                  <h2>Organisations ({orgsFull.length})</h2>
+                  {canManage ? (
+                    <button type="button" className="button button-light" onClick={() => setCreatingOrg(true)}>
+                      Créer une organisation
+                    </button>
+                  ) : null}
+                </div>
+                <div className="admin-table-wrap">
+                  <table className="admin-table">
+                    <thead>
+                      <tr>
+                        <th>Logo</th>
+                        <th>Nom</th>
+                        <th>Type</th>
+                        <th>Ville</th>
+                        <th>Pays</th>
+                        <th className="admin-num">Membres</th>
+                        <th>Rattaché à</th>
+                        <th />
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {orgsFull.map((o) => (
+                        <tr key={o.id}>
+                          <td>
+                            {o.logoUrl ? (
+                              // eslint-disable-next-line @next/next/no-img-element
+                              <img src={o.logoUrl} alt="" className="admin-logo-thumb" />
+                            ) : (
+                              <span className="admin-logo-empty">—</span>
+                            )}
+                          </td>
+                          <td>{o.name}</td>
+                          <td>
+                            <AccountTypeBadge type={o.type as AccountType} />
+                          </td>
+                          <td>{o.city ?? '—'}</td>
+                          <td>{o.country ?? '—'}</td>
+                          <td className="admin-num">{o.memberCount}</td>
+                          <td>{o.resellerName ?? o.distributorName ?? '—'}</td>
+                          <td>
+                            {canManage ? (
+                              <button type="button" className="admin-link-btn" onClick={() => setEditingOrg(o)}>
+                                Gérer
+                              </button>
+                            ) : null}
+                          </td>
+                        </tr>
+                      ))}
+                      {orgsFull.length === 0 ? (
+                        <tr>
+                          <td colSpan={8} className="admin-empty">
+                            Aucune organisation.
+                          </td>
+                        </tr>
+                      ) : null}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div className="admin-block">
+                <div className="admin-block-head">
+                  <h2>Attribution clients ({orgs.clients.length})</h2>
+                </div>
+                <div className="admin-table-wrap">
+                  <table className="admin-table">
+                    <thead>
+                      <tr>
+                        <th>Client</th>
+                        <th>Revendeur</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {orgs.clients.map((c) => (
+                        <OrgRow key={c.id} client={c} resellers={orgs.resellers} canManage={canManage} />
+                      ))}
+                      {orgs.clients.length === 0 ? (
+                        <tr>
+                          <td colSpan={2} className="admin-empty">
+                            Aucune organisation cliente.
+                          </td>
+                        </tr>
+                      ) : null}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </>
+          ) : null}
+
+          {tab === 'courses' ? (
+            <div className="admin-block">
+              <div className="admin-block-head">
+                <h2>Par cours</h2>
+              </div>
+              <div className="admin-table-wrap">
+                <table className="admin-table">
+                  <thead>
+                    <tr>
+                      <th>Cours</th>
+                      <th>Type</th>
+                      <th className="admin-num">Apprenants</th>
+                      <th className="admin-num">Certifiés</th>
+                      <th className="admin-num">Score moyen QCM</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {courses.map((c) => (
+                      <tr key={c.slug}>
+                        <td>{c.title}</td>
+                        <td>{c.tone === 'premium' ? 'Premium' : 'Gratuit'}</td>
+                        <td className="admin-num">{c.learners}</td>
+                        <td className="admin-num">{c.certified}</td>
+                        <td className="admin-num">{c.avgQuizPct != null ? `${c.avgQuizPct}%` : '—'}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          ) : null}
         </div>
       </section>
 

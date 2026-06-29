@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { SupportPortal, type SupportMessage, type SupportRow } from '@/components/support-portal';
+import { teamOrgFromEmail } from '@/lib/account-type';
 
 export const metadata: Metadata = {
   title: 'Your support tickets | Rutherford',
@@ -74,5 +75,9 @@ export default async function AccountSupportRoute() {
     };
   });
 
-  return <SupportPortal rows={rows} />;
+  // A Rutherford team member can view/reply here too — flip the thread labels so
+  // the customer side shows the client (not "You") from their perspective.
+  const viewerIsTeam = Boolean(teamOrgFromEmail(user.email ?? ''));
+
+  return <SupportPortal rows={rows} viewerIsTeam={viewerIsTeam} />;
 }

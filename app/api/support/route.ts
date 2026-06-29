@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { createSupabaseAdminClient, createSupabaseServerClient } from '@/lib/supabase/server';
-import { addSupportTaskAttachment, createSupportTask } from '@/lib/asana';
+import { addTaskAttachment, asanaTaskUrl, createSupportTask } from '@/lib/asana';
+import { notifyDiscordSupport } from '@/lib/discord';
 import { sendMail } from '@/lib/msgraph';
 import { supportAckEmail } from '@/lib/support-emails';
 import { insertSupportTicket } from '@/lib/support-tickets';
@@ -87,7 +88,7 @@ export async function POST(request: NextRequest) {
   if (asanaTaskGid && admin && attachable.length) {
     for (const { path, filename } of attachable) {
       const { data: blob } = await admin.storage.from(BUCKET).download(path);
-      if (blob) await addSupportTaskAttachment(asanaTaskGid, filename, blob);
+      if (blob) await addTaskAttachment(asanaTaskGid, filename, blob);
     }
   }
 
@@ -106,6 +107,15 @@ export async function POST(request: NextRequest) {
   const ref = id ? id.slice(0, 8) : null;
   const ack = supportAckEmail(ref ? `#${ref}` : null);
   await sendMail({ to: await getNotificationEmail(userId, email), subject: ack.subject, html: ack.html });
+
+  // Best-effort team ping (no-op without DISCORD_WEBHOOK_URL).
+  await notifyDiscordSupport({
+    company,
+    email,
+    subject,
+    country,
+    asanaUrl: asanaTaskUrl(asanaTaskGid),
+  });
 
   return NextResponse.json({ ok: true, reference: ref });
 }

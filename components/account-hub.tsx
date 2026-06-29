@@ -7,6 +7,8 @@ import { SiteFooter } from '@/components/site-footer';
 import { SiteNav } from '@/components/site-nav';
 import { type Locale, useLanguage } from '@/components/language-provider';
 import type { AccountType } from '@/data/account-types';
+import { AccountSystems, type ClientSystem } from '@/components/account-systems';
+import { AccountSubnav } from '@/components/account-subnav';
 
 export type ResellerClient = {
   name: string;
@@ -44,7 +46,13 @@ type Props = {
   supportStat: { status: string | null; newMessage: boolean };
   resume: { slug: string; title: string; moduleIndex: number; moduleTitle: string } | null;
   resellerClients: ResellerClient[];
+  systems: ClientSystem[];
+  // Read-only admin preview ("view as client"): hides every action that would
+  // act on the admin's own session (edit profile, sign out, uploads, team mgmt).
+  preview?: boolean;
 };
+
+export type AccountHubProps = Props;
 
 // Accent colour per role (matches the design handoff).
 const TONE: Record<AccountType, string> = {
@@ -360,6 +368,70 @@ const COPY: Record<Locale, Copy> = {
   },
 };
 
+// "À faire maintenant" hero copy — the single most important action.
+const HERO: Record<
+  Locale,
+  {
+    eyebrow: string;
+    eligibleTitle: (n: number) => string; eligibleSub: string; eligibleCta: string;
+    supportTitle: string; supportSub: string; supportCta: string;
+    resumeSub: string; resumeCta: string;
+    okTitle: string; okSub: string; okCta: string;
+    remSupportT: string; remSupportS: string; remResumeT: string;
+  }
+> = {
+  en: {
+    eyebrow: 'To do now',
+    eligibleTitle: (n) => `${n} press${n === 1 ? ' is' : 'es are'} eligible to connect`,
+    eligibleSub: 'Connect them to enable closed-loop color control and cut makeready waste from the next run.',
+    eligibleCta: 'Connect my presses',
+    supportTitle: 'Our team has replied to your ticket', supportSub: 'Pick up the conversation and keep your request moving.', supportCta: 'Open support',
+    resumeSub: 'Pick up your training where you left off.', resumeCta: 'Resume',
+    okTitle: 'You’re all set', okSub: 'Explore the Academy or request a console validation.', okCta: 'Explore Academy',
+    remSupportT: 'Support ticket', remSupportS: 'A reply is waiting for you', remResumeT: 'Resume your course',
+  },
+  fr: {
+    eyebrow: 'À faire maintenant',
+    eligibleTitle: (n) => `${n} presse${n === 1 ? '' : 's'} éligible${n === 1 ? '' : 's'} à la connexion`,
+    eligibleSub: 'Connectez-les pour activer le suivi couleur en boucle fermée et réduire la gâche au calage dès la prochaine série.',
+    eligibleCta: 'Connecter mes presses',
+    supportTitle: 'Notre équipe a répondu à votre ticket', supportSub: 'Reprenez la conversation pour faire avancer votre demande.', supportCta: 'Ouvrir le support',
+    resumeSub: 'Reprenez votre formation là où vous en étiez.', resumeCta: 'Reprendre',
+    okTitle: 'Tout est à jour', okSub: 'Explorez l’Academy ou demandez une validation console.', okCta: 'Découvrir l’Academy',
+    remSupportT: 'Ticket de support', remSupportS: 'Une réponse vous attend', remResumeT: 'Reprendre votre formation',
+  },
+  de: {
+    eyebrow: 'Jetzt zu erledigen',
+    eligibleTitle: (n) => `${n} ${n === 1 ? 'Maschine ist' : 'Maschinen sind'} verbindungsbereit`,
+    eligibleSub: 'Verbinden Sie sie für die Closed-Loop-Farbsteuerung und weniger Makulatur beim Einrichten ab dem nächsten Auftrag.',
+    eligibleCta: 'Maschinen verbinden',
+    supportTitle: 'Unser Team hat auf Ihr Ticket geantwortet', supportSub: 'Setzen Sie das Gespräch fort und bringen Sie Ihre Anfrage voran.', supportCta: 'Support öffnen',
+    resumeSub: 'Setzen Sie Ihre Schulung dort fort, wo Sie aufgehört haben.', resumeCta: 'Fortsetzen',
+    okTitle: 'Alles erledigt', okSub: 'Entdecken Sie die Academy oder fordern Sie eine Konsolenvalidierung an.', okCta: 'Academy entdecken',
+    remSupportT: 'Support-Ticket', remSupportS: 'Eine Antwort wartet auf Sie', remResumeT: 'Schulung fortsetzen',
+  },
+  it: {
+    eyebrow: 'Da fare ora',
+    eligibleTitle: (n) => `${n} macchin${n === 1 ? 'a idonea' : 'e idonee'} alla connessione`,
+    eligibleSub: 'Collegale per attivare il controllo colore closed-loop e ridurre lo scarto di avviamento dalla prossima tiratura.',
+    eligibleCta: 'Collega le mie macchine',
+    supportTitle: 'Il nostro team ha risposto al tuo ticket', supportSub: 'Riprendi la conversazione e fai avanzare la tua richiesta.', supportCta: 'Apri il support',
+    resumeSub: 'Riprendi la formazione da dove eri rimasto.', resumeCta: 'Riprendi',
+    okTitle: 'Tutto in regola', okSub: 'Esplora l’Academy o richiedi una validazione console.', okCta: 'Scopri l’Academy',
+    remSupportT: 'Ticket di supporto', remSupportS: 'Una risposta ti aspetta', remResumeT: 'Riprendi il corso',
+  },
+  es: {
+    eyebrow: 'Por hacer ahora',
+    eligibleTitle: (n) => `${n} prensa${n === 1 ? '' : 's'} apta${n === 1 ? '' : 's'} para conexión`,
+    eligibleSub: 'Conéctelas para activar el control del color closed-loop y reducir el desperdicio de puesta a punto desde la próxima tirada.',
+    eligibleCta: 'Conectar mis prensas',
+    supportTitle: 'Nuestro equipo respondió a su ticket', supportSub: 'Retome la conversación y haga avanzar su solicitud.', supportCta: 'Abrir soporte',
+    resumeSub: 'Retome su formación donde la dejó.', resumeCta: 'Continuar',
+    okTitle: 'Todo al día', okSub: 'Explore la Academy o solicite una validación de consola.', okCta: 'Descubrir Academy',
+    remSupportT: 'Ticket de soporte', remSupportS: 'Una respuesta le espera', remResumeT: 'Continuar su curso',
+  },
+};
+
 const ICON: Record<string, ReactNode> = {
   acad: <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 4 2.5 9 12 14l9.5-5L12 4z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round"/><path d="M6 11v4.5c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5V11" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/></svg>,
   console: <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" strokeWidth="1.7"/><path d="M3 9h18M7 14h5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/><circle cx="16.5" cy="14" r="1.3" fill="currentColor"/></svg>,
@@ -396,13 +468,15 @@ function fmtMonth(iso: string | null, locale: Locale): string {
 type Tile = { ic: string; cls: string; t: string; s: string; href: string; statDot?: string; statV: string; statM?: string };
 
 export function AccountHub(props: Props) {
-  const { accountType, team, selfId, networkResellers, email, memberSince, profile, academy, consoleStat, supportStat, resume, resellerClients } = props;
+  const { accountType, team, selfId, networkResellers, email, memberSince, profile, academy, consoleStat, supportStat, resume, resellerClients, systems, preview = false } = props;
   const { locale } = useLanguage();
   const t = COPY[locale];
   const accent = TONE[accountType];
   // Resellers get the same top co-brand strip as X-Rite, using the org logo
   // the Rutherford team uploads in the back-office (null until one is set).
   const resellerLogo = accountType === 'reseller' ? team.org?.logoUrl ?? null : null;
+  // Clients see their own company logo at the top when one is set.
+  const clientLogo = accountType === 'client' ? team.org?.logoUrl ?? null : null;
   const rank = RANK_NAMES[locale][Math.min(academy.level - 1, 4)] ?? '';
   const nextRank = RANK_NAMES[locale][Math.min(academy.level, 4)] ?? '';
 
@@ -447,9 +521,40 @@ export function AccountHub(props: Props) {
         ? [roleTile, consoleTile, academyTile, supportTile]
         : [academyTile, consoleTile, roleTile, supportTile];
 
+  // "À faire maintenant" — surface the single most important action.
+  const h = HERO[locale];
+  let hero: { title: string; sub: string; cta: string; href: string };
+  if (!preview && consoleStat.eligible > 0) {
+    hero = { title: h.eligibleTitle(consoleStat.eligible), sub: h.eligibleSub, cta: h.eligibleCta, href: '/account/console-validations' };
+  } else if (!preview && (supportStat.newMessage || supportStat.status === 'waiting_customer')) {
+    hero = { title: h.supportTitle, sub: h.supportSub, cta: h.supportCta, href: '/account/support' };
+  } else if (resume) {
+    hero = { title: resume.title, sub: h.resumeSub, cta: h.resumeCta, href: `/academy/${resume.slug}` };
+  } else {
+    hero = { title: h.okTitle, sub: h.okSub, cta: h.okCta, href: '/account/academy' };
+  }
+  const reminders: { ic: ReactNode; title: string; sub: string; href: string }[] = [];
+  if (supportStat.status) reminders.push({ ic: ICON.support, title: h.remSupportT, sub: h.remSupportS, href: '/account/support' });
+  if (resume) reminders.push({ ic: ICON.acad, title: h.remResumeT, sub: `${resume.title} · ${t.moduleWord} ${resume.moduleIndex + 1}`, href: `/academy/${resume.slug}` });
+
   return (
     <main className="page-shell" id="top">
       <SiteNav current="account" />
+      {preview ? (
+        <div style={{ background: '#fff7e6', borderBottom: '1px solid #f0e3c0' }}>
+          <div
+            className="container"
+            style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, padding: '10px 0' }}
+          >
+            <span style={{ fontSize: '0.88rem', fontWeight: 600, color: '#7a5b00' }}>
+              👁 Aperçu de l’espace client — lecture seule{profile.fullName ? ` · ${profile.fullName}` : ''}
+            </span>
+            <a className="button button-light" href={`/admin/users/${selfId}`}>← Fiche admin</a>
+          </div>
+        </div>
+      ) : (
+        <AccountSubnav current="dashboard" />
+      )}
       {accountType === 'distributor' ? (
         <div className="ah-cobrand-strip">
           <div className="container ah-cobrand">
@@ -466,6 +571,16 @@ export function AccountHub(props: Props) {
             <span className="ah-cobrand-badge">{RESELLER_BADGE[locale]}</span>
           </div>
         </div>
+      ) : clientLogo ? (
+        <div className="ah-cobrand-strip">
+          <div className="container ah-cobrand">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img className="ah-cobrand-logo" src={clientLogo} alt={team.org?.name ?? profile.company ?? ''} />
+            {profile.company || team.org?.name ? (
+              <span className="ah-cobrand-badge">{profile.company ?? team.org?.name}</span>
+            ) : null}
+          </div>
+        </div>
       ) : null}
 
       <section className="ah-section section">
@@ -477,7 +592,7 @@ export function AccountHub(props: Props) {
               currentUrl={profile.avatarUrl}
               fallback={initials(profile.fullName, email)}
               shape="circle"
-              editable
+              editable={!preview}
               bg={accent}
               fg="#ffffff"
             />
@@ -488,17 +603,8 @@ export function AccountHub(props: Props) {
                 <span className="ah-role"><span className="ah-role-dot" />{t.roles[accountType]}</span>
               </div>
               <div className="ah-co">
-                {profile.company || team.org?.logoUrl || team.myRole === 'owner' || team.myRole === 'admin' ? (
-                  <MediaUpload
-                    kind="logo"
-                    currentUrl={team.org?.logoUrl ?? null}
-                    fallback={initials(profile.company, profile.company || 'CO')}
-                    shape="square"
-                    editable={team.myRole === 'owner' || team.myRole === 'admin'}
-                    bg="#f1efec"
-                    fg="#16130f"
-                  />
-                ) : null}
+                {/* Company logo lives in the account subnav (top-right) + the
+                    Profil › Société card now, so no logo tile here. */}
                 {profile.company ? <span className="ah-co-name">{profile.company}</span> : null}
                 <span className="ah-meta">
                   {email}
@@ -507,24 +613,47 @@ export function AccountHub(props: Props) {
               </div>
             </div>
             <div className="ah-actions">
-              <a className="button button-light" href="/account/profile">{t.editProfile}</a>
-              <form action="/api/auth/sign-out" method="post">
-                <button type="submit" className="button button-light">{t.signOut}</button>
-              </form>
+              {preview ? (
+                <a className="button button-light" href={`/admin/users/${selfId}`}>← Fiche admin</a>
+              ) : (
+                <>
+                  <a className="button button-light" href="/account/profile">{t.editProfile}</a>
+                  <form action="/api/auth/sign-out" method="post">
+                    <button type="submit" className="button button-light">{t.signOut}</button>
+                  </form>
+                </>
+              )}
             </div>
           </div>
 
-          {/* Resume (Academy) — for every role when there is something to resume */}
-          {resume ? (
-            <a className="ah-resume" href={`/academy/${resume.slug}`}>
-              <span className="ah-resume-ic">{ICON.acad}</span>
-              <span className="ah-resume-main">
-                <span className="ah-resume-eb">{t.resumeKicker}</span>
-                <span className="ah-resume-t">{resume.title}</span>
-                <span className="ah-resume-s">{t.moduleWord} {resume.moduleIndex + 1} · {resume.moduleTitle}</span>
-              </span>
-              <span className="button button-accent ah-resume-cta">{t.resumeCta} →</span>
-            </a>
+          {/* À faire maintenant — top action + reminders (not in admin preview) */}
+          {!preview ? (
+            <>
+              <div className="ah-hero">
+                <div>
+                  <p className="ah-hero-eyebrow">{h.eyebrow}</p>
+                  <h2 className="ah-hero-title">{hero.title}</h2>
+                  <p className="ah-hero-sub">{hero.sub}</p>
+                </div>
+                <a className="ah-hero-cta" href={hero.href}>
+                  {hero.cta} <span aria-hidden="true">→</span>
+                </a>
+              </div>
+              {reminders.length ? (
+                <div className="ah-reminders">
+                  {reminders.map((r, i) => (
+                    <a className="ah-reminder" href={r.href} key={i}>
+                      <span className="ah-reminder-ic">{r.ic}</span>
+                      <span className="ah-reminder-main">
+                        <span className="ah-reminder-t">{r.title}</span>
+                        <span className="ah-reminder-s">{r.sub}</span>
+                      </span>
+                      <span className="ah-reminder-chev">{ICON.chevR}</span>
+                    </a>
+                  ))}
+                </div>
+              ) : null}
+            </>
           ) : null}
 
           {/* Quick access */}
@@ -544,10 +673,13 @@ export function AccountHub(props: Props) {
             ))}
           </div>
 
+          {/* My presses — clients (renders nothing when there are none) */}
+          <AccountSystems systems={systems} accent={accent} />
+
           {/* Body */}
           <div className="ah-grid">
             <div className="ah-stack">
-              <SettingsCard t={t} locale={locale} profile={profile} email={email} />
+              <SettingsCard t={t} locale={locale} profile={profile} email={email} preview={preview} />
               <ManagePanel
                 accountType={accountType}
                 team={team}
@@ -569,7 +701,7 @@ export function AccountHub(props: Props) {
   );
 }
 
-function SettingsCard({ t, locale, profile, email }: { t: Copy; locale: Locale; profile: Props['profile']; email: string }) {
+function SettingsCard({ t, locale, profile, email, preview }: { t: Copy; locale: Locale; profile: Props['profile']; email: string; preview?: boolean }) {
   const rows: [string, string][] = [
     [t.rowName, profile.fullName || '—'],
     [t.rowEmail, email],
@@ -581,7 +713,7 @@ function SettingsCard({ t, locale, profile, email }: { t: Copy; locale: Locale; 
     <div className="ah-card">
       <div className="ah-card-h">
         <div><div className="ah-card-t">{t.settingsT}</div><div className="ah-card-s">{t.settingsS}</div></div>
-        <a className="button button-light" href="/account/profile">{t.editProfile}</a>
+        {preview ? null : <a className="button button-light" href="/account/profile">{t.editProfile}</a>}
       </div>
       <div className="ah-card-bd">
         {rows.map(([k, v], i) => (
@@ -590,10 +722,17 @@ function SettingsCard({ t, locale, profile, email }: { t: Copy; locale: Locale; 
             <span className="ah-row-v">{v}</span>
           </div>
         ))}
-        <a className="ah-row ah-row-link" href="/account/security">
-          <span className="ah-row-k">{t.security}</span>
-          <span className="ah-row-v">→</span>
-        </a>
+        {preview ? (
+          <div className="ah-row">
+            <span className="ah-row-k">{t.security}</span>
+            <span className="ah-row-v">••••</span>
+          </div>
+        ) : (
+          <a className="ah-row ah-row-link" href="/account/security">
+            <span className="ah-row-k">{t.security}</span>
+            <span className="ah-row-v">→</span>
+          </a>
+        )}
       </div>
     </div>
   );

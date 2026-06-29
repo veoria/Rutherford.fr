@@ -9,6 +9,7 @@ import { getLessonsForCourse } from '@/data/academy-lessons';
 import { overallStats, type CourseStat } from '@/lib/gamification';
 import { getDistributorResellers, getResellerClients, getTeamForUser } from '@/lib/organizations';
 import type { AccountType } from '@/data/account-types';
+import type { ClientSystem } from '@/components/account-systems';
 
 export const metadata: Metadata = {
   title: 'Your partner account | Rutherford',
@@ -53,7 +54,11 @@ export default async function AccountHubRoute() {
         .maybeSingle(),
       supabase.from('course_progress').select('course_slug, lesson_index').eq('user_id', user.id),
       supabase.from('quiz_attempts').select('course_slug, passed').eq('user_id', user.id),
-      supabase.from('console_validations').select('status').eq('user_id', user.id),
+      supabase
+        .from('console_validations')
+        .select('machine, country, company, status, created_at, pipedrive_deal_id')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false }),
     ]);
 
   // Lead-capture gate: complete the profile before the account hub.
@@ -100,10 +105,41 @@ export default async function AccountHubRoute() {
     break;
   }
 
-  // Own console validations — for the Console Validation tile stat.
-  const ownStatuses = ((ownCv ?? []) as { status: string }[]).map((r) => r.status);
+  // Own console validations — the Console Validation tile stat + "My presses".
+  const ownRows = (ownCv ?? []) as {
+    machine: string | null;
+    country: string | null;
+    company: string | null;
+    status: string;
+    created_at: string;
+    pipedrive_deal_id: number | null;
+  }[];
+  const ownStatuses = ownRows.map((r) => r.status);
   const cvEligible = ownStatuses.filter((s) => s === 'can_be_connected').length;
   const cvOpen = ownStatuses.filter((s) => OPEN_CV.includes(s)).length;
+
+  // One system per distinct machine, keeping the latest status (rows are ordered
+  // newest-first) and counting how many validations that press has had.
+  const sysByMachine = new Map<string, ClientSystem>();
+  for (const r of ownRows) {
+    const machine = (r.machine ?? '').trim();
+    if (!machine) continue;
+    const key = machine.toLowerCase();
+    const existing = sysByMachine.get(key);
+    if (existing) {
+      existing.count += 1;
+    } else {
+      sysByMachine.set(key, {
+        machine,
+        company: r.company,
+        country: r.country,
+        status: r.status,
+        dealId: r.pipedrive_deal_id,
+        count: 1,
+      });
+    }
+  }
+  const systems = [...sysByMachine.values()];
 
   // Support tile: surface an open ticket's status, and a "new message" badge
   // when the latest message on an open ticket came from our team.
@@ -216,6 +252,7 @@ export default async function AccountHubRoute() {
       supportStat={{ status: supportStatus, newMessage: supportNewMessage }}
       resume={resume}
       resellerClients={resellerClients}
+      systems={systems}
     />
   );
 }
