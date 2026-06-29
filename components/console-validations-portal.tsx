@@ -7,6 +7,7 @@ import { SiteNav } from '@/components/site-nav';
 import { AccountSubnav } from '@/components/account-subnav';
 import { CvInvite, type CvInviteItem } from '@/components/cv-invite';
 import { type Locale, useLanguage } from '@/components/language-provider';
+import { countryFlag } from '@/data/country-flags';
 import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 
 export type ConsoleValidationStatus =
@@ -370,7 +371,8 @@ function fmt(iso: string, locale: Locale): string {
 }
 
 const listTitle = (r: ConsoleValidationRow) => r.machine || r.company || 'Console';
-const listSub = (r: ConsoleValidationRow) => [r.company, r.country].filter(Boolean).join(' · ');
+const listSub = (r: ConsoleValidationRow) =>
+  [r.company, r.country ? `${countryFlag(r.country)} ${r.country}`.trim() : ''].filter(Boolean).join(' · ');
 
 type TLState = 'done' | 'current' | 'amber' | 'rejected' | 'pending';
 
@@ -672,7 +674,7 @@ export function ConsoleValidationsPortal({
 
               <div className="cvx-meta">
                 {[
-                  [c.mCountry, selected.country],
+                  [c.mCountry, selected.country ? `${countryFlag(selected.country)} ${selected.country}`.trim() : selected.country],
                   [c.mCompany, selected.company],
                   [c.mPress, selected.machine],
                   [c.mRef, selected.reference],

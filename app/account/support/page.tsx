@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
-import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { createSupabaseAdminClient, createSupabaseServerClient } from '@/lib/supabase/server';
 import { SupportPortal, type SupportMessage, type SupportRow } from '@/components/support-portal';
 import { teamOrgFromEmail } from '@/lib/account-type';
 
@@ -9,6 +9,8 @@ export const metadata: Metadata = {
 };
 
 export const dynamic = 'force-dynamic';
+
+const HAS_ADMIN = Boolean(process.env.SUPABASE_SERVICE_ROLE_KEY && process.env.NEXT_PUBLIC_SUPABASE_URL);
 
 export default async function AccountSupportRoute() {
   const supabase = createSupabaseServerClient();
@@ -23,11 +25,38 @@ export default async function AccountSupportRoute() {
   const { data } = await supabase
     .from('support_tickets')
     .select(
-      'id, company, subject, anydesk, description, status, created_at, updated_at, photos, customer_reply_at, agent_message, agent_message_at, assignee_name'
+      'id, user_id, email, company, subject, anydesk, description, status, created_at, updated_at, photos, customer_reply_at, agent_message, agent_message_at, assignee_name'
     )
     .order('created_at', { ascending: false });
 
   const ticketRows = data ?? [];
+
+  // Resolve each ticket's country from the customer's profile (org country as a
+  // fallback), server-side with the admin client so it doesn't depend on RLS.
+  const countryByUser = new Map<string, string>();
+  const userIds = [...new Set(ticketRows.map((r) => r.user_id as string | null).filter(Boolean))] as string[];
+  if (HAS_ADMIN && userIds.length) {
+    try {
+      const admin = createSupabaseAdminClient();
+      const { data: profs } = await admin.from('profiles').select('id, country, organization_id').in('id', userIds);
+      const orgIds = [
+        ...new Set((profs ?? []).map((p) => p.organization_id as string | null).filter(Boolean)),
+      ] as string[];
+      const orgCountry = new Map<string, string>();
+      if (orgIds.length) {
+        const { data: orgs } = await admin.from('organizations').select('id, country').in('id', orgIds);
+        for (const o of orgs ?? []) if (o.country) orgCountry.set(o.id as string, o.country as string);
+      }
+      for (const p of profs ?? []) {
+        const c =
+          (p.country as string | null) ||
+          (p.organization_id ? orgCountry.get(p.organization_id as string) ?? null : null);
+        if (c) countryByUser.set(p.id as string, c);
+      }
+    } catch {
+      /* best-effort — country stays null */
+    }
+  }
 
   // Conversation thread for these tickets (RLS also scopes this to the user).
   const ids = ticketRows.map((r) => r.id as string);
@@ -60,6 +89,8 @@ export default async function AccountSupportRoute() {
       id: row.id as string,
       reference: `#${String(row.id).slice(0, 8)}`,
       company: (row.company as string | null) ?? null,
+      contactEmail: (row.email as string | null) ?? null,
+      country: row.user_id ? countryByUser.get(row.user_id as string) ?? null : null,
       subject: (row.subject as string | null) ?? null,
       anydesk: (row.anydesk as string | null) ?? null,
       description: (row.description as string | null) ?? '',
