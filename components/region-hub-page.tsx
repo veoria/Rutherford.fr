@@ -283,11 +283,7 @@ export function RegionHubPage({ region: _region }: { region?: Region }) {
             {PRODUCTS.map((p) => (
               <a className="rl-card" key={p.key} href={p.href} {...(p.href.startsWith('http') ? { target: '_blank', rel: 'noreferrer' } : {})}>
                 <div className="rl-card-media">
-                  {'video' in p && p.video ? (
-                    <video src={p.video} autoPlay muted loop playsInline preload="metadata" />
-                  ) : (
-                    <img src={(p as { poster: string }).poster} alt={p.name} loading="lazy" />
-                  )}
+                  <img src={p.poster} alt={p.name} loading="lazy" />
                 </div>
                 <div className="rl-card-body">
                   <div className="rl-card-process">{t.process[p.key]}</div>
