@@ -121,6 +121,17 @@ const HERO_COPY: Record<Locale, HeroCopy> = {
     secondaryCta: 'Solicitar una auditoría',
     tertiaryCta: 'Descubrir ColorLoop',
   },
+  pt: {
+    eyebrow: 'Especialistas em impressão offset',
+    headlineLead: 'Melhorar o controlo da cor e',
+    headlineAccent: 'reduzir a maculatura de acerto.',
+    reduceLabel: 'Reduzir',
+    supporting:
+      'Da experiência em closed-loop ao software de produção moderno, a Rutherford apoia as equipas offset que procuram um acerto mais rápido, maior repetibilidade e um controlo mais claro junto à máquina. ColorLoop é a mais recente plataforma de software da Rutherford para uma produção offset mais inteligente.',
+    primaryCta: 'Solicitar validação de consola',
+    secondaryCta: 'Solicitar uma auditoria',
+    tertiaryCta: 'Descobrir ColorLoop',
+  },
 };
 
 export default function HomePage() {

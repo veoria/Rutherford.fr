@@ -128,6 +128,26 @@ const COPY: Record<Locale, Copy> = {
       },
     ],
   },
+  pt: {
+    kicker: 'Com quem trabalhamos',
+    headline: 'Com quem trabalha a Rutherford',
+    intro:
+      'Se alguma destas situações lhe é familiar, a Rutherford é provavelmente uma boa opção. Trabalhamos melhor com equipas focadas em resultados reais na máquina.',
+    cards: [
+      {
+        title: 'Impressores offset',
+        body: 'Impressores que procuram um acerto mais rápido e resultados de cor mais estáveis entre trabalhos, turnos e máquinas.',
+      },
+      {
+        title: 'Transformadores de embalagem',
+        body: 'Transformadores que procuram maior controlo de produção, normalização e repetibilidade na sala de impressão.',
+      },
+      {
+        title: 'Decisores',
+        body: 'Responsáveis que avaliam a modernização do workflow, uma estratégia closed-loop de cor ou a compatibilidade da consola antes de uma implementação.',
+      },
+    ],
+  },
 };
 
 export function AudienceSection() {

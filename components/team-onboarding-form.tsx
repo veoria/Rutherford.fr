@@ -96,6 +96,20 @@ const COPY: Record<Locale, TeamCopy> = {
     errorGeneric: 'Algo salió mal. Inténtelo de nuevo.',
     fine: 'Su empresa y país se rellenan automáticamente a partir de su correo.',
   },
+  pt: {
+    kicker: 'Equipa Rutherford',
+    title: 'Bem-vindo à equipa',
+    subtitle: 'Um passo rápido para configurar o seu espaço de trabalho.',
+    nameLabel: 'Nome completo',
+    namePlaceholder: 'João Silva',
+    roleLabel: 'A sua função',
+    selectRole: 'Selecione a sua função',
+    submit: 'Aceder ao espaço de trabalho',
+    saving: 'A guardar…',
+    errorRequired: 'Preencha todos os campos.',
+    errorGeneric: 'Ocorreu um erro. Tente novamente.',
+    fine: 'A sua empresa e o seu país são preenchidos automaticamente a partir do seu email.',
+  },
 };
 
 type Props = {

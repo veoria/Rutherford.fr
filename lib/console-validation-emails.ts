@@ -344,7 +344,7 @@ export function cannotConnectEmail(lead: ResultLead): { subject: string; html: s
 
 // ── Invitation (reseller / distributor / team invites a client) ─────────────
 
-type EmailLocale = 'en' | 'fr' | 'de' | 'it' | 'es';
+type EmailLocale = 'en' | 'fr' | 'de' | 'it' | 'es' | 'pt';
 
 type InviteCopy = {
   subject: (company: string) => string;
@@ -413,6 +413,17 @@ const INVITE_COPY: Record<EmailLocale, InviteCopy> = {
     cta: 'Iniciar mi validación de consola',
     invitedBy: 'Invitado por',
   },
+  pt: {
+    subject: (c) => `${c} convida-o para uma validação de consola gratuita`,
+    preheader: 'Verifique se a sua máquina pode funcionar em closed-loop, cerca de 2 minutos.',
+    eyebrow: 'VALIDAÇÃO DE CONSOLA · CONVITE',
+    headline: { pre: 'A sua máquina está pronta para o ', accent: 'closed-loop', post: '?' },
+    intro: (c) =>
+      `<strong>${c}</strong> convida-o a realizar uma validação de consola gratuita. Com alguns dados sobre a sua máquina, os especialistas da Rutherford confirmam se pode ser ligada para automatizar o controlo da cor e reduzir a maculatura de acerto.`,
+    closing: 'Demora cerca de dois minutos e não implica qualquer compromisso.',
+    cta: 'Iniciar a minha validação de consola',
+    invitedBy: 'Convidado por',
+  },
 };
 
 /** Invitation email a reseller / distributor / team member sends to a client. */
@@ -423,7 +434,7 @@ export function consoleInviteEmail(opts: {
   note: string | null;
   url: string;
 }): { subject: string; html: string } {
-  const loc = (['en', 'fr', 'de', 'it', 'es'].includes(opts.locale) ? opts.locale : 'en') as EmailLocale;
+  const loc = (['en', 'fr', 'de', 'it', 'es', 'pt'].includes(opts.locale) ? opts.locale : 'en') as EmailLocale;
   const c = INVITE_COPY[loc];
   const body = [c.intro(esc(opts.inviterCompany))];
   if (opts.note && opts.note.trim()) {

@@ -22,6 +22,7 @@ const LABELS: Record<Locale, Record<Exclude<AccountTab, 'profile'>, string>> = {
   de: { dashboard: 'Dashboard', console: 'Konsolenvalidierung', academy: 'Academy', team: 'Mein Team', support: 'Support' },
   it: { dashboard: 'Dashboard', console: 'Validazione console', academy: 'Academy', team: 'Il mio team', support: 'Support' },
   es: { dashboard: 'Panel', console: 'Validación de consola', academy: 'Academy', team: 'Mi equipo', support: 'Soporte' },
+  pt: { dashboard: 'Painel', console: 'Validação de consola', academy: 'Academy', team: 'A minha equipa', support: 'Support' },
 };
 
 export function AccountSubnav({ current }: { current: AccountTab }) {

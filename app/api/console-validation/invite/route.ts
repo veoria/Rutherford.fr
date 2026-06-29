@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic';
 
 const SITE = 'https://rutherford.fr';
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const LOCALES = ['en', 'fr', 'de', 'it', 'es'];
+const LOCALES = ['en', 'fr', 'de', 'it', 'es', 'pt'];
 
 // A reseller / distributor / team member invites a client to fill out a console
 // validation. Creates an invitation (token) and emails the client a link.

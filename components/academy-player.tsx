@@ -103,6 +103,22 @@ const PLAYER_COPY: Record<Locale, PlayerCopy> = {
     captureLabel: 'Captura de producto por insertar',
     captureHint: 'ver Captures-Requises.md',
   },
+  pt: {
+    exit: 'Sair',
+    back: 'Voltar',
+    cont: 'Continuar',
+    validate: 'Validar o módulo',
+    tryAgain: 'Tente novamente.',
+    moduleValidated: (n) => `Módulo ${n} validado`,
+    nextUnlocked: 'O módulo seguinte está desbloqueado. Continue ou volte mais tarde. O seu progresso fica guardado.',
+    courseComplete: 'Curso concluído. Volte ao curso para a avaliação e o certificado.',
+    startNext: (n) => `Iniciar o módulo ${n}`,
+    finish: 'Terminar',
+    stepCounter: (cur, total) => `${cur}/${total}`,
+    moduleLabel: (n) => `Módulo ${n}`,
+    captureLabel: 'Captura de produto a inserir',
+    captureHint: 'ver Captures-Requises.md',
+  },
 };
 
 type AcademyPlayerProps = {

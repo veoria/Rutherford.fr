@@ -8,13 +8,14 @@ import './globals.css';
 // import './brutalism.css'; // disabled, v1 design
 
 const BASE = 'https://rutherford.fr';
-const PREFIX_LOCALES = ['fr', 'de', 'it', 'es'];
+const PREFIX_LOCALES = ['fr', 'de', 'it', 'es', 'pt'];
 const OG_LOCALE: Record<Locale, string> = {
   en: 'en_US',
   fr: 'fr_FR',
   de: 'de_DE',
   it: 'it_IT',
   es: 'es_ES',
+  pt: 'pt_PT',
 };
 const TITLE = 'Rutherford.fr | Closed-loop color control';
 const DESCRIPTION =
@@ -41,6 +42,7 @@ export async function generateMetadata(): Promise<Metadata> {
         de: `${BASE}/de${suffix}`,
         it: `${BASE}/it${suffix}`,
         es: `${BASE}/es${suffix}`,
+        pt: `${BASE}/pt${suffix}`,
         'x-default': enHref,
       };
 

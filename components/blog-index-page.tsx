@@ -13,6 +13,7 @@ export function BlogIndexPage({ articles }: { articles: BlogArticle[] }) {
     de: { kicker: 'Rutherford Journal', title: 'Unsere Artikel', subtitle: 'Neuigkeiten, Fallstudien, Produktneuheiten, Erfahrungsberichte und praktische Einblicke aus der Druckproduktion.', indexed: 'Artikel', search: 'Artikel suchen', all: 'Alle', noResults: 'Keine Artikel gefunden.', dateLocale: 'de-DE' },
     it: { kicker: 'Rutherford Journal', title: 'I nostri articoli', subtitle: 'News, case study, release di prodotto, testimonianze e insight pratici dal reparto stampa.', indexed: 'articoli', search: 'Cerca un articolo', all: 'Tutti', noResults: 'Nessun articolo corrisponde alla ricerca.', dateLocale: 'it-IT' },
     es: { kicker: 'Journal Rutherford', title: 'Nuestros artículos', subtitle: 'Noticias, casos de estudio, lanzamientos de producto, testimonios e ideas prácticas desde la planta de impresión.', indexed: 'artículos', search: 'Buscar un artículo', all: 'Todos', noResults: 'Ningún artículo coincide con tu búsqueda.', dateLocale: 'es-ES' },
+    pt: { kicker: 'Journal Rutherford', title: 'Os nossos artigos', subtitle: 'Notícias, casos de estudo, lançamentos de produto, testemunhos e ideias práticas a partir do chão de fábrica.', indexed: 'artigos', search: 'Procurar um artigo', all: 'Todos', noResults: 'Nenhum artigo corresponde à sua pesquisa.', dateLocale: 'pt-PT' },
   };
   const t = copy[locale];
   const [query, setQuery] = useState('');

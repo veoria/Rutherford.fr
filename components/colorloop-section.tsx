@@ -156,6 +156,34 @@ const COPY: Record<Locale, Copy> = {
       'ColorLoop funciona con herramientas estándar del sector como MeasureColor y IntelliTrax2, sus inversiones en medición y reporting se mantienen.',
     primaryCta: 'Descubrir ColorLoop',
   },
+  pt: {
+    kicker: 'O software',
+    headline: 'ColorLoop para impressão offset',
+    intro:
+      'Construído a partir da experiência closed-loop da Rutherford, o ColorLoop ajuda as equipas offset a reduzir o tempo de acerto, melhorar a consistência da cor e ligar os dados de produção de forma mais clara ao longo do workflow.',
+    benefits: [
+      {
+        title: 'Acerto mais rápido',
+        body: 'Alcance a cor alvo mais cedo com workflows de acerto e correção assistidos por IA.',
+      },
+      {
+        title: 'Menos maculatura',
+        body: 'Reduza papel, tinta e reimpressões desnecessárias através de um acerto mais consistente.',
+      },
+      {
+        title: 'Melhor repetibilidade',
+        body: 'Use dados de produção estáveis para melhorar o desempenho de um trabalho para o seguinte.',
+      },
+      {
+        title: 'Visibilidade ligada',
+        body: 'Reúna medições, dados de qualidade e indicadores de produção numa única camada operacional mais clara.',
+      },
+    ],
+    techLabel: 'Integrações',
+    techBody:
+      'O ColorLoop funciona com ferramentas padrão do setor, como MeasureColor e IntelliTrax2, preservando os seus investimentos em medição e reporting.',
+    primaryCta: 'Descobrir ColorLoop',
+  },
 };
 
 export function ColorLoopSection() {

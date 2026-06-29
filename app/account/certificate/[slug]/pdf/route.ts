@@ -9,7 +9,7 @@ import { RUTHERFORD_LOGO_PNG_BASE64 } from '@/lib/certificate-logo';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-const LOCALES = ['en', 'fr', 'de', 'it', 'es'] as const;
+const LOCALES = ['en', 'fr', 'de', 'it', 'es', 'pt'] as const;
 type L = (typeof LOCALES)[number];
 
 type PdfCopy = {
@@ -73,6 +73,16 @@ const COPY: Record<L, PdfCopy> = {
     issuedOn: (d) => `Emitido el ${d}`,
     referenceLabel: 'N.º de certificado',
     issuer: 'Rutherford Academy · rutherford.fr — gestión del color closed-loop',
+  },
+  pt: {
+    heading: 'Certificado de conclusão',
+    awardedTo: 'Certifica-se que',
+    forCompleting: 'concluiu com sucesso',
+    assessmentPassed: (p) => `Avaliação final aprovada, classificação ${p}%`,
+    modulesWord: 'módulos',
+    issuedOn: (d) => `Emitido a ${d}`,
+    referenceLabel: 'N.º de certificado',
+    issuer: 'Rutherford Academy · rutherford.fr · gestão da cor closed-loop',
   },
 };
 

@@ -39,6 +39,12 @@ const COPY: Record<Locale, { text: string; learn: string; accept: string; refuse
     accept: 'Aceptar',
     refuse: 'Rechazar',
   },
+  pt: {
+    text: 'Utilizamos cookies de análise para perceber como o site é utilizado e melhorá-lo.',
+    learn: 'Saber mais',
+    accept: 'Aceitar',
+    refuse: 'Recusar',
+  },
 };
 
 export function CookieConsent() {

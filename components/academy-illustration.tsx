@@ -12,6 +12,7 @@ const LABELS: Record<Locale, { enlarge: string; close: string }> = {
   de: { enlarge: 'Illustration vergrößern', close: 'Schließen' },
   it: { enlarge: "Ingrandisci l'illustrazione", close: 'Chiudi' },
   es: { enlarge: 'Ampliar la ilustración', close: 'Cerrar' },
+  pt: { enlarge: 'Ampliar a ilustração', close: 'Fechar' },
 };
 
 /**

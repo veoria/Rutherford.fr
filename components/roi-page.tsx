@@ -293,6 +293,57 @@ const COPY: Record<Locale, RoiCopy> = {
       cta: 'Ver testimonio',
     },
   },
+  pt: {
+    hero: {
+      kicker: 'Estimador de ROI',
+      h1: 'Quanto poderia a ColorLoop poupar na sua sala de prensa?',
+      lead: 'Em menos de um minuto, estime a maculatura, o tempo de acerto e os custos que pode recuperar nas suas máquinas offset, a partir dos seus próprios números.',
+      ctaCalc: 'Calcule a sua poupança',
+      ctaConsole: 'Solicitar validação de consola',
+      trust: '25+ anos · 30+ países · 1.000+ sistemas instalados · parceiro X-Rite PANTONE',
+    },
+    capture: {
+      kicker: 'Estimativa detalhada',
+      h2: 'Receba a sua estimativa detalhada por email',
+      lead: 'Receba o detalhe da sua poupança potencial (maculatura, tempo de acerto, tinta, papel e energia) diretamente na sua caixa de entrada.',
+      emailLabel: 'Endereço de email',
+      emailPlaceholder: 'nome@empresa.com',
+      companyLabel: 'Impressor',
+      companyPlaceholder: 'A sua empresa',
+      button: 'Enviem-me a estimativa',
+      note: 'Sem spam. Usamos os seus dados apenas para enviar a estimativa e dar seguimento.',
+      success: 'Obrigado, a sua estimativa detalhada está a caminho.',
+      sending: 'A enviar…',
+      error: 'Ocorreu um erro. Tente novamente ou escreva-nos diretamente.',
+    },
+    levers: {
+      kicker: 'Alavancas',
+      h2: 'Onde o dinheiro é recuperado',
+      items: [
+        { title: 'Maculatura de acerto', body: 'O closed-loop atinge a cor alvo em poucas folhas, menos folhas perdidas em cada arranque.' },
+        { title: 'Tempo de acerto', body: 'Acertos mais curtos libertam tempo de máquina, produz mais no mesmo período.' },
+        { title: 'Tinta, papel e energia', body: 'Menos maculatura significa diretamente menos material e energia consumidos em cada trabalho.' },
+        { title: 'Consistência e relances', body: 'Cor estável de um turno e de um relance para o seguinte, sem novo acerto.' },
+      ],
+    },
+    method: {
+      kicker: 'Metodologia',
+      h2: 'De onde vêm estes números',
+      lead: 'O cálculo assenta em pressupostos transparentes que pode ajustar à sua realidade. Nenhum número é inflacionado, são os ganhos típicos de um workflow closed-loop ColorLoop.',
+      items: [
+        { value: '225', unit: 'dias / ano', note: 'Base de produção anual, ajustável à sua atividade.' },
+        { value: '−55 %', unit: 'maculatura de acerto', note: 'Redução típica graças ao presetting e ao closed-loop.' },
+        { value: '−38 %', unit: 'tempo de acerto', note: 'Ganho de tempo de máquina observado num workflow ColorLoop.' },
+        { value: '€', unit: 'papel e custo de máquina', note: 'Gramagem, preço do papel e custo horário da máquina são configuráveis.' },
+      ],
+    },
+    testimonial: {
+      kicker: 'Testemunho',
+      quote: '« Na máquina equipada com IntelliTrax, a nossa maculatura média de acerto passou de 700 a 800 folhas por trabalho (8 cores) para 450 folhas, uns bons 40 % menos de maculatura. »',
+      author: 'Viappiani Printing, impressor de etiquetas, Milão',
+      cta: 'Ver o testemunho',
+    },
+  },
 };
 
 export function RoiPage() {

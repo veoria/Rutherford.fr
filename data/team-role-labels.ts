@@ -46,4 +46,12 @@ export const TEAM_ROLE_LABELS: Record<Locale, Record<TeamRoleKey, string>> = {
     marketing: 'Marketing',
     operations: 'Operaciones',
   },
+  pt: {
+    sales: 'Comercial',
+    technical_color: 'Técnico / Cor',
+    support: 'Suporte',
+    management: 'Direção',
+    marketing: 'Marketing',
+    operations: 'Operações',
+  },
 };

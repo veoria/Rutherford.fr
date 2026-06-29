@@ -103,6 +103,13 @@ const COPY: Record<Locale, Copy> = {
     supportCta: 'Soporte para esta prensa', guides: 'Guías & docs', email: 'Escríbanos',
     validations: (n) => `${n} validaci${n === 1 ? 'ón' : 'ones'}`,
   },
+  pt: {
+    heading: 'As minhas máquinas',
+    status: { eligible: 'Elegível para ligação', review: 'Em análise', action: 'Ação necessária', rejected: 'Não elegível', closed: 'Encerrada' },
+    gSupport: 'Support', gTraining: 'Formação', gHelp: 'Ajuda',
+    supportCta: 'Support para esta máquina', guides: 'Guias & docs', email: 'Escreva-nos',
+    validations: (n) => `${n} validaç${n === 1 ? 'ão' : 'ões'}`,
+  },
 };
 
 export function AccountSystems({ systems, accent }: { systems: ClientSystem[]; accent: string }) {

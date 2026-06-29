@@ -168,6 +168,29 @@ const QUIZ_COPY: Record<Locale, QuizCopy> = {
     viewCertificate: 'Ver su certificado',
     celebrateTitle: '¡Evaluación aprobada!',
   },
+  pt: {
+    kicker: 'Avaliação final',
+    title: 'Valide os seus conhecimentos',
+    intro: (n, pct) => `${n} perguntas. Obtenha ${pct}% ou mais para passar e desbloquear o seu certificado.`,
+    gateNote: 'Percorra primeiro os módulos acima e depois teste os seus conhecimentos.',
+    start: 'Começar a avaliação',
+    selectOne: 'Selecione uma resposta',
+    selectMany: 'Selecione todas as corretas',
+    submit: 'Enviar respostas',
+    submitting: 'A corrigir…',
+    answerAll: 'Responda a todas as perguntas antes de enviar.',
+    submitError: 'Ocorreu um erro. Tente novamente.',
+    retake: 'Repetir a avaliação',
+    passLine: (s, t, pct) => `Aprovado: ${s}/${t} (${pct}%)`,
+    failLine: (s, t, pct) => `${s}/${t} (${pct}%), ainda não`,
+    passSub: 'Certificado desbloqueado. Encontra-o na sua conta.',
+    failSub: (pct) => `Precisa de ${pct}% para passar. Reveja as explicações e tente novamente.`,
+    reviewModule: (n) => `Rever o módulo ${String(n).padStart(2, '0')}`,
+    alreadyPassedTitle: 'Avaliação aprovada',
+    alreadyPassedSub: (s, t, pct) => `Passou com ${s}/${t} (${pct}%).`,
+    viewCertificate: 'Ver o seu certificado',
+    celebrateTitle: 'Avaliação aprovada!',
+  },
 };
 
 type ProgressCopy = {
@@ -225,6 +248,15 @@ const PROGRESS_COPY: Record<Locale, ProgressCopy> = {
     palierTitle: { 25: '¡Buen comienzo!', 50: '¡A mitad de camino!', 75: '¡Ya casi está!', 100: '¡Curso completado!' },
     xpGain: (n) => `+${n} XP`,
     certificateUnlocked: 'Certificado desbloqueado — vea su cuenta',
+  },
+  pt: {
+    progressTitle: 'O seu progresso',
+    modulesDone: (d, t) => `${d} / ${t} módulos`,
+    markDone: 'Marcar o módulo como concluído',
+    markedDone: 'Módulo concluído',
+    palierTitle: { 25: 'Bom começo!', 50: 'A meio caminho!', 75: 'Quase lá!', 100: 'Curso concluído!' },
+    xpGain: (n) => `+${n} XP`,
+    certificateUnlocked: 'Certificado desbloqueado, veja a sua conta',
   },
 };
 

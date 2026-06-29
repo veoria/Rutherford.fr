@@ -178,6 +178,36 @@ const COPY: Record<Locale, OnboardingCopy> = {
       other: 'Otro',
     },
   },
+  pt: {
+    title: 'Fale-nos sobre si',
+    subtitle:
+      'Um passo rápido antes de começar. Ajuda-nos a adaptar os cursos, os certificados e o suporte à sua função.',
+    nameLabel: 'Nome completo',
+    namePlaceholder: 'João Silva',
+    countryLabel: 'País',
+    selectCountry: 'Selecione o seu país',
+    companyLabel: 'Empresa',
+    companyPlaceholder: 'Tipografia Silva',
+    roleLabel: 'A sua função',
+    selectRole: 'Selecione a sua função',
+    submit: 'Continuar',
+    saving: 'A guardar…',
+    errorRequired: 'Preencha todos os campos.',
+    errorGeneric: 'Ocorreu um erro. Tente novamente.',
+    fine: 'Utilizamos estes dados apenas para personalizar a sua experiência e, quando relevante, para o contactar sobre as soluções Rutherford.',
+    consentLabel: 'Aceito receber comunicações da Rutherford sobre as suas soluções (opcional).',
+    roles: {
+      operator: 'Operador de impressão',
+      prepress: 'Pré-impressão / Reprografia',
+      production_manager: 'Responsável de produção',
+      quality_color: 'Qualidade / Responsável de cor',
+      purchasing: 'Compras',
+      management: 'Direção / Proprietário',
+      brand_owner: 'Marca / Comprador de packaging',
+      sales_marketing: 'Vendas / Marketing',
+      other: 'Outro',
+    },
+  },
 };
 
 // Match an IP-geo country name (from /api/geo, an ISO short name) against our

@@ -192,6 +192,39 @@ const COPY: Record<Locale, Copy> = {
       cta: 'Pruebe su prensa',
     },
   },
+  pt: {
+    intl: { note: 'Está a ver a versão em português.', link: 'Versão internacional (inglês)' },
+    lead: 'Cor no alvo.',
+    accent: 'Automaticamente.',
+    sub: 'Cor closed-loop para máquinas offset e flexo. Menos desperdício, cor estável em cada turno.',
+    cta1: 'Verificar elegibilidade',
+    cta2: 'Fale connosco',
+    withLabel: 'Com',
+    stats: [
+      { num: '25+', label: 'Anos de cor' },
+      { num: '30+', label: 'Países' },
+      { num: '1.000+', label: 'Sistemas instalados' },
+    ],
+    productsHead: 'Offset e flexo, um só closed loop',
+    products: {
+      offsetDesc: 'Cor closed-loop para offset de folha e bobina, com X-Rite e MeasureColor.',
+      flexoDesc: 'Cor espectral inline para etiquetas e embalagem.',
+    },
+    process: { offset: 'Offset', flexo: 'Flexo' },
+    howHead: 'Como funciona o loop',
+    how: [
+      { n: '01', t: 'Medir', d: 'Uma leitura espectral em cada folha, em direto na máquina.' },
+      { n: '02', t: 'Decidir', d: 'O software compara cada zona de tinta com o seu alvo.' },
+      { n: '03', t: 'Corrigir', d: 'As teclas de tinta ajustam-se automaticamente, tiragem após tiragem.' },
+    ],
+    roi: { title: 'Veja o que poupa', sub: 'Menos desperdício no acerto, menos repetições, cor mais estável. Em números reais.' },
+    console: {
+      title: 'Pare de perder dinheiro em cada acerto',
+      sub: 'Verifique em dois minutos se a sua máquina é elegível para o closed-loop da Rutherford.',
+      steps: ['Indique a sua máquina e a sua consola', 'Verificamos as suas teclas de tinta e a sua medição', 'Receba o seu resultado de elegibilidade gratuito'],
+      cta: 'Teste a sua máquina',
+    },
+  },
 };
 
 // Two process pillars: the scanner behind each process, offset and flexo.

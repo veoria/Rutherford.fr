@@ -2,9 +2,9 @@
 
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 
-export type Locale = 'en' | 'fr' | 'de' | 'it' | 'es';
+export type Locale = 'en' | 'fr' | 'de' | 'it' | 'es' | 'pt';
 
-const SUPPORTED_LOCALES: Locale[] = ['en', 'fr', 'de', 'it', 'es'];
+const SUPPORTED_LOCALES: Locale[] = ['en', 'fr', 'de', 'it', 'es', 'pt'];
 
 type LanguageContextValue = {
   locale: Locale;

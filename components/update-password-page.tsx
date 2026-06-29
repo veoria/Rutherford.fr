@@ -112,6 +112,23 @@ const COPY: Record<Locale, Copy> = {
     expiredText: 'Este enlace de contraseña ya no es válido. Solicite uno nuevo desde la página de inicio de sesión.',
     backToSignin: 'Volver al inicio de sesión',
   },
+  pt: {
+    title: 'Defina uma nova palavra-passe',
+    subtitle: 'Escolha uma palavra-passe para iniciar sessão da próxima vez, sem ligação por email.',
+    passwordLabel: 'Nova palavra-passe',
+    passwordPlaceholder: 'Pelo menos 8 caracteres',
+    confirmLabel: 'Confirmar palavra-passe',
+    confirmPlaceholder: 'Volte a introduzir a palavra-passe',
+    submit: 'Guardar palavra-passe',
+    saving: 'A guardar…',
+    saved: 'Palavra-passe guardada. A redirecionar…',
+    tooShort: 'A palavra-passe deve ter pelo menos 8 caracteres.',
+    mismatch: 'As duas palavras-passe não coincidem.',
+    errorGeneric: 'Ocorreu um erro. Tente novamente.',
+    expiredTitle: 'Ligação expirada',
+    expiredText: 'Esta ligação de palavra-passe já não é válida. Solicite uma nova a partir da página de início de sessão.',
+    backToSignin: 'Voltar ao início de sessão',
+  },
 };
 
 export function UpdatePasswordPage() {

@@ -8,13 +8,14 @@ import type { SocialLink } from '@/components/social-links';
 
 // The language selector lives in the footer now (country is auto-detected, so
 // the header no longer needs it). FR first to match the design.
-const NAV_PREFIX_LOCALES = ['fr', 'de', 'it', 'es'];
+const NAV_PREFIX_LOCALES = ['fr', 'de', 'it', 'es', 'pt'];
 const FOOTER_LANGS: { code: Locale; label: string }[] = [
   { code: 'fr', label: 'FR' },
   { code: 'en', label: 'EN' },
   { code: 'de', label: 'DE' },
   { code: 'it', label: 'IT' },
   { code: 'es', label: 'ES' },
+  { code: 'pt', label: 'PT' },
 ];
 
 const socialLinks: SocialLink[] = [
@@ -100,6 +101,17 @@ const COPY: Record<Locale, Copy> = {
     langAuto: 'Idioma · detección automática',
     resourceLabels: { blog: 'Blog', support: 'Soporte', console: 'Validación de consola', contact: 'Contacto' },
     companyLabels: { about: 'Sobre Rutherford', colorloop: 'ColorLoop', offset360: 'Offset360', cases: 'Casos prácticos' },
+  },
+  pt: {
+    tagline: 'Experiência em offset, software e tecnologia, para modernizar o controlo da produção.',
+    platforms: 'Plataformas',
+    resources: 'Recursos',
+    company: 'Empresa',
+    follow: 'Seguir',
+    rights: 'Todos os direitos reservados',
+    langAuto: 'Idioma · detetado automaticamente',
+    resourceLabels: { blog: 'Blog', support: 'Apoio', console: 'Validação de consola', contact: 'Contacto' },
+    companyLabels: { about: 'Sobre a Rutherford', colorloop: 'ColorLoop', offset360: 'Offset360', cases: 'Casos de clientes' },
   },
 };
 

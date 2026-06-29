@@ -81,6 +81,18 @@ const COPY: Record<Locale, Copy> = {
     enable: 'Activar doble factor',
     errGeneric: 'Algo salió mal. Inténtelo de nuevo.',
   },
+  pt: {
+    kicker: 'Verificação de segurança',
+    title: 'Confirme que é você',
+    subtitle: 'Introduza o código de 6 dígitos da sua aplicação de autenticação para continuar.',
+    codeLabel: 'Código de 6 dígitos',
+    codePlaceholder: '123456',
+    verify: 'Verificar',
+    verifying: 'A verificar…',
+    noFactor: 'É necessária a autenticação de dois fatores para aceder a esta área.',
+    enable: 'Ativar dois fatores',
+    errGeneric: 'Ocorreu um erro. Tente novamente.',
+  },
 };
 
 function safeNext(value: string | null): string {

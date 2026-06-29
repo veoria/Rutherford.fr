@@ -5,7 +5,7 @@ import { PRESS_BRANDS_PAGES } from '@/data/press-brands';
 import { ALL_REGIONS } from '@/data/regions';
 
 const BASE = 'https://rutherford.fr';
-const PREFIX_LOCALES = ['fr', 'de', 'it', 'es'];
+const PREFIX_LOCALES = ['fr', 'de', 'it', 'es', 'pt'];
 
 // Language alternates (hreflang) for a given canonical (English, unprefixed) path.
 function languages(path: string): Record<string, string> {

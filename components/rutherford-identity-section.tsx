@@ -150,6 +150,24 @@ const COPY: Record<Locale, Copy> = {
     countries: 'Países',
     systems: 'Sistemas instalados',
   },
+  pt: {
+    kicker: 'Quem somos',
+    title: 'Rutherford.fr',
+    body: [
+      { text: 'Equipa europeia especializada na ' },
+      { text: 'gestão da cor em offset e flexografia', accent: true },
+      { text: '. Enquanto ' },
+      { text: 'parceiro X-Rite PANTONE', accent: true },
+      { text: ', apoiamos impressores, transformadores de embalagem e marcas em ' },
+      { text: 'mais de 30 países', accent: true },
+      { text: ', com ' },
+      { text: 'mais de 1.000 sistemas instalados em todo o mundo', accent: true },
+      { text: '.' },
+    ],
+    years: 'Anos de experiência',
+    countries: 'Países',
+    systems: 'Sistemas instalados',
+  },
 };
 
 const printers = [

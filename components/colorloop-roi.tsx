@@ -218,6 +218,41 @@ const COPY: Record<Locale, Copy> = {
       'Estimado sobre 225 días de producción/año y los objetivos ColorLoop de −55 % desperdicio y −38 % tiempo de puesta a punto. El gramaje y el precio del papel dependen del perfil de producción seleccionado.',
     cta: 'Hablar con un experto Rutherford',
   },
+  pt: {
+    kicker: 'Estimador de ROI',
+    headline: 'Quanto poderia a ColorLoop poupar na sua sala de prensa?',
+    intro:
+      'Escolha o seu perfil de produção, o formato de máquina e o número de cores, depois afine os seus números de acerto. Todos os valores permanecem ajustáveis.',
+    figuresHeading: 'Afine os seus números',
+    inputs: {
+      calages: { label: 'Acertos por dia', hint: 'Definido pelo perfil, ajuste livremente' },
+      temps: { label: 'Tempo de acerto (minutos)', hint: 'Da lavagem ao BAT máquina OK' },
+      gache: { label: 'Maculatura por acerto (folhas)', hint: 'Folhas até à primeira boa' },
+      coutPresse: { label: 'Custo horário da máquina (€)', hint: 'Custo horário da máquina carregado' },
+    },
+    machine: {
+      profile: 'Perfil de produção',
+      format: 'Formato de folha',
+      colors: 'Cores',
+      profiles: { commercial: 'Comercial', packaging: 'Embalagem cartão', luxe: 'Embalagem luxo' },
+      formats: { b2: 'B2 (53 × 75 cm)', b1: 'B1 (70 × 100 cm)', vlf: 'Grande formato (110 × 162 cm)' },
+      sheetNote: (dims, cost, paper) => `Folha ${dims} · ≈ ${cost}/folha (${paper})`,
+    },
+    table: {
+      line: 'Item',
+      paper: 'Papel poupado',
+      press: 'Tempo de máquina recuperado',
+      total: 'Poupança total',
+      annual: 'Poupança anual estimada',
+      perYear: '/ ano',
+      perMonth: '/ mês',
+      sheets: 'folhas/ano',
+      hours: 'horas de máquina/ano',
+    },
+    disclaimer:
+      'Estimado sobre 225 dias de produção/ano e os objetivos ColorLoop de −55 % maculatura e −38 % tempo de acerto. A gramagem e o preço do papel dependem do perfil de produção selecionado.',
+    cta: 'Fale com um especialista Rutherford',
+  },
 };
 
 // Constants from the spec (docs/roi-calculator-spec.md)

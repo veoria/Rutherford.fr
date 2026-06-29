@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { type Locale, useLanguage } from '@/components/language-provider';
 import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 
-const NAV_PREFIX_LOCALES = ['fr', 'de', 'it', 'es'];
+const NAV_PREFIX_LOCALES = ['fr', 'de', 'it', 'es', 'pt'];
 
 type SiteNavProps = {
   current?: 'home' | 'roi' | 'blog' | 'console-validation' | 'support' | 'academy' | 'account';
@@ -97,6 +97,11 @@ export function SiteNav({ current = 'home' }: SiteNavProps) {
       home: 'Inicio', colorloop: 'ColorLoop', roi: 'ROI', cases: 'Casos prácticos', blog: 'Blog',
       academy: 'Academy', support: 'Soporte', console: 'Validación de consola', contact: 'Contacto',
       openNav: 'Abrir navegación', mainNav: 'Navegación principal', signIn: 'Iniciar sesión', account: 'Mi cuenta',
+    },
+    pt: {
+      home: 'Início', colorloop: 'ColorLoop', roi: 'ROI', cases: 'Casos de estudo', blog: 'Blog',
+      academy: 'Academy', support: 'Suporte', console: 'Validação de consola', contact: 'Contacto',
+      openNav: 'Abrir navegação', mainNav: 'Navegação principal', signIn: 'Iniciar sessão', account: 'A minha conta',
     },
   };
 

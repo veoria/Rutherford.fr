@@ -57,6 +57,13 @@ const COPY: Record<Locale, Copy> = {
     readMore: 'Leer el artículo',
     seeAll: 'Ver todos los artículos',
   },
+  pt: {
+    kicker: 'No blog',
+    headline: 'Artigos recentes',
+    intro: 'Notas da Rutherford sobre produção offset, gestão da cor e evoluções do setor.',
+    readMore: 'Ler o artigo',
+    seeAll: 'Ver todos os artigos',
+  },
 };
 
 export function BlogPreviewSection() {

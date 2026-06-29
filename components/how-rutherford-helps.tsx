@@ -133,6 +133,30 @@ const COPY: Record<Locale, Copy> = {
       },
     ],
   },
+  pt: {
+    kicker: 'Como a Rutherford ajuda',
+    headline: 'Resultados concretos para ambientes reais de produção offset.',
+    intro:
+      'A Rutherford apoia as equipas offset na gestão da cor, no workflow junto à máquina e na normalização da produção, com foco no que faz andar a máquina e não em slogans.',
+    benefits: [
+      {
+        title: 'Cor estável em cada tiragem',
+        body: 'Calibração normalizada, modelos de tinta e correção closed-loop que mantêm as entregas consistentes de um trabalho para o seguinte.',
+      },
+      {
+        title: 'Menos maculatura de acerto',
+        body: 'Menos folhas, menos tinta e ciclos de acerto mais curtos graças a um alcance previsível do alvo e a um controlo mais apertado da máquina.',
+      },
+      {
+        title: 'Melhor controlo do workflow',
+        body: 'Decisões mais claras junto à máquina, dados de medição ligados e uma transição estruturada entre operadores e gestão.',
+      },
+      {
+        title: 'Normalização da produção',
+        body: 'Processos repetíveis entre máquinas, turnos e instalações, para que proprietários de marca e transformadores possam confiar no que é entregue.',
+      },
+    ],
+  },
 };
 
 const BENEFIT_IMAGES = [

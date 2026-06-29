@@ -69,6 +69,7 @@ const PARTNER_BADGE: Record<Locale, string> = {
   de: 'Offizieller X-Rite PANTONE Partner',
   it: 'Partner ufficiale X-Rite PANTONE',
   es: 'Partner oficial X-Rite PANTONE',
+  pt: 'Parceiro oficial X-Rite PANTONE',
 };
 
 // Co-brand badge for reseller partners — their logo is set by the Rutherford
@@ -79,6 +80,7 @@ const RESELLER_BADGE: Record<Locale, string> = {
   de: 'Offizieller Rutherford-Partner',
   it: 'Partner ufficiale Rutherford',
   es: 'Partner oficial Rutherford',
+  pt: 'Parceiro oficial Rutherford',
 };
 
 const LANG_NAME: Record<Locale, string> = {
@@ -87,6 +89,7 @@ const LANG_NAME: Record<Locale, string> = {
   de: 'Deutsch',
   it: 'Italiano',
   es: 'Español',
+  pt: 'Português',
 };
 
 const RANK_NAMES: Record<Locale, string[]> = {
@@ -95,6 +98,7 @@ const RANK_NAMES: Record<Locale, string[]> = {
   de: ['Einsteiger', 'Bediener', 'Kolorist', 'Farbexperte', 'Closed-Loop-Meister'],
   it: ['Apprendista', 'Operatore', 'Colorista', 'Esperto colore', 'Maestro closed-loop'],
   es: ['Aprendiz', 'Operador', 'Colorista', 'Experto en color', 'Maestro closed-loop'],
+  pt: ['Aprendiz', 'Operador', 'Colorista', 'Especialista de cor', 'Mestre closed-loop'],
 };
 
 type Copy = {
@@ -366,6 +370,47 @@ const COPY: Record<Locale, Copy> = {
     supportHelp: 'Centro de ayuda', supportHelpS: 'Guías & documentación',
     supportMail: 'Escríbanos', supportMailS: 'contact@rutherford.fr',
   },
+  pt: {
+    eyebrow: 'A sua conta',
+    roles: { client: 'Cliente', reseller: 'Revendedor', distributor: 'Distribuidor X-Rite', team: 'Equipa Rutherford' },
+    editProfile: 'Editar perfil', signOut: 'Terminar sessão', quickAccess: 'Acesso rápido',
+    tiles: {
+      academyT: 'Academy', academyS: 'As suas masterclasses de cor',
+      consoleT: 'Console Validation', consoleS: 'As suas validações de máquina',
+      supportT: 'Support', supportS: 'Ajuda & documentação',
+      teamT: 'A minha equipa', teamS: 'Faça a gestão dos seus operadores',
+      clientsT: 'Os meus clientes', clientsS: 'Impressores que acompanha',
+      networkT: 'A minha rede', networkS: 'Revendedores parceiros',
+      adminT: 'Admin', adminS: 'Back-office',
+    },
+    stat: {
+      eligible: (n) => `${n} elegíve${n === 1 ? 'l' : 'is'}`, open: (n) => `${n} em curso`,
+      supportReply: 'Resposta < 1 dia útil', supportOpen: 'Ticket em curso', supportAction: 'Ação necessária', supportNewMsg: 'Nova mensagem', youOnly: 'Apenas você',
+      clientsCount: (n) => `${n} cliente${n === 1 ? '' : 's'}`, networkSoon: 'Em breve', backoffice: 'Back-office',
+    },
+    resumeKicker: 'Retome de onde ficou', resumeCta: 'Continuar', moduleWord: 'Módulo',
+    settingsT: 'Informações da conta', settingsS: 'Faça a gestão do seu perfil e preferências',
+    rowName: 'Nome completo', rowEmail: 'Endereço de email', rowCompany: 'Empresa', rowCountry: 'País', rowLang: 'Idioma', rowPwd: 'Palavra-passe', security: 'Palavra-passe e dois fatores',
+    manage: {
+      teamTitle: 'A minha equipa', teamSub: 'Quem pode aceder a esta conta',
+      clientsTitle: 'Clientes & equipa', clientsSub: 'Os seus clientes e a sua equipa',
+      networkTitle: 'Rede de revendedores', networkSub: 'Os revendedores da sua rede',
+      tabNetwork: (n) => `Rede (${n})`, tabClients: (n) => `Clientes (${n})`, tabTeam: 'Equipa', owner: 'Proprietário',
+      inviteMember: 'Convidar um membro', inviteClient: 'Convidar um cliente', addReseller: 'Adicionar um revendedor',
+      soonTeam: 'Os convites de equipa chegam em breve.', soonNetwork: 'A sua rede aparecerá aqui.', clientsEmpty: 'Ainda não há validações de clientes.',
+      pressUnit: (n) => `${n} máquina${n === 1 ? '' : 's'}`, eligibleShort: (n) => `${n} elegíve${n === 1 ? 'l' : 'is'}`, openShort: (n) => `${n} em curso`,
+      adminTitle: 'Back-office', adminSub: 'Ferramentas da equipa Rutherford', adminCta: 'Abrir admin',
+      adminTag: 'Admin', memberTag: 'Membro', invitedTag: 'Convidado', invitePending: 'Convite enviado', inviteSend: 'Enviar convite', inviteEmailPh: 'nome@empresa.com',
+      remove: 'Remover', revoke: 'Revogar', networkEmpty: 'Ainda não há revendedores na sua rede.',
+    },
+    academyH: 'Academy', levelWord: 'Nível', xpUnit: 'XP',
+    xpToNext: (n, rank) => `${n} XP para ${rank}`, maxLevel: 'Nível máximo atingido',
+    statModules: 'Módulos', statCertificates: 'Certificados',
+    supportH: 'Support',
+    supportChat: 'Falar com o support', supportChatS: 'Resposta em menos de 1 dia útil',
+    supportHelp: 'Centro de ajuda', supportHelpS: 'Guias & documentação',
+    supportMail: 'Escreva-nos', supportMailS: 'contact@rutherford.fr',
+  },
 };
 
 // "À faire maintenant" hero copy — the single most important action.
@@ -429,6 +474,16 @@ const HERO: Record<
     resumeSub: 'Retome su formación donde la dejó.', resumeCta: 'Continuar',
     okTitle: 'Todo al día', okSub: 'Explore la Academy o solicite una validación de consola.', okCta: 'Descubrir Academy',
     remSupportT: 'Ticket de soporte', remSupportS: 'Una respuesta le espera', remResumeT: 'Continuar su curso',
+  },
+  pt: {
+    eyebrow: 'A fazer agora',
+    eligibleTitle: (n) => `${n} máquina${n === 1 ? '' : 's'} elegíve${n === 1 ? 'l' : 'is'} para ligação`,
+    eligibleSub: 'Ligue-as para ativar o controlo de cor closed-loop e reduzir o desperdício na preparação já na próxima tiragem.',
+    eligibleCta: 'Ligar as minhas máquinas',
+    supportTitle: 'A nossa equipa respondeu ao seu ticket', supportSub: 'Retome a conversa e faça avançar o seu pedido.', supportCta: 'Abrir o support',
+    resumeSub: 'Retome a sua formação de onde ficou.', resumeCta: 'Retomar',
+    okTitle: 'Está tudo em dia', okSub: 'Explore a Academy ou peça uma validação de consola.', okCta: 'Descobrir a Academy',
+    remSupportT: 'Ticket de support', remSupportS: 'Uma resposta aguarda-o', remResumeT: 'Retomar o seu curso',
   },
 };
 

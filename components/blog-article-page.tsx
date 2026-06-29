@@ -36,6 +36,7 @@ export function BlogArticlePage({ article }: { article: BlogArticle }) {
     de: { sources: 'Quellen', back: 'Zurück zu allen Artikeln', original: 'Originalseite', ctaTitle: 'Ist Ihre Druckmaschine bereit für Closed-Loop?', ctaCheck: 'Eignung prüfen', ctaRoi: 'ROI berechnen', relatedTitle: 'Mit der passenden Schulung weitermachen' },
     it: { sources: 'Fonti', back: 'Torna a tutti gli articoli', original: 'Pagina originale', ctaTitle: 'La tua macchina è pronta per il closed-loop?', ctaCheck: "Verifica l'idoneità", ctaRoi: 'Calcola il ROI', relatedTitle: 'Approfondisci con la formazione correlata' },
     es: { sources: 'Fuentes', back: 'Volver a todos los artículos', original: 'Página original', ctaTitle: '¿Tu prensa está lista para closed-loop?', ctaCheck: 'Comprobar elegibilidad', ctaRoi: 'Calcular tu ROI', relatedTitle: 'Profundiza con la formación relacionada' },
+    pt: { sources: 'Fontes', back: 'Voltar a todos os artigos', original: 'Página original', ctaTitle: 'A sua máquina está pronta para o closed-loop?', ctaCheck: 'Verificar a sua elegibilidade', ctaRoi: 'Calcular o seu ROI', relatedTitle: 'Vá mais longe com a formação associada' },
   }[locale];
 
   // Localized content (falls back to the English base when a field is missing).

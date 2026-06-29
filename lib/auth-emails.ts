@@ -6,7 +6,7 @@
 
 import { render } from '@/lib/console-validation-emails';
 
-type AuthLocale = 'en' | 'fr' | 'de' | 'it' | 'es';
+type AuthLocale = 'en' | 'fr' | 'de' | 'it' | 'es' | 'pt';
 type ActionKey = 'signup' | 'magiclink' | 'recovery' | 'email_change' | 'reauthentication' | 'default';
 
 type ActionCopy = {
@@ -375,9 +375,75 @@ const COPY: Record<AuthLocale, Record<ActionKey, ActionCopy>> = {
       cta: 'Confirmar',
     },
   },
+  pt: {
+    signup: {
+      subject: 'Confirme o seu email para ativar a sua conta',
+      eyebrow: 'CONFIRME O SEU EMAIL',
+      tone: 'info',
+      headline: { pre: 'Confirme o seu email para ', accent: 'começar', post: '.' },
+      body: [
+        'Está a um clique da sua conta Rutherford Academy. Confirme o seu endereço de email para a ativar e, em seguida, ajudamos a completar o seu perfil.',
+        'Se não foi quem criou esta conta, pode ignorar este email.',
+      ],
+      cta: 'Confirmar o meu email',
+    },
+    magiclink: {
+      subject: 'A sua ligação de acesso',
+      eyebrow: 'LIGAÇÃO DE ACESSO',
+      tone: 'info',
+      headline: { pre: 'A sua ', accent: 'ligação de acesso', post: ' segura.' },
+      body: [
+        'Clique no botão abaixo para iniciar sessão na sua conta Rutherford. A ligação é de utilização única e expira numa hora.',
+        'Se não solicitou isto, pode ignorar este email.',
+      ],
+      cta: 'Iniciar sessão',
+    },
+    recovery: {
+      subject: 'Reponha a sua palavra-passe',
+      eyebrow: 'REPOR A PALAVRA-PASSE',
+      tone: 'warn',
+      headline: { pre: 'Reponha a sua ', accent: 'palavra-passe', post: '.' },
+      body: [
+        'Recebemos um pedido para repor a palavra-passe da sua conta Rutherford. Clique abaixo para escolher uma nova. A ligação expira numa hora.',
+        'Se não solicitou isto, pode ignorar este email. A sua palavra-passe permanece inalterada.',
+      ],
+      cta: 'Repor a palavra-passe',
+    },
+    email_change: {
+      subject: 'Confirme o seu novo endereço de email',
+      eyebrow: 'ALTERAÇÃO DE EMAIL',
+      tone: 'info',
+      headline: { pre: 'Confirme o seu ', accent: 'novo email', post: '.' },
+      body: [
+        'Confirme este endereço para concluir a atualização do email da sua conta Rutherford.',
+        'Se não solicitou esta alteração, contacte-nos.',
+      ],
+      cta: 'Confirmar o novo email',
+    },
+    reauthentication: {
+      subject: 'O seu código de verificação',
+      eyebrow: 'CÓDIGO DE VERIFICAÇÃO',
+      tone: 'warn',
+      headline: { pre: 'O seu ', accent: 'código de verificação', post: '.' },
+      body: [
+        'Utilize este código para confirmar a sua identidade:',
+        '%CODE%',
+        'O código expira em breve. Se não solicitou isto, pode ignorar este email.',
+      ],
+      cta: 'Aceder à minha conta',
+    },
+    default: {
+      subject: 'Confirme o seu pedido',
+      eyebrow: 'CONFIRMAÇÃO',
+      tone: 'info',
+      headline: { pre: 'Por favor, ', accent: 'confirme', post: ' o seu pedido.' },
+      body: ['Clique no botão abaixo para continuar.'],
+      cta: 'Confirmar',
+    },
+  },
 };
 
-const LOCALES = ['en', 'fr', 'de', 'it', 'es'] as const;
+const LOCALES = ['en', 'fr', 'de', 'it', 'es', 'pt'] as const;
 
 // One-time code block for the reauthentication mail.
 const CODE_STYLE =

@@ -101,6 +101,20 @@ const COPY: Record<Locale, CertCopy> = {
     back: 'Volver a su cuenta',
     hint: 'Su certificado se descarga como PDF de una página, listo para compartir.',
   },
+  pt: {
+    kicker: 'Rutherford Academy',
+    heading: 'Certificado de conclusão',
+    awardedTo: 'Certifica-se que',
+    forCompleting: 'concluiu com êxito',
+    assessmentPassed: (pct) => `Avaliação final aprovada, pontuação de ${pct}%`,
+    modulesWord: 'módulos',
+    issuedOn: (d) => `Emitido a ${d}`,
+    referenceLabel: 'N.º de certificado',
+    issuer: 'Rutherford Academy · rutherford.fr, gestão da cor closed-loop',
+    download: 'Descarregar PDF',
+    back: 'Voltar à sua conta',
+    hint: 'O seu certificado é descarregado como PDF de uma página, pronto a partilhar.',
+  },
 };
 
 function formatDate(value: string | null, locale: Locale) {

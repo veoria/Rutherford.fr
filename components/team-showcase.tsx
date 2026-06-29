@@ -42,6 +42,12 @@ const COPY: Record<Locale, Copy> = {
     body: 'Rutherford.fr y Veoria.fr son dos empresas hermanas con sede en Francia. Nuestro equipo combina experiencia offset, ingeniería de software y tecnologías de impresión industrial para acompañar a impresores, convertidores y marcas en Europa y más allá. Cada proyecto se gestiona directamente desde Francia, por personas que conocen su prensa, su flujo de trabajo y su negocio.',
     ctaLabel: 'Hablar con nuestro equipo',
   },
+  pt: {
+    kicker: 'Feito em França',
+    headline: 'A nossa equipa',
+    body: 'A Rutherford.fr e a Veoria.fr são duas empresas irmãs sediadas em França. A nossa equipa reúne competência offset, engenharia de software e tecnologia de impressão industrial para apoiar impressores, converters e marcas na Europa e além. Cada projeto é tratado diretamente a partir de França, por pessoas que conhecem a sua máquina, o seu workflow e o seu negócio.',
+    ctaLabel: 'Fale com a nossa equipa',
+  },
 };
 
 const slides = [

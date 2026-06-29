@@ -11,6 +11,7 @@ const STEP_LABELS: Record<Locale, [string, string, string]> = {
   de: ['Konto', 'E-Mail', 'Profil'],
   it: ['Account', 'E-mail', 'Profilo'],
   es: ['Cuenta', 'Correo', 'Perfil'],
+  pt: ['Conta', 'Email', 'Perfil'],
 };
 
 export function AuthSteps({ active }: { active: 1 | 2 | 3 }) {

@@ -3,7 +3,7 @@ import { updateSession } from '@/lib/supabase/middleware';
 
 // 'en' is served unprefixed at the root (canonical / x-default).
 // These locales get a URL prefix and are rewritten to the same pages.
-const PREFIX_LOCALES = ['fr', 'de', 'it', 'es'];
+const PREFIX_LOCALES = ['fr', 'de', 'it', 'es', 'pt'];
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
