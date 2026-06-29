@@ -3,6 +3,7 @@ import { notFound, redirect } from 'next/navigation';
 import { AccountPage } from '@/components/account-page';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { isOnboarded } from '@/lib/profile';
+import { teamOrgFromEmail } from '@/lib/account-type';
 import { ALL_COURSES, FREE_COURSES } from '@/data/academy-courses';
 import { getLessonsForCourse } from '@/data/academy-lessons';
 import {
@@ -199,6 +200,7 @@ export default async function AccountAcademyRoute() {
       activeDays={activeDays}
       resume={resume}
       catalog={{ total: ALL_COURSES.length, freeSlugs: FREE_COURSES.map((c) => c.id) }}
+      isTeam={Boolean(teamOrgFromEmail(user.email ?? ''))}
     />
   );
 }

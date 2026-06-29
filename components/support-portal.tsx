@@ -8,6 +8,7 @@ import { AccountSubnav } from '@/components/account-subnav';
 import { type Locale, useLanguage } from '@/components/language-provider';
 import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 import { countryFlag } from '@/data/country-flags';
+import { accountAreaEyebrow } from '@/data/account-eyebrow';
 
 export type SupportStatus = 'new' | 'in_progress' | 'waiting_customer' | 'resolved' | 'closed';
 
@@ -425,7 +426,7 @@ export function SupportPortal({ rows, viewerIsTeam = false }: { rows: SupportRow
           <div className="container cvx-shell">
             <div className="team-head">
               <div>
-                <p className="profile-eyebrow">{c.eyebrow}</p>
+                <p className="profile-eyebrow">{accountAreaEyebrow(locale, viewerIsTeam)}</p>
                 <h1 className="profile-h1">{c.title}</h1>
                 <p className="profile-sub">{c.sub}</p>
               </div>
@@ -463,7 +464,7 @@ export function SupportPortal({ rows, viewerIsTeam = false }: { rows: SupportRow
         <div className="container cvx-shell">
           <div className="team-head">
             <div>
-              <p className="profile-eyebrow">{c.eyebrow}</p>
+              <p className="profile-eyebrow">{accountAreaEyebrow(locale, viewerIsTeam)}</p>
               <h1 className="profile-h1">{c.title}</h1>
               <p className="profile-sub">{c.sub}</p>
             </div>
