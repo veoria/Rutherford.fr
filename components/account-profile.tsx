@@ -7,7 +7,6 @@ import { SiteNav } from '@/components/site-nav';
 import { AccountSubnav } from '@/components/account-subnav';
 import { type Locale, useLanguage } from '@/components/language-provider';
 import { COUNTRIES, JOB_TITLE_KEYS, TEAM_ROLE_KEYS, type JobTitleKey } from '@/data/onboarding-options';
-import { accountAreaEyebrow } from '@/data/account-eyebrow';
 import { TEAM_ROLE_LABELS } from '@/data/team-role-labels';
 import type { AccountType } from '@/data/account-types';
 
@@ -765,7 +764,6 @@ export function AccountProfile({
       <section className="section profile-section">
         <div className="container profile-shell">
           <div className="profile-head">
-            <p className="profile-eyebrow">{accountAreaEyebrow(locale, isTeam)}</p>
             <h1 className="profile-h1">{v.pageTitle}</h1>
             <p className="profile-sub">{v.pageSub}</p>
           </div>

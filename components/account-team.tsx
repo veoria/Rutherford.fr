@@ -364,7 +364,6 @@ function TeamTable({ team, selfId }: { team: Team; selfId: string }) {
       <div className="container team-shell">
         <div className="team-head">
           <div>
-            <p className="profile-eyebrow">{t.eyebrow}</p>
             <h1 className="profile-h1">{t.title}</h1>
             <p className="profile-sub">{countLine}</p>
           </div>

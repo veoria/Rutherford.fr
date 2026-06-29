@@ -110,7 +110,6 @@ export default function AccountDemoRoute() {
         moduleTitle: 'Reading the press: density, ΔE and tolerances',
       }}
       catalog={{ total: ALL_COURSES.length, freeSlugs: FREE_COURSES.map((c) => c.id) }}
-      isTeam={false}
     />
   );
 }
