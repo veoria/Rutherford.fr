@@ -27,6 +27,9 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
   } = await rls.auth.getUser();
   if (!user) return NextResponse.json({ error: 'Sign in required' }, { status: 401 });
 
+  // A Rutherford team member can reply from the same in-account form.
+  const isTeamSender = Boolean(teamOrgFromEmail(user.email ?? ''));
+
   let body: any;
   try {
     body = await request.json();
@@ -74,11 +77,10 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
 
   // Relay to Asana as a comment so the assignee/followers are notified.
   if (row.asana_task_gid) {
-    const lines = [
-      `Customer reply — ${ref}${row.email ? ` (${row.email})` : ''}`,
-      comment || '(no comment)',
-      ...links.map((l, i) => `Photo ${i + 1}: ${l}`),
-    ];
+    const heading = isTeamSender
+      ? `Rutherford reply — ${ref} (${user.email ?? 'team'})`
+      : `Customer reply — ${ref}${row.email ? ` (${row.email})` : ''}`;
+    const lines = [heading, comment || '(no comment)', ...links.map((l, i) => `Photo ${i + 1}: ${l}`)];
     await addSupportTaskComment(String(row.asana_task_gid), lines.join('\n'));
   }
 
@@ -100,11 +102,14 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
     })
     .eq('id', row.id);
 
-  // Keep the message in the conversation thread shown in the account.
-  // A Rutherford team member can reply from the same form — attribute it to the
-  // team side, not the customer, so the thread shows the right author.
-  const author = teamOrgFromEmail(user.email ?? '') ? 'team' : 'customer';
-  await insertSupportMessage({ ticketId: String(row.id), author, body: comment || null, photos: links });
+  // Keep the message in the conversation thread shown in the account — attribute
+  // a team member's reply to the team side, not the customer.
+  await insertSupportMessage({
+    ticketId: String(row.id),
+    author: isTeamSender ? 'team' : 'customer',
+    body: comment || null,
+    photos: links,
+  });
 
   return NextResponse.json({ ok: true });
 }
