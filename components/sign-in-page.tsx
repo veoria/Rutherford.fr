@@ -261,11 +261,18 @@ const COPY: Record<Locale, SignInCopy> = {
 
 type Status = 'idle' | 'working' | 'linkSent' | 'resetSent' | 'confirmSent' | 'error';
 
+// Internal paths only — block protocol-relative ("//", "/\") and absolute URLs
+// so a crafted ?next= can't bounce the user off-site after sign-in (open-redirect guard).
+function safeNext(value: string | null): string {
+  if (value && /^\/(?![/\\])/.test(value)) return value;
+  return '/account';
+}
+
 export function SignInPage() {
   const { locale } = useLanguage();
   const t = COPY[locale];
   const search = useSearchParams();
-  const next = search.get('next') ?? '/account';
+  const next = safeNext(search.get('next'));
   // ?mode=signup lets external CTAs (e.g. the /promo reels) land directly on
   // the "Create your account" tab.
   const [mode, setMode] = useState<'signin' | 'signup'>(

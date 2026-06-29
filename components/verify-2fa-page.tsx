@@ -84,7 +84,8 @@ const COPY: Record<Locale, Copy> = {
 };
 
 function safeNext(value: string | null): string {
-  if (value && value.startsWith('/') && !value.startsWith('//')) return value;
+  // Reject protocol-relative ("//", "/\") and absolute URLs, not just "//".
+  if (value && /^\/(?![/\\])/.test(value)) return value;
   return '/account';
 }
 
