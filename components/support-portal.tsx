@@ -7,6 +7,7 @@ import { SiteNav } from '@/components/site-nav';
 import { AccountSubnav } from '@/components/account-subnav';
 import { type Locale, useLanguage } from '@/components/language-provider';
 import { createSupabaseBrowserClient } from '@/lib/supabase/client';
+import { countryFlag } from '@/data/country-flags';
 
 export type SupportStatus = 'new' | 'in_progress' | 'waiting_customer' | 'resolved' | 'closed';
 
@@ -21,6 +22,8 @@ export type SupportRow = {
   id: string;
   reference: string;
   company: string | null;
+  contactEmail: string | null;
+  country: string | null;
   subject: string | null;
   anydesk: string | null;
   description: string;
@@ -53,6 +56,7 @@ type SCopy = {
   client: string;
   ourTeam: string;
   requestTitle: string;
+  contactField: string;
   convEmpty: string;
   send: string;
   writeReply: string;
@@ -81,6 +85,7 @@ const COPY: Record<Locale, SCopy> = {
     client: 'Customer',
     ourTeam: 'Rutherford team',
     requestTitle: 'Original request',
+    contactField: 'Contact',
     convEmpty: 'No messages yet — write below and our team will get it.',
     send: 'Send',
     writeReply: 'Write a reply…',
@@ -117,6 +122,7 @@ const COPY: Record<Locale, SCopy> = {
     client: 'Client',
     ourTeam: 'Équipe Rutherford',
     requestTitle: 'Demande initiale',
+    contactField: 'Contact',
     convEmpty: 'Aucun message pour l’instant — écrivez ci-dessous et notre équipe le recevra.',
     send: 'Envoyer',
     writeReply: 'Écrire une réponse…',
@@ -153,6 +159,7 @@ const COPY: Record<Locale, SCopy> = {
     client: 'Kunde',
     ourTeam: 'Rutherford-Team',
     requestTitle: 'Ursprüngliche Anfrage',
+    contactField: 'Kontakt',
     convEmpty: 'Noch keine Nachrichten — schreiben Sie unten, unser Team erhält sie.',
     send: 'Senden',
     writeReply: 'Antwort schreiben…',
@@ -189,6 +196,7 @@ const COPY: Record<Locale, SCopy> = {
     client: 'Cliente',
     ourTeam: 'Team Rutherford',
     requestTitle: 'Richiesta iniziale',
+    contactField: 'Contatto',
     convEmpty: 'Ancora nessun messaggio — scriva qui sotto e il team lo riceverà.',
     send: 'Invia',
     writeReply: 'Scriva una risposta…',
@@ -225,6 +233,7 @@ const COPY: Record<Locale, SCopy> = {
     client: 'Cliente',
     ourTeam: 'Equipo Rutherford',
     requestTitle: 'Solicitud inicial',
+    contactField: 'Contacto',
     convEmpty: 'Aún no hay mensajes — escriba abajo y nuestro equipo lo recibirá.',
     send: 'Enviar',
     writeReply: 'Escriba una respuesta…',
@@ -442,7 +451,9 @@ export function SupportPortal({ rows, viewerIsTeam = false }: { rows: SupportRow
   // The original request is shown as its own recap above; the thread is the
   // back-and-forth only.
   const thread: SupportMessage[] = [...selected.messages];
-  const hasRecap = Boolean(selected.description.trim() || selected.anydesk || selected.photos.length);
+  const hasRecap = Boolean(
+    selected.description.trim() || selected.anydesk || selected.photos.length || selected.contactEmail
+  );
 
   return (
     <main className="page-shell">
@@ -475,7 +486,8 @@ export function SupportPortal({ rows, viewerIsTeam = false }: { rows: SupportRow
                     <StatusPill meta={c.st[r.status]} />
                   </span>
                   <span className="cvx-item-sub">
-                    {r.reference} · {c.updatedOn} {fmt(r.updatedAt, locale)}
+                    {countryFlag(r.country) ? `${countryFlag(r.country)} ` : ''}
+                    {r.company || r.contactEmail || '—'} · {r.reference}
                   </span>
                 </button>
               ))}
@@ -487,7 +499,8 @@ export function SupportPortal({ rows, viewerIsTeam = false }: { rows: SupportRow
                   <h2 className="cvx-dtitle">{truncate(baseTitle(selected), 80)}</h2>
                   <p className="cvx-dsub">
                     {selected.reference} · {c.openedOn} {fmt(selected.createdAt, locale)}
-                    {selected.company ? ` · ${selected.company}` : ''}
+                    {selected.company ? ` · ${countryFlag(selected.country) ? `${countryFlag(selected.country)} ` : ''}${selected.company}` : ''}
+                    {selected.country ? ` · ${selected.country}` : ''}
                   </p>
                 </div>
                 <StatusPill meta={meta} lg />
@@ -497,6 +510,11 @@ export function SupportPortal({ rows, viewerIsTeam = false }: { rows: SupportRow
                 <div className="sup2-recap">
                   <div className="sup2-recap-h">{c.requestTitle}</div>
                   {selected.description.trim() ? <p className="sup2-recap-body">{selected.description}</p> : null}
+                  {selected.contactEmail ? (
+                    <p className="sup2-recap-meta">
+                      <span className="sup2-recap-k">{c.contactField}</span> {selected.contactEmail}
+                    </p>
+                  ) : null}
                   {selected.anydesk ? (
                     <p className="sup2-recap-meta">
                       <span className="sup2-recap-k">AnyDesk</span> {selected.anydesk}
