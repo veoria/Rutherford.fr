@@ -7,7 +7,6 @@ import { AccountSubnav } from '@/components/account-subnav';
 import { type Locale, useLanguage } from '@/components/language-provider';
 import { Celebration, type CelebrationContent } from '@/components/academy-celebration';
 import { coursePercent, isCourseComplete, overallStats } from '@/lib/gamification';
-import { accountAreaEyebrow } from '@/data/account-eyebrow';
 
 const CONSOLE_TRACKING_ENABLED = process.env.NEXT_PUBLIC_CONSOLE_TRACKING_ENABLED === 'true';
 
@@ -48,7 +47,6 @@ type Props = {
   activeDays: string[];
   resume: { slug: string; title: string; moduleIndex: number; moduleTitle: string } | null;
   catalog: { total: number; freeSlugs: string[] };
-  isTeam: boolean;
 };
 
 type BadgeId =
@@ -627,7 +625,6 @@ export function AccountPage({
   daily,
   resume,
   catalog,
-  isTeam,
 }: Props) {
   const { locale } = useLanguage();
   const t = COPY[locale];
@@ -740,7 +737,6 @@ export function AccountPage({
         <div className="container acad-shell">
           <div className="acad-head">
             <div>
-              <p className="profile-eyebrow">{accountAreaEyebrow(locale, isTeam)}</p>
               <h1 className="profile-h1">{x.academyTitle}</h1>
               <p className="profile-sub">{x.academySub}</p>
             </div>

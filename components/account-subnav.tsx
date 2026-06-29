@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react';
 import { type Locale, useLanguage } from '@/components/language-provider';
 import { createSupabaseBrowserClient } from '@/lib/supabase/client';
+import { accountAreaLabel } from '@/data/account-eyebrow';
+import type { AccountType } from '@/data/account-types';
 
 // Shared account-area shell: pill-tab subnav + the partner/distributor co-brand
 // logo (top-right). Rendered right under <SiteNav> on every account page.
@@ -29,6 +31,7 @@ export function AccountSubnav({ current }: { current: AccountTab }) {
   const L = LABELS[locale];
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [orgName, setOrgName] = useState<string | null>(null);
+  const [accountType, setAccountType] = useState<AccountType | null>(null);
 
   useEffect(() => {
     if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) return;
@@ -39,9 +42,10 @@ export function AccountSubnav({ current }: { current: AccountTab }) {
       if (!active || !data.user) return;
       const { data: prof } = await supabase
         .from('profiles')
-        .select('organization_id, company')
+        .select('organization_id, company, account_type')
         .eq('id', data.user.id)
         .maybeSingle();
+      if (active) setAccountType(((prof?.account_type as AccountType | null) ?? 'client') as AccountType);
       const orgId = (prof?.organization_id as string | null) ?? null;
       if (!orgId) {
         if (active) setOrgName((prof?.company as string | null) ?? null);
@@ -72,10 +76,14 @@ export function AccountSubnav({ current }: { current: AccountTab }) {
             </a>
           ))}
         </div>
-        {logoUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img className="acct-subnav-logo" src={logoUrl} alt={orgName ?? ''} />
-        ) : null}
+        <div className="acct-subnav-right">
+          {accountType ? <span className="acct-subnav-area">{accountAreaLabel(locale, accountType)}</span> : null}
+          {accountType && logoUrl ? <span className="acct-subnav-sep" aria-hidden="true" /> : null}
+          {logoUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img className="acct-subnav-logo" src={logoUrl} alt={orgName ?? ''} />
+          ) : null}
+        </div>
       </div>
     </nav>
   );

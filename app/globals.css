@@ -13420,7 +13420,13 @@ a.blog-card-image:hover img {
 .acct-subnav-link { font-size: 0.92rem; font-weight: 500; color: #676767; padding: 8px 14px; border-radius: 999px; white-space: nowrap; text-decoration: none; transition: background 0.15s ease, color 0.15s ease; }
 .acct-subnav-link:hover { color: #111; background: rgba(20, 19, 15, 0.04); }
 .acct-subnav-link.is-active { color: #111; background: #f4f6f8; font-weight: 600; }
-.acct-subnav-logo { margin-left: auto; height: 30px; width: auto; max-width: 140px; object-fit: contain; flex: 0 0 auto; }
+.acct-subnav-right { margin-left: auto; display: flex; align-items: center; gap: 12px; flex: 0 0 auto; }
+.acct-subnav-area { font-size: 0.8rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--accent); white-space: nowrap; }
+.acct-subnav-sep { width: 1px; height: 22px; background: var(--line); flex: 0 0 auto; }
+.acct-subnav-logo { height: 30px; width: auto; max-width: 140px; object-fit: contain; flex: 0 0 auto; }
+@media (max-width: 640px) {
+  .acct-subnav-area { display: none; }
+}
 
 /* Profile completion banner */
 .profile-banner {
