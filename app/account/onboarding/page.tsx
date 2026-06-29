@@ -14,7 +14,8 @@ export const dynamic = 'force-dynamic';
 // Only allow internal redirect targets (no open redirects).
 function safeNext(next?: string | string[]): string {
   const value = Array.isArray(next) ? next[0] : next;
-  if (value && value.startsWith('/') && !value.startsWith('//')) return value;
+  // Reject protocol-relative ("//", "/\") and absolute URLs, not just "//".
+  if (value && /^\/(?![/\\])/.test(value)) return value;
   return '/account';
 }
 
