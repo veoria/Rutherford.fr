@@ -66,7 +66,11 @@ export default async function AccountSupportRoute() {
       status: row.status as SupportRow['status'],
       createdAt: row.created_at as string,
       updatedAt: (row.updated_at as string | null) ?? (row.created_at as string),
-      photos: Object.values(photos).filter((v): v is string => typeof v === 'string'),
+      // Original request attachments only — reply photos (keys "reply-…") already
+      // show inside their own conversation messages.
+      photos: Object.entries(photos)
+        .filter(([k, v]) => !k.startsWith('reply-') && typeof v === 'string')
+        .map(([, v]) => v),
       customerReplyAt: (row.customer_reply_at as string | null) ?? null,
       agentMessage: (row.agent_message as string | null) ?? null,
       agentMessageAt: (row.agent_message_at as string | null) ?? null,

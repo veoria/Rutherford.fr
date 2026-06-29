@@ -14385,6 +14385,26 @@ select.profile-input { padding-right: 28px; }
 .cvx-pill.cvx-t-neutral { background: #f1f1ec; color: #5c5c54; }
 .cvx-pill.cvx-t-neutral .cvx-pill-dot { background: #9a9a94; }
 
+.sup2-recap {
+  margin-top: 20px;
+  background: #f7f8fa;
+  border: 1px solid #f0f0ee;
+  border-radius: 16px;
+  padding: 16px 18px;
+}
+.sup2-recap-h {
+  margin-bottom: 8px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #9a9a94;
+}
+.sup2-recap-body { margin: 0; font-size: 0.9rem; line-height: 1.55; color: #3a3a3a; white-space: pre-wrap; }
+.sup2-recap-meta { margin: 10px 0 0; font-size: 0.82rem; color: #676767; }
+.sup2-recap-k { margin-right: 4px; font-weight: 700; color: var(--text); }
+.sup2-recap-photos { margin-top: 12px; }
+
 .sup2-thread { margin-top: 24px; display: flex; flex-direction: column; gap: 18px; }
 .sup2-msg { display: flex; gap: 13px; }
 .sup2-av {

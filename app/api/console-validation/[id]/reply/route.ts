@@ -30,6 +30,9 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
   } = await rls.auth.getUser();
   if (!user) return NextResponse.json({ error: 'Sign in required' }, { status: 401 });
 
+  // A Rutherford team member can reply from the same in-account form.
+  const isTeamSender = Boolean(teamOrgFromEmail(user.email ?? ''));
+
   let body: any;
   try {
     body = await request.json();
@@ -103,8 +106,11 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
   // Relay to Asana as a comment so the reviewer is notified (the photos are
   // attached above; the originals also sit in Dropbox when configured).
   if (row.asana_task_gid) {
+    const heading = isTeamSender
+      ? `Rutherford reply — ${ref} (${user.email ?? 'team'})`
+      : `Customer reply — ${ref}${row.email ? ` (${row.email})` : ''}`;
     const lines = [
-      `Customer reply — ${ref}${row.email ? ` (${row.email})` : ''}`,
+      heading,
       comment || '(no comment)',
       moved.length ? `${moved.length} photo(s) attached.` : null,
     ].filter(Boolean) as string[];
@@ -112,7 +118,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
   }
   await addDealNote(
     dealId,
-    `Customer added details via the account — ${ref}.${comment ? ` "${comment.slice(0, 200)}"` : ''} Photos: ${links.length}`
+    `${isTeamSender ? 'Rutherford note' : 'Customer added details'} via the account — ${ref}.${comment ? ` "${comment.slice(0, 200)}"` : ''} Photos: ${links.length}`
   );
 
   // Reopen the review and record the latest customer note.
@@ -125,7 +131,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
   // member replying from the same form is attributed to the team side.
   await insertConsoleValidationMessage({
     validationId: String(row.id),
-    author: teamOrgFromEmail(user.email ?? '') ? 'team' : 'customer',
+    author: isTeamSender ? 'team' : 'customer',
     body: comment || null,
     photos: links,
   });
