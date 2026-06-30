@@ -297,9 +297,9 @@ const COPY: Record<Locale, Copy> = {
     },
   },
   pt: {
-    kicker: 'Casos de estudo',
+    kicker: 'Casos de sucesso',
     headline: 'Resultados no terreno',
-    intro: 'Histórias do terreno onde a Rutherford ajudou equipas offset a atingir objetivos mais depressa, reduzir a maculatura e standardizar a produção.',
+    intro: 'Histórias reais onde a Rutherford ajudou equipas de offset a atingir os seus objetivos mais depressa, reduzir o desperdício e padronizar a produção.',
     challengeLabel: 'Desafio',
     resultLabel: 'Resultado',
     cta: 'Ver testemunho',

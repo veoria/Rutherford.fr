@@ -107,15 +107,15 @@ const COPY: Record<Locale, Copy> = {
     kicker: 'Regulamentação',
     title: 'PPWR & DPP',
     tagline:
-      'Acompanhamos impressores e marcas em cada passo rumo à conformidade PPWR e à preparação para o Digital Product Passport.',
+      'Acompanhamos impressores e marcas em cada etapa rumo à conformidade com o PPWR e à implementação do Passaporte Digital de Produto.',
     intro:
       'O regulamento PPWR (Packaging and Packaging Waste Regulation) é o novo quadro europeu que estabelece regras vinculativas para todas as embalagens colocadas no mercado europeu: reciclabilidade, conteúdo reciclado, redução, rotulagem e rastreabilidade. Para comprovar a conformidade, cada produto incluirá um Digital Product Passport (DPP): um registo legível por máquina, normalmente acessível através de um código QR, que expõe composição, origem dos materiais, reciclabilidade e informação de fim de vida a marcas, autoridades e consumidores.',
     ppwrTitle: 'Conformidade PPWR',
     ppwrBody:
       'Reciclável por conceção, conteúdo reciclado validado, substratos certificados FSC, embalagem minimizada. Ajudamos a traduzir o texto regulamentar em normas de produção concretas, auditadas, documentadas e prontas para os controlos de mercado.',
-    dppTitle: 'Digital Product Passport',
+    dppTitle: 'Passaporte Digital de Produto',
     dppBody:
-      'Cada embalagem torna-se um suporte de dados. Uma única leitura revela composição, origem dos materiais e reciclabilidade, dados estruturados, atualizados em tempo real, partilhados ao longo de toda a cadeia de valor, do fornecedor ao consumidor.',
+      'Cada embalagem torna-se um suporte de dados. Uma simples leitura revela composição, origem dos materiais e reciclabilidade, dados estruturados, atualizados em tempo real, partilhados ao longo de toda a cadeia de valor, do fornecedor ao consumidor.',
     cardCta: 'Saber mais',
     ctaLabel: 'Descobrir PPWR Connect',
     ctaSub: 'A sua via rápida para a preparação PPWR e DPP',

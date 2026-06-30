@@ -135,9 +135,9 @@ const COPY: Record<Locale, Copy> = {
   },
   pt: {
     kicker: 'Como a Rutherford ajuda',
-    headline: 'Resultados concretos para ambientes reais de produção offset.',
+    headline: 'Resultados concretos para a produção offset.',
     intro:
-      'A Rutherford apoia as equipas offset na gestão da cor, no workflow junto à máquina e na normalização da produção, com foco no que faz andar a máquina e não em slogans.',
+      'A Rutherford acompanha as equipas de offset na gestão de cor, no workflow de impressão e na padronização da produção. Focada no que faz as máquinas trabalhar, não em slogans.',
     benefits: [
       {
         title: 'Cor estável em cada tiragem',

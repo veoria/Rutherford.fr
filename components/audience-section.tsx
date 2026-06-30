@@ -140,10 +140,10 @@ const COPY: Record<Locale, Copy> = {
       },
       {
         title: 'Transformadores de embalagem',
-        body: 'Transformadores que procuram maior controlo de produção, normalização e repetibilidade na sala de impressão.',
+        body: 'Transformadores que procuram um controlo de produção mais forte, mais padronização e repetibilidade na gráfica.',
       },
       {
-        title: 'Decisores',
+        title: 'Gestores',
         body: 'Responsáveis que avaliam a modernização do workflow, uma estratégia closed-loop de cor ou a compatibilidade da consola antes de uma implementação.',
       },
     ],
