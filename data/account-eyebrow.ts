@@ -9,6 +9,7 @@ const LABELS: Record<Locale, Record<AccountType, string>> = {
   de: { team: 'Rutherford-Bereich', distributor: 'X-Rite-Bereich', reseller: 'Händlerbereich', client: 'Kundenbereich' },
   it: { team: 'Area Rutherford', distributor: 'Area X-Rite', reseller: 'Area rivenditore', client: 'Area cliente' },
   es: { team: 'Área Rutherford', distributor: 'Área X-Rite', reseller: 'Área de revendedor', client: 'Área de cliente' },
+  pt: { team: 'Área Rutherford', distributor: 'Área X-Rite', reseller: 'Área de revendedor', client: 'Área de cliente' },
 };
 
 export function accountAreaLabel(locale: Locale, accountType: AccountType): string {

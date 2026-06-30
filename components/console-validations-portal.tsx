@@ -365,6 +365,7 @@ const COPY: Record<Locale, CCopy> = {
     emptyCta: 'Iniciar una validación de consola',
   },
   pt: {
+    attach: 'Anexar um ficheiro',
     title: 'Validações de consola',
     presses: (n) => `${n} máquina${n > 1 ? 's' : ''}`,
     eligible: (n) => `${n} elegíve${n > 1 ? 'is' : 'l'} para ligar`,

@@ -260,6 +260,8 @@ const COPY: Record<Locale, SCopy> = {
     ],
   },
   pt: {
+    requestTitle: 'Pedido inicial',
+    contactField: 'Contacto',
     eyebrow: 'Área de parceiro',
     title: 'Support',
     sub: 'Os seus pedidos de assistência e a ajuda Rutherford.',
