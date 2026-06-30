@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { SiteFooter } from '@/components/site-footer';
 import { SiteNav } from '@/components/site-nav';
+import { OFFSET360_FAQ } from '@/data/offset360-faq';
 
 const XRITE_OFFSET360_URL = 'https://www.xrite.com/page/offset360';
 const VIDEO_ID = '7X0fOMXK72Y';
@@ -473,6 +474,22 @@ export function Offset360Page() {
             Open and flexible by design. Offset360 works with <strong>any press brand and any workflow</strong>, no vendor
             lock-in, no rip-and-replace.
           </p>
+        </div>
+      </section>
+
+      {/* FAQ — Offset360 (also powers FAQPage schema) */}
+      <section className="o360-section o360-quiet">
+        <div className="o360-narrow o360-reveal">
+          <p className="o360-eyebrow">Offset360 FAQ</p>
+          <h2 className="o360-h2">Offset360, answered.</h2>
+          <div className="o360-faq">
+            {OFFSET360_FAQ.map((f) => (
+              <details className="o360-faq-item" key={f.q}>
+                <summary>{f.q}</summary>
+                <p>{f.a}</p>
+              </details>
+            ))}
+          </div>
         </div>
       </section>
 

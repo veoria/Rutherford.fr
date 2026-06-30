@@ -726,3 +726,18 @@
   color: inherit;
   -webkit-text-fill-color: inherit;
 }
+
+/* Offset360 FAQ accordion */
+.o360-faq { margin-top: 28px; display: grid; gap: 0; max-width: 760px; }
+.o360-faq-item { border-top: 1px solid rgba(0, 0, 0, 0.1); }
+.o360-faq-item:last-child { border-bottom: 1px solid rgba(0, 0, 0, 0.1); }
+.o360-faq-item summary {
+  list-style: none; cursor: pointer; padding: 20px 2px; font-size: 1.1rem; font-weight: 600;
+  color: #1d1d1f; display: flex; justify-content: space-between; align-items: center; gap: 16px;
+}
+.o360-faq-item summary::-webkit-details-marker { display: none; }
+.o360-faq-item summary::after {
+  content: "+"; font-size: 1.5rem; font-weight: 400; color: #0071e3; line-height: 1; flex: 0 0 auto; transition: transform .2s ease;
+}
+.o360-faq-item[open] summary::after { content: "\2212"; }
+.o360-faq-item p { margin: 0 2px 22px; color: #5a6172; line-height: 1.55; font-size: 1rem; max-width: 680px; }
