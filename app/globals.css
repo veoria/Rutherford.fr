@@ -577,8 +577,8 @@ svg {
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(rgba(0, 113, 227, 0.06) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 113, 227, 0.06) 1px, transparent 1px);
+    linear-gradient(rgba(0, 0, 0, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.04) 1px, transparent 1px);
   background-size: 48px 48px;
   mask-image: radial-gradient(ellipse at 50% 50%, #000 40%, transparent 80%);
   -webkit-mask-image: radial-gradient(ellipse at 50% 50%, #000 40%, transparent 80%);
@@ -5635,7 +5635,7 @@ a.blog-card-image:hover img {
   display: block;
   border-radius: 50%;
   filter: blur(90px);
-  opacity: 0.5;
+  opacity: 0.06;
   will-change: transform;
 }
 
@@ -5671,8 +5671,8 @@ a.blog-card-image:hover img {
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(rgba(0, 113, 227, 0.06) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 113, 227, 0.06) 1px, transparent 1px);
+    linear-gradient(rgba(0, 0, 0, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.04) 1px, transparent 1px);
   background-size: 48px 48px;
   mask-image: radial-gradient(ellipse at 50% 50%, #000 40%, transparent 80%);
   -webkit-mask-image: radial-gradient(ellipse at 50% 50%, #000 40%, transparent 80%);
@@ -6747,7 +6747,7 @@ a.blog-card-image:hover img {
 }
 
 .brand-explainer-card-rutherford {
-  background: linear-gradient(165deg, #0071e3 0%, #0056b3 100%);
+  background: linear-gradient(165deg, #1d1d1f 0%, #0a0a0a 100%);
   border: 0;
 }
 
@@ -7670,10 +7670,10 @@ a.blog-card-image:hover img {
   justify-items: center;
   text-align: center;
   padding: clamp(48px, 6vw, 72px) clamp(24px, 4vw, 56px);
-  background: linear-gradient(135deg, #0b3b6c 0%, #0071e3 100%);
+  background: linear-gradient(160deg, #1d1d1f 0%, #000000 100%);
   border-radius: 28px;
   color: #ffffff;
-  box-shadow: 0 30px 60px -30px rgba(0, 113, 227, 0.4);
+  box-shadow: 0 30px 60px -30px rgba(0, 0, 0, 0.45);
 }
 
 .console-cta-illustration {
