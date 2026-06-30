@@ -111,7 +111,7 @@ const COPY: Record<Locale, Copy> = {
     rights: 'Todos os direitos reservados',
     langAuto: 'Idioma · detetado automaticamente',
     resourceLabels: { blog: 'Blog', support: 'Apoio', console: 'Validação de consola', contact: 'Contacto' },
-    companyLabels: { about: 'Sobre a Rutherford', colorloop: 'ColorLoop', offset360: 'Offset360', cases: 'Casos de clientes' },
+    companyLabels: { about: 'Sobre a Rutherford', colorloop: 'ColorLoop', offset360: 'Offset360', cases: 'Casos de sucesso' },
   },
 };
 

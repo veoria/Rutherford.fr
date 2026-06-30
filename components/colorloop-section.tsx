@@ -160,7 +160,7 @@ const COPY: Record<Locale, Copy> = {
     kicker: 'O software',
     headline: 'ColorLoop para impressão offset',
     intro:
-      'Construído a partir da experiência closed-loop da Rutherford, o ColorLoop ajuda as equipas offset a reduzir o tempo de acerto, melhorar a consistência da cor e ligar os dados de produção de forma mais clara ao longo do workflow.',
+      'Construído a partir da experiência closed-loop da Rutherford, o ColorLoop ajuda as equipas offset a reduzir o tempo de acerto, melhorar a consistência de cor e ligar os dados de produção de forma mais clara ao longo do workflow.',
     benefits: [
       {
         title: 'Acerto mais rápido',

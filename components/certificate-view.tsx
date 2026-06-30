@@ -110,7 +110,7 @@ const COPY: Record<Locale, CertCopy> = {
     modulesWord: 'módulos',
     issuedOn: (d) => `Emitido a ${d}`,
     referenceLabel: 'N.º de certificado',
-    issuer: 'Rutherford Academy · rutherford.fr, gestão da cor closed-loop',
+    issuer: 'Rutherford Academy · rutherford.fr, gestão de cor closed-loop',
     download: 'Descarregar PDF',
     back: 'Voltar à sua conta',
     hint: 'O seu certificado é descarregado como PDF de uma página, pronto a partilhar.',

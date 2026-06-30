@@ -307,24 +307,24 @@ const COPY: Record<Locale, Copy> = {
     next: 'Testemunho seguinte',
     cases: {
       wauters: {
-        challenge: 'Manter uma precisão da cor rigorosa em embalagem offset de grande volume.',
-        result: 'Precisão da cor reforçada, acerto mais rápido e mais confiança em cada trabalho.',
+        challenge: 'Manter uma precisão de cor rigorosa em embalagem offset de grande volume.',
+        result: 'Precisão de cor reforçada, acerto mais rápido e mais confiança em cada trabalho.',
       },
       viappiani: {
         challenge: 'Manter precisão e velocidade em trabalhos offset comerciais exigentes.',
-        result: 'Acerto mais rápido, menos maculatura e controlo da cor mais rigoroso com o closed-loop Rutherford.',
+        result: 'Acerto mais rápido, menos maculatura e controlo de cor mais rigoroso com o closed-loop Rutherford.',
       },
       autajon: {
-        challenge: 'Manter a consistência da cor de marca na produção de embalagem premium.',
-        result: 'Maior consistência da cor e melhor eficiência da máquina, turno após turno.',
+        challenge: 'Manter a consistência de cor de marca na produção de embalagem premium.',
+        result: 'Maior consistência de cor e melhor eficiência da máquina, turno após turno.',
       },
       lefrancq: {
-        challenge: 'Trabalhos de embalagem exigentes, sem margem para deriva da cor.',
-        result: 'Nao conseguimos pôr a máquina a trabalhar sem ele, closed-loop adotado como standard diário.',
+        challenge: 'Trabalhos de packaging exigentes, nenhuma variação de cor tolerada.',
+        result: '«Já não conseguimos pôr a máquina a trabalhar sem ele.» O closed-loop adotado como standard diário.',
       },
       gsmonaco: {
         challenge: 'Cumprir exigências de cor de luxo com a Forbes Monaco.',
-        result: 'Controlo da cor mais rigoroso, acerto mais curto e produção de luxo controlada.',
+        result: 'Controlo de cor mais rigoroso, acerto mais curto e produção de luxo controlada.',
       },
       moderna: {
         challenge: 'Arranques lentos e manuais que aumentavam a maculatura de acerto em offset de folhas.',
@@ -332,15 +332,15 @@ const COPY: Record<Locale, Copy> = {
       },
       colorconsulting: {
         challenge: 'Industrializar a competência da cor junto de clientes italianos de embalagem.',
-        result: 'Workflows standardizados e melhorias mensuráveis no desempenho da cor.',
+        result: 'Workflows padronizados e melhorias mensuráveis no desempenho da cor.',
       },
       printwell: {
         challenge: 'Escalar uma cor consistente em offset comercial de grande volume nos EUA.',
-        result: 'Sala de prensa standardizada, integração mais rápida e entregas fiáveis aos clientes.',
+        result: 'Gráfica padronizada, integração mais rápida e entregas fiáveis aos clientes.',
       },
       avery: {
-        challenge: 'Escalar a consistência da cor na produção internacional de etiquetas.',
-        result: 'Sala de prensa standardizada, qualidade da cor fiável e dados mais limpos entre fábricas.',
+        challenge: 'Escalar a consistência de cor na produção internacional de etiquetas.',
+        result: 'Gráfica padronizada, qualidade de cor fiável e dados mais limpos entre instalações.',
       },
     },
   },

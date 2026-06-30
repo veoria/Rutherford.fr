@@ -300,7 +300,7 @@ const COPY: Record<Locale, RoiCopy> = {
       lead: 'Em menos de um minuto, estime a maculatura, o tempo de acerto e os custos que pode recuperar nas suas máquinas offset, a partir dos seus próprios números.',
       ctaCalc: 'Calcule a sua poupança',
       ctaConsole: 'Solicitar uma validação de consola',
-      trust: '25+ anos · 30+ países · 1.000+ sistemas instalados · parceiro X-Rite PANTONE',
+      trust: '25+ anos · 30+ países · 1.000+ sistemas implementados · parceiro X-Rite PANTONE',
     },
     capture: {
       kicker: 'Estimativa detalhada',

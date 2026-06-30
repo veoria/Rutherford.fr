@@ -60,7 +60,7 @@ const COPY: Record<Locale, Copy> = {
   pt: {
     kicker: 'No blog',
     headline: 'Artigos recentes',
-    intro: 'Notas da Rutherford sobre produção offset, gestão da cor e evoluções do setor.',
+    intro: 'Notas da Rutherford sobre produção offset, gestão de cor e evoluções do setor.',
     readMore: 'Ler o artigo',
     seeAll: 'Ver todos os artigos',
   },

@@ -56,7 +56,7 @@ const COPY: Record<Locale, Copy> = {
     kicker: 'Pare de perder dinheiro',
     headline: 'Pare de perder dinheiro em cada acerto',
     supporting:
-      'A deriva da cor queima folhas, tinta e tempo de máquina. Verifique gratuitamente se a sua máquina de impressão é elegível para o closed-loop da Rutherford.',
+      'A deriva de cor queima folhas, tinta e tempo de máquina. Verifique gratuitamente se a sua máquina de impressão é elegível para o closed-loop da Rutherford.',
     primaryCta: 'Teste a sua elegibilidade gratuitamente',
     secondaryCta: 'Fale com a Rutherford',
   },

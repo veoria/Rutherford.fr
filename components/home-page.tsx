@@ -123,7 +123,7 @@ const HERO_COPY: Record<Locale, HeroCopy> = {
   },
   pt: {
     eyebrow: 'Especialistas em impressão offset',
-    headlineLead: 'Melhorar o controlo da cor e',
+    headlineLead: 'Melhorar o controlo de cor e',
     headlineAccent: 'reduzir a maculatura de acerto.',
     reduceLabel: 'Reduzir',
     supporting:

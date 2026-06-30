@@ -477,7 +477,7 @@ const COPY: Record<Locale, Copy> = {
   pt: {
     kicker: 'Suporte',
     title: 'Estamos aqui para o ajudar.',
-    tagline: 'Assistência remota para a sua sala de impressão.',
+    tagline: 'Assistência remota para a sua gráfica.',
     phoneLine: 'Tire uma foto e envie-a diretamente do seu telemóvel.',
     ctaPrimary: 'Abrir um pedido',
     ctaSecondary: 'Fale com um especialista',

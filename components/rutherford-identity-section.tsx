@@ -166,7 +166,7 @@ const COPY: Record<Locale, Copy> = {
     ],
     years: 'Anos de experiência',
     countries: 'Países',
-    systems: 'Sistemas instalados',
+    systems: 'Sistemas implementados',
   },
 };
 

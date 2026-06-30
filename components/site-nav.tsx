@@ -99,7 +99,7 @@ export function SiteNav({ current = 'home' }: SiteNavProps) {
       openNav: 'Abrir navegación', mainNav: 'Navegación principal', signIn: 'Iniciar sesión', account: 'Mi cuenta',
     },
     pt: {
-      home: 'Início', colorloop: 'ColorLoop', roi: 'ROI', cases: 'Casos de estudo', blog: 'Blog',
+      home: 'Início', colorloop: 'ColorLoop', roi: 'ROI', cases: 'Casos de sucesso', blog: 'Blog',
       academy: 'Academy', support: 'Suporte', console: 'Validação de consola', contact: 'Contacto',
       openNav: 'Abrir navegação', mainNav: 'Navegação principal', signIn: 'Iniciar sessão', account: 'A minha conta',
     },
