@@ -296,10 +296,10 @@ const COPY: Record<Locale, RoiCopy> = {
   pt: {
     hero: {
       kicker: 'Estimador de ROI',
-      h1: 'Quanto poderia a ColorLoop poupar na sua sala de prensa?',
+      h1: 'Quanto é que o ColorLoop poderia poupar à sua gráfica?',
       lead: 'Em menos de um minuto, estime a maculatura, o tempo de acerto e os custos que pode recuperar nas suas máquinas offset, a partir dos seus próprios números.',
       ctaCalc: 'Calcule a sua poupança',
-      ctaConsole: 'Solicitar validação de consola',
+      ctaConsole: 'Solicitar uma validação de consola',
       trust: '25+ anos · 30+ países · 1.000+ sistemas instalados · parceiro X-Rite PANTONE',
     },
     capture: {

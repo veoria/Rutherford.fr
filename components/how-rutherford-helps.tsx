@@ -141,18 +141,18 @@ const COPY: Record<Locale, Copy> = {
     benefits: [
       {
         title: 'Cor estável em cada tiragem',
-        body: 'Calibração normalizada, modelos de tinta e correção closed-loop que mantêm as entregas consistentes de um trabalho para o seguinte.',
+        body: 'Calibração padronizada, modelos de entintagem e correção closed-loop que garantem a consistência de um trabalho para o outro.',
       },
       {
-        title: 'Menos maculatura de acerto',
-        body: 'Menos folhas, menos tinta e ciclos de acerto mais curtos graças a um alcance previsível do alvo e a um controlo mais apertado da máquina.',
+        title: 'Menos maculatura no acerto',
+        body: 'Menos folhas, menos tinta e ciclos de acerto mais curtos graças a um controlo mais fiável.',
       },
       {
         title: 'Melhor controlo do workflow',
-        body: 'Decisões mais claras junto à máquina, dados de medição ligados e uma transição estruturada entre operadores e gestão.',
+        body: 'Decisões de impressão mais claras, dados de medição ligados e transmissão estruturada entre operadores e gestão.',
       },
       {
-        title: 'Normalização da produção',
+        title: 'Padronização da produção',
         body: 'Processos repetíveis entre máquinas, turnos e instalações, para que proprietários de marca e transformadores possam confiar no que é entregue.',
       },
     ],

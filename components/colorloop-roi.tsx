@@ -220,7 +220,7 @@ const COPY: Record<Locale, Copy> = {
   },
   pt: {
     kicker: 'Estimador de ROI',
-    headline: 'Quanto poderia a ColorLoop poupar na sua sala de prensa?',
+    headline: 'Quanto é que o ColorLoop poderia poupar à sua gráfica?',
     intro:
       'Escolha o seu perfil de produção, o formato de máquina e o número de cores, depois afine os seus números de acerto. Todos os valores permanecem ajustáveis.',
     figuresHeading: 'Afine os seus números',

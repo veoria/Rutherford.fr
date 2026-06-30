@@ -136,24 +136,24 @@ const COPY: Record<Locale, Copy> = {
   },
   pt: {
     kicker: 'Como trabalhamos',
-    headline: 'O know-how, o software e a tecnologia por detrás da Rutherford',
+    headline: 'A expertise, o software e a tecnologia por trás da Rutherford',
     intro:
       'A Rutherford reúne experiência em impressão offset, software e tecnologia para ajudar a modernizar o controlo de produção.',
     rutherford: {
       title: 'Rutherford.fr',
-      body: 'A Rutherford traz anos de experiência em impressão offset na gestão da cor, no workflow junto à máquina e na consistência de produção.',
+      body: 'A Rutherford traz anos de expertise em offset, na gestão de cor, no workflow de impressão e na consistência de produção.',
       ctaLabel: 'Descobrir a Rutherford',
       href: '/#who-we-are',
     },
     colorloop: {
       title: 'ColorLoop.ai',
-      body: 'ColorLoop é a plataforma de software da Rutherford para o controlo moderno da produção offset, construída a partir de experiência real na sala de impressão.',
+      body: 'ColorLoop é a plataforma de software da Rutherford para o controlo moderno da produção offset, concebida a partir da experiência no terreno.',
       ctaLabel: 'Visitar colorloop.ai',
       href: 'https://colorloop.ai/',
     },
     veoria: {
       title: 'Veoria.fr',
-      body: 'A VEORIA, empresa irmã da Rutherford, é uma empresa de tecnologia de impressão dedicada aos sistemas de impressão industrial e ao controlo da cor inline para a impressão de etiquetas. A sua equipa de engenharia desenvolveu a tecnologia por detrás do ColorLoop em conjunto com a experiência offset da Rutherford.',
+      body: 'A VEORIA, empresa irmã da Rutherford, é uma empresa de tecnologias de impressão especializada em sistemas industriais e no controlo de cor inline para etiquetas. As suas equipas de engenharia desenvolveram a tecnologia do ColorLoop em conjunto com a expertise em offset da Rutherford.',
       ctaLabel: 'Visitar veoria.fr',
       href: 'https://veoria.fr/',
     },

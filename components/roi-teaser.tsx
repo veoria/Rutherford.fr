@@ -52,7 +52,7 @@ const COPY: Record<Locale, TeaserCopy> = {
   pt: {
     label: 'Poupança anual estimada',
     amount: '≈ 145.000 €',
-    lead: 'para uma máquina B1 de seis cores em embalagem cartão. Quanto poderia a ColorLoop poupar na sua sala de prensa?',
+    lead: 'para uma máquina B1 de seis cores em embalagem de cartão. Quanto é que o ColorLoop poderia poupar à sua gráfica?',
     cta: 'Calcule a sua poupança',
     aria: 'Estime a sua poupança com a ColorLoop',
   },
