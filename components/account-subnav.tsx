@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import { type Locale, useLanguage } from '@/components/language-provider';
-import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 import { accountAreaLabel } from '@/data/account-eyebrow';
 import type { AccountType } from '@/data/account-types';
 
@@ -34,27 +33,23 @@ export function AccountSubnav({ current }: { current: AccountTab }) {
   const [accountType, setAccountType] = useState<AccountType | null>(null);
 
   useEffect(() => {
-    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) return;
-    const supabase = createSupabaseBrowserClient();
     let active = true;
     (async () => {
-      const { data } = await supabase.auth.getUser();
-      if (!active || !data.user) return;
-      const { data: prof } = await supabase
-        .from('profiles')
-        .select('organization_id, company, account_type')
-        .eq('id', data.user.id)
-        .maybeSingle();
-      if (active) setAccountType(((prof?.account_type as AccountType | null) ?? 'client') as AccountType);
-      const orgId = (prof?.organization_id as string | null) ?? null;
-      if (!orgId) {
-        if (active) setOrgName((prof?.company as string | null) ?? null);
-        return;
+      try {
+        const res = await fetch('/api/account/subnav');
+        if (!active || !res.ok) return;
+        const d = (await res.json()) as {
+          accountType?: AccountType;
+          orgName?: string | null;
+          logoUrl?: string | null;
+        };
+        if (!active) return;
+        setAccountType((d.accountType ?? 'client') as AccountType);
+        setOrgName(d.orgName ?? null);
+        setLogoUrl(d.logoUrl ?? null);
+      } catch {
+        // Best-effort shell decoration; ignore failures.
       }
-      const { data: org } = await supabase.from('organizations').select('logo_url, name').eq('id', orgId).maybeSingle();
-      if (!active) return;
-      setLogoUrl((org?.logo_url as string | null) ?? null);
-      setOrgName((org?.name as string | null) ?? (prof?.company as string | null) ?? null);
     })();
     return () => {
       active = false;
