@@ -13,8 +13,24 @@ const SECURITY_HEADERS = [
 ];
 
 const nextConfig = {
+  // Serve modern formats and cache optimized images aggressively. Local images are
+  // content-stable and the optimizer keys on source + dimensions, so a long TTL is
+  // safe and cuts repeat-visit bytes for every next/image on the site.
+  images: {
+    formats: ['image/avif', 'image/webp'],
+    minimumCacheTTL: 31536000,
+  },
   async headers() {
-    return [{ source: '/:path*', headers: SECURITY_HEADERS }];
+    return [
+      { source: '/:path*', headers: SECURITY_HEADERS },
+      // Long-lived caching for static content images (served raw from /public).
+      // Not "immutable": paths are reused when an image is replaced, so we keep a
+      // revalidation window instead of pinning a year.
+      {
+        source: '/images/:path*',
+        headers: [{ key: 'Cache-Control', value: 'public, max-age=2592000, stale-while-revalidate=604800' }],
+      },
+    ];
   },
   async redirects() {
     return [
