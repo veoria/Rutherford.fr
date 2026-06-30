@@ -72,7 +72,7 @@ const HERO_COPY: Record<Locale, HeroCopy> = {
     headlineAccent: 'reduce makeready waste.',
     reduceLabel: 'Reduce',
     supporting:
-      'From closed-loop workflow expertise to modern production software, Rutherford supports offset teams that want faster setup, stronger repeatability, and clearer press-side control. ColorLoop is Rutherford’s latest software platform for smarter offset production.',
+      'Faster makeready, steadier color, less waste. ColorLoop is Rutherford’s production software for offset.',
     primaryCta: 'Request console validation',
     secondaryCta: 'Request an audit',
     tertiaryCta: 'Discover ColorLoop',
@@ -83,7 +83,7 @@ const HERO_COPY: Record<Locale, HeroCopy> = {
     headlineAccent: 'réduire la gâche au calage.',
     reduceLabel: 'Réduire',
     supporting:
-      "De l’expertise closed-loop aux logiciels de production modernes, Rutherford accompagne les équipes offset qui veulent un calage plus rapide, une meilleure répétabilité et un contrôle presse plus clair. ColorLoop est la dernière plateforme logicielle de Rutherford pour une production offset plus intelligente.",
+      'Calage plus rapide, couleur stable, moins de gâche. ColorLoop, le logiciel de production offset de Rutherford.',
     primaryCta: 'Demander une validation console',
     secondaryCta: 'Demander un audit',
     tertiaryCta: 'Découvrir ColorLoop',
@@ -94,7 +94,7 @@ const HERO_COPY: Record<Locale, HeroCopy> = {
     headlineAccent: 'Makulatur beim Einrichten reduzieren.',
     reduceLabel: 'Reduzieren',
     supporting:
-      'Von Closed-Loop-Workflow-Expertise bis zu moderner Produktionssoftware unterstützt Rutherford Offsetteams, die schnelleres Einrichten, bessere Wiederholbarkeit und klarere Maschinensteuerung wollen. ColorLoop ist Rutherfords neueste Softwareplattform für eine intelligentere Offsetproduktion.',
+      'Schnelleres Einrichten, stabile Farbe, weniger Makulatur. ColorLoop ist Rutherfords Produktionssoftware für Offset.',
     primaryCta: 'Konsolenvalidierung anfragen',
     secondaryCta: 'Audit anfragen',
     tertiaryCta: 'ColorLoop entdecken',
@@ -105,7 +105,7 @@ const HERO_COPY: Record<Locale, HeroCopy> = {
     headlineAccent: 'Meno scarti in avviamento.',
     reduceLabel: 'Meno',
     supporting:
-      "Dai workflow closed-loop al nostro software di ultima generazione per l’ottimizzazione della produzione, Rutherford affianca i team offset che vogliono ridurre i tempi di avviamento, migliorare la ripetibilità e ottenere un controllo più chiaro direttamente a bordo macchina. ColorLoop è la nuova piattaforma software Rutherford per una produzione offset più intelligente.",
+      'Avviamento più rapido, colore stabile, meno scarto. ColorLoop è il software di produzione offset di Rutherford.',
     primaryCta: 'Richiedi la validazione della console',
     secondaryCta: 'Richiedi un audit',
     tertiaryCta: 'Scopri ColorLoop',
@@ -116,7 +116,7 @@ const HERO_COPY: Record<Locale, HeroCopy> = {
     headlineAccent: 'reducir el desperdicio de puesta a punto.',
     reduceLabel: 'Reducir',
     supporting:
-      'Desde la experiencia closed-loop hasta el software de producción moderno, Rutherford acompaña a los equipos offset que buscan puestas a punto más rápidas, mejor repetibilidad y un control de prensa más claro. ColorLoop es la última plataforma de software de Rutherford para una producción offset más inteligente.',
+      'Puesta a punto más rápida, color estable, menos desperdicio. ColorLoop es el software de producción offset de Rutherford.',
     primaryCta: 'Solicitar validación de consola',
     secondaryCta: 'Solicitar una auditoría',
     tertiaryCta: 'Descubrir ColorLoop',
@@ -127,7 +127,7 @@ const HERO_COPY: Record<Locale, HeroCopy> = {
     headlineAccent: 'reduzir a maculatura de acerto.',
     reduceLabel: 'Reduzir',
     supporting:
-      'Da experiência em closed-loop ao software de produção moderno, a Rutherford acompanha as equipas de offset que procuram um acerto mais rápido, melhor repetibilidade e um controlo de impressão mais claro. ColorLoop é a mais recente plataforma de software da Rutherford para uma produção offset mais inteligente.',
+      'Acerto mais rápido, cor estável, menos maculatura. ColorLoop é o software de produção offset da Rutherford.',
     primaryCta: 'Solicitar uma validação de consola',
     secondaryCta: 'Solicitar uma auditoria',
     tertiaryCta: 'Descobrir ColorLoop',

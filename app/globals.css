@@ -500,7 +500,7 @@ svg {
   position: relative;
   overflow: hidden;
   isolation: isolate;
-  background: linear-gradient(180deg, #ffffff 0%, #f5f8ff 100%);
+  background: #ffffff;
 }
 
 .hero-background {
@@ -541,7 +541,7 @@ svg {
   display: block;
   border-radius: 50%;
   filter: blur(90px);
-  opacity: 0.55;
+  opacity: 0.08;
   will-change: transform;
 }
 
@@ -4603,7 +4603,7 @@ a.blog-card-image:hover img {
 
 @media (max-width: 640px) {
   :root {
-    --container: min(100vw - 24px, 100%);
+    --container: min(100vw - 40px, 100%);
   }
 
   .hero-section {
