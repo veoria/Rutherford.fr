@@ -71,8 +71,8 @@ export function AcademyPage() {
 
       <figure className="academy-hero-banner">
         <img
-          src="/images/academy/hero.jpg"
-          alt="Rutherford team training on a press console"
+          src="/images/Hugues on console press offset.jpg"
+          alt="Operator at the ColorLoop press console"
           loading="eager"
         />
       </figure>
