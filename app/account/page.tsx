@@ -141,20 +141,23 @@ export default async function AccountHubRoute() {
   }
   const systems = [...sysByMachine.values()];
 
-  // Support tile: surface an open ticket's status, and a "new message" badge
-  // when the latest message on an open ticket came from our team.
-  let supportStatus: string | null = null;
-  let supportNewMessage = false;
-  try {
-    const { data: stRows } = await supabase
-      .from('support_tickets')
-      .select('id, status, updated_at')
-      .order('updated_at', { ascending: false });
-    const openTickets = ((stRows ?? []) as { id: string; status: string }[]).filter((r) =>
-      ['new', 'in_progress', 'waiting_customer'].includes(r.status)
-    );
-    if (openTickets.length) {
-      supportStatus = openTickets.find((r) => r.status === 'waiting_customer')?.status ?? openTickets[0].status;
+  // The next four reads are mutually independent — start them together and await
+  // as a group instead of in series. Each block keeps its original logic and
+  // error handling; only the sequencing changes.
+
+  // Support tile: an open ticket's status + a "new message" badge when the latest
+  // message on an open ticket came from our team.
+  const supportSummaryP = (async (): Promise<{ status: string | null; newMessage: boolean }> => {
+    try {
+      const { data: stRows } = await supabase
+        .from('support_tickets')
+        .select('id, status, updated_at')
+        .order('updated_at', { ascending: false });
+      const openTickets = ((stRows ?? []) as { id: string; status: string }[]).filter((r) =>
+        ['new', 'in_progress', 'waiting_customer'].includes(r.status)
+      );
+      if (!openTickets.length) return { status: null, newMessage: false };
+      const status = openTickets.find((r) => r.status === 'waiting_customer')?.status ?? openTickets[0].status;
       const { data: msgRows } = await supabase
         .from('support_messages')
         .select('ticket_id, author, created_at')
@@ -164,64 +167,73 @@ export default async function AccountHubRoute() {
         )
         .order('created_at', { ascending: false });
       const seen = new Set<string>();
+      let newMessage = false;
       for (const msg of (msgRows ?? []) as { ticket_id: string; author: string }[]) {
         if (seen.has(msg.ticket_id)) continue;
         seen.add(msg.ticket_id);
-        if (msg.author === 'team') supportNewMessage = true;
+        if (msg.author === 'team') newMessage = true;
       }
-    }
-  } catch {
-    /* support tables optional — leave defaults */
-  }
-
-  // Reseller → clients (real, from console_validations.reseller_id). Privileged
-  // read scoped to this reseller; the user RLS policy doesn't cover it.
-  let resellerClients: ResellerClient[] = [];
-  if ((accountType === 'reseller' || accountType === 'distributor') && HAS_ADMIN) {
-    try {
-      const { data } = await createSupabaseAdminClient()
-        .from('console_validations')
-        .select('company, country, machine, status, email, created_at')
-        .eq('reseller_id', user.id)
-        .order('created_at', { ascending: false });
-      const byClient = new Map<string, ResellerClient>();
-      for (const r of (data ?? []) as {
-        company: string | null;
-        country: string | null;
-        machine: string | null;
-        status: string;
-        email: string;
-        created_at: string;
-      }[]) {
-        const key = (r.company || r.email || 'client').toLowerCase();
-        const cur =
-          byClient.get(key) ??
-          ({ name: r.company || r.email, country: r.country, presses: 0, eligible: 0, open: 0 } as ResellerClient);
-        cur.presses += 1;
-        if (r.status === 'can_be_connected') cur.eligible += 1;
-        if (OPEN_CV.includes(r.status)) cur.open += 1;
-        byClient.set(key, cur);
-      }
-      resellerClients = [...byClient.values()];
+      return { status, newMessage };
     } catch {
-      resellerClients = [];
+      // support tables optional — leave defaults
+      return { status: null, newMessage: false };
     }
-  }
+  })();
 
-  // Merge real org-linked clients (organizations.reseller_org_id) with the ones
-  // derived from console_validations, so attribution shows whichever exists.
-  if (accountType === 'reseller' || accountType === 'distributor') {
-    const linked = await getResellerClients(user.id);
-    const byName = new Map(resellerClients.map((c) => [c.name.toLowerCase(), c] as const));
-    for (const l of linked) {
-      const key = l.name.toLowerCase();
-      if (!byName.has(key)) byName.set(key, { name: l.name, country: l.country, presses: 0, eligible: 0, open: 0 });
+  // Reseller → clients: privileged read scoped to this reseller (the user RLS
+  // policy doesn't cover it), merged with the org-linked clients
+  // (organizations.reseller_org_id) so attribution shows whichever exists.
+  const resellerClientsP = (async (): Promise<ResellerClient[]> => {
+    let clients: ResellerClient[] = [];
+    if ((accountType === 'reseller' || accountType === 'distributor') && HAS_ADMIN) {
+      try {
+        const { data } = await createSupabaseAdminClient()
+          .from('console_validations')
+          .select('company, country, machine, status, email, created_at')
+          .eq('reseller_id', user.id)
+          .order('created_at', { ascending: false });
+        const byClient = new Map<string, ResellerClient>();
+        for (const r of (data ?? []) as {
+          company: string | null;
+          country: string | null;
+          machine: string | null;
+          status: string;
+          email: string;
+          created_at: string;
+        }[]) {
+          const key = (r.company || r.email || 'client').toLowerCase();
+          const cur =
+            byClient.get(key) ??
+            ({ name: r.company || r.email, country: r.country, presses: 0, eligible: 0, open: 0 } as ResellerClient);
+          cur.presses += 1;
+          if (r.status === 'can_be_connected') cur.eligible += 1;
+          if (OPEN_CV.includes(r.status)) cur.open += 1;
+          byClient.set(key, cur);
+        }
+        clients = [...byClient.values()];
+      } catch {
+        clients = [];
+      }
     }
-    resellerClients = [...byName.values()];
-  }
 
-  const team = await getTeamForUser(user.id);
-  const networkResellers = accountType === 'distributor' ? await getDistributorResellers(user.id) : [];
+    if (accountType === 'reseller' || accountType === 'distributor') {
+      const linked = await getResellerClients(user.id);
+      const byName = new Map(clients.map((c) => [c.name.toLowerCase(), c] as const));
+      for (const l of linked) {
+        const key = l.name.toLowerCase();
+        if (!byName.has(key)) byName.set(key, { name: l.name, country: l.country, presses: 0, eligible: 0, open: 0 });
+      }
+      clients = [...byName.values()];
+    }
+    return clients;
+  })();
+
+  const teamP = getTeamForUser(user.id);
+  const networkResellersP =
+    accountType === 'distributor' ? getDistributorResellers(user.id) : Promise.resolve([]);
+
+  const [{ status: supportStatus, newMessage: supportNewMessage }, resellerClients, team, networkResellers] =
+    await Promise.all([supportSummaryP, resellerClientsP, teamP, networkResellersP]);
 
   return (
     <AccountHub
