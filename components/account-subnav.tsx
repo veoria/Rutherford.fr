@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { type Locale, useLanguage } from '@/components/language-provider';
-import { createSupabaseBrowserClient } from '@/lib/supabase/client';
+import { accountAreaLabel } from '@/data/account-eyebrow';
+import type { AccountType } from '@/data/account-types';
 
 // Shared account-area shell: pill-tab subnav + the partner/distributor co-brand
 // logo (top-right). Rendered right under <SiteNav> on every account page.
@@ -30,28 +31,26 @@ export function AccountSubnav({ current }: { current: AccountTab }) {
   const L = LABELS[locale];
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [orgName, setOrgName] = useState<string | null>(null);
+  const [accountType, setAccountType] = useState<AccountType | null>(null);
 
   useEffect(() => {
-    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) return;
-    const supabase = createSupabaseBrowserClient();
     let active = true;
     (async () => {
-      const { data } = await supabase.auth.getUser();
-      if (!active || !data.user) return;
-      const { data: prof } = await supabase
-        .from('profiles')
-        .select('organization_id, company')
-        .eq('id', data.user.id)
-        .maybeSingle();
-      const orgId = (prof?.organization_id as string | null) ?? null;
-      if (!orgId) {
-        if (active) setOrgName((prof?.company as string | null) ?? null);
-        return;
+      try {
+        const res = await fetch('/api/account/subnav');
+        if (!active || !res.ok) return;
+        const d = (await res.json()) as {
+          accountType?: AccountType;
+          orgName?: string | null;
+          logoUrl?: string | null;
+        };
+        if (!active) return;
+        setAccountType((d.accountType ?? 'client') as AccountType);
+        setOrgName(d.orgName ?? null);
+        setLogoUrl(d.logoUrl ?? null);
+      } catch {
+        // Best-effort shell decoration; ignore failures.
       }
-      const { data: org } = await supabase.from('organizations').select('logo_url, name').eq('id', orgId).maybeSingle();
-      if (!active) return;
-      setLogoUrl((org?.logo_url as string | null) ?? null);
-      setOrgName((org?.name as string | null) ?? (prof?.company as string | null) ?? null);
     })();
     return () => {
       active = false;
@@ -73,10 +72,14 @@ export function AccountSubnav({ current }: { current: AccountTab }) {
             </a>
           ))}
         </div>
-        {logoUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img className="acct-subnav-logo" src={logoUrl} alt={orgName ?? ''} />
-        ) : null}
+        <div className="acct-subnav-right">
+          {accountType ? <span className="acct-subnav-area">{accountAreaLabel(locale, accountType)}</span> : null}
+          {accountType && logoUrl ? <span className="acct-subnav-sep" aria-hidden="true" /> : null}
+          {logoUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img className="acct-subnav-logo" src={logoUrl} alt={orgName ?? ''} />
+          ) : null}
+        </div>
       </div>
     </nav>
   );

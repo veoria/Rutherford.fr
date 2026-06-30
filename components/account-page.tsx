@@ -825,7 +825,6 @@ export function AccountPage({
         <div className="container acad-shell">
           <div className="acad-head">
             <div>
-              <p className="profile-eyebrow">{x.eyebrow}</p>
               <h1 className="profile-h1">{x.academyTitle}</h1>
               <p className="profile-sub">{x.academySub}</p>
             </div>

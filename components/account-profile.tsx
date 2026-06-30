@@ -850,7 +850,6 @@ export function AccountProfile({
       <section className="section profile-section">
         <div className="container profile-shell">
           <div className="profile-head">
-            <p className="profile-eyebrow">{v.eyebrow}</p>
             <h1 className="profile-h1">{v.pageTitle}</h1>
             <p className="profile-sub">{v.pageSub}</p>
           </div>

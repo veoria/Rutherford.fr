@@ -13420,7 +13420,13 @@ a.blog-card-image:hover img {
 .acct-subnav-link { font-size: 0.92rem; font-weight: 500; color: #676767; padding: 8px 14px; border-radius: 999px; white-space: nowrap; text-decoration: none; transition: background 0.15s ease, color 0.15s ease; }
 .acct-subnav-link:hover { color: #111; background: rgba(20, 19, 15, 0.04); }
 .acct-subnav-link.is-active { color: #111; background: #f4f6f8; font-weight: 600; }
-.acct-subnav-logo { margin-left: auto; height: 30px; width: auto; max-width: 140px; object-fit: contain; flex: 0 0 auto; }
+.acct-subnav-right { margin-left: auto; display: flex; align-items: center; gap: 12px; flex: 0 0 auto; }
+.acct-subnav-area { font-size: 0.8rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--accent); white-space: nowrap; }
+.acct-subnav-sep { width: 1px; height: 22px; background: var(--line); flex: 0 0 auto; }
+.acct-subnav-logo { height: 30px; width: auto; max-width: 140px; object-fit: contain; flex: 0 0 auto; }
+@media (max-width: 640px) {
+  .acct-subnav-area { display: none; }
+}
 
 /* Profile completion banner */
 .profile-banner {
@@ -14384,6 +14390,26 @@ select.profile-input { padding-right: 28px; }
 .cvx-pill svg { width: 11px; height: 11px; }
 .cvx-pill.cvx-t-neutral { background: #f1f1ec; color: #5c5c54; }
 .cvx-pill.cvx-t-neutral .cvx-pill-dot { background: #9a9a94; }
+
+.sup2-recap {
+  margin-top: 20px;
+  background: #f7f8fa;
+  border: 1px solid #f0f0ee;
+  border-radius: 16px;
+  padding: 16px 18px;
+}
+.sup2-recap-h {
+  margin-bottom: 8px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #9a9a94;
+}
+.sup2-recap-body { margin: 0; font-size: 0.9rem; line-height: 1.55; color: #3a3a3a; white-space: pre-wrap; }
+.sup2-recap-meta { margin: 10px 0 0; font-size: 0.82rem; color: #676767; }
+.sup2-recap-k { margin-right: 4px; font-weight: 700; color: var(--text); }
+.sup2-recap-photos { margin-top: 12px; }
 
 .sup2-thread { margin-top: 24px; display: flex; flex-direction: column; gap: 18px; }
 .sup2-msg { display: flex; gap: 13px; }

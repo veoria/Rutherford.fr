@@ -11,7 +11,8 @@ const EXT_BY_TYPE: Record<string, string> = {
   'image/jpeg': 'jpg',
   'image/webp': 'webp',
   'image/gif': 'gif',
-  'image/svg+xml': 'svg',
+  // SVG is intentionally excluded: it can carry inline <script>, and this bucket
+  // is public, so an uploaded SVG would be a stored-XSS vector.
 };
 
 /** Upload a profile photo (kind=avatar, own) or company logo (kind=logo,
