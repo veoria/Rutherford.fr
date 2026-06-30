@@ -1836,6 +1836,10 @@
       {
         "label": "Rutherford, Offset360",
         "href": "https://rutherford.fr/offset360"
+      },
+      {
+        "label": "Rutherford, PPWRConnect",
+        "href": "https://ppwrconnect.com"
       }
     ],
     "body": [
@@ -1881,6 +1885,10 @@
       {
         "type": "p",
         "text": "Compliance is easier when color control already produces clean, auditable data. A closed-loop workflow records what was printed and how close it was to target, which is exactly the kind of traceable evidence PPWR and DPP reward."
+      },
+      {
+        "type": "p",
+        "text": "To put this into practice, Rutherford built [PPWRConnect.com](https://ppwrconnect.com), a platform that helps packaging printers and converters get PPWR and DPP ready: it brings recyclability, recycled-content and color-traceability data together so compliance can be documented job by job and connected to the Digital Product Passport."
       }
     ],
     "i18n": {
@@ -1931,6 +1939,10 @@
           {
             "type": "p",
             "text": "Compliance ist einfacher, wenn die Farbregelung bereits saubere, prüffähige Daten erzeugt. Ein Closed-Loop-Workflow protokolliert, was gedruckt wurde und wie nah es am Zielwert war, genau die Art rückverfolgbarer Nachweise, die PPWR und DPP belohnen."
+          },
+          {
+            "type": "p",
+            "text": "Um das in die Praxis umzusetzen, hat Rutherford [PPWRConnect.com](https://ppwrconnect.com) entwickelt, eine Plattform, die Verpackungsdruckereien und Verarbeiter auf PPWR und DPP vorbereitet: Sie führt Daten zu Recyclingfähigkeit, Recyclinganteil und Farbnachverfolgung zusammen, sodass Konformität Auftrag für Auftrag dokumentiert und mit dem Digitalen Produktpass verbunden werden kann."
           }
         ]
       },
@@ -1981,6 +1993,10 @@
           {
             "type": "p",
             "text": "La conformité est plus simple quand le contrôle couleur produit déjà des données propres et auditables. Un workflow closed-loop enregistre ce qui a été imprimé et à quel point c'était proche de la cible, exactement le type de preuve traçable que la PPWR et le DPP récompensent."
+          },
+          {
+            "type": "p",
+            "text": "Pour passer à la pratique, Rutherford a créé [PPWRConnect.com](https://ppwrconnect.com), une plateforme qui aide les imprimeurs et converters packaging à se préparer à la PPWR et au DPP : elle réunit les données de recyclabilité, de contenu recyclé et de traçabilité couleur pour documenter la conformité travail par travail et l'alimenter dans le passeport produit numérique."
           }
         ]
       },
@@ -2031,6 +2047,10 @@
           {
             "type": "p",
             "text": "La conformità è più semplice quando il controllo colore produce già dati puliti e verificabili. Un workflow closed-loop registra cosa è stato stampato e quanto era vicino al target, esattamente il tipo di prova tracciabile che PPWR e DPP premiano."
+          },
+          {
+            "type": "p",
+            "text": "Per metterlo in pratica, Rutherford ha creato [PPWRConnect.com](https://ppwrconnect.com), una piattaforma che aiuta stampatori e converter del packaging a prepararsi a PPWR e DPP: riunisce i dati di riciclabilità, contenuto riciclato e tracciabilità del colore per documentare la conformità lavoro per lavoro e collegarla al passaporto digitale di prodotto."
           }
         ]
       },
@@ -2081,6 +2101,10 @@
           {
             "type": "p",
             "text": "La conformidad es más fácil cuando el control de color ya produce datos limpios y auditables. Un flujo de trabajo closed-loop registra qué se imprimió y cuán cerca estaba del objetivo, exactamente el tipo de prueba trazable que la PPWR y el DPP recompensan."
+          },
+          {
+            "type": "p",
+            "text": "Para llevarlo a la práctica, Rutherford ha creado [PPWRConnect.com](https://ppwrconnect.com), una plataforma que ayuda a impresores y convertidores de packaging a prepararse para la PPWR y el DPP: reúne los datos de reciclabilidad, contenido reciclado y trazabilidad del color para documentar la conformidad trabajo por trabajo y conectarla con el pasaporte digital de producto."
           }
         ]
       }
