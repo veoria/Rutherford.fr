@@ -14,13 +14,15 @@ const THRESHOLD_GB = Number(process.env.STORAGE_ALERT_GB) || 20;
  * wall (100 GB included, then ~$0.021/GB), so this is an early heads-up, not a
  * failure guard. Read-only — never deletes anything.
  *
- * Auth: Vercel Cron sends `Authorization: Bearer $CRON_SECRET` when CRON_SECRET
- * is set; we enforce it if configured. Without it the endpoint still runs (it
- * only reads a size and may post an alert — no secrets, no mutations).
+ * Auth: Vercel Cron sends `Authorization: Bearer $CRON_SECRET`. CRON_SECRET must
+ * be configured in the environment — the endpoint fails closed (401) without it,
+ * so it is never anonymously callable.
  */
 export async function GET(request: NextRequest) {
+  // Fail closed: require CRON_SECRET to be set AND matched. Previously an unset
+  // secret skipped the check entirely, leaving the endpoint open to any caller.
   const secret = process.env.CRON_SECRET;
-  if (secret && request.headers.get('authorization') !== `Bearer ${secret}`) {
+  if (!secret || request.headers.get('authorization') !== `Bearer ${secret}`) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
   }
   if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
