@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { createSupabaseAdminClient, createSupabaseServerClient } from '@/lib/supabase/server';
+import { requireAdminWrite } from '@/lib/admin-access';
 
 // One-time admin helper to register (or confirm) the Asana webhook(s) that drive
 // status updates + verdict emails. Visit it once, signed in as an admin, on the
@@ -54,20 +54,11 @@ async function ensureWebhook(project: string, label: string, target: string, hea
 }
 
 export async function GET(request: NextRequest) {
-  // Admin gate: identify the signed-in user, then confirm is_admin via service role.
-  const {
-    data: { user },
-  } = await createSupabaseServerClient().auth.getUser();
-  if (!user) {
-    return NextResponse.json({ error: 'Sign in required' }, { status: 401 });
-  }
-  const { data: profile } = await createSupabaseAdminClient()
-    .from('profiles')
-    .select('is_admin')
-    .eq('id', user.id)
-    .maybeSingle();
-  if (!profile?.is_admin) {
-    return NextResponse.json({ error: 'Admins only' }, { status: 403 });
+  // Admin gate: is_admin + AAL2 (2FA this session), consistent with the other
+  // admin-write endpoints (registers production webhooks, so step-up matters).
+  const gate = await requireAdminWrite();
+  if (!gate.ok) {
+    return NextResponse.json({ error: gate.error }, { status: gate.status });
   }
 
   if (!TOKEN) {
