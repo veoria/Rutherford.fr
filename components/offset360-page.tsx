@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { SiteFooter } from '@/components/site-footer';
 import { SiteNav } from '@/components/site-nav';
+import { ColorLoopROI } from '@/components/colorloop-roi';
 import { useLanguage } from '@/components/language-provider';
 import { OFFSET360_COPY } from '@/data/offset360-copy';
 import { OFFSET360_FAQ_BY_LOCALE } from '@/data/offset360-faq';
@@ -336,6 +337,15 @@ export function Offset360Page() {
                 <span>{t.numberLabels[i]}</span>
               </div>
             ))}
+          </div>
+        </div>
+        {/* Interactive ROI calculator, dark-glass treatment to match the band */}
+        <div className="o360-container o360-roi o360-reveal">
+          <ColorLoopROI />
+          <div className="o360-cta-row o360-roi-quote">
+            <a className="o360-btn o360-btn-light" href="/console-validation">
+              {t.quoteCta}
+            </a>
           </div>
         </div>
       </section>

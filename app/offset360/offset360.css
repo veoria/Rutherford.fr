@@ -590,6 +590,146 @@
   color: rgba(255, 255, 255, 0.6);
 }
 
+/* ROI calculator embedded in the black band — dark-glass treatment that keeps
+   the band's blue gradient accents (#6fb1ff → #0071e3). */
+.o360-roi {
+  margin-top: 88px;
+}
+
+.o360-roi .colorloop-roi {
+  background: rgba(255, 255, 255, 0.045);
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: none;
+  color: #fff;
+}
+
+.o360-roi .colorloop-roi-headline,
+.o360-roi .colorloop-roi-figures-heading {
+  color: #fff;
+}
+
+.o360-roi .colorloop-roi .section-kicker {
+  color: #6fb1ff;
+}
+
+.o360-roi .colorloop-roi-intro {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.o360-roi .roi-machine-group-label {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.o360-roi .roi-hero-controls {
+  background: rgba(12, 12, 14, 0.72);
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: none;
+}
+
+.o360-roi .roi-seg button {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.16);
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.o360-roi .roi-seg button:hover {
+  border-color: rgba(111, 177, 255, 0.6);
+}
+
+.o360-roi .roi-seg button.is-active {
+  background: rgba(0, 113, 227, 0.3);
+  border-color: #6fb1ff;
+  color: #fff;
+}
+
+.o360-roi .roi-sheet-note {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.o360-roi .roi-input-label {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.o360-roi .roi-input-hint {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.o360-roi .roi-input-range {
+  background: rgba(111, 177, 255, 0.3);
+}
+
+.o360-roi .roi-input-number {
+  color: #fff;
+}
+
+.o360-roi .roi-input-number:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.o360-roi .roi-input-number:focus {
+  background: rgba(0, 113, 227, 0.22);
+  border-color: #6fb1ff;
+}
+
+.o360-roi .colorloop-roi-result {
+  background: linear-gradient(180deg, rgba(0, 113, 227, 0.18), rgba(0, 113, 227, 0.05));
+  border-color: rgba(111, 177, 255, 0.28);
+}
+
+.o360-roi .colorloop-roi-result-label {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.o360-roi .colorloop-roi-result-total {
+  background: linear-gradient(90deg, #6fb1ff, #33c6ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.o360-roi .colorloop-roi-result-month {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.o360-roi .colorloop-roi-breakdown {
+  border-top-color: rgba(111, 177, 255, 0.25);
+}
+
+.o360-roi .colorloop-roi-brk-key,
+.o360-roi .colorloop-roi-brk-val {
+  color: #fff;
+}
+
+.o360-roi .colorloop-roi-brk-key small {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.o360-roi .colorloop-roi-disclaimer {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.o360-roi .colorloop-roi-cta {
+  background: #ffffff;
+  color: #0b0b0c;
+}
+
+.o360-roi .colorloop-roi-cta:hover {
+  background: rgba(255, 255, 255, 0.85);
+  color: #0b0b0c;
+}
+
+.o360-roi-quote {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-top: 40px;
+}
+
+.o360-btn-light {
+  background: #ffffff;
+  color: #0b0b0c;
+}
+
 /* Process — 3 stages */
 .o360-process {
   display: grid;
