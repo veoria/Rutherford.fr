@@ -31,7 +31,13 @@ export async function generateMetadata(): Promise<Metadata> {
       description: t.metaDescription,
       type: 'website',
       url: localizedUrl(locale),
-      images: [{ url: '/images/Bundle Rutherford-4.jpg', alt: 'Offset360 bundle' }],
+      images: [{ url: '/images/og-offset360.png', width: 1200, height: 630, alt: 'Offset360 — closed-loop color for sheetfed offset' }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: t.metaTitle,
+      description: t.metaDescription,
+      images: ['/images/og-offset360.png'],
     },
   };
 }
