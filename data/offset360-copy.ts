@@ -43,6 +43,7 @@ export type Offset360Copy = {
   ctaPrimary: string;
   ctaSecondary: string;
   breadcrumbHome: string;
+  photoAlts: { problem: string; deploy: string; cta: string };
 };
 
 export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
@@ -161,6 +162,11 @@ export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
     ctaPrimary: 'Test your eligibility for free',
     ctaSecondary: 'Learn more on X-Rite',
     breadcrumbHome: 'Home',
+    photoAlts: {
+      problem: 'Press operator sitting between two Heidelberg Speedmaster printing units',
+      deploy: 'The Rutherford team in conversation',
+      cta: 'Red offset ink on the press rollers',
+    },
   },
 
   fr: {
@@ -278,6 +284,11 @@ export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
     ctaPrimary: 'Testez gratuitement votre éligibilité',
     ctaSecondary: 'En savoir plus sur X-Rite',
     breadcrumbHome: 'Accueil',
+    photoAlts: {
+      problem: 'Opérateur assis entre deux groupes d’impression Heidelberg Speedmaster',
+      deploy: 'L’équipe Rutherford en discussion',
+      cta: 'Encre offset rouge sur les rouleaux de la presse',
+    },
   },
 
   de: {
@@ -395,6 +406,11 @@ export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
     ctaPrimary: 'Eignung kostenlos prüfen',
     ctaSecondary: 'Mehr auf X-Rite erfahren',
     breadcrumbHome: 'Startseite',
+    photoAlts: {
+      problem: 'Bediener zwischen zwei Heidelberg Speedmaster-Druckwerken',
+      deploy: 'Das Rutherford-Team im Gespräch',
+      cta: 'Rote Offsetfarbe auf den Walzen der Druckmaschine',
+    },
   },
 
   it: {
@@ -512,6 +528,11 @@ export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
     ctaPrimary: 'Verifica gratuita di idoneità',
     ctaSecondary: 'Scopri di più su X-Rite',
     breadcrumbHome: 'Home',
+    photoAlts: {
+      problem: 'Operatore seduto tra due gruppi di stampa Heidelberg Speedmaster',
+      deploy: 'Il team Rutherford in conversazione',
+      cta: 'Inchiostro offset rosso sui rulli della macchina',
+    },
   },
 
   es: {
@@ -629,6 +650,11 @@ export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
     ctaPrimary: 'Pruebe gratis su elegibilidad',
     ctaSecondary: 'Más información en X-Rite',
     breadcrumbHome: 'Inicio',
+    photoAlts: {
+      problem: 'Operario sentado entre dos cuerpos de impresión Heidelberg Speedmaster',
+      deploy: 'El equipo Rutherford en conversación',
+      cta: 'Tinta offset roja sobre los rodillos de la prensa',
+    },
   },
 
   pt: {
@@ -746,5 +772,10 @@ export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
     ctaPrimary: 'Teste gratuitamente a sua elegibilidade',
     ctaSecondary: 'Saber mais na X-Rite',
     breadcrumbHome: 'Início',
+    photoAlts: {
+      problem: 'Operador sentado entre dois corpos de impressão Heidelberg Speedmaster',
+      deploy: 'A equipa Rutherford em conversa',
+      cta: 'Tinta offset vermelha nos rolos da máquina',
+    },
   },
 };

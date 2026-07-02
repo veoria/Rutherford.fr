@@ -178,7 +178,10 @@ export function Offset360Page() {
     );
     els.forEach((el) => obs.observe(el));
     return () => obs.disconnect();
-  }, []);
+    // Re-run on locale change: the client-side language switch re-renders the
+    // copy, and any element remounted after the first pass would otherwise
+    // never be observed (stuck at opacity 0).
+  }, [locale]);
 
   return (
     <main className="page-shell o360" ref={rootRef}>
@@ -225,6 +228,11 @@ export function Offset360Page() {
           </h2>
           <p>{t.problemBody}</p>
         </div>
+        <div className="o360-container">
+          <figure className="o360-photo o360-reveal">
+            <img src="/images/man-on-offset-press.jpg" alt={t.photoAlts.problem} loading="lazy" />
+          </figure>
+        </div>
       </section>
 
       {/* What it is */}
@@ -270,7 +278,7 @@ export function Offset360Page() {
       {/* Deep-dive feature rows */}
       <section className="o360-section o360-quiet">
         {featureStatic.map((f, i) => (
-          <div className={`o360-feature o360-reveal ${f.reverse ? 'is-reverse' : ''}`} key={t.features[i].title}>
+          <div className={`o360-feature o360-reveal ${f.reverse ? 'is-reverse' : ''}`} key={f.image}>
             <div className="o360-feature-media">
               <img src={f.image} alt={t.features[i].imageAlt} loading="lazy" />
             </div>
@@ -308,7 +316,7 @@ export function Offset360Page() {
           </div>
           <ol className="o360-steps">
             {t.steps.map((s, i) => (
-              <li className="o360-step o360-reveal" key={stepNums[i]} style={{ transitionDelay: `${i * 80}ms` }}>
+              <li className="o360-step o360-reveal" key={i} style={{ transitionDelay: `${i * 80}ms` }}>
                 <span className="o360-step-num">{stepNums[i]}</span>
                 <div className="o360-step-body">
                   <h3>{s.title}</h3>
@@ -330,7 +338,7 @@ export function Offset360Page() {
           <p className="o360-band-sub">{t.roiSub}</p>
           <div className="o360-numbers">
             {numbersStatic.map((n, i) => (
-              <div className="o360-number o360-reveal" key={t.numberLabels[i]} style={{ transitionDelay: `${i * 90}ms` }}>
+              <div className="o360-number o360-reveal" key={i} style={{ transitionDelay: `${i * 90}ms` }}>
                 <strong>
                   <CountUp prefix={n.prefix} value={n.value} suffix={n.suffix} />
                 </strong>
@@ -354,13 +362,16 @@ export function Offset360Page() {
           </div>
           <div className="o360-process">
             {t.process.map((p, i) => (
-              <div className="o360-process-card o360-reveal" key={p.title} style={{ transitionDelay: `${i * 90}ms` }}>
+              <div className="o360-process-card o360-reveal" key={i} style={{ transitionDelay: `${i * 90}ms` }}>
                 <span className="o360-process-step">{i + 1}</span>
                 <h3>{p.title}</h3>
                 <p>{p.body}</p>
               </div>
             ))}
           </div>
+          <figure className="o360-photo o360-reveal">
+            <img src="/images/team-group-1.jpg" alt={t.photoAlts.deploy} loading="lazy" />
+          </figure>
         </div>
       </section>
 
@@ -373,7 +384,7 @@ export function Offset360Page() {
           </div>
           <ul className="o360-included">
             {t.included.map((item, i) => (
-              <li key={item} className="o360-reveal" style={{ transitionDelay: `${i * 70}ms` }}>
+              <li key={i} className="o360-reveal" style={{ transitionDelay: `${i * 70}ms` }}>
                 <Check />
                 <span>{item}</span>
               </li>
@@ -411,6 +422,11 @@ export function Offset360Page() {
 
       {/* Closing CTA */}
       <section className="o360-section">
+        <div className="o360-container">
+          <figure className="o360-photo o360-photo-ink o360-reveal">
+            <img src="/images/ink-red.jpg" alt={t.photoAlts.cta} loading="lazy" />
+          </figure>
+        </div>
         <div className="o360-narrow o360-end o360-reveal">
           <p className="o360-eyebrow">{t.ctaEyebrow}</p>
           <h2 className="o360-h2">{t.ctaTitle}</h2>
