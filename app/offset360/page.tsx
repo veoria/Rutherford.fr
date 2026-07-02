@@ -1,22 +1,40 @@
 import type { Metadata } from 'next';
+import { headers } from 'next/headers';
 import { Offset360Page } from '@/components/offset360-page';
-import { OFFSET360_FAQ } from '@/data/offset360-faq';
+import type { Locale } from '@/components/language-provider';
+import { OFFSET360_COPY } from '@/data/offset360-copy';
+import { OFFSET360_FAQ_BY_LOCALE } from '@/data/offset360-faq';
 import './offset360.css';
 
-export const metadata: Metadata = {
-  title: 'Offset360 | Closed-loop color for sheetfed offset',
-  description:
-    'Offset360 is the X-Rite + Rutherford closed-loop bundle for sheetfed offset: IntelliTrax2 scanning, MeasureColor reporting, and Rutherford ColorLoop closed-loop control on the press.',
-  keywords: ['Offset360', 'Offset 360', 'X-Rite Offset360', 'closed-loop color', 'sheetfed offset', 'IntelliTrax2', 'MeasureColor', 'ColorLoop', 'Rutherford'],
-  openGraph: {
-    title: 'Offset360 | Closed-loop color for sheetfed offset',
-    description:
-      'The X-Rite + Rutherford bundle that pairs IntelliTrax2, MeasureColor and Rutherford ColorLoop to deliver closed-loop color control for sheetfed offset printing.',
-    type: 'website',
-    url: 'https://rutherford.fr/offset360',
-    images: [{ url: '/images/Bundle Rutherford-4.jpg', alt: 'Offset360 bundle' }],
-  },
-};
+const BASE = 'https://rutherford.fr';
+
+function requestLocale(): Locale {
+  const locale = (headers().get('x-locale') as Locale) || 'en';
+  return OFFSET360_COPY[locale] ? locale : 'en';
+}
+
+function localizedUrl(locale: Locale): string {
+  return locale === 'en' ? `${BASE}/offset360` : `${BASE}/${locale}/offset360`;
+}
+
+// Localized title/description per served locale; canonical + hreflang are
+// inherited from the root layout (canonical base: rutherford.fr/offset360).
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = requestLocale();
+  const t = OFFSET360_COPY[locale];
+  return {
+    title: t.metaTitle,
+    description: t.metaDescription,
+    keywords: ['Offset360', 'Offset 360', 'X-Rite Offset360', 'closed-loop color', 'sheetfed offset', 'IntelliTrax2', 'MeasureColor', 'ColorLoop', 'Rutherford'],
+    openGraph: {
+      title: t.metaTitle,
+      description: t.metaDescription,
+      type: 'website',
+      url: localizedUrl(locale),
+      images: [{ url: '/images/Bundle Rutherford-4.jpg', alt: 'Offset360 bundle' }],
+    },
+  };
+}
 
 const PRODUCT_JSON_LD = {
   '@context': 'https://schema.org',
@@ -29,21 +47,35 @@ const PRODUCT_JSON_LD = {
   image: 'https://rutherford.fr/images/Bundle Rutherford-4.jpg',
 };
 
-const FAQ_JSON_LD = {
-  '@context': 'https://schema.org',
-  '@type': 'FAQPage',
-  mainEntity: OFFSET360_FAQ.map((f) => ({
-    '@type': 'Question',
-    name: f.q,
-    acceptedAnswer: { '@type': 'Answer', text: f.a },
-  })),
-};
-
 export default function Offset360Route() {
+  const locale = requestLocale();
+  const t = OFFSET360_COPY[locale];
+
+  // FAQ rich-result markup in the language actually served on this URL.
+  const faqJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: OFFSET360_FAQ_BY_LOCALE[locale].map((f) => ({
+      '@type': 'Question',
+      name: f.q,
+      acceptedAnswer: { '@type': 'Answer', text: f.a },
+    })),
+  };
+
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: t.breadcrumbHome, item: locale === 'en' ? BASE : `${BASE}/${locale}` },
+      { '@type': 'ListItem', position: 2, name: 'Offset360', item: localizedUrl(locale) },
+    ],
+  };
+
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(PRODUCT_JSON_LD) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(FAQ_JSON_LD) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
       <Offset360Page />
     </>
   );
