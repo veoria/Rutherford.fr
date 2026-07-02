@@ -42,7 +42,6 @@ export type Offset360Copy = {
   ctaBody: string;
   ctaPrimary: string;
   ctaSecondary: string;
-  quoteCta: string;
   breadcrumbHome: string;
 };
 
@@ -161,7 +160,6 @@ export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
       'Every uncontrolled makeready costs sheets, ink and press time. Check your press eligibility for free: a few photos, two minutes, answer within one business day.',
     ctaPrimary: 'Test your eligibility for free',
     ctaSecondary: 'Learn more on X-Rite',
-    quoteCta: 'Request a quote',
     breadcrumbHome: 'Home',
   },
 
@@ -279,7 +277,6 @@ export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
       'Chaque calage non maîtrisé coûte des feuilles, de l’encre et du temps machine. Testez gratuitement l’éligibilité de votre presse : quelques photos, deux minutes, réponse sous un jour ouvré.',
     ctaPrimary: 'Testez gratuitement votre éligibilité',
     ctaSecondary: 'En savoir plus sur X-Rite',
-    quoteCta: 'Demander un devis',
     breadcrumbHome: 'Accueil',
   },
 
@@ -397,7 +394,6 @@ export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
       'Jedes unkontrollierte Einrichten kostet Bogen, Farbe und Maschinenzeit. Prüfen Sie kostenlos die Eignung Ihrer Druckmaschine: ein paar Fotos, zwei Minuten, Antwort innerhalb eines Werktags.',
     ctaPrimary: 'Eignung kostenlos prüfen',
     ctaSecondary: 'Mehr auf X-Rite erfahren',
-    quoteCta: 'Angebot anfragen',
     breadcrumbHome: 'Startseite',
   },
 
@@ -515,7 +511,6 @@ export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
       'Ogni avviamento non controllato costa fogli, inchiostro e tempo macchina. Verificate gratuitamente l’idoneità della vostra macchina: qualche foto, due minuti, risposta entro un giorno lavorativo.',
     ctaPrimary: 'Verifica gratuita di idoneità',
     ctaSecondary: 'Scopri di più su X-Rite',
-    quoteCta: 'Richiedi un preventivo',
     breadcrumbHome: 'Home',
   },
 
@@ -633,7 +628,6 @@ export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
       'Cada puesta a punto sin control cuesta pliegos, tinta y tiempo de máquina. Compruebe gratis la elegibilidad de su prensa: unas fotos, dos minutos, respuesta en un día laborable.',
     ctaPrimary: 'Pruebe gratis su elegibilidad',
     ctaSecondary: 'Más información en X-Rite',
-    quoteCta: 'Solicitar un presupuesto',
     breadcrumbHome: 'Inicio',
   },
 
@@ -751,7 +745,6 @@ export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
       'Cada acerto sem controlo custa folhas, tinta e tempo de máquina. Verifique gratuitamente a elegibilidade da sua máquina: algumas fotos, dois minutos, resposta num dia útil.',
     ctaPrimary: 'Teste gratuitamente a sua elegibilidade',
     ctaSecondary: 'Saber mais na X-Rite',
-    quoteCta: 'Pedir um orçamento',
     breadcrumbHome: 'Início',
   },
 };

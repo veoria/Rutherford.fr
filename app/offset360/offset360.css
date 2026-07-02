@@ -718,17 +718,6 @@
   color: #0b0b0c;
 }
 
-.o360-roi-quote {
-  display: flex;
-  justify-content: center;
-  width: 100%;
-  margin-top: 40px;
-}
-
-.o360-btn-light {
-  background: #ffffff;
-  color: #0b0b0c;
-}
 
 /* Process — 3 stages */
 .o360-process {

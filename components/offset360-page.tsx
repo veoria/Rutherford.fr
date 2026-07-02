@@ -342,11 +342,6 @@ export function Offset360Page() {
         {/* Interactive ROI calculator, dark-glass treatment to match the band */}
         <div className="o360-container o360-roi o360-reveal">
           <ColorLoopROI />
-          <div className="o360-cta-row o360-roi-quote">
-            <a className="o360-btn o360-btn-light" href="/console-validation">
-              {t.quoteCta}
-            </a>
-          </div>
         </div>
       </section>
 
