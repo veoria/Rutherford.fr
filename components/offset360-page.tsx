@@ -230,7 +230,7 @@ export function Offset360Page() {
         </div>
         <div className="o360-container">
           <figure className="o360-photo o360-reveal">
-            <img src="/images/man-on-offset-press.jpg" alt={t.photoAlts.problem} loading="lazy" />
+            <img src="/images/stopplayingpiano-operator.jpg" alt={t.photoAlts.problem} loading="lazy" />
           </figure>
         </div>
       </section>

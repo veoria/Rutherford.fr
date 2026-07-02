@@ -163,7 +163,7 @@ export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
     ctaSecondary: 'Learn more on X-Rite',
     breadcrumbHome: 'Home',
     photoAlts: {
-      problem: 'Press operator sitting between two Heidelberg Speedmaster printing units',
+      problem: 'Operator checking a printed sheet at the console, IntelliTrax2 scanner in the foreground',
     },
   },
 
@@ -283,7 +283,7 @@ export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
     ctaSecondary: 'En savoir plus sur X-Rite',
     breadcrumbHome: 'Accueil',
     photoAlts: {
-      problem: 'Opérateur assis entre deux groupes d’impression Heidelberg Speedmaster',
+      problem: 'Opérateur contrôlant une feuille imprimée au pupitre, scanner IntelliTrax2 au premier plan',
     },
   },
 
@@ -403,7 +403,7 @@ export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
     ctaSecondary: 'Mehr auf X-Rite erfahren',
     breadcrumbHome: 'Startseite',
     photoAlts: {
-      problem: 'Bediener zwischen zwei Heidelberg Speedmaster-Druckwerken',
+      problem: 'Bediener prüft einen Druckbogen am Druckpult, IntelliTrax2-Scanner im Vordergrund',
     },
   },
 
@@ -523,7 +523,7 @@ export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
     ctaSecondary: 'Scopri di più su X-Rite',
     breadcrumbHome: 'Home',
     photoAlts: {
-      problem: 'Operatore seduto tra due gruppi di stampa Heidelberg Speedmaster',
+      problem: 'Operatore che controlla un foglio stampato al pulpito, scanner IntelliTrax2 in primo piano',
     },
   },
 
@@ -643,7 +643,7 @@ export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
     ctaSecondary: 'Más información en X-Rite',
     breadcrumbHome: 'Inicio',
     photoAlts: {
-      problem: 'Operario sentado entre dos cuerpos de impresión Heidelberg Speedmaster',
+      problem: 'Operario comprobando un pliego impreso en la consola, escáner IntelliTrax2 en primer plano',
     },
   },
 
@@ -763,7 +763,7 @@ export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
     ctaSecondary: 'Saber mais na X-Rite',
     breadcrumbHome: 'Início',
     photoAlts: {
-      problem: 'Operador sentado entre dois corpos de impressão Heidelberg Speedmaster',
+      problem: 'Operador a verificar uma folha impressa na consola, scanner IntelliTrax2 em primeiro plano',
     },
   },
 };
