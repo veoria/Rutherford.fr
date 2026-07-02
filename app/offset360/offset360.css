@@ -560,17 +560,8 @@
   object-fit: cover;
 }
 
-.o360-photo-ink {
-  margin-bottom: 24px;
-}
-
-.o360-photo-ink img {
-  aspect-ratio: 21 / 9;
-}
-
 @media (max-width: 640px) {
-  .o360-photo img,
-  .o360-photo-ink img {
+  .o360-photo img {
     aspect-ratio: 4 / 3;
   }
 }

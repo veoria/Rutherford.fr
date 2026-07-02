@@ -43,7 +43,7 @@ export type Offset360Copy = {
   ctaPrimary: string;
   ctaSecondary: string;
   breadcrumbHome: string;
-  photoAlts: { problem: string; deploy: string; cta: string };
+  photoAlts: { problem: string };
 };
 
 export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
@@ -164,8 +164,6 @@ export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
     breadcrumbHome: 'Home',
     photoAlts: {
       problem: 'Press operator sitting between two Heidelberg Speedmaster printing units',
-      deploy: 'The Rutherford team in conversation',
-      cta: 'Red offset ink on the press rollers',
     },
   },
 
@@ -286,8 +284,6 @@ export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
     breadcrumbHome: 'Accueil',
     photoAlts: {
       problem: 'Opérateur assis entre deux groupes d’impression Heidelberg Speedmaster',
-      deploy: 'L’équipe Rutherford en discussion',
-      cta: 'Encre offset rouge sur les rouleaux de la presse',
     },
   },
 
@@ -408,8 +404,6 @@ export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
     breadcrumbHome: 'Startseite',
     photoAlts: {
       problem: 'Bediener zwischen zwei Heidelberg Speedmaster-Druckwerken',
-      deploy: 'Das Rutherford-Team im Gespräch',
-      cta: 'Rote Offsetfarbe auf den Walzen der Druckmaschine',
     },
   },
 
@@ -530,8 +524,6 @@ export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
     breadcrumbHome: 'Home',
     photoAlts: {
       problem: 'Operatore seduto tra due gruppi di stampa Heidelberg Speedmaster',
-      deploy: 'Il team Rutherford in conversazione',
-      cta: 'Inchiostro offset rosso sui rulli della macchina',
     },
   },
 
@@ -652,8 +644,6 @@ export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
     breadcrumbHome: 'Inicio',
     photoAlts: {
       problem: 'Operario sentado entre dos cuerpos de impresión Heidelberg Speedmaster',
-      deploy: 'El equipo Rutherford en conversación',
-      cta: 'Tinta offset roja sobre los rodillos de la prensa',
     },
   },
 
@@ -774,8 +764,6 @@ export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
     breadcrumbHome: 'Início',
     photoAlts: {
       problem: 'Operador sentado entre dois corpos de impressão Heidelberg Speedmaster',
-      deploy: 'A equipa Rutherford em conversa',
-      cta: 'Tinta offset vermelha nos rolos da máquina',
     },
   },
 };

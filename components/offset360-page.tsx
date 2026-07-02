@@ -369,9 +369,6 @@ export function Offset360Page() {
               </div>
             ))}
           </div>
-          <figure className="o360-photo o360-reveal">
-            <img src="/images/team-group-1.jpg" alt={t.photoAlts.deploy} loading="lazy" />
-          </figure>
         </div>
       </section>
 
@@ -422,11 +419,6 @@ export function Offset360Page() {
 
       {/* Closing CTA */}
       <section className="o360-section">
-        <div className="o360-container">
-          <figure className="o360-photo o360-photo-ink o360-reveal">
-            <img src="/images/ink-red.jpg" alt={t.photoAlts.cta} loading="lazy" />
-          </figure>
-        </div>
         <div className="o360-narrow o360-end o360-reveal">
           <p className="o360-eyebrow">{t.ctaEyebrow}</p>
           <h2 className="o360-h2">{t.ctaTitle}</h2>
