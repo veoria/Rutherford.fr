@@ -83,7 +83,7 @@ const bundleStatic = [
     name: 'IntelliTrax2',
     vendorLogo: '/images/xrite-logo-black.png',
     vendorAlt: 'X-Rite',
-    image: '/images/intellitrax2-clean.jpg',
+    image: '/images/intellitrax2-black.webp',
     href: 'https://www.xrite.com/categories/scanning-instruments/intellitrax2',
     external: true,
   },
