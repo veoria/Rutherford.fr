@@ -430,6 +430,7 @@ svg {
   align-items: center;
   gap: 9px;
   height: 50px;
+  white-space: nowrap;
   padding: 0 22px;
   border-radius: 999px;
   background: var(--accent);
@@ -445,6 +446,10 @@ svg {
 .header-account-cta:focus-visible {
   transform: translateY(-1px);
   box-shadow: 0 10px 24px rgba(0, 113, 227, 0.34);
+}
+/* Keep the user icon from squishing into an ellipse when the header narrows. */
+.header-account-cta svg {
+  flex: 0 0 auto;
 }
 
 .header-account-chip {
@@ -465,6 +470,7 @@ svg {
 
 .header-account-avatar {
   position: relative;
+  flex: 0 0 auto;
   width: 38px;
   height: 38px;
   border-radius: 50%;
@@ -482,6 +488,10 @@ svg {
   bottom: 0;
 }
 .header-account-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   font-size: 0.9rem;
   font-weight: 600;
   color: var(--text);
