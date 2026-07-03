@@ -260,6 +260,17 @@ const PROGRESS_COPY: Record<Locale, ProgressCopy> = {
   },
 };
 
+// Shown when the Stripe checkout request fails (network error, server error, or
+// a non-JSON response) so the buy button never fails silently.
+const CHECKOUT_ERROR_COPY: Record<Locale, string> = {
+  en: 'Checkout is unavailable right now. Please try again in a moment or contact us.',
+  fr: 'Le paiement est momentanément indisponible. Réessayez dans un instant ou contactez-nous.',
+  de: 'Die Bezahlung ist derzeit nicht verfügbar. Bitte versuchen Sie es gleich erneut oder kontaktieren Sie uns.',
+  it: 'Il pagamento non è al momento disponibile. Riprovi tra poco o ci contatti.',
+  es: 'El pago no está disponible en este momento. Inténtelo de nuevo en un momento o contáctenos.',
+  pt: 'O pagamento está indisponível de momento. Tente novamente daqui a pouco ou contacte-nos.',
+};
+
 const FREE_COURSE_LIST: { id: string; title: string }[] = [
   { id: 'fundamentals', title: 'Offset Color Management Fundamentals' },
   { id: 'measurement-essentials', title: 'Press-Side Measurement Essentials' },
@@ -299,6 +310,7 @@ export function AcademyCoursePage({
   const { locale } = useLanguage();
   const tp = PROGRESS_COPY[locale];
   const tq = QUIZ_COPY[locale];
+  const tc = { checkoutError: CHECKOUT_ERROR_COPY[locale] };
   const tone = course.tone;
   const siblings = tone === 'premium' ? PREMIUM_COURSE_LIST : FREE_COURSE_LIST;
   const lessons = getLessonsForCourse(course.id);
@@ -485,9 +497,19 @@ export function AcademyCoursePage({
         window.location.href = `/account/sign-in?next=${encodeURIComponent(`/academy/${course.id}`)}`;
         return;
       }
-      const { url, error } = await res.json();
-      if (url) window.location.href = url;
-      else if (error) alert(error);
+      // Parse defensively: an unhandled server error can return HTML, not JSON.
+      const data = await res.json().catch(() => null);
+      if (data?.url) {
+        window.location.href = data.url;
+        return;
+      }
+      // Log the server-provided reason for debugging, but always show the
+      // friendly localized message — never raw server error text.
+      console.error('[academy] checkout failed', { status: res.status, error: data?.error });
+      alert(tc.checkoutError);
+    } catch (err) {
+      console.error('[academy] checkout request failed', err);
+      alert(tc.checkoutError);
     } finally {
       setCheckoutLoading(null);
     }
