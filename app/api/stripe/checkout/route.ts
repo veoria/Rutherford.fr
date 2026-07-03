@@ -37,47 +37,65 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'sign in required' }, { status: 401 });
   }
 
-  // Fetch / create Stripe customer
-  const admin = createSupabaseAdminClient();
-  const { data: profile } = await admin
-    .from('profiles')
-    .select('stripe_customer_id')
-    .eq('id', user.id)
-    .maybeSingle();
+  // Everything below can throw (Stripe API rejections, Supabase errors). Keep it
+  // inside a try/catch so the client always receives a JSON error instead of an
+  // HTML 500 — otherwise the caller's `res.json()` throws and the buy button
+  // fails silently (spinner returns to "Buy" with no feedback).
+  try {
+    // Fetch / create Stripe customer
+    const admin = createSupabaseAdminClient();
+    const { data: profile } = await admin
+      .from('profiles')
+      .select('stripe_customer_id')
+      .eq('id', user.id)
+      .maybeSingle();
 
-  let customerId = profile?.stripe_customer_id ?? null;
-  if (!customerId) {
-    const customer = await getStripe().customers.create({
-      email: user.email ?? undefined,
-      metadata: { supabase_user_id: user.id },
-    });
-    customerId = customer.id;
-    await admin.from('profiles').update({ stripe_customer_id: customerId }).eq('id', user.id);
-  }
+    let customerId = profile?.stripe_customer_id ?? null;
+    if (!customerId) {
+      const customer = await getStripe().customers.create({
+        email: user.email ?? undefined,
+        metadata: { supabase_user_id: user.id },
+      });
+      customerId = customer.id;
+      await admin.from('profiles').update({ stripe_customer_id: customerId }).eq('id', user.id);
+    }
 
-  const origin = new URL(request.url).origin;
-  const session = await getStripe().checkout.sessions.create({
-    mode,
-    customer: customerId,
-    line_items: [{ price: priceId, quantity: 1 }],
-    allow_promotion_codes: true,
-    success_url: `${origin}/academy/${courseSlug === 'academy-pass' ? '' : courseSlug}?purchase=success`,
-    cancel_url: `${origin}/academy/${courseSlug === 'academy-pass' ? '' : courseSlug}?purchase=cancel`,
-    metadata: {
-      supabase_user_id: user.id,
-      course_slug: courseSlug,
-    },
-    ...(mode === 'subscription'
-      ? {
-          subscription_data: {
-            metadata: {
-              supabase_user_id: user.id,
-              course_slug: courseSlug,
+    const origin = new URL(request.url).origin;
+    const session = await getStripe().checkout.sessions.create({
+      mode,
+      customer: customerId,
+      line_items: [{ price: priceId, quantity: 1 }],
+      allow_promotion_codes: true,
+      success_url: `${origin}/academy/${courseSlug === 'academy-pass' ? '' : courseSlug}?purchase=success`,
+      cancel_url: `${origin}/academy/${courseSlug === 'academy-pass' ? '' : courseSlug}?purchase=cancel`,
+      metadata: {
+        supabase_user_id: user.id,
+        course_slug: courseSlug,
+      },
+      ...(mode === 'subscription'
+        ? {
+            subscription_data: {
+              metadata: {
+                supabase_user_id: user.id,
+                course_slug: courseSlug,
+              },
             },
-          },
-        }
-      : {}),
-  });
+          }
+        : {}),
+    });
 
-  return NextResponse.json({ url: session.url });
+    if (!session.url) {
+      console.error('[stripe/checkout] session created without a URL', { courseSlug });
+      return NextResponse.json({ error: 'could not start checkout' }, { status: 502 });
+    }
+
+    return NextResponse.json({ url: session.url });
+  } catch (err) {
+    // Log the full detail server-side (visible in Vercel logs) but return a
+    // generic, non-leaky error to the client — Stripe messages can reference
+    // internal price IDs and test/live-mode state we don't want to expose.
+    const message = err instanceof Error ? err.message : 'checkout failed';
+    console.error('[stripe/checkout] failed to create session', { courseSlug, mode, message });
+    return NextResponse.json({ error: 'could not start checkout' }, { status: 500 });
+  }
 }
