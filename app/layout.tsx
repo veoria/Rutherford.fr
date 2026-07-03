@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { headers } from 'next/headers';
 import { LanguageProvider, type Locale } from '@/components/language-provider';
 import { GoogleAnalytics } from '@/components/google-analytics';
+import { PostHogAnalytics } from '@/components/posthog-analytics';
 import { CookieConsent } from '@/components/cookie-consent';
 import { Analytics } from '@vercel/analytics/next';
 import './globals.css';
@@ -97,6 +98,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           <CookieConsent />
         </LanguageProvider>
         <GoogleAnalytics />
+        <PostHogAnalytics />
         <Analytics />
       </body>
     </html>
