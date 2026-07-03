@@ -15513,6 +15513,79 @@ textarea.cv-input { resize: vertical; min-height: 74px; }
 .ah-sys-pill.blue { background: #eaf1fc; color: #1b6ff3; }
 .ah-sys-pill.amber { background: #fbf1d9; color: #9a6a00; }
 .ah-sys-pill.grey { background: #f1efec; color: #6b6661; }
+
+/* "Mon système" — license / AnyDesk / version rows */
+.ah-section-s {
+  font-size: 0.82rem;
+  color: var(--ah-muted);
+  margin-left: 10px;
+}
+.ah-sys-kvs {
+  display: flex;
+  flex-direction: column;
+}
+.ah-sys-kv {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 7px 0;
+  border-top: 1px solid #f1efea;
+  font-size: 0.86rem;
+}
+.ah-sys-kv:first-child {
+  border-top: none;
+}
+.ah-sys-k {
+  color: var(--ah-muted);
+  flex: 0 0 auto;
+}
+.ah-sys-v {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--ah-ink);
+  text-align: right;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+.ah-copy {
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 7px;
+  border: 1px solid var(--ah-border);
+  background: #fff;
+  color: var(--ah-muted);
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+.ah-copy:hover {
+  border-color: #d9d9d5;
+  color: var(--ah-ink);
+}
+.ah-copy.done {
+  color: #1e874b;
+  border-color: #bfe3cd;
+}
+.ah-sys-update {
+  font-size: 0.73rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: #fbf1d9;
+  color: #9a6a00;
+  white-space: nowrap;
+}
+.ah-sys-uptodate {
+  font-size: 0.73rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: #e7f4ec;
+  color: #1e874b;
+  white-space: nowrap;
+}
 .ah-sys-group {
   border-top: 1px solid #f1efea;
   padding-top: 11px;
@@ -16329,6 +16402,22 @@ textarea.cv-input { resize: vertical; min-height: 74px; }
 .admin-mem-email {
   font-size: 0.78rem;
   color: var(--muted);
+}
+
+/* admin — systèmes & licences (inside the org editor) */
+.admin-sys-card {
+  border: 1px solid #eee9e1;
+  border-radius: 12px;
+  padding: 14px 14px 12px;
+  margin-bottom: 12px;
+  background: #fcfbf9;
+}
+.admin-sys-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 4px;
 }
 
 /* account hub — avatar / logo upload slots */
