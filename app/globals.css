@@ -502,6 +502,34 @@ svg {
   line-height: 1;
 }
 
+/* Narrow-desktop / laptop band (still above the 920px burger breakpoint):
+   logo + full nav + Console button + labelled account chip don't all fit and
+   the chip used to get clipped off the right edge. Collapse the account control
+   to its avatar (chip) / icon (sign-in) and trim the surrounding chrome so
+   everything stays on screen. Below 920px the burger menu takes over. */
+@media (max-width: 1200px) {
+  .header-account-name,
+  .header-account-caret,
+  .header-account-cta-label {
+    display: none;
+  }
+  .header-account-chip {
+    padding: 5px;
+  }
+  .header-account-cta {
+    gap: 0;
+    width: 44px;
+    padding: 0;
+    justify-content: center;
+  }
+  .header-divider {
+    display: none;
+  }
+  .main-nav {
+    gap: clamp(16px, 1.7vw, 34px);
+  }
+}
+
 .hero-section {
   padding: clamp(48px, 6vw, 76px) 0;
   min-height: calc(100vh - 160px);
