@@ -8,7 +8,7 @@ import { SiteNav } from '@/components/site-nav';
 import { type Locale, useLanguage } from '@/components/language-provider';
 import type { AccountType } from '@/data/account-types';
 import { AccountSystems, type ClientSystem } from '@/components/account-systems';
-import { AccountInstallations, type AccountInstallation } from '@/components/account-installations';
+import { AccountInstallations, type AccountInstallation, type AccountSite } from '@/components/account-installations';
 import { AccountSubnav } from '@/components/account-subnav';
 
 export type ResellerClient = {
@@ -52,6 +52,7 @@ type Props = {
   resellerClients: ResellerClient[];
   systems: ClientSystem[];
   installations?: AccountInstallation[];
+  sites?: AccountSite[];
   // Read-only admin preview ("view as client"): hides every action that would
   // act on the admin's own session (edit profile, sign out, uploads, team mgmt).
   preview?: boolean;
@@ -536,7 +537,7 @@ function fmtMonth(iso: string | null, locale: Locale): string {
 type Tile = { ic: string; cls: string; t: string; s: string; href: string; statDot?: string; statV: string; statM?: string };
 
 export function AccountHub(props: Props) {
-  const { accountType, team, selfId, networkResellers, email, memberSince, profile, academy, consoleStat, supportStat, resume, resellerClients, systems, installations = [], preview = false } = props;
+  const { accountType, team, selfId, networkResellers, email, memberSince, profile, academy, consoleStat, supportStat, resume, resellerClients, systems, installations = [], sites = [], preview = false } = props;
   const { locale } = useLanguage();
   const t = COPY[locale];
   const accent = TONE[accountType];
@@ -752,9 +753,7 @@ export function AccountHub(props: Props) {
 
           {/* My system — licenses, AnyDesk, updates (set in the org back-office;
               renders nothing until the Rutherford team adds a system) */}
-          <div id="account-system">
-            <AccountInstallations installations={installations} accent={accent} />
-          </div>
+          <AccountInstallations installations={installations} sites={sites} accent={accent} />
 
           {/* My presses — clients (renders nothing when there are none) */}
           <AccountSystems systems={systems} accent={accent} />

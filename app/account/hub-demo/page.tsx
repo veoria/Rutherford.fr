@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { AccountHub, type ResellerClient } from '@/components/account-hub';
 import type { ClientSystem } from '@/components/account-systems';
-import type { AccountInstallation } from '@/components/account-installations';
+import type { AccountInstallation, AccountSite } from '@/components/account-installations';
 import type { AccountType } from '@/data/account-types';
 import type { ResellerClientOrg, Team } from '@/lib/organizations';
 
@@ -64,12 +64,20 @@ export default function AccountHubDemoRoute({ searchParams }: { searchParams: { 
         ]
       : [];
 
-  // "Mon système" sample — license / AnyDesk / update states.
+  // "Mon système" sample — two plants (usines), license / AnyDesk / update states.
+  const sites: AccountSite[] =
+    accountType === 'client'
+      ? [
+          { id: 's1', name: 'Site de Lyon', city: 'Lyon', country: 'France', anydeskId: '111 222 333' },
+          { id: 's2', name: 'Site de Lille', city: 'Lille', country: 'France', anydeskId: null },
+        ]
+      : [];
   const installations: AccountInstallation[] =
     accountType === 'client'
       ? [
           {
             id: 'i1',
+            siteId: 's1',
             product: 'ColorLoop',
             machine: 'Heidelberg Speedmaster CD102-6+L',
             licenseKey: 'CL-2026-ACME-0042',
@@ -82,6 +90,7 @@ export default function AccountHubDemoRoute({ searchParams }: { searchParams: { 
           },
           {
             id: 'i2',
+            siteId: 's1',
             product: 'MeasureColor',
             machine: 'Komori Lithrone GL-840',
             licenseKey: 'MC-2025-ACME-0007',
@@ -91,6 +100,19 @@ export default function AccountHubDemoRoute({ searchParams }: { searchParams: { 
             installedVersion: '23.1',
             latestVersion: '23.1',
             updateAvailable: false,
+          },
+          {
+            id: 'i3',
+            siteId: 's2',
+            product: 'ColorLoop Connect',
+            machine: 'Manroland R700',
+            licenseKey: 'CLC-2026-ACME-0015',
+            licenseStatus: 'trial',
+            licenseExpiresAt: '2026-09-30',
+            anydeskId: '444 555 666',
+            installedVersion: '3.3.0',
+            latestVersion: '3.4.0',
+            updateAvailable: true,
           },
         ]
       : [];
@@ -125,6 +147,7 @@ export default function AccountHubDemoRoute({ searchParams }: { searchParams: { 
       resellerClients={resellerClients}
       systems={systems}
       installations={installations}
+      sites={sites}
       preview={preview}
     />
   );
