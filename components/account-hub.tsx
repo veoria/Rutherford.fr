@@ -8,6 +8,7 @@ import { SiteNav } from '@/components/site-nav';
 import { type Locale, useLanguage } from '@/components/language-provider';
 import type { AccountType } from '@/data/account-types';
 import { AccountSystems, type ClientSystem } from '@/components/account-systems';
+import { AccountInstallations, type AccountInstallation } from '@/components/account-installations';
 import { AccountSubnav } from '@/components/account-subnav';
 
 export type ResellerClient = {
@@ -16,6 +17,9 @@ export type ResellerClient = {
   presses: number;
   eligible: number;
   open: number;
+  // Installed base (client_systems) of the linked client org, when known.
+  systems?: number;
+  updates?: number;
 };
 
 type Props = {
@@ -47,6 +51,7 @@ type Props = {
   resume: { slug: string; title: string; moduleIndex: number; moduleTitle: string } | null;
   resellerClients: ResellerClient[];
   systems: ClientSystem[];
+  installations?: AccountInstallation[];
   // Read-only admin preview ("view as client"): hides every action that would
   // act on the admin's own session (edit profile, sign out, uploads, team mgmt).
   preview?: boolean;
@@ -147,6 +152,8 @@ type Copy = {
     pressUnit: (n: number) => string;
     eligibleShort: (n: number) => string;
     openShort: (n: number) => string;
+    systemsShort: (n: number) => string;
+    updatesShort: (n: number) => string;
     adminTitle: string; adminSub: string; adminCta: string;
     adminTag: string; memberTag: string; invitedTag: string; invitePending: string; inviteSend: string; inviteEmailPh: string;
     remove: string; revoke: string; networkEmpty: string;
@@ -194,6 +201,7 @@ const COPY: Record<Locale, Copy> = {
       inviteMember: 'Invite a member', inviteClient: 'Invite a client', addReseller: 'Add a reseller',
       soonTeam: 'Team invitations are coming soon.', soonNetwork: 'Your network will appear here.', clientsEmpty: 'No client validations yet.',
       pressUnit: (n) => `${n} press${n === 1 ? '' : 'es'}`, eligibleShort: (n) => `${n} eligible`, openShort: (n) => `${n} open`,
+      systemsShort: (n) => `${n} system${n === 1 ? '' : 's'}`, updatesShort: (n) => `${n} update${n === 1 ? '' : 's'} pending`,
       adminTitle: 'Back-office', adminSub: 'Rutherford team tools', adminCta: 'Open admin',
       adminTag: 'Admin', memberTag: 'Member', invitedTag: 'Invited', invitePending: 'Invitation sent', inviteSend: 'Send invite', inviteEmailPh: 'name@company.com',
       remove: 'Remove', revoke: 'Revoke', networkEmpty: 'No resellers in your network yet.',
@@ -235,6 +243,7 @@ const COPY: Record<Locale, Copy> = {
       inviteMember: 'Inviter un membre', inviteClient: 'Inviter un client', addReseller: 'Ajouter un revendeur',
       soonTeam: 'Les invitations d’équipe arrivent bientôt.', soonNetwork: 'Votre réseau apparaîtra ici.', clientsEmpty: 'Aucune validation client pour l’instant.',
       pressUnit: (n) => `${n} presse${n === 1 ? '' : 's'}`, eligibleShort: (n) => `${n} éligible${n === 1 ? '' : 's'}`, openShort: (n) => `${n} en cours`,
+      systemsShort: (n) => `${n} système${n === 1 ? '' : 's'}`, updatesShort: (n) => `${n} mise${n === 1 ? '' : 's'} à jour en attente`,
       adminTitle: 'Back-office', adminSub: 'Outils de l’équipe Rutherford', adminCta: 'Ouvrir l’admin',
       adminTag: 'Admin', memberTag: 'Membre', invitedTag: 'Invité', invitePending: 'Invitation envoyée', inviteSend: 'Envoyer l’invitation', inviteEmailPh: 'nom@entreprise.com',
       remove: 'Retirer', revoke: 'Révoquer', networkEmpty: 'Aucun revendeur dans votre réseau pour l’instant.',
@@ -276,6 +285,7 @@ const COPY: Record<Locale, Copy> = {
       inviteMember: 'Mitglied einladen', inviteClient: 'Kunde einladen', addReseller: 'Wiederverkäufer hinzufügen',
       soonTeam: 'Team-Einladungen folgen in Kürze.', soonNetwork: 'Ihr Netzwerk erscheint hier.', clientsEmpty: 'Noch keine Kunden-Validierungen.',
       pressUnit: (n) => `${n} Maschine${n === 1 ? '' : 'n'}`, eligibleShort: (n) => `${n} geeignet`, openShort: (n) => `${n} offen`,
+      systemsShort: (n) => `${n} System${n === 1 ? '' : 'e'}`, updatesShort: (n) => `${n} Update${n === 1 ? '' : 's'} ausstehend`,
       adminTitle: 'Back-office', adminSub: 'Werkzeuge des Rutherford-Teams', adminCta: 'Admin öffnen',
       adminTag: 'Admin', memberTag: 'Mitglied', invitedTag: 'Eingeladen', invitePending: 'Einladung gesendet', inviteSend: 'Einladung senden', inviteEmailPh: 'name@firma.com',
       remove: 'Entfernen', revoke: 'Zurückziehen', networkEmpty: 'Noch keine Wiederverkäufer in Ihrem Netzwerk.',
@@ -317,6 +327,7 @@ const COPY: Record<Locale, Copy> = {
       inviteMember: 'Invita un membro', inviteClient: 'Invita un cliente', addReseller: 'Aggiungi un rivenditore',
       soonTeam: 'Gli inviti al team arrivano presto.', soonNetwork: 'La sua rete apparirà qui.', clientsEmpty: 'Nessuna validazione cliente per ora.',
       pressUnit: (n) => `${n} macchin${n === 1 ? 'a' : 'e'}`, eligibleShort: (n) => `${n} idonee`, openShort: (n) => `${n} in corso`,
+      systemsShort: (n) => `${n} sistem${n === 1 ? 'a' : 'i'}`, updatesShort: (n) => `${n} aggiornament${n === 1 ? 'o' : 'i'} in attesa`,
       adminTitle: 'Back-office', adminSub: 'Strumenti del team Rutherford', adminCta: 'Apri admin',
       adminTag: 'Admin', memberTag: 'Membro', invitedTag: 'Invitato', invitePending: 'Invito inviato', inviteSend: 'Invia invito', inviteEmailPh: 'nome@azienda.com',
       remove: 'Rimuovi', revoke: 'Revoca', networkEmpty: 'Ancora nessun rivenditore nella sua rete.',
@@ -358,6 +369,7 @@ const COPY: Record<Locale, Copy> = {
       inviteMember: 'Invitar a un miembro', inviteClient: 'Invitar a un cliente', addReseller: 'Añadir un revendedor',
       soonTeam: 'Las invitaciones de equipo llegan pronto.', soonNetwork: 'Su red aparecerá aquí.', clientsEmpty: 'Aún no hay validaciones de clientes.',
       pressUnit: (n) => `${n} prensa${n === 1 ? '' : 's'}`, eligibleShort: (n) => `${n} aptas`, openShort: (n) => `${n} en curso`,
+      systemsShort: (n) => `${n} sistema${n === 1 ? '' : 's'}`, updatesShort: (n) => `${n} actualizaci${n === 1 ? 'ón' : 'ones'} pendiente${n === 1 ? '' : 's'}`,
       adminTitle: 'Back-office', adminSub: 'Herramientas del equipo Rutherford', adminCta: 'Abrir admin',
       adminTag: 'Admin', memberTag: 'Miembro', invitedTag: 'Invitado', invitePending: 'Invitación enviada', inviteSend: 'Enviar invitación', inviteEmailPh: 'nombre@empresa.com',
       remove: 'Quitar', revoke: 'Revocar', networkEmpty: 'Aún no hay revendedores en su red.',
@@ -399,6 +411,7 @@ const COPY: Record<Locale, Copy> = {
       inviteMember: 'Convidar um membro', inviteClient: 'Convidar um cliente', addReseller: 'Adicionar um revendedor',
       soonTeam: 'Os convites de equipa chegam em breve.', soonNetwork: 'A sua rede aparecerá aqui.', clientsEmpty: 'Ainda não há validações de clientes.',
       pressUnit: (n) => `${n} máquina${n === 1 ? '' : 's'}`, eligibleShort: (n) => `${n} elegíve${n === 1 ? 'l' : 'is'}`, openShort: (n) => `${n} em curso`,
+      systemsShort: (n) => `${n} sistema${n === 1 ? '' : 's'}`, updatesShort: (n) => `${n} atualizaç${n === 1 ? 'ão' : 'ões'} pendente${n === 1 ? '' : 's'}`,
       adminTitle: 'Back-office', adminSub: 'Ferramentas da equipa Rutherford', adminCta: 'Abrir admin',
       adminTag: 'Admin', memberTag: 'Membro', invitedTag: 'Convidado', invitePending: 'Convite enviado', inviteSend: 'Enviar convite', inviteEmailPh: 'nome@empresa.com',
       remove: 'Remover', revoke: 'Revogar', networkEmpty: 'Ainda não há revendedores na sua rede.',
@@ -422,7 +435,7 @@ const HERO: Record<
     supportTitle: string; supportSub: string; supportCta: string;
     resumeSub: string; resumeCta: string;
     okTitle: string; okSub: string; okCta: string;
-    remSupportT: string; remSupportS: string; remResumeT: string;
+    remSupportT: string; remSupportS: string; remResumeT: string; remUpdateT: string;
   }
 > = {
   en: {
@@ -433,7 +446,7 @@ const HERO: Record<
     supportTitle: 'Our team has replied to your ticket', supportSub: 'Pick up the conversation and keep your request moving.', supportCta: 'Open support',
     resumeSub: 'Pick up your training where you left off.', resumeCta: 'Resume',
     okTitle: 'You’re all set', okSub: 'Explore the Academy or request a console validation.', okCta: 'Explore Academy',
-    remSupportT: 'Support ticket', remSupportS: 'A reply is waiting for you', remResumeT: 'Resume your course',
+    remSupportT: 'Support ticket', remSupportS: 'A reply is waiting for you', remResumeT: 'Resume your course', remUpdateT: 'Update available',
   },
   fr: {
     eyebrow: 'À faire maintenant',
@@ -443,7 +456,7 @@ const HERO: Record<
     supportTitle: 'Notre équipe a répondu à votre ticket', supportSub: 'Reprenez la conversation pour faire avancer votre demande.', supportCta: 'Ouvrir le support',
     resumeSub: 'Reprenez votre formation là où vous en étiez.', resumeCta: 'Reprendre',
     okTitle: 'Tout est à jour', okSub: 'Explorez l’Academy ou demandez une validation console.', okCta: 'Découvrir l’Academy',
-    remSupportT: 'Ticket de support', remSupportS: 'Une réponse vous attend', remResumeT: 'Reprendre votre formation',
+    remSupportT: 'Ticket de support', remSupportS: 'Une réponse vous attend', remResumeT: 'Reprendre votre formation', remUpdateT: 'Mise à jour disponible',
   },
   de: {
     eyebrow: 'Jetzt zu erledigen',
@@ -453,7 +466,7 @@ const HERO: Record<
     supportTitle: 'Unser Team hat auf Ihr Ticket geantwortet', supportSub: 'Setzen Sie das Gespräch fort und bringen Sie Ihre Anfrage voran.', supportCta: 'Support öffnen',
     resumeSub: 'Setzen Sie Ihre Schulung dort fort, wo Sie aufgehört haben.', resumeCta: 'Fortsetzen',
     okTitle: 'Alles erledigt', okSub: 'Entdecken Sie die Academy oder fordern Sie eine Konsolenvalidierung an.', okCta: 'Academy entdecken',
-    remSupportT: 'Support-Ticket', remSupportS: 'Eine Antwort wartet auf Sie', remResumeT: 'Schulung fortsetzen',
+    remSupportT: 'Support-Ticket', remSupportS: 'Eine Antwort wartet auf Sie', remResumeT: 'Schulung fortsetzen', remUpdateT: 'Update verfügbar',
   },
   it: {
     eyebrow: 'Da fare ora',
@@ -463,7 +476,7 @@ const HERO: Record<
     supportTitle: 'Il nostro team ha risposto al tuo ticket', supportSub: 'Riprendi la conversazione e fai avanzare la tua richiesta.', supportCta: 'Apri il support',
     resumeSub: 'Riprendi la formazione da dove eri rimasto.', resumeCta: 'Riprendi',
     okTitle: 'Tutto in regola', okSub: 'Esplora l’Academy o richiedi una validazione console.', okCta: 'Scopri l’Academy',
-    remSupportT: 'Ticket di supporto', remSupportS: 'Una risposta ti aspetta', remResumeT: 'Riprendi il corso',
+    remSupportT: 'Ticket di supporto', remSupportS: 'Una risposta ti aspetta', remResumeT: 'Riprendi il corso', remUpdateT: 'Aggiornamento disponibile',
   },
   es: {
     eyebrow: 'Por hacer ahora',
@@ -473,7 +486,7 @@ const HERO: Record<
     supportTitle: 'Nuestro equipo respondió a su ticket', supportSub: 'Retome la conversación y haga avanzar su solicitud.', supportCta: 'Abrir soporte',
     resumeSub: 'Retome su formación donde la dejó.', resumeCta: 'Continuar',
     okTitle: 'Todo al día', okSub: 'Explore la Academy o solicite una validación de consola.', okCta: 'Descubrir Academy',
-    remSupportT: 'Ticket de soporte', remSupportS: 'Una respuesta le espera', remResumeT: 'Continuar su curso',
+    remSupportT: 'Ticket de soporte', remSupportS: 'Una respuesta le espera', remResumeT: 'Continuar su curso', remUpdateT: 'Actualización disponible',
   },
   pt: {
     eyebrow: 'A fazer agora',
@@ -483,7 +496,7 @@ const HERO: Record<
     supportTitle: 'A nossa equipa respondeu ao seu ticket', supportSub: 'Retome a conversa e faça avançar o seu pedido.', supportCta: 'Abrir o support',
     resumeSub: 'Retome a sua formação de onde ficou.', resumeCta: 'Retomar',
     okTitle: 'Está tudo em dia', okSub: 'Explore a Academy ou peça uma validação de consola.', okCta: 'Descobrir a Academy',
-    remSupportT: 'Ticket de support', remSupportS: 'Uma resposta aguarda-o', remResumeT: 'Retomar o seu curso',
+    remSupportT: 'Ticket de support', remSupportS: 'Uma resposta aguarda-o', remResumeT: 'Retomar o seu curso', remUpdateT: 'Atualização disponível',
   },
 };
 
@@ -523,7 +536,7 @@ function fmtMonth(iso: string | null, locale: Locale): string {
 type Tile = { ic: string; cls: string; t: string; s: string; href: string; statDot?: string; statV: string; statM?: string };
 
 export function AccountHub(props: Props) {
-  const { accountType, team, selfId, networkResellers, email, memberSince, profile, academy, consoleStat, supportStat, resume, resellerClients, systems, preview = false } = props;
+  const { accountType, team, selfId, networkResellers, email, memberSince, profile, academy, consoleStat, supportStat, resume, resellerClients, systems, installations = [], preview = false } = props;
   const { locale } = useLanguage();
   const t = COPY[locale];
   const accent = TONE[accountType];
@@ -589,6 +602,15 @@ export function AccountHub(props: Props) {
     hero = { title: h.okTitle, sub: h.okSub, cta: h.okCta, href: '/account/academy' };
   }
   const reminders: { ic: ReactNode; title: string; sub: string; href: string }[] = [];
+  const pendingUpdates = installations.filter((s) => s.updateAvailable);
+  if (pendingUpdates.length) {
+    reminders.push({
+      ic: ICON.console,
+      title: h.remUpdateT,
+      sub: pendingUpdates.map((s) => `${s.product}${s.latestVersion ? ' → ' + s.latestVersion : ''}`).join(' · '),
+      href: '#account-system',
+    });
+  }
   if (supportStat.status) reminders.push({ ic: ICON.support, title: h.remSupportT, sub: h.remSupportS, href: '/account/support' });
   if (resume) reminders.push({ ic: ICON.acad, title: h.remResumeT, sub: `${resume.title} · ${t.moduleWord} ${resume.moduleIndex + 1}`, href: `/academy/${resume.slug}` });
 
@@ -726,6 +748,12 @@ export function AccountHub(props: Props) {
                 </div>
               </a>
             ))}
+          </div>
+
+          {/* My system — licenses, AnyDesk, updates (set in the org back-office;
+              renders nothing until the Rutherford team adds a system) */}
+          <div id="account-system">
+            <AccountInstallations installations={installations} accent={accent} />
           </div>
 
           {/* My presses — clients (renders nothing when there are none) */}
@@ -1147,7 +1175,8 @@ export function ManagePanel({
                     accent={accent}
                     square
                     name={c.name}
-                    sub={`${c.country ? c.country + ' · ' : ''}${t.manage.pressUnit(c.presses)}${c.eligible ? ' · ' + t.manage.eligibleShort(c.eligible) : ''}${c.open ? ' · ' + t.manage.openShort(c.open) : ''}`}
+                    sub={`${c.country ? c.country + ' · ' : ''}${t.manage.pressUnit(c.presses)}${c.eligible ? ' · ' + t.manage.eligibleShort(c.eligible) : ''}${c.open ? ' · ' + t.manage.openShort(c.open) : ''}${c.systems ? ' · ' + t.manage.systemsShort(c.systems) : ''}`}
+                    right={c.updates ? <span className="ah-sys-pill amber">{t.manage.updatesShort(c.updates)}</span> : undefined}
                   />
                 ))}
               </div>

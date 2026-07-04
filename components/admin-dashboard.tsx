@@ -411,6 +411,290 @@ function OrgRow({
   );
 }
 
+// ── Systèmes & licences (client_systems) — édités dans la fiche organisation ──
+
+type OrgSystem = {
+  id: string;
+  product: string;
+  machine: string | null;
+  licenseKey: string | null;
+  licenseStatus: 'active' | 'trial' | 'expired' | 'suspended';
+  licenseExpiresAt: string | null;
+  anydeskId: string | null;
+  installedVersion: string | null;
+  latestVersion: string | null;
+  notes: string | null;
+};
+
+const LICENSE_STATUS_LABELS: Record<OrgSystem['licenseStatus'], string> = {
+  active: 'Active',
+  trial: 'Essai',
+  expired: 'Expirée',
+  suspended: 'Suspendue',
+};
+
+// Suggestions produit — champ libre, mais on pousse les noms canoniques.
+const SYSTEM_PRODUCTS = ['ColorLoop', 'ColorLoop Connect', 'EasySet', 'EasyLoop', 'MeasureColor', 'IntelliTrax2'];
+
+type SystemDraft = Omit<OrgSystem, 'id'>;
+
+const EMPTY_SYSTEM: SystemDraft = {
+  product: '',
+  machine: null,
+  licenseKey: null,
+  licenseStatus: 'active',
+  licenseExpiresAt: null,
+  anydeskId: null,
+  installedVersion: null,
+  latestVersion: null,
+  notes: null,
+};
+
+function SystemForm({
+  initial,
+  submitLabel,
+  onSubmit,
+  onDelete,
+}: {
+  initial: SystemDraft;
+  submitLabel: string;
+  onSubmit: (draft: SystemDraft) => Promise<boolean>;
+  onDelete?: () => Promise<void>;
+}) {
+  const [draft, setDraft] = useState<SystemDraft>(initial);
+  const [busy, setBusy] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const set = (patch: Partial<SystemDraft>) => {
+    setDraft((d) => ({ ...d, ...patch }));
+    setSaved(false);
+  };
+  const text = (v: string) => v || null;
+  const updateReady =
+    Boolean((draft.installedVersion ?? '').trim()) &&
+    Boolean((draft.latestVersion ?? '').trim()) &&
+    (draft.installedVersion ?? '').trim() !== (draft.latestVersion ?? '').trim();
+
+  return (
+    <div className="admin-sys-card">
+      <div className="admin-field-row">
+        <div className="admin-field">
+          <label>Produit</label>
+          <input
+            className="admin-input"
+            list="admin-sys-products"
+            value={draft.product}
+            onChange={(e) => set({ product: e.target.value })}
+            disabled={busy}
+            placeholder="ColorLoop"
+          />
+        </div>
+        <div className="admin-field">
+          <label>Presse / machine</label>
+          <input
+            className="admin-input"
+            value={draft.machine ?? ''}
+            onChange={(e) => set({ machine: text(e.target.value) })}
+            disabled={busy}
+            placeholder="Heidelberg XL 106"
+          />
+        </div>
+      </div>
+      <div className="admin-field-row">
+        <div className="admin-field">
+          <label>Licence (clé)</label>
+          <input
+            className="admin-input"
+            value={draft.licenseKey ?? ''}
+            onChange={(e) => set({ licenseKey: text(e.target.value) })}
+            disabled={busy}
+          />
+        </div>
+        <div className="admin-field">
+          <label>Statut</label>
+          <select
+            className="admin-input"
+            value={draft.licenseStatus}
+            onChange={(e) => set({ licenseStatus: e.target.value as OrgSystem['licenseStatus'] })}
+            disabled={busy}
+          >
+            {(Object.keys(LICENSE_STATUS_LABELS) as OrgSystem['licenseStatus'][]).map((s) => (
+              <option key={s} value={s}>
+                {LICENSE_STATUS_LABELS[s]}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="admin-field">
+          <label>Expiration</label>
+          <input
+            className="admin-input"
+            type="date"
+            value={draft.licenseExpiresAt ?? ''}
+            onChange={(e) => set({ licenseExpiresAt: text(e.target.value) })}
+            disabled={busy}
+          />
+        </div>
+      </div>
+      <div className="admin-field-row">
+        <div className="admin-field">
+          <label>N° AnyDesk</label>
+          <input
+            className="admin-input"
+            value={draft.anydeskId ?? ''}
+            onChange={(e) => set({ anydeskId: text(e.target.value) })}
+            disabled={busy}
+            placeholder="123 456 789"
+          />
+        </div>
+        <div className="admin-field">
+          <label>Version installée</label>
+          <input
+            className="admin-input"
+            value={draft.installedVersion ?? ''}
+            onChange={(e) => set({ installedVersion: text(e.target.value) })}
+            disabled={busy}
+            placeholder="3.2.1"
+          />
+        </div>
+        <div className="admin-field">
+          <label>Dernière version</label>
+          <input
+            className="admin-input"
+            value={draft.latestVersion ?? ''}
+            onChange={(e) => set({ latestVersion: text(e.target.value) })}
+            disabled={busy}
+            placeholder="3.4.0"
+          />
+        </div>
+      </div>
+      <div className="admin-field">
+        <label>Notes internes</label>
+        <input
+          className="admin-input"
+          value={draft.notes ?? ''}
+          onChange={(e) => set({ notes: text(e.target.value) })}
+          disabled={busy}
+        />
+      </div>
+      <div className="admin-sys-actions">
+        {updateReady ? <span className="ah-sys-pill amber">Mise à jour à proposer</span> : null}
+        {onDelete ? (
+          <button
+            type="button"
+            className="ah-revoke"
+            disabled={busy}
+            onClick={async () => {
+              if (!window.confirm('Supprimer ce système ?')) return;
+              setBusy(true);
+              await onDelete();
+              setBusy(false);
+            }}
+          >
+            Supprimer
+          </button>
+        ) : null}
+        <button
+          type="button"
+          className="button button-light"
+          disabled={busy || !draft.product.trim()}
+          onClick={async () => {
+            setBusy(true);
+            const ok = await onSubmit(draft);
+            setSaved(ok);
+            setBusy(false);
+          }}
+        >
+          {busy ? '…' : saved ? 'Enregistré ✓' : submitLabel}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function OrgSystemsSection({ orgId }: { orgId: string }) {
+  const router = useRouter();
+  const [systems, setSystems] = useState<OrgSystem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [adding, setAdding] = useState(false);
+
+  const refresh = async () => {
+    try {
+      const res = await fetch(`/api/admin/orgs/systems?orgId=${encodeURIComponent(orgId)}`);
+      if (res.ok) {
+        const d = (await res.json()) as { systems?: OrgSystem[] };
+        setSystems(d.systems ?? []);
+      }
+    } catch {
+      /* ignore */
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    void refresh();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [orgId]);
+
+  const save = async (id: string | null, draft: SystemDraft): Promise<boolean> => {
+    try {
+      const res = await fetch('/api/admin/orgs/systems', {
+        method: id ? 'PATCH' : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(id ? { id, ...draft } : { orgId, ...draft }),
+      });
+      if (!res.ok) return false;
+      if (!id) setAdding(false);
+      await refresh();
+      router.refresh();
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
+  return (
+    <div className="admin-modal-members">
+      <h4 className="admin-modal-subhead">
+        Systèmes & licences{loading ? ' …' : ` (${systems.length})`}
+      </h4>
+      <p className="admin-modal-section-status">
+        Licence, n° AnyDesk et versions affichés dans l&apos;espace client (« Mon système »). Une « Dernière
+        version » différente de la version installée signale une mise à jour disponible au client et à son
+        revendeur.
+      </p>
+      <datalist id="admin-sys-products">
+        {SYSTEM_PRODUCTS.map((p) => (
+          <option key={p} value={p} />
+        ))}
+      </datalist>
+      {systems.map((s) => (
+        <SystemForm
+          key={s.id}
+          initial={s}
+          submitLabel="Enregistrer"
+          onSubmit={(draft) => save(s.id, draft)}
+          onDelete={async () => {
+            try {
+              await fetch(`/api/admin/orgs/systems?id=${encodeURIComponent(s.id)}`, { method: 'DELETE' });
+            } catch {
+              /* ignore */
+            }
+            await refresh();
+            router.refresh();
+          }}
+        />
+      ))}
+      {adding ? (
+        <SystemForm initial={EMPTY_SYSTEM} submitLabel="Ajouter" onSubmit={(draft) => save(null, draft)} />
+      ) : (
+        <button type="button" className="admin-link-btn" onClick={() => setAdding(true)}>
+          + Ajouter un système
+        </button>
+      )}
+    </div>
+  );
+}
+
 function OrgDrawer({ org, allOrgs, onClose }: { org: AdminOrgFull | null; allOrgs: AdminOrgFull[]; onClose: () => void }) {
   const router = useRouter();
   const isNew = !org;
@@ -803,6 +1087,8 @@ function OrgDrawer({ org, allOrgs, onClose }: { org: AdminOrgFull | null; allOrg
             </div>
           </div>
         ) : null}
+
+        {!isNew ? <OrgSystemsSection orgId={org!.id} /> : null}
 
         {error ? <p className="admin-modal-error">{error}</p> : null}
 

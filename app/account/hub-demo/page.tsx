@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { AccountHub, type ResellerClient } from '@/components/account-hub';
 import type { ClientSystem } from '@/components/account-systems';
+import type { AccountInstallation } from '@/components/account-installations';
 import type { AccountType } from '@/data/account-types';
 import type { ResellerClientOrg, Team } from '@/lib/organizations';
 
@@ -37,16 +38,16 @@ export default function AccountHubDemoRoute({ searchParams }: { searchParams: { 
 
   const networkResellers: ResellerClientOrg[] = isXrite
     ? [
-        { orgId: 'r1', name: 'ColorConsulting', country: 'Italy', memberCount: 3 },
-        { orgId: 'r2', name: 'GS Monaco', country: 'Monaco', memberCount: 1 },
+        { orgId: 'r1', name: 'ColorConsulting', country: 'Italy', memberCount: 3, systems: 0, updates: 0 },
+        { orgId: 'r2', name: 'GS Monaco', country: 'Monaco', memberCount: 1, systems: 0, updates: 0 },
       ]
     : [];
 
   const resellerClients: ResellerClient[] =
     accountType === 'reseller'
       ? [
-          { name: 'Moderna Printing', country: 'Belgium', presses: 2, eligible: 1, open: 1 },
-          { name: 'Viappiani', country: 'Italy', presses: 1, eligible: 0, open: 1 },
+          { name: 'Moderna Printing', country: 'Belgium', presses: 2, eligible: 1, open: 1, systems: 2, updates: 1 },
+          { name: 'Viappiani', country: 'Italy', presses: 1, eligible: 0, open: 1, systems: 1 },
         ]
       : accountType === 'distributor'
         ? [
@@ -60,6 +61,37 @@ export default function AccountHubDemoRoute({ searchParams }: { searchParams: { 
       ? [
           { machine: 'Heidelberg Speedmaster CD102-6+L', company: 'Acme Print', country: 'France', status: 'can_be_connected', dealId: 2391, count: 2 },
           { machine: 'Komori Lithrone GL-840', company: 'Acme Print', country: 'France', status: 'in_review', dealId: 2392, count: 1 },
+        ]
+      : [];
+
+  // "Mon système" sample — license / AnyDesk / update states.
+  const installations: AccountInstallation[] =
+    accountType === 'client'
+      ? [
+          {
+            id: 'i1',
+            product: 'ColorLoop',
+            machine: 'Heidelberg Speedmaster CD102-6+L',
+            licenseKey: 'CL-2026-ACME-0042',
+            licenseStatus: 'active',
+            licenseExpiresAt: '2027-02-01',
+            anydeskId: '123 456 789',
+            installedVersion: '3.2.1',
+            latestVersion: '3.4.0',
+            updateAvailable: true,
+          },
+          {
+            id: 'i2',
+            product: 'MeasureColor',
+            machine: 'Komori Lithrone GL-840',
+            licenseKey: 'MC-2025-ACME-0007',
+            licenseStatus: 'active',
+            licenseExpiresAt: null,
+            anydeskId: '987 654 321',
+            installedVersion: '23.1',
+            latestVersion: '23.1',
+            updateAvailable: false,
+          },
         ]
       : [];
 
@@ -92,6 +124,7 @@ export default function AccountHubDemoRoute({ searchParams }: { searchParams: { 
       }}
       resellerClients={resellerClients}
       systems={systems}
+      installations={installations}
       preview={preview}
     />
   );
