@@ -8,6 +8,7 @@
 
 import { createSupabaseAdminClient } from '@/lib/supabase/server';
 import type { AccountInstallation } from '@/components/account-installations';
+import { getRestrictedSiteIds } from '@/lib/sites';
 
 export const LICENSE_STATUSES = ['active', 'trial', 'expired', 'suspended'] as const;
 export type LicenseStatus = (typeof LICENSE_STATUSES)[number];
@@ -19,6 +20,7 @@ export function isLicenseStatus(value: string): value is LicenseStatus {
 export type ClientSystemRecord = {
   id: string;
   orgId: string;
+  siteId: string | null;
   product: string;
   machine: string | null;
   licenseKey: string | null;
@@ -42,6 +44,7 @@ export function hasUpdateAvailable(s: Pick<ClientSystemRecord, 'installedVersion
 export function toAccountInstallation(r: ClientSystemRecord): AccountInstallation {
   return {
     id: r.id,
+    siteId: r.siteId,
     product: r.product,
     machine: r.machine,
     licenseKey: r.licenseKey,
@@ -62,6 +65,7 @@ function admin() {
 type Row = {
   id: string;
   org_id: string;
+  site_id: string | null;
   product: string;
   machine: string | null;
   license_key: string | null;
@@ -78,6 +82,7 @@ function toRecord(r: Row): ClientSystemRecord {
   return {
     id: r.id,
     orgId: r.org_id,
+    siteId: r.site_id,
     product: r.product,
     machine: r.machine,
     licenseKey: r.license_key,
@@ -92,9 +97,11 @@ function toRecord(r: Row): ClientSystemRecord {
 }
 
 const SELECT =
-  'id, org_id, product, machine, license_key, license_status, license_expires_at, anydesk_id, installed_version, latest_version, notes, updated_at';
+  'id, org_id, site_id, product, machine, license_key, license_status, license_expires_at, anydesk_id, installed_version, latest_version, notes, updated_at';
 
-/** The signed-in user's systems, via their primary organization. */
+/** The signed-in user's systems, via their primary organization, filtered to
+ * the sites they may see (site_members restriction; empty = all sites). A
+ * restricted user does not see systems that aren't placed on a site. */
 export async function getSystemsForUser(userId: string): Promise<ClientSystemRecord[]> {
   const supabase = admin();
   if (!supabase) return [];
@@ -106,7 +113,13 @@ export async function getSystemsForUser(userId: string): Promise<ClientSystemRec
       .maybeSingle();
     const orgId = (prof?.organization_id as string | null) ?? null;
     if (!orgId) return [];
-    return getSystemsForOrg(orgId);
+    const [systems, restricted] = await Promise.all([getSystemsForOrg(orgId), getRestrictedSiteIds(userId)]);
+    if (!restricted.length) return systems;
+    const allowed = new Set(restricted);
+    const scoped = systems.filter((s) => s.siteId && allowed.has(s.siteId));
+    // A restriction that matches none of this org's systems (e.g. it only
+    // covers another org) shouldn't blank the hub — fall back to all.
+    return scoped.length ? scoped : systems;
   } catch {
     return [];
   }
@@ -156,6 +169,7 @@ export async function countSystemsForOrgs(
 
 export type ClientSystemInput = {
   product: string;
+  siteId?: string | null;
   machine?: string | null;
   licenseKey?: string | null;
   licenseStatus?: LicenseStatus;
@@ -176,6 +190,7 @@ export async function createSystem(orgId: string, input: ClientSystemInput): Pro
       .from('client_systems')
       .insert({
         org_id: orgId,
+        site_id: input.siteId ?? null,
         product: product.slice(0, 120),
         machine: input.machine ?? null,
         license_key: input.licenseKey ?? null,
@@ -196,6 +211,7 @@ export async function createSystem(orgId: string, input: ClientSystemInput): Pro
 }
 
 type SystemPatch = Partial<{
+  site_id: string | null;
   product: string;
   machine: string | null;
   license_key: string | null;

@@ -12,6 +12,7 @@ import type { MemberRole, Team } from '@/lib/organizations';
 import type { AccountHubProps } from '@/components/account-hub';
 import type { ClientSystem } from '@/components/account-systems';
 import { getSystemsForOrg, toAccountInstallation } from '@/lib/client-systems';
+import { getSitesForOrg, toAccountSite } from '@/lib/sites';
 
 const OPEN_CV = ['submitted', 'in_review', 'changes_requested'];
 
@@ -129,13 +130,16 @@ export async function getAccountHubPreview(userId: string): Promise<Omit<Account
   let org: Team['org'] = null;
   let memberRole: MemberRole = 'member';
   let installations: Omit<AccountHubProps, 'preview'>['installations'] = [];
+  let sites: Omit<AccountHubProps, 'preview'>['sites'] = [];
   if (p?.organization_id) {
-    const [{ data: o }, { data: mem }, orgSystems] = await Promise.all([
+    const [{ data: o }, { data: mem }, orgSystems, orgSites] = await Promise.all([
       admin.from('organizations').select('id, name, type, logo_url').eq('id', p.organization_id).maybeSingle(),
       admin.from('organization_members').select('role').eq('org_id', p.organization_id).eq('user_id', userId).maybeSingle(),
       getSystemsForOrg(p.organization_id),
+      getSitesForOrg(p.organization_id),
     ]);
     installations = orgSystems.map(toAccountInstallation);
+    sites = orgSites.map(toAccountSite);
     if (o) {
       const oo = o as { id: string; name: string; type: string; logo_url: string | null };
       org = { id: oo.id, name: oo.name, type: oo.type, logoUrl: oo.logo_url ?? null };
@@ -179,5 +183,6 @@ export async function getAccountHubPreview(userId: string): Promise<Omit<Account
     resellerClients: [],
     systems,
     installations,
+    sites,
   };
 }

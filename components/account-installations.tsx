@@ -10,6 +10,7 @@ import { getCourseBySlug } from '@/data/academy-courses';
 // server page maps lib/client-systems records into this shape.
 export type AccountInstallation = {
   id: string;
+  siteId: string | null;
   product: string;
   machine: string | null;
   licenseKey: string | null;
@@ -19,6 +20,15 @@ export type AccountInstallation = {
   installedVersion: string | null;
   latestVersion: string | null;
   updateAvailable: boolean;
+};
+
+// A plant/site (usine) the user can see. Serializable subset of SiteRecord.
+export type AccountSite = {
+  id: string;
+  name: string;
+  city: string | null;
+  country: string | null;
+  anydeskId: string | null;
 };
 
 // Two targeted Academy courses per product family.
@@ -47,6 +57,10 @@ type Copy = {
   gSupport: string;
   gTraining: string;
   supportCta: string;
+  allSites: string;
+  unplaced: string;
+  siteRemote: string;
+  systemsCount: (n: number) => string;
 };
 
 const COPY: Record<Locale, Copy> = {
@@ -61,6 +75,8 @@ const COPY: Record<Locale, Copy> = {
     copy: 'Copy', copied: 'Copied', remote: 'Remote assistance',
     gSupport: 'Support', gTraining: 'Training',
     supportCta: 'Get support for this system',
+    allSites: 'All plants', unplaced: 'Unassigned', siteRemote: 'Remote assistance',
+    systemsCount: (n) => `${n} system${n === 1 ? '' : 's'}`,
   },
   fr: {
     heading: 'Mon système',
@@ -73,6 +89,8 @@ const COPY: Record<Locale, Copy> = {
     copy: 'Copier', copied: 'Copié', remote: 'Assistance à distance',
     gSupport: 'Support', gTraining: 'Formations',
     supportCta: 'Support sur ce système',
+    allSites: 'Toutes les usines', unplaced: 'Non affecté', siteRemote: 'Assistance à distance',
+    systemsCount: (n) => `${n} système${n === 1 ? '' : 's'}`,
   },
   de: {
     heading: 'Mein System',
@@ -85,6 +103,8 @@ const COPY: Record<Locale, Copy> = {
     copy: 'Kopieren', copied: 'Kopiert', remote: 'Fernwartung',
     gSupport: 'Support', gTraining: 'Schulungen',
     supportCta: 'Support für dieses System',
+    allSites: 'Alle Werke', unplaced: 'Nicht zugeordnet', siteRemote: 'Fernwartung',
+    systemsCount: (n) => `${n} System${n === 1 ? '' : 'e'}`,
   },
   it: {
     heading: 'Il mio sistema',
@@ -97,6 +117,8 @@ const COPY: Record<Locale, Copy> = {
     copy: 'Copia', copied: 'Copiato', remote: 'Assistenza remota',
     gSupport: 'Support', gTraining: 'Formazione',
     supportCta: 'Assistenza per questo sistema',
+    allSites: 'Tutti gli stabilimenti', unplaced: 'Non assegnato', siteRemote: 'Assistenza remota',
+    systemsCount: (n) => `${n} sistem${n === 1 ? 'a' : 'i'}`,
   },
   es: {
     heading: 'Mi sistema',
@@ -109,6 +131,8 @@ const COPY: Record<Locale, Copy> = {
     copy: 'Copiar', copied: 'Copiado', remote: 'Asistencia remota',
     gSupport: 'Soporte', gTraining: 'Formación',
     supportCta: 'Soporte para este sistema',
+    allSites: 'Todas las plantas', unplaced: 'Sin asignar', siteRemote: 'Asistencia remota',
+    systemsCount: (n) => `${n} sistema${n === 1 ? '' : 's'}`,
   },
   pt: {
     heading: 'O meu sistema',
@@ -121,6 +145,8 @@ const COPY: Record<Locale, Copy> = {
     copy: 'Copiar', copied: 'Copiado', remote: 'Assistência remota',
     gSupport: 'Support', gTraining: 'Formação',
     supportCta: 'Support para este sistema',
+    allSites: 'Todas as fábricas', unplaced: 'Não atribuído', siteRemote: 'Assistência remota',
+    systemsCount: (n) => `${n} sistema${n === 1 ? '' : 's'}`,
   },
 };
 
@@ -160,111 +186,199 @@ function CopyButton({ value, copy, copied }: { value: string; copy: string; copi
   );
 }
 
+function SystemCard({ s, t, locale }: { s: AccountInstallation; t: Copy; locale: Locale }) {
+  const courses = coursesFor(s.product).map((slug) => ({
+    slug,
+    title: getCourseBySlug(slug)?.title ?? slug,
+  }));
+  const supportSubject = [s.product, s.machine].filter(Boolean).join(' — ');
+  const q = new URLSearchParams({ subject: supportSubject }).toString();
+  return (
+    <div className="ah-sys">
+      <div className="ah-sys-h">
+        <div>
+          <div className="ah-sys-name">{s.product}</div>
+          {s.machine ? <div className="ah-sys-meta">{s.machine}</div> : null}
+        </div>
+        <span className={`ah-sys-pill ${STATUS_PILL[s.licenseStatus]}`}>{t.status[s.licenseStatus]}</span>
+      </div>
+
+      <div className="ah-sys-kvs">
+        {s.licenseKey ? (
+          <div className="ah-sys-kv">
+            <span className="ah-sys-k">{t.license}</span>
+            <span className="ah-sys-v ah-mono">{s.licenseKey}</span>
+          </div>
+        ) : null}
+        {s.licenseExpiresAt ? (
+          <div className="ah-sys-kv">
+            <span className="ah-sys-k">{t.expires}</span>
+            <span className="ah-sys-v">{fmtDate(s.licenseExpiresAt, locale)}</span>
+          </div>
+        ) : null}
+        {s.anydeskId ? (
+          <div className="ah-sys-kv">
+            <span className="ah-sys-k">AnyDesk</span>
+            <span className="ah-sys-v ah-mono">
+              {s.anydeskId}
+              <CopyButton value={s.anydeskId} copy={t.copy} copied={t.copied} />
+            </span>
+          </div>
+        ) : null}
+        {s.installedVersion ? (
+          <div className="ah-sys-kv">
+            <span className="ah-sys-k">{t.version}</span>
+            <span className="ah-sys-v">
+              <span className="ah-mono">{s.installedVersion}</span>
+              {s.updateAvailable && s.latestVersion ? (
+                <span className="ah-sys-update">{t.updateTo(s.latestVersion)}</span>
+              ) : (
+                <span className="ah-sys-uptodate">{t.upToDate}</span>
+              )}
+            </span>
+          </div>
+        ) : null}
+      </div>
+
+      <div className="ah-sys-group">
+        <div className="ah-sys-glabel">{t.gSupport}</div>
+        <div className="ah-sys-links">
+          <a className="ah-sys-link primary" href={`/support?${q}`}>{t.supportCta}</a>
+          {s.updateAvailable && s.latestVersion ? (
+            <a
+              className="ah-sys-link"
+              href={`/support?${new URLSearchParams({ subject: `${supportSubject} — ${t.updateTo(s.latestVersion)}` }).toString()}`}
+            >
+              {t.updateCta}
+            </a>
+          ) : null}
+          {s.anydeskId ? (
+            <a className="ah-sys-link" href={`anydesk:${s.anydeskId.replace(/\s+/g, '')}`}>
+              {t.remote}
+            </a>
+          ) : null}
+        </div>
+      </div>
+
+      <div className="ah-sys-group">
+        <div className="ah-sys-glabel">{t.gTraining}</div>
+        <div className="ah-sys-links">
+          {courses.map((c) => (
+            <a className="ah-sys-link" href={`/academy/${c.slug}`} key={c.slug}>
+              {c.title}
+            </a>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function siteLocation(site: AccountSite): string {
+  return [site.city, site.country].filter(Boolean).join(', ');
+}
+
 export function AccountInstallations({
   installations,
+  sites = [],
   accent,
 }: {
   installations: AccountInstallation[];
+  sites?: AccountSite[];
   accent: string;
 }) {
   const { locale } = useLanguage();
   const t = COPY[locale];
+  // Only sites that actually carry a visible system are worth a tab; plus a
+  // synthetic "unassigned" bucket for systems with no site.
+  const bySite = new Map<string, AccountInstallation[]>();
+  for (const inst of installations) {
+    const key = inst.siteId ?? '__none__';
+    const list = bySite.get(key) ?? [];
+    list.push(inst);
+    bySite.set(key, list);
+  }
+  const orderedSites = sites.filter((s) => bySite.has(s.id));
+  const unplaced = bySite.get('__none__') ?? [];
+  const tabCount = orderedSites.length + (unplaced.length ? 1 : 0);
+
+  // Tab state: '__all__' | siteId | '__none__'. Default to all when several.
+  const [tab, setTab] = useState<string>('__all__');
+
   if (!installations.length) return null;
 
+  // No real site structure (single or zero named site) → flat grid, as before.
+  const multi = tabCount > 1;
+
+  const activeSite = orderedSites.find((s) => s.id === tab) ?? null;
+  const visible =
+    !multi || tab === '__all__'
+      ? installations
+      : tab === '__none__'
+        ? unplaced
+        : bySite.get(tab) ?? [];
+
   return (
-    <div style={{ ['--role' as string]: accent }}>
+    <div style={{ ['--role' as string]: accent }} id="account-system">
       <div className="ah-section-h">
         <span className="ah-section-t">{t.heading}</span>
         <span className="ah-section-s">{t.sub}</span>
       </div>
+
+      {multi ? (
+        <div className="ah-site-tabs" role="tablist">
+          <button
+            type="button"
+            className={`ah-site-tab${tab === '__all__' ? ' on' : ''}`}
+            onClick={() => setTab('__all__')}
+          >
+            {t.allSites}
+            <span className="ah-site-tab-n">{t.systemsCount(installations.length)}</span>
+          </button>
+          {orderedSites.map((s) => (
+            <button
+              type="button"
+              key={s.id}
+              className={`ah-site-tab${tab === s.id ? ' on' : ''}`}
+              onClick={() => setTab(s.id)}
+            >
+              {s.name}
+              <span className="ah-site-tab-n">{t.systemsCount((bySite.get(s.id) ?? []).length)}</span>
+            </button>
+          ))}
+          {unplaced.length ? (
+            <button
+              type="button"
+              className={`ah-site-tab${tab === '__none__' ? ' on' : ''}`}
+              onClick={() => setTab('__none__')}
+            >
+              {t.unplaced}
+              <span className="ah-site-tab-n">{t.systemsCount(unplaced.length)}</span>
+            </button>
+          ) : null}
+        </div>
+      ) : null}
+
+      {activeSite && (siteLocation(activeSite) || activeSite.anydeskId) ? (
+        <div className="ah-site-meta">
+          {siteLocation(activeSite) ? <span className="ah-site-loc">{siteLocation(activeSite)}</span> : null}
+          {activeSite.anydeskId ? (
+            <span className="ah-site-remote">
+              <span className="ah-sys-k">AnyDesk {activeSite.name}</span>
+              <span className="ah-mono">{activeSite.anydeskId}</span>
+              <CopyButton value={activeSite.anydeskId} copy={t.copy} copied={t.copied} />
+              <a className="ah-sys-link" href={`anydesk:${activeSite.anydeskId.replace(/\s+/g, '')}`}>
+                {t.siteRemote}
+              </a>
+            </span>
+          ) : null}
+        </div>
+      ) : null}
+
       <div className="ah-sys-grid">
-        {installations.map((s) => {
-          const courses = coursesFor(s.product).map((slug) => ({
-            slug,
-            title: getCourseBySlug(slug)?.title ?? slug,
-          }));
-          const supportSubject = [s.product, s.machine].filter(Boolean).join(' — ');
-          const q = new URLSearchParams({ subject: supportSubject }).toString();
-          return (
-            <div className="ah-sys" key={s.id}>
-              <div className="ah-sys-h">
-                <div>
-                  <div className="ah-sys-name">{s.product}</div>
-                  {s.machine ? <div className="ah-sys-meta">{s.machine}</div> : null}
-                </div>
-                <span className={`ah-sys-pill ${STATUS_PILL[s.licenseStatus]}`}>{t.status[s.licenseStatus]}</span>
-              </div>
-
-              <div className="ah-sys-kvs">
-                {s.licenseKey ? (
-                  <div className="ah-sys-kv">
-                    <span className="ah-sys-k">{t.license}</span>
-                    <span className="ah-sys-v ah-mono">{s.licenseKey}</span>
-                  </div>
-                ) : null}
-                {s.licenseExpiresAt ? (
-                  <div className="ah-sys-kv">
-                    <span className="ah-sys-k">{t.expires}</span>
-                    <span className="ah-sys-v">{fmtDate(s.licenseExpiresAt, locale)}</span>
-                  </div>
-                ) : null}
-                {s.anydeskId ? (
-                  <div className="ah-sys-kv">
-                    <span className="ah-sys-k">AnyDesk</span>
-                    <span className="ah-sys-v ah-mono">
-                      {s.anydeskId}
-                      <CopyButton value={s.anydeskId} copy={t.copy} copied={t.copied} />
-                    </span>
-                  </div>
-                ) : null}
-                {s.installedVersion ? (
-                  <div className="ah-sys-kv">
-                    <span className="ah-sys-k">{t.version}</span>
-                    <span className="ah-sys-v">
-                      <span className="ah-mono">{s.installedVersion}</span>
-                      {s.updateAvailable && s.latestVersion ? (
-                        <span className="ah-sys-update">{t.updateTo(s.latestVersion)}</span>
-                      ) : (
-                        <span className="ah-sys-uptodate">{t.upToDate}</span>
-                      )}
-                    </span>
-                  </div>
-                ) : null}
-              </div>
-
-              <div className="ah-sys-group">
-                <div className="ah-sys-glabel">{t.gSupport}</div>
-                <div className="ah-sys-links">
-                  <a className="ah-sys-link primary" href={`/support?${q}`}>{t.supportCta}</a>
-                  {s.updateAvailable && s.latestVersion ? (
-                    <a
-                      className="ah-sys-link"
-                      href={`/support?${new URLSearchParams({ subject: `${supportSubject} — ${t.updateTo(s.latestVersion)}` }).toString()}`}
-                    >
-                      {t.updateCta}
-                    </a>
-                  ) : null}
-                  {s.anydeskId ? (
-                    <a className="ah-sys-link" href={`anydesk:${s.anydeskId.replace(/\s+/g, '')}`}>
-                      {t.remote}
-                    </a>
-                  ) : null}
-                </div>
-              </div>
-
-              <div className="ah-sys-group">
-                <div className="ah-sys-glabel">{t.gTraining}</div>
-                <div className="ah-sys-links">
-                  {courses.map((c) => (
-                    <a className="ah-sys-link" href={`/academy/${c.slug}`} key={c.slug}>
-                      {c.title}
-                    </a>
-                  ))}
-                </div>
-              </div>
-            </div>
-          );
-        })}
+        {visible.map((s) => (
+          <SystemCard key={s.id} s={s} t={t} locale={locale} />
+        ))}
       </div>
     </div>
   );

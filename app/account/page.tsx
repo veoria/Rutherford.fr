@@ -9,6 +9,7 @@ import { getLessonsForCourse } from '@/data/academy-lessons';
 import { overallStats, type CourseStat } from '@/lib/gamification';
 import { getDistributorResellers, getResellerClients, getTeamForUser } from '@/lib/organizations';
 import { getSystemsForUser, toAccountInstallation } from '@/lib/client-systems';
+import { getVisibleSitesForUser, toAccountSite } from '@/lib/sites';
 import type { AccountType } from '@/data/account-types';
 import type { ClientSystem } from '@/components/account-systems';
 
@@ -242,6 +243,14 @@ export default async function AccountHubRoute() {
   const [{ status: supportStatus, newMessage: supportNewMessage }, resellerClients, team, networkResellers, installations] =
     await Promise.all([supportSummaryP, resellerClientsP, teamP, networkResellersP, installationsP]);
 
+  // Plants (usines) the user may see — owners/admins see all their org's sites,
+  // other members are narrowed by any site_members restriction.
+  const orgId = team.org?.id ?? null;
+  const canManageOrg = team.myRole === 'owner' || team.myRole === 'admin';
+  const sites = orgId
+    ? (await getVisibleSitesForUser(user.id, orgId, canManageOrg)).map(toAccountSite)
+    : [];
+
   return (
     <AccountHub
       accountType={accountType}
@@ -273,6 +282,7 @@ export default async function AccountHubRoute() {
       resellerClients={resellerClients}
       systems={systems}
       installations={installations}
+      sites={sites}
     />
   );
 }

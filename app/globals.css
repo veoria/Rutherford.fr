@@ -15520,6 +15520,62 @@ textarea.cv-input { resize: vertical; min-height: 74px; }
   color: var(--ah-muted);
   margin-left: 10px;
 }
+/* plant (usine) selector */
+.ah-site-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.ah-site-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 13px;
+  border-radius: 10px;
+  border: 1px solid var(--ah-border);
+  background: #fff;
+  color: var(--ah-ink);
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+.ah-site-tab:hover {
+  border-color: #d9d9d5;
+  background: #faf9f7;
+}
+.ah-site-tab.on {
+  border-color: var(--role, #1b6ff3);
+  background: color-mix(in srgb, var(--role, #1b6ff3) 8%, #fff);
+  color: var(--role, #1b6ff3);
+}
+.ah-site-tab-n {
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--ah-muted);
+}
+.ah-site-tab.on .ah-site-tab-n {
+  color: var(--role, #1b6ff3);
+}
+.ah-site-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  margin: -4px 0 14px;
+  font-size: 0.85rem;
+  color: var(--ah-muted);
+}
+.ah-site-loc {
+  font-weight: 600;
+}
+.ah-site-remote {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
 .ah-sys-kvs {
   display: flex;
   flex-direction: column;
@@ -16418,6 +16474,34 @@ textarea.cv-input { resize: vertical; min-height: 74px; }
   justify-content: flex-end;
   gap: 10px;
   margin-top: 4px;
+}
+
+/* admin — per-member site (usine) access */
+.admin-site-access {
+  margin-top: 4px;
+}
+.admin-site-access-list {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-top: 6px;
+  padding: 8px 10px;
+  border: 1px solid #eee9e1;
+  border-radius: 8px;
+  background: #fcfbf9;
+}
+.admin-site-access-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: #1d1d1f;
+  cursor: pointer;
+}
+.admin-site-access-hint {
+  margin: 2px 0 0;
+  font-size: 0.76rem;
+  color: var(--muted);
 }
 
 /* account hub — avatar / logo upload slots */
