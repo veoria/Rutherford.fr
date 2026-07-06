@@ -90,6 +90,50 @@
   margin: 0;
 }
 
+.o360-h1 .sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Typewriter caret for the ColorLoop-first hero headline */
+.o360-caret {
+  display: inline-block;
+  width: 0.05em;
+  height: 0.82em;
+  margin-left: 0.03em;
+  background: var(--o360-accent);
+  vertical-align: -0.06em;
+  opacity: 1;
+}
+
+.o360-caret.is-blinking {
+  animation: o360-caret-blink 0.9s step-end infinite;
+}
+
+@keyframes o360-caret-blink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .o360-caret {
+    display: none;
+  }
+}
+
 .o360-h2 {
   font-size: clamp(2.4rem, 5.4vw, 4.2rem);
   font-weight: 700;

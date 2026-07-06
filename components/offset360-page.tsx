@@ -77,6 +77,36 @@ function CountUp({
   );
 }
 
+/** Typewriter reveal: types `text` out on mount, then blinks a caret. */
+function TypeOn({ text, speed = 70 }: { text: string; speed?: number }) {
+  const [chars, setChars] = useState(prefersReducedMotion() ? text.length : 0);
+  const [done, setDone] = useState(prefersReducedMotion());
+
+  useEffect(() => {
+    if (prefersReducedMotion()) return;
+    setChars(0);
+    setDone(false);
+    let i = 0;
+    const id = setInterval(() => {
+      i += 1;
+      setChars(i);
+      if (i >= text.length) {
+        clearInterval(id);
+        setDone(true);
+      }
+    }, speed);
+    return () => clearInterval(id);
+  }, [text, speed]);
+
+  return (
+    <>
+      {text.slice(0, chars)}
+      <span className={`o360-caret ${done ? 'is-blinking' : ''}`} aria-hidden="true" />
+      <span className="sr-only">{text}</span>
+    </>
+  );
+}
+
 // Locale-independent parts of the three bundle cards; text comes from OFFSET360_COPY.
 const bundleStatic = [
   {
@@ -202,7 +232,9 @@ export function Offset360Page({ colorloopFocus = false }: { colorloopFocus?: boo
               <img src="/images/xrite-logo-black.png" alt="X-Rite" />
             </a>
           )}
-          <h1 className="o360-h1">{colorloopFocus ? 'ColorLoop.ai' : 'Offset360'}</h1>
+          <h1 className="o360-h1">
+            {colorloopFocus ? <TypeOn key={locale} text="ColorLoop.ai" /> : 'Offset360'}
+          </h1>
           <p className="o360-lede">{colorloopFocus ? t.colorloop.heroLede : t.heroLede}</p>
           <div className="o360-cta-row">
             <a className="o360-btn o360-btn-primary" href="#film">{t.watchFilm}</a>
