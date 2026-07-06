@@ -13,21 +13,32 @@ function requestLocale(): Locale {
   return OFFSET360_COPY[locale] ? locale : 'en';
 }
 
+type SearchParams = { [key: string]: string | string[] | undefined };
+
+// ColorLoop-first variant on the colorloop.ai domain (X-Rite kept discreet,
+// per X-Rite's request); ?colorloop=1 previews it on any host.
+function isColorloopFocus(searchParams?: SearchParams): boolean {
+  if (searchParams?.colorloop !== undefined) return searchParams.colorloop !== '0';
+  const host = headers().get('host') ?? '';
+  return host.includes('colorloop.');
+}
+
 function localizedUrl(locale: Locale): string {
   return locale === 'en' ? `${BASE}/offset360` : `${BASE}/${locale}/offset360`;
 }
 
 // Localized title/description per served locale; canonical + hreflang are
 // inherited from the root layout (canonical base: rutherford.fr/offset360).
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata({ searchParams }: { searchParams?: SearchParams }): Promise<Metadata> {
   const locale = requestLocale();
   const t = OFFSET360_COPY[locale];
+  const title = isColorloopFocus(searchParams) ? t.colorloop.metaTitle : t.metaTitle;
   return {
-    title: t.metaTitle,
+    title,
     description: t.metaDescription,
     keywords: ['Offset360', 'Offset 360', 'X-Rite Offset360', 'closed-loop color', 'sheetfed offset', 'IntelliTrax2', 'MeasureColor', 'ColorLoop', 'Rutherford'],
     openGraph: {
-      title: t.metaTitle,
+      title,
       description: t.metaDescription,
       type: 'website',
       url: localizedUrl(locale),
@@ -35,7 +46,7 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     twitter: {
       card: 'summary_large_image',
-      title: t.metaTitle,
+      title,
       description: t.metaDescription,
       images: ['/images/og-offset360.png'],
     },
@@ -53,9 +64,10 @@ const PRODUCT_JSON_LD = {
   image: 'https://rutherford.fr/images/Bundle Rutherford-4.jpg',
 };
 
-export default function Offset360Route() {
+export default function Offset360Route({ searchParams }: { searchParams?: SearchParams }) {
   const locale = requestLocale();
   const t = OFFSET360_COPY[locale];
+  const colorloopFocus = isColorloopFocus(searchParams);
 
   // FAQ rich-result markup in the language actually served on this URL.
   const faqJsonLd = {
@@ -82,7 +94,7 @@ export default function Offset360Route() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(PRODUCT_JSON_LD) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
-      <Offset360Page />
+      <Offset360Page colorloopFocus={colorloopFocus} />
     </>
   );
 }

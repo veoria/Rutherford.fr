@@ -150,11 +150,14 @@ function Check() {
   );
 }
 
-export function Offset360Page() {
+export function Offset360Page({ colorloopFocus = false }: { colorloopFocus?: boolean }) {
   const rootRef = useRef<HTMLElement>(null);
   const { locale } = useLanguage();
   const t = OFFSET360_COPY[locale] ?? OFFSET360_COPY.en;
   const faq = OFFSET360_FAQ_BY_LOCALE[locale] ?? OFFSET360_FAQ_BY_LOCALE.en;
+  // ColorLoop-first variant (go.colorloop.ai): Rutherford ColorLoop leads,
+  // X-Rite products follow. Same content, different emphasis.
+  const order = colorloopFocus ? [2, 0, 1] : [0, 1, 2];
 
   // Reveal-on-scroll for every .o360-reveal element inside the page.
   useEffect(() => {
@@ -190,11 +193,17 @@ export function Offset360Page() {
       {/* Hero */}
       <section className="o360-section">
         <div className="o360-narrow">
-          <a className="o360-hero-logo" href={XRITE_OFFSET360_URL} target="_blank" rel="noreferrer" aria-label="X-Rite">
-            <img src="/images/xrite-logo-black.png" alt="X-Rite" />
-          </a>
-          <h1 className="o360-h1">Offset360</h1>
-          <p className="o360-lede">{t.heroLede}</p>
+          {colorloopFocus ? (
+            <span className="o360-hero-logo">
+              <img src="/images/colorloop-logo-black.png" alt="ColorLoop" />
+            </span>
+          ) : (
+            <a className="o360-hero-logo" href={XRITE_OFFSET360_URL} target="_blank" rel="noreferrer" aria-label="X-Rite">
+              <img src="/images/xrite-logo-black.png" alt="X-Rite" />
+            </a>
+          )}
+          <h1 className="o360-h1">{colorloopFocus ? 'ColorLoop' : 'Offset360'}</h1>
+          <p className="o360-lede">{colorloopFocus ? t.colorloop.heroLede : t.heroLede}</p>
           <div className="o360-cta-row">
             <a className="o360-btn o360-btn-primary" href="#film">{t.watchFilm}</a>
             <a className="o360-btn o360-btn-ghost" href="https://form.typeform.com/to/LZtPUH" target="_blank" rel="noreferrer">
@@ -248,18 +257,20 @@ export function Offset360Page() {
       <section className="o360-section" style={{ paddingTop: 0 }}>
         <div className="o360-container">
           <div className="o360-bundle">
-            {bundleStatic.map((item, i) => (
+            {order.map((idx, i) => {
+              const item = bundleStatic[idx];
+              return (
               <article className="o360-card o360-reveal" key={item.name} style={{ transitionDelay: `${i * 90}ms` }}>
                 <div className="o360-card-media">
-                  <img src={item.image} alt={t.bundle[i].imageAlt} loading="lazy" />
+                  <img src={item.image} alt={t.bundle[idx].imageAlt} loading="lazy" />
                 </div>
                 <div className="o360-card-body">
                   <div className="o360-card-vendor">
                     <img src={item.vendorLogo} alt={item.vendorAlt} />
                   </div>
                   <h3 className="o360-h3">{item.name}</h3>
-                  <p className="o360-card-role">{t.bundle[i].role}</p>
-                  <p>{t.bundle[i].description}</p>
+                  <p className="o360-card-role">{t.bundle[idx].role}</p>
+                  <p>{t.bundle[idx].description}</p>
                   <a
                     className="o360-card-link"
                     href={item.href}
@@ -270,27 +281,30 @@ export function Offset360Page() {
                   </a>
                 </div>
               </article>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>
 
       {/* Deep-dive feature rows */}
       <section className="o360-section o360-quiet">
-        {featureStatic.map((f, i) => (
-          <div className={`o360-feature o360-reveal ${f.reverse ? 'is-reverse' : ''}`} key={f.image}>
+        {order.map((idx, i) => {
+          const f = featureStatic[idx];
+          return (
+          <div className={`o360-feature o360-reveal ${i % 2 === 1 ? 'is-reverse' : ''}`} key={f.image}>
             <div className="o360-feature-media">
-              <img src={f.image} alt={t.features[i].imageAlt} loading="lazy" />
+              <img src={f.image} alt={t.features[idx].imageAlt} loading="lazy" />
             </div>
             <div className="o360-feature-copy">
               <div className="o360-feature-eyebrow">
                 <img src={f.vendorLogo} alt={f.vendorAlt} />
-                <span>{t.features[i].eyebrow}</span>
+                <span>{t.features[idx].eyebrow}</span>
               </div>
-              <h3>{t.features[i].title}</h3>
-              <p>{t.features[i].body}</p>
+              <h3>{t.features[idx].title}</h3>
+              <p>{t.features[idx].body}</p>
               <ul className="o360-chips">
-                {t.features[i].chips.map((c) => (
+                {t.features[idx].chips.map((c) => (
                   <li key={c}>{c}</li>
                 ))}
               </ul>
@@ -304,7 +318,8 @@ export function Offset360Page() {
               </a>
             </div>
           </div>
-        ))}
+          );
+        })}
       </section>
 
       {/* How it works */}
@@ -427,9 +442,15 @@ export function Offset360Page() {
             <a className="o360-btn o360-btn-primary" href="/console-validation">
               {t.ctaPrimary}
             </a>
-            <a className="o360-btn o360-btn-ghost" href={XRITE_OFFSET360_URL} target="_blank" rel="noreferrer">
-              {t.ctaSecondary}
-            </a>
+            {colorloopFocus ? (
+              <a className="o360-btn o360-btn-ghost" href="/#colorloop">
+                {t.colorloop.ctaSecondary}
+              </a>
+            ) : (
+              <a className="o360-btn o360-btn-ghost" href={XRITE_OFFSET360_URL} target="_blank" rel="noreferrer">
+                {t.ctaSecondary}
+              </a>
+            )}
           </div>
         </div>
       </section>

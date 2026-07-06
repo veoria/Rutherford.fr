@@ -44,6 +44,8 @@ export type Offset360Copy = {
   ctaSecondary: string;
   breadcrumbHome: string;
   photoAlts: { problem: string };
+  /** ColorLoop-first variant served on go.colorloop.ai (X-Rite kept discreet). */
+  colorloop: { metaTitle: string; heroLede: string; ctaSecondary: string };
 };
 
 export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
@@ -165,6 +167,11 @@ export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
     photoAlts: {
       problem: 'Operator checking a printed sheet at the console, IntelliTrax2 scanner in the foreground',
     },
+    colorloop: {
+      metaTitle: 'ColorLoop | Closed-loop color control for sheetfed offset',
+      heroLede: 'The Rutherford software that closes the loop on your press. Scan, compare, correct, automatically.',
+      ctaSecondary: 'Discover ColorLoop',
+    },
   },
 
   fr: {
@@ -284,6 +291,11 @@ export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
     breadcrumbHome: 'Accueil',
     photoAlts: {
       problem: 'Opérateur contrôlant une feuille imprimée au pupitre, scanner IntelliTrax2 au premier plan',
+    },
+    colorloop: {
+      metaTitle: 'ColorLoop | Contrôle couleur closed-loop pour offset feuille à feuille',
+      heroLede: 'Le logiciel Rutherford qui ferme la boucle sur votre presse. Mesurer, comparer, corriger, automatiquement.',
+      ctaSecondary: 'Découvrir ColorLoop',
     },
   },
 
@@ -405,6 +417,11 @@ export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
     photoAlts: {
       problem: 'Bediener prüft einen Druckbogen am Druckpult, IntelliTrax2-Scanner im Vordergrund',
     },
+    colorloop: {
+      metaTitle: 'ColorLoop | Closed-Loop-Farbsteuerung für den Bogenoffset',
+      heroLede: 'Die Rutherford-Software, die den Loop an Ihrer Druckmaschine schließt. Messen, vergleichen, korrigieren, automatisch.',
+      ctaSecondary: 'ColorLoop entdecken',
+    },
   },
 
   it: {
@@ -524,6 +541,11 @@ export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
     breadcrumbHome: 'Home',
     photoAlts: {
       problem: 'Operatore che controlla un foglio stampato al pulpito, scanner IntelliTrax2 in primo piano',
+    },
+    colorloop: {
+      metaTitle: 'ColorLoop | Controllo colore closed-loop per offset foglio',
+      heroLede: 'Il software Rutherford che chiude il loop sulla vostra macchina. Misurare, confrontare, correggere, automaticamente.',
+      ctaSecondary: 'Scopri ColorLoop',
     },
   },
 
@@ -645,6 +667,11 @@ export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
     photoAlts: {
       problem: 'Operario comprobando un pliego impreso en la consola, escáner IntelliTrax2 en primer plano',
     },
+    colorloop: {
+      metaTitle: 'ColorLoop | Control del color closed-loop para offset pliego',
+      heroLede: 'El software de Rutherford que cierra el loop en su prensa. Medir, comparar, corregir, automáticamente.',
+      ctaSecondary: 'Descubrir ColorLoop',
+    },
   },
 
   pt: {
@@ -764,6 +791,11 @@ export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
     breadcrumbHome: 'Início',
     photoAlts: {
       problem: 'Operador a verificar uma folha impressa na consola, scanner IntelliTrax2 em primeiro plano',
+    },
+    colorloop: {
+      metaTitle: 'ColorLoop | Controlo de cor closed-loop para offset de folhas',
+      heroLede: 'O software da Rutherford que fecha o loop na sua máquina. Medir, comparar, corrigir, automaticamente.',
+      ctaSecondary: 'Descobrir o ColorLoop',
     },
   },
 };
