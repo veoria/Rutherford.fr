@@ -6,6 +6,7 @@
 
 import { createSupabaseAdminClient } from '@/lib/supabase/server';
 import { companyDomainFromEmail } from '@/lib/account-type';
+import { countSystemsForOrgs } from '@/lib/client-systems';
 
 export type MemberRole = 'owner' | 'admin' | 'member';
 
@@ -331,6 +332,10 @@ export type ResellerClientOrg = {
   name: string;
   country: string | null;
   memberCount: number;
+  // Installed base of the client org (client_systems): total systems and how
+  // many have a pending update — the reseller's cue to plan an intervention.
+  systems: number;
+  updates: number;
 };
 
 /** Client orgs managed by this reseller (organizations.reseller_org_id = my org). */
@@ -352,15 +357,23 @@ export async function getResellerClients(userId: string): Promise<ResellerClient
     const list = (clients ?? []) as { id: string; name: string; country: string | null }[];
     const ids = list.map((c) => c.id);
     const counts = new Map<string, number>();
+    let systemCounts = new Map<string, { systems: number; updates: number }>();
     if (ids.length) {
-      const { data: mems } = await supabase
-        .from('organization_members')
-        .select('org_id')
-        .in('org_id', ids)
-        .eq('status', 'active');
+      const [{ data: mems }, sysCounts] = await Promise.all([
+        supabase.from('organization_members').select('org_id').in('org_id', ids).eq('status', 'active'),
+        countSystemsForOrgs(ids),
+      ]);
       for (const m of (mems ?? []) as { org_id: string }[]) counts.set(m.org_id, (counts.get(m.org_id) ?? 0) + 1);
+      systemCounts = sysCounts;
     }
-    return list.map((c) => ({ orgId: c.id, name: c.name, country: c.country, memberCount: counts.get(c.id) ?? 0 }));
+    return list.map((c) => ({
+      orgId: c.id,
+      name: c.name,
+      country: c.country,
+      memberCount: counts.get(c.id) ?? 0,
+      systems: systemCounts.get(c.id)?.systems ?? 0,
+      updates: systemCounts.get(c.id)?.updates ?? 0,
+    }));
   } catch {
     return [];
   }
@@ -392,7 +405,7 @@ export async function getDistributorResellers(userId: string): Promise<ResellerC
         if (c.reseller_org_id) counts.set(c.reseller_org_id, (counts.get(c.reseller_org_id) ?? 0) + 1);
       }
     }
-    return list.map((r) => ({ orgId: r.id, name: r.name, country: r.country, memberCount: counts.get(r.id) ?? 0 }));
+    return list.map((r) => ({ orgId: r.id, name: r.name, country: r.country, memberCount: counts.get(r.id) ?? 0, systems: 0, updates: 0 }));
   } catch {
     return [];
   }

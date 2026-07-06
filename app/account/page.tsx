@@ -8,6 +8,8 @@ import { courseHasQuiz } from '@/data/academy-quizzes';
 import { getLessonsForCourse } from '@/data/academy-lessons';
 import { overallStats, type CourseStat } from '@/lib/gamification';
 import { getDistributorResellers, getResellerClients, getTeamForUser } from '@/lib/organizations';
+import { getSystemsForUser, toAccountInstallation } from '@/lib/client-systems';
+import { getVisibleSitesForUser, toAccountSite } from '@/lib/sites';
 import type { AccountType } from '@/data/account-types';
 import type { ClientSystem } from '@/components/account-systems';
 
@@ -221,7 +223,10 @@ export default async function AccountHubRoute() {
       const byName = new Map(clients.map((c) => [c.name.toLowerCase(), c] as const));
       for (const l of linked) {
         const key = l.name.toLowerCase();
-        if (!byName.has(key)) byName.set(key, { name: l.name, country: l.country, presses: 0, eligible: 0, open: 0 });
+        const cur = byName.get(key) ?? { name: l.name, country: l.country, presses: 0, eligible: 0, open: 0 };
+        cur.systems = l.systems;
+        cur.updates = l.updates;
+        byName.set(key, cur);
       }
       clients = [...byName.values()];
     }
@@ -231,9 +236,20 @@ export default async function AccountHubRoute() {
   const teamP = getTeamForUser(user.id);
   const networkResellersP =
     accountType === 'distributor' ? getDistributorResellers(user.id) : Promise.resolve([]);
+  // "Mon système" — the installed base (license, AnyDesk, updates) the
+  // Rutherford team maintains on the user's organization.
+  const installationsP = getSystemsForUser(user.id).then((rows) => rows.map(toAccountInstallation));
 
-  const [{ status: supportStatus, newMessage: supportNewMessage }, resellerClients, team, networkResellers] =
-    await Promise.all([supportSummaryP, resellerClientsP, teamP, networkResellersP]);
+  const [{ status: supportStatus, newMessage: supportNewMessage }, resellerClients, team, networkResellers, installations] =
+    await Promise.all([supportSummaryP, resellerClientsP, teamP, networkResellersP, installationsP]);
+
+  // Plants (usines) the user may see — owners/admins see all their org's sites,
+  // other members are narrowed by any site_members restriction.
+  const orgId = team.org?.id ?? null;
+  const canManageOrg = team.myRole === 'owner' || team.myRole === 'admin';
+  const sites = orgId
+    ? (await getVisibleSitesForUser(user.id, orgId, canManageOrg)).map(toAccountSite)
+    : [];
 
   return (
     <AccountHub
@@ -265,6 +281,8 @@ export default async function AccountHubRoute() {
       resume={resume}
       resellerClients={resellerClients}
       systems={systems}
+      installations={installations}
+      sites={sites}
     />
   );
 }

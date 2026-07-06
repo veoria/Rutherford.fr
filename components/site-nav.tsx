@@ -161,7 +161,8 @@ export function SiteNav({ current = 'home' }: SiteNavProps) {
           <a className={current === 'support' ? 'is-current' : undefined} href={lhref('/support')} onClick={() => setOpen(false)}>
             {labels.support}
           </a>
-          <a href="mailto:contact@rutherford.fr" onClick={() => setOpen(false)}>
+          {/* Contact — burger only (also in the footer); dropped from the desktop bar to save width */}
+          <a className="mobile-nav-link mobile-nav-contact" href="mailto:contact@rutherford.fr" onClick={() => setOpen(false)}>
             {labels.contact}
           </a>
           {/* Console — burger only (desktop shows the button in header-actions) */}
@@ -205,7 +206,7 @@ export function SiteNav({ current = 'home' }: SiteNavProps) {
                 <circle cx="12" cy="8" r="4" />
                 <path d="M4 20c0-4.4 3.6-8 8-8s8 3.6 8 8" />
               </svg>
-              {labels.signIn}
+              <span className="header-account-cta-label">{labels.signIn}</span>
             </a>
           )}
         </div>
