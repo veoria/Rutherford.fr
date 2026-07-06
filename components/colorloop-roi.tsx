@@ -306,10 +306,12 @@ function sheetCostEur(profile: Profile, format: MachineFormat) {
   return (f.sheetWidthMm / 1000) * (f.sheetCutMm / 1000) * p.grammageKgM2 * p.eurPerKg;
 }
 
-function formatEur(locale: Locale, value: number) {
+type Currency = 'EUR' | 'USD';
+
+function formatEur(locale: Locale, value: number, currency: Currency = 'EUR') {
   const code =
     locale === 'fr' ? 'fr-FR' : locale === 'de' ? 'de-DE' : locale === 'it' ? 'it-IT' : locale === 'es' ? 'es-ES' : 'en-US';
-  return new Intl.NumberFormat(code, { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(value);
+  return new Intl.NumberFormat(code, { style: 'currency', currency, maximumFractionDigits: 0 }).format(value);
 }
 
 function formatNum(locale: Locale, value: number) {
@@ -318,12 +320,12 @@ function formatNum(locale: Locale, value: number) {
   return new Intl.NumberFormat(code, { maximumFractionDigits: 0 }).format(value);
 }
 
-function formatEurPrecise(locale: Locale, value: number) {
+function formatEurPrecise(locale: Locale, value: number, currency: Currency = 'EUR') {
   const code =
     locale === 'fr' ? 'fr-FR' : locale === 'de' ? 'de-DE' : locale === 'it' ? 'it-IT' : locale === 'es' ? 'es-ES' : 'en-US';
   return new Intl.NumberFormat(code, {
     style: 'currency',
-    currency: 'EUR',
+    currency,
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   }).format(value);
@@ -379,9 +381,13 @@ function SliderInput({ id, label, hint, value, min, max, step, onChange }: Slide
 
 const roundTo = (value: number, step: number) => Math.round(value / step) * step;
 
-export function ColorLoopROI() {
+// currency='USD' relabels the calculator for US audiences (go.colorloop.ai):
+// same reference figures presented in $, close enough at EUR/USD parity for
+// an estimate the disclaimer already frames as indicative.
+export function ColorLoopROI({ currency = 'EUR' }: { currency?: Currency }) {
   const { locale } = useLanguage();
   const t = COPY[locale];
+  const sym = currency === 'USD' ? '$' : '€';
 
   // Defaults = Packaging carton × B1 × 6 colors (Rutherford's core audience).
   const [profile, setProfile] = useState<Profile>('packaging');
@@ -408,7 +414,7 @@ export function ColorLoopROI() {
   const fmt = FORMATS[machineFormat];
   const profileData = PROFILES[profile];
   const sheetCost = sheetCostEur(profile, machineFormat);
-  const paperNote = `${formatNum(locale, profileData.grammageKgM2 * 1000)} g/m² · ${formatNum(locale, profileData.eurPerKg * 1000)} €/t`;
+  const paperNote = `${formatNum(locale, profileData.grammageKgM2 * 1000)} g/m² · ${formatNum(locale, profileData.eurPerKg * 1000)} ${sym}/t`;
 
   const result = useMemo(() => {
     const calagesYear = PRODUCTION_DAYS_PER_YEAR * calages;
@@ -487,7 +493,7 @@ export function ColorLoopROI() {
           <p className="roi-sheet-note">
             {t.machine.sheetNote(
               `${formatNum(locale, fmt.sheetCutMm)} × ${formatNum(locale, fmt.sheetWidthMm)} mm`,
-              formatEurPrecise(locale, sheetCost),
+              formatEurPrecise(locale, sheetCost, currency),
               paperNote
             )}
           </p>
@@ -523,7 +529,7 @@ export function ColorLoopROI() {
           />
           <SliderInput
             id="roi-cout"
-            label={t.inputs.coutPresse.label}
+            label={t.inputs.coutPresse.label.replace('(€)', `(${sym})`)}
             hint={t.inputs.coutPresse.hint}
             value={coutPresse}
             min={50}
@@ -538,10 +544,10 @@ export function ColorLoopROI() {
           {/* hero figure: normalise the locale's narrow no-break space to a plain
               space so the big number reads clearly, e.g. "122 267 €" */}
           <div className="colorloop-roi-result-total">
-            {formatEur(locale, result.total).replace(/[\u202f\u00a0]/g, ' ')}
+            {formatEur(locale, result.total, currency).replace(/[\u202f\u00a0]/g, ' ')}
           </div>
           <p className="colorloop-roi-result-month">
-            ≈ {formatEur(locale, result.total / 12)} {t.table.perMonth}
+            ≈ {formatEur(locale, result.total / 12, currency)} {t.table.perMonth}
           </p>
 
           <div className="colorloop-roi-breakdown">
@@ -552,7 +558,7 @@ export function ColorLoopROI() {
                   {formatNum(locale, result.sheetsSaved)} {t.table.sheets}
                 </small>
               </span>
-              <span className="colorloop-roi-brk-val">{formatEur(locale, result.paperEur)}</span>
+              <span className="colorloop-roi-brk-val">{formatEur(locale, result.paperEur, currency)}</span>
             </div>
             <div className="colorloop-roi-brk-row">
               <span className="colorloop-roi-brk-key">
@@ -561,7 +567,7 @@ export function ColorLoopROI() {
                   {formatNum(locale, result.hoursSaved)} {t.table.hours}
                 </small>
               </span>
-              <span className="colorloop-roi-brk-val">{formatEur(locale, result.pressEur)}</span>
+              <span className="colorloop-roi-brk-val">{formatEur(locale, result.pressEur, currency)}</span>
             </div>
           </div>
 

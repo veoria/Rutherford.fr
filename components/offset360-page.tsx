@@ -194,7 +194,7 @@ export function Offset360Page({ colorloopFocus = false }: { colorloopFocus?: boo
       <section className="o360-section">
         <div className="o360-narrow">
           {colorloopFocus ? (
-            <span className="o360-hero-logo">
+            <span className="o360-hero-logo o360-hero-logo-cl">
               <img src="/images/colorloop-logo-black.png" alt="ColorLoop" />
             </span>
           ) : (
@@ -362,9 +362,10 @@ export function Offset360Page({ colorloopFocus = false }: { colorloopFocus?: boo
             ))}
           </div>
         </div>
-        {/* Interactive ROI calculator, dark-glass treatment to match the band */}
+        {/* Interactive ROI calculator, dark-glass treatment to match the band.
+            US audience on the colorloop.ai domain sees dollars. */}
         <div className="o360-container o360-roi o360-reveal">
-          <ColorLoopROI />
+          <ColorLoopROI currency={colorloopFocus && locale === 'en' ? 'USD' : 'EUR'} />
         </div>
       </section>
 

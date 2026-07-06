@@ -28,6 +28,11 @@
   display: block;
 }
 
+/* ColorLoop-first variant: the ColorLoop wordmark leads, 30% larger */
+.o360-hero-logo-cl img {
+  height: 23px;
+}
+
 .o360-hero-logo:hover {
   opacity: 0.7;
 }
@@ -35,6 +40,10 @@
 @media (min-width: 720px) {
   .o360-hero-logo img {
     height: 22px;
+  }
+
+  .o360-hero-logo-cl img {
+    height: 29px;
   }
 }
 
