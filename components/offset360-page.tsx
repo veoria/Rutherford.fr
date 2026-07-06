@@ -202,7 +202,7 @@ export function Offset360Page({ colorloopFocus = false }: { colorloopFocus?: boo
               <img src="/images/xrite-logo-black.png" alt="X-Rite" />
             </a>
           )}
-          <h1 className="o360-h1">{colorloopFocus ? 'ColorLoop' : 'Offset360'}</h1>
+          <h1 className="o360-h1">{colorloopFocus ? 'ColorLoop.ai' : 'Offset360'}</h1>
           <p className="o360-lede">{colorloopFocus ? t.colorloop.heroLede : t.heroLede}</p>
           <div className="o360-cta-row">
             <a className="o360-btn o360-btn-primary" href="#film">{t.watchFilm}</a>
