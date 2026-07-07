@@ -99,7 +99,7 @@ var STR={
 var CV='https://rutherford.fr/console-validation',AC='https://rutherford.fr/academy',RO='https://rutherford.fr/roi',CL='https://go.colorloop.ai/',BLOG='https://rutherford.fr/blog/',VID='https://rutherford.fr/videos/colorloop-preview.mp4';
 
 var DATA=[
- {hero:'heroClosed',slug:'closed-loop-color-control-offset-guide',chip:{en:'Photo',fr:'Photo'},
+ {hero:'heroClosed',w:442,slug:'closed-loop-color-control-offset-guide',chip:{en:'Photo',fr:'Photo'},
   en:{kick:'ColorLoop education',h1:'Closed-loop color,<br>explained simply',lede:'Measure, compare, correct — three moves, one loop. See how ColorLoop keeps your press stable, makeready after makeready.',read:'Read the full guide'},
   fr:{kick:'Pédagogie ColorLoop',h1:'Le closed-loop,<br>simplement',lede:'Mesurer, comparer, corriger — trois gestes, une boucle. ColorLoop garde la couleur de votre presse stable, calage après calage.',read:'Lire le guide'}},
  {hero:'heroMakeready',slug:'reduce-makeready-waste-offset-press',chip:{en:'Animated GIF',fr:'GIF animé'},
@@ -129,7 +129,7 @@ function card(d,i,lang){
       '<p class="nl-kick">'+t.kick+'</p>'+
       '<h1 class="nl-h1">'+t.h1+'</h1>'+
       '<p class="nl-lede">'+t.lede+'</p>'+
-      '<div class="nl-hero"><a href="'+BLOG+d.slug+'" target="_blank" rel="noreferrer"><img src="'+IMG[d.hero]+'" alt=""></a>'+play+'</div>'+
+      '<div class="nl-hero"'+(d.w?' style="max-width:'+d.w+'px"':'')+'><a href="'+BLOG+d.slug+'" target="_blank" rel="noreferrer"><img src="'+IMG[d.hero]+'" alt=""></a>'+play+'</div>'+
       watch+
       '<div class="nl-btns">'+A(CV,'nl-btn pri',s.primary)+A(BLOG+d.slug,'nl-btn sec',t.read)+'</div>'+
       '<div class="nl-card"><div class="nl-cols">'+
