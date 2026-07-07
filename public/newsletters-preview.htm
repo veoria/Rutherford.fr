@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Newsletters ColorLoop — preview</title>
+  <style>
+    :root { --bg:#e9e9e4; --card:#ffffff; --ink:#1d1d1f; --muted:#6b6b70; --blue:#0071e3; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--bg); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif; color:var(--ink); }
+    header { text-align:center; padding:40px 20px 8px; }
+    header h1 { margin:0 0 6px; font-size:26px; letter-spacing:-0.5px; }
+    header p { margin:0; color:var(--muted); font-size:15px; }
+    .tabs { display:flex; gap:8px; justify-content:center; padding:18px 20px 6px; position:sticky; top:0; background:var(--bg); z-index:5; }
+    .tabs button { border:0; background:#d7d7d1; color:#333; font-size:14px; font-weight:600; padding:9px 18px; border-radius:999px; cursor:pointer; }
+    .tabs button.active { background:var(--blue); color:#fff; }
+    .wrap { max-width:680px; margin:0 auto; padding:10px 16px 60px; }
+    .item { margin:26px 0 8px; }
+    .label { display:flex; flex-wrap:wrap; align-items:center; gap:10px; margin:0 4px 10px; }
+    .num { background:var(--ink); color:#fff; font-size:13px; font-weight:700; width:26px; height:26px; border-radius:50%; display:flex; align-items:center; justify-content:center; }
+    .label b { font-size:16px; }
+    .chip { font-size:12px; font-weight:600; color:var(--blue); background:#eaf3fe; padding:3px 10px; border-radius:999px; }
+    .label a { margin-left:auto; font-size:13px; color:var(--blue); text-decoration:none; font-weight:600; }
+    .frame { background:var(--card); border-radius:16px; overflow:hidden; box-shadow:0 6px 24px rgba(0,0,0,0.08); }
+    iframe { width:100%; border:0; display:block; }
+    .hint { text-align:center; color:var(--muted); font-size:13px; padding:6px 20px 0; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Newsletters éducatives ColorLoop</h1>
+    <p>5 numéros pédagogiques · CTA « Rutherford Check » · Academy · sans X-Rite</p>
+  </header>
+
+  <div class="tabs">
+    <button id="tab-en" class="active" onclick="setLang('en')">English</button>
+    <button id="tab-fr" onclick="setLang('fr')">Français</button>
+  </div>
+  <p class="hint">Fais défiler pour tout lire à la suite. Bascule EN / FR avec les boutons.</p>
+
+  <div class="wrap" id="wrap"></div>
+
+  <script>
+    var DATA = [
+      { key:'closed-loop', hero:'Photo',           en:'Closed-loop color, explained simply',   fr:'Le closed-loop, expliqué simplement' },
+      { key:'makeready',   hero:'GIF animé',        en:'10 levers to cut makeready waste',       fr:'10 leviers pour réduire la gâche' },
+      { key:'deltae',      hero:'Vidéo (poster + ▶)', en:'DeltaE: what tolerance to aim for?',    fr:'DeltaE : quelle tolérance viser ?' },
+      { key:'g7-iso',      hero:'Photo + comparatif', en:'G7 or ISO 12647? (or both)',           fr:'G7 ou ISO 12647 ? (ou les deux)' },
+      { key:'cip3',        hero:'Capture produit',  en:'CIP3/CIP4 presetting',                   fr:'CIP3/CIP4 : le presetting' }
+    ];
+    var lang = 'en';
+
+    function fit(f){ try { f.style.height = (f.contentWindow.document.body.scrollHeight + 4) + 'px'; } catch(e){ f.style.height = '2600px'; } }
+
+    function render(){
+      var wrap = document.getElementById('wrap');
+      wrap.innerHTML = '';
+      DATA.forEach(function(d, i){
+        var src = '/newsletter-edu-' + d.key + '-' + lang + '-preview.htm';
+        var item = document.createElement('div');
+        item.className = 'item';
+        item.innerHTML =
+          '<div class="label">' +
+            '<span class="num">' + (i+1) + '</span>' +
+            '<b>' + (lang === 'en' ? d.en : d.fr) + '</b>' +
+            '<span class="chip">' + d.hero + '</span>' +
+            '<a href="' + src + '" target="_blank" rel="noreferrer">Ouvrir en plein écran &rarr;</a>' +
+          '</div>' +
+          '<div class="frame"><iframe src="' + src + '" scrolling="no" onload="fit(this)"></iframe></div>';
+        wrap.appendChild(item);
+      });
+    }
+
+    function setLang(l){
+      lang = l;
+      document.getElementById('tab-en').className = l === 'en' ? 'active' : '';
+      document.getElementById('tab-fr').className = l === 'fr' ? 'active' : '';
+      render();
+    }
+
+    render();
+    // re-fit after images/fonts settle
+    window.addEventListener('load', function(){
+      setTimeout(function(){ document.querySelectorAll('iframe').forEach(fit); }, 1200);
+    });
+  </script>
+</body>
+</html>
