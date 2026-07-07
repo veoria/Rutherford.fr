@@ -96,7 +96,7 @@ var STR={
     clT:'Rutherford ColorLoop — une boucle fermée.',clP:'Contrôle couleur closed-loop, avec votre presse. De bout en bout.',clC:'Découvrir ColorLoop',
     foot:'Rutherford.fr · Expertise offset, logiciel et technologie · ColorLoop'}
 };
-var CV='https://rutherford.fr/console-validation',AC='https://rutherford.fr/academy',RO='https://rutherford.fr/roi',CL='https://go.colorloop.ai/',BLOG='https://rutherford.fr/blog/',VID='https://rutherford.fr/videos/colorloop-preview.mp4';
+var CV='https://rutherford.fr/console-validation',AC='https://rutherford.fr/academy',RO='https://rutherford.fr/roi',CL='https://go.colorloop.ai/',BLOG='https://rutherford.fr/blog/';
 
 var DATA=[
  {hero:'heroClosed',slug:'closed-loop-color-control-offset-guide',chip:{en:'Photo',fr:'Photo'},
@@ -105,7 +105,7 @@ var DATA=[
  {hero:'heroMakeready',slug:'reduce-makeready-waste-offset-press',chip:{en:'Animated GIF',fr:'GIF animé'},
   en:{kick:'Education · Waste',h1:'Cut the waste<br>at makeready',lede:'Makeready waste eats your margin on every job. Ten concrete levers to cut it down — and measure it.',read:'Read the 10 levers'},
   fr:{kick:'Pédagogie · Gâche',h1:'Réduire la gâche<br>au calage',lede:'La gâche au calage grignote votre marge à chaque OT. Dix leviers concrets pour la réduire — et la mesurer.',read:'Voir les 10 leviers'}},
- {hero:'heroDeltae',slug:'delta-e-tolerance-print-guide',video:true,chip:{en:'Video',fr:'Vidéo'},
+ {hero:'heroDeltae',slug:'delta-e-tolerance-print-guide',chip:{en:'Photo',fr:'Photo'},
   en:{kick:'Education · DeltaE',h1:'DeltaE: what<br>tolerance to aim for',lede:'Process or brand colors — which DeltaE is realistic in offset, and how to hold it, shift after shift.',read:'Read the article'},
   fr:{kick:'Pédagogie · DeltaE',h1:'DeltaE : quelle<br>tolérance viser',lede:'Couleurs process ou de marque — quel DeltaE est réaliste en offset, et comment le tenir, équipe après équipe.',read:"Lire l'article"}},
  {hero:'heroG7',slug:'g7-vs-iso-12647-offset-color',chip:{en:'Photo',fr:'Photo'},
@@ -120,8 +120,6 @@ function A(href,cls,txt){return '<a class="'+cls+'" href="'+href+'" target="_bla
 
 function card(d,i,lang){
   var t=d[lang],s=STR[lang];
-  var play=d.video?'<div class="nl-play"><span>&#9654;</span></div>':'';
-  var watch=d.video?'<div class="nl-btns"><a class="nl-btn sec" style="min-width:0;padding:12px 26px;font-size:15px" href="'+VID+'" target="_blank" rel="noreferrer">'+s.watch+'</a></div>':'';
   return '<div class="item">'+
     '<div class="label"><span class="num">'+(i+1)+'</span><b>'+t.h1.replace(/<br>/g,' ')+'</b><span class="chip">'+d.chip[lang]+'</span></div>'+
     '<div class="nl"><div class="nl-in">'+
@@ -129,8 +127,7 @@ function card(d,i,lang){
       '<p class="nl-kick">'+t.kick+'</p>'+
       '<h1 class="nl-h1">'+t.h1+'</h1>'+
       '<p class="nl-lede">'+t.lede+'</p>'+
-      '<div class="nl-hero"'+(d.w?' style="max-width:'+d.w+'px"':'')+'><a href="'+BLOG+d.slug+'" target="_blank" rel="noreferrer"><img src="'+IMG[d.hero]+'" alt=""></a>'+play+'</div>'+
-      watch+
+      '<div class="nl-hero"'+(d.w?' style="max-width:'+d.w+'px"':'')+'><a href="'+BLOG+d.slug+'" target="_blank" rel="noreferrer"><img src="'+IMG[d.hero]+'" alt=""></a></div>'+
       '<div class="nl-btns">'+A(CV,'nl-btn pri',s.primary)+A(BLOG+d.slug,'nl-btn sec',t.read)+'</div>'+
       '<div class="nl-card"><div class="nl-cols">'+
         '<div class="nl-col"><img src="'+IMG.icoQualify+'" alt=""><h3>'+s.p1t+'</h3><p>'+s.p1d+'</p>'+A(CV,'',s.p1a)+'</div>'+
