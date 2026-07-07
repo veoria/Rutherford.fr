@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Rutherford — educational newsletters</title>
+<style>
+  body{font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;color:#1d1d1f;background:#e9e9e4;margin:0;padding:0 0 60px;}
+  .hd{text-align:center;padding:40px 20px 6px;}
+  .hd h1{margin:0 0 6px;font-size:26px;letter-spacing:-0.5px;}
+  .hd p{margin:0;color:#6b6b70;font-size:15px;}
+  .tabs{display:flex;gap:8px;justify-content:center;padding:16px 20px 4px;position:sticky;top:0;background:#e9e9e4;z-index:5;}
+  .tabs button{border:0;background:#d7d7d1;color:#333;font-size:14px;font-weight:600;padding:9px 20px;border-radius:999px;cursor:pointer;}
+  .tabs button.on{background:#0071e3;color:#fff;}
+  .hint{text-align:center;color:#8a8a90;font-size:12.5px;padding:4px 20px 0;}
+  .list{max-width:640px;margin:0 auto;padding:14px 16px 0;}
+  .item{margin:26px 0;}
+  .label{display:flex;align-items:center;gap:10px;margin:0 4px 10px;}
+  .num{background:#1d1d1f;color:#fff;font-size:13px;font-weight:700;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex:none;}
+  .label b{font-size:15px;}
+  .chip{font-size:11.5px;font-weight:600;color:#0071e3;background:#e7f1fd;padding:3px 10px;border-radius:999px;margin-left:auto;}
+  .nl{background:#f5f5f7;border-radius:20px;overflow:hidden;box-shadow:0 8px 30px rgba(0,0,0,.10);}
+  .nl-in{max-width:600px;margin:0 auto;padding:0 0 22px;text-align:center;}
+  .nl-logo{width:150px;margin:26px auto 0;display:block;}
+  .nl-kick{margin:30px 0 10px;font-size:12px;font-weight:700;letter-spacing:1.6px;text-transform:uppercase;color:#0071e3;}
+  .nl-h1{margin:0 34px;font-size:40px;line-height:44px;font-weight:600;letter-spacing:-1.1px;color:#1d1d1f;}
+  .nl-lede{margin:16px 34px 0;font-size:18px;line-height:26px;color:#6e6e73;}
+  .nl-hero{position:relative;width:calc(100% - 48px);max-width:552px;margin:26px auto 0;}
+  .nl-hero img{width:100%;height:auto;border-radius:16px;display:block;}
+  .nl-play{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;}
+  .nl-play span{width:64px;height:64px;border-radius:50%;background:rgba(0,0,0,.62);color:#fff;display:flex;align-items:center;justify-content:center;font-size:24px;padding-left:5px;}
+  .nl-btns{margin:22px 24px 0;display:flex;flex-direction:column;align-items:center;gap:12px;}
+  .nl-btn{display:inline-block;min-width:240px;text-align:center;font-size:16px;font-weight:600;padding:14px 0;border-radius:980px;text-decoration:none;}
+  .nl-btn.pri{background:#0071e3;color:#fff;}
+  .nl-btn.sec{background:#1d1d1f;color:#fff;}
+  .nl-card{background:#fff;border-radius:18px;margin:30px 24px 0;padding:32px 20px;}
+  .nl-cols{display:flex;gap:8px;}
+  .nl-col{flex:1;text-align:center;padding:0 6px;}
+  .nl-col img{width:48px;height:48px;margin:0 auto 12px;display:block;}
+  .nl-col h3{margin:0 0 6px;font-size:16px;font-weight:600;color:#1d1d1f;}
+  .nl-col p{margin:0 0 9px;font-size:13.5px;line-height:20px;color:#6e6e73;}
+  .nl-col a{font-size:13.5px;font-weight:600;color:#0071e3;text-decoration:none;}
+  .nl-cl{background:#fff;border-radius:18px;overflow:hidden;margin:14px 24px 0;}
+  .nl-cl img{width:100%;display:block;}
+  .nl-cl-b{padding:30px 32px;text-align:center;}
+  .nl-cl-b h3{margin:0;font-size:23px;line-height:28px;font-weight:600;color:#1d1d1f;letter-spacing:-.3px;}
+  .nl-cl-b p{margin:12px 0 20px;font-size:15px;line-height:23px;color:#6e6e73;}
+  .nl-cl-b a{display:inline-block;background:#0071e3;color:#fff;font-size:16px;font-weight:600;padding:13px 28px;border-radius:980px;text-decoration:none;}
+  .nl-soc{margin:26px 0 0;}
+  .nl-soc a{display:inline-block;margin:0 7px;}
+  .nl-soc img{width:28px;height:28px;vertical-align:middle;}
+  .nl-foot{margin:20px 34px 0;font-size:12.5px;line-height:19px;color:#9a9a9f;}
+  @media (max-width:560px){ .nl-h1{font-size:31px;line-height:35px;} .nl-cols{flex-direction:column;gap:22px;} }
+  @media (prefers-color-scheme:dark){
+    body{background:#1a1a1c;color:#e8e8ea;}
+    .tabs{background:#1a1a1c;} .hd p{color:#a0a0a6;} .tabs button{background:#333;color:#ddd;} .label b{color:#e8e8ea;}
+  }
+</style>
+</head>
+<body>
+  <div class="hd">
+    <h1>Rutherford — educational newsletters</h1>
+    <p>5 issues · Rutherford Check · Academy · ColorLoop focus</p>
+  </div>
+  <div class="tabs">
+    <button id="t-en" class="on" onclick="setLang('en')">English</button>
+    <button id="t-fr" onclick="setLang('fr')">Français</button>
+  </div>
+  <div class="hint">Scroll to read all five. Buttons and links are clickable.</div>
+  <div class="list" id="list"></div>
+
+<script>
+var B='https://rutherford.fr/images/';
+var IMG={logo:B+'rutherford-logo-black.png',
+  heroClosed:B+'blog/photo-closed-loop-color-control-offset-guide.jpg',
+  heroMakeready:B+'roi-press-email.gif',
+  heroDeltae:B+'man-on-press.jpg',
+  heroG7:B+'blog/photo-g7-vs-iso-12647-offset-color.jpg',
+  heroCip3:B+'colorloop-machine.png',
+  clScreen:B+'colorloop-screen.gif',
+  icoQualify:B+'ico-qualify.png',icoTrain:B+'ico-train.png',icoRoi:B+'ico-roi.png'};
+var SOC='https://app-rsrc.getbee.io/public/resources/social-networks-icon-sets/t-only-logo-dark-gray/';
+
+var STR={
+  en:{primary:'Start Rutherford Check',watch:'&#9654; Watch ColorLoop (45s)',
+    p1t:'Rutherford Check',p1d:'Test your press eligibility, free.',p1a:'Start &rsaquo;',
+    p2t:'Academy',p2d:'Courses open to everyone.',p2a:'Explore &rsaquo;',
+    p3t:'ROI calculator',p3d:'Estimate your savings.',p3a:'Calculate &rsaquo;',
+    clT:'Rutherford ColorLoop — one closed loop.',clP:'Closed-loop color control, working with your press. End to end.',clC:'Discover ColorLoop',
+    foot:'Rutherford.fr · Offset expertise, software and technology · ColorLoop'},
+  fr:{primary:'Lancer Rutherford Check',watch:'&#9654; Voir ColorLoop (45s)',
+    p1t:'Rutherford Check',p1d:"Testez l'éligibilité de votre presse, gratuit.",p1a:'Démarrer &rsaquo;',
+    p2t:'Academy',p2d:'Formations ouvertes à tous.',p2a:'Découvrir &rsaquo;',
+    p3t:'Calculateur ROI',p3d:'Estimez vos économies.',p3a:'Calculer &rsaquo;',
+    clT:'Rutherford ColorLoop — une boucle fermée.',clP:'Contrôle couleur closed-loop, avec votre presse. De bout en bout.',clC:'Découvrir ColorLoop',
+    foot:'Rutherford.fr · Expertise offset, logiciel et technologie · ColorLoop'}
+};
+var CV='https://rutherford.fr/console-validation',AC='https://rutherford.fr/academy',RO='https://rutherford.fr/roi',CL='https://go.colorloop.ai/',BLOG='https://rutherford.fr/blog/',VID='https://rutherford.fr/videos/colorloop-preview.mp4';
+
+var DATA=[
+ {hero:'heroClosed',slug:'closed-loop-color-control-offset-guide',chip:{en:'Photo',fr:'Photo'},
+  en:{kick:'ColorLoop education',h1:'Closed-loop color,<br>explained simply',lede:'Measure, compare, correct — three moves, one loop. See how ColorLoop keeps your press stable, makeready after makeready.',read:'Read the full guide'},
+  fr:{kick:'Pédagogie ColorLoop',h1:'Le closed-loop,<br>simplement',lede:'Mesurer, comparer, corriger — trois gestes, une boucle. ColorLoop garde la couleur de votre presse stable, calage après calage.',read:'Lire le guide'}},
+ {hero:'heroMakeready',slug:'reduce-makeready-waste-offset-press',chip:{en:'Animated GIF',fr:'GIF animé'},
+  en:{kick:'Education · Waste',h1:'Cut the waste<br>at makeready',lede:'Makeready waste eats your margin on every job. Ten concrete levers to cut it down — and measure it.',read:'Read the 10 levers'},
+  fr:{kick:'Pédagogie · Gâche',h1:'Réduire la gâche<br>au calage',lede:'La gâche au calage grignote votre marge à chaque OT. Dix leviers concrets pour la réduire — et la mesurer.',read:'Voir les 10 leviers'}},
+ {hero:'heroDeltae',slug:'delta-e-tolerance-print-guide',video:true,chip:{en:'Video',fr:'Vidéo'},
+  en:{kick:'Education · DeltaE',h1:'DeltaE: what<br>tolerance to aim for',lede:'Process or brand colors — which DeltaE is realistic in offset, and how to hold it, shift after shift.',read:'Read the article'},
+  fr:{kick:'Pédagogie · DeltaE',h1:'DeltaE : quelle<br>tolérance viser',lede:'Couleurs process ou de marque — quel DeltaE est réaliste en offset, et comment le tenir, équipe après équipe.',read:"Lire l'article"}},
+ {hero:'heroG7',slug:'g7-vs-iso-12647-offset-color',chip:{en:'Photo',fr:'Photo'},
+  en:{kick:'Education · Standards',h1:'G7 or ISO 12647?<br>(or both)',lede:'Two routes to standardize offset color. What really sets them apart — and how to combine them.',read:'Read the comparison'},
+  fr:{kick:'Pédagogie · Standards',h1:'G7 ou ISO 12647 ?<br>(ou les deux)',lede:'Deux routes pour standardiser la couleur offset. Ce qui les distingue vraiment — et comment les combiner.',read:'Lire la comparaison'}},
+ {hero:'heroCip3',slug:'cip3-cip4-ink-presetting-makeready',chip:{en:'Product',fr:'Produit'},
+  en:{kick:'Education · Presetting',h1:'The right ink keys,<br>from sheet one',lede:'CIP3/CIP4 presetting opens your ink keys from prepress data. Paired with closed-loop, it shortens makeready.',read:'Read the article'},
+  fr:{kick:'Pédagogie · Presetting',h1:'Les bonnes clés,<br>dès la 1re feuille',lede:"Le presetting CIP3/CIP4 ouvre vos clés d'encrage depuis les données prépresse. Couplé au closed-loop, il raccourcit le calage.",read:"Lire l'article"}}
+];
+
+function A(href,cls,txt){return '<a class="'+cls+'" href="'+href+'" target="_blank" rel="noreferrer">'+txt+'</a>';}
+
+function card(d,i,lang){
+  var t=d[lang],s=STR[lang];
+  var play=d.video?'<div class="nl-play"><span>&#9654;</span></div>':'';
+  var watch=d.video?'<div class="nl-btns"><a class="nl-btn sec" style="min-width:0;padding:12px 26px;font-size:15px" href="'+VID+'" target="_blank" rel="noreferrer">'+s.watch+'</a></div>':'';
+  return '<div class="item">'+
+    '<div class="label"><span class="num">'+(i+1)+'</span><b>'+t.h1.replace(/<br>/g,' ')+'</b><span class="chip">'+d.chip[lang]+'</span></div>'+
+    '<div class="nl"><div class="nl-in">'+
+      '<img class="nl-logo" src="'+IMG.logo+'" alt="Rutherford.fr">'+
+      '<p class="nl-kick">'+t.kick+'</p>'+
+      '<h1 class="nl-h1">'+t.h1+'</h1>'+
+      '<p class="nl-lede">'+t.lede+'</p>'+
+      '<div class="nl-hero"><a href="'+BLOG+d.slug+'" target="_blank" rel="noreferrer"><img src="'+IMG[d.hero]+'" alt=""></a>'+play+'</div>'+
+      watch+
+      '<div class="nl-btns">'+A(CV,'nl-btn pri',s.primary)+A(BLOG+d.slug,'nl-btn sec',t.read)+'</div>'+
+      '<div class="nl-card"><div class="nl-cols">'+
+        '<div class="nl-col"><img src="'+IMG.icoQualify+'" alt=""><h3>'+s.p1t+'</h3><p>'+s.p1d+'</p>'+A(CV,'',s.p1a)+'</div>'+
+        '<div class="nl-col"><img src="'+IMG.icoTrain+'" alt=""><h3>'+s.p2t+'</h3><p>'+s.p2d+'</p>'+A(AC,'',s.p2a)+'</div>'+
+        '<div class="nl-col"><img src="'+IMG.icoRoi+'" alt=""><h3>'+s.p3t+'</h3><p>'+s.p3d+'</p>'+A(RO,'',s.p3a)+'</div>'+
+      '</div></div>'+
+      '<div class="nl-cl"><img src="'+IMG.clScreen+'" alt=""><div class="nl-cl-b"><h3>'+s.clT+'</h3><p>'+s.clP+'</p>'+A(CL,'',s.clC).replace('<a ','<a style="display:inline-block;background:#0071e3;color:#fff;font-size:16px;font-weight:600;padding:13px 28px;border-radius:980px" ')+'</div></div>'+
+      '<div class="nl-soc">'+
+        '<a href="https://www.linkedin.com/company/rutherford-graphic-products-llc/" target="_blank" rel="noreferrer"><img src="'+SOC+'linkedin@2x.png" alt="LinkedIn"></a>'+
+        '<a href="https://www.instagram.com/rutherfordgraphic/" target="_blank" rel="noreferrer"><img src="'+SOC+'instagram@2x.png" alt="Instagram"></a>'+
+        '<a href="https://www.youtube.com/channel/UChiClIodg9rbuTDnInE4GmQ" target="_blank" rel="noreferrer"><img src="'+SOC+'youtube@2x.png" alt="YouTube"></a>'+
+        '<a href="https://www.tiktok.com/@rutherfordgraphic" target="_blank" rel="noreferrer"><img src="'+SOC+'tiktok@2x.png" alt="TikTok"></a>'+
+      '</div>'+
+      '<p class="nl-foot">'+s.foot+'</p>'+
+    '</div></div>'+
+  '</div>';
+}
+function render(lang){document.getElementById('list').innerHTML=DATA.map(function(d,i){return card(d,i,lang);}).join('');}
+function setLang(l){document.getElementById('t-en').className=l==='en'?'on':'';document.getElementById('t-fr').className=l==='fr'?'on':'';render(l);}
+render('en');
+</script>
+</body>
+</html>
