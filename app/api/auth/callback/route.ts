@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { createSupabaseServerClient, createSupabaseAdminClient } from '@/lib/supabase/server';
 import { accountTypeFromDomain } from '@/lib/account-type';
-import { acceptPendingInvitations, ensureSharedXriteOrg } from '@/lib/organizations';
+import { acceptPendingInvitations, autoJoinOrgByEmailDomain, ensureSharedXriteOrg } from '@/lib/organizations';
 
 export const dynamic = 'force-dynamic';
 
@@ -36,6 +36,8 @@ export async function GET(request: NextRequest) {
         if (user.email) await acceptPendingInvitations(user.id, user.email);
         // X-Rite staff share one canonical distributor org.
         if (user.email) await ensureSharedXriteOrg(user.id, user.email);
+        // Orgless colleagues join the org their company email domain maps to.
+        if (user.email) await autoJoinOrgByEmailDomain(user.id, user.email);
       }
     } catch {
       // Best-effort — never block sign-in on classification / invitations.
