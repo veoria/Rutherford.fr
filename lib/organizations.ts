@@ -192,6 +192,80 @@ export async function acceptPendingInvitations(userId: string, email: string): P
   }
 }
 
+/** The org colleagues with this company email domain belong to, or null.
+ * Matches organizations.email_domain first; falls back to the org other users
+ * of the same domain already point to (covers orgs created before the domain
+ * was stamped — e.g. an admin-created reseller org) and stamps the domain on
+ * it so the next colleague matches directly. */
+async function findOrgForCompanyDomain(
+  supabase: NonNullable<ReturnType<typeof admin>>,
+  companyDomain: string,
+  excludeUserId: string
+): Promise<string | null> {
+  const { data: existing } = await supabase
+    .from('organizations')
+    .select('id')
+    .eq('email_domain', companyDomain)
+    .maybeSingle();
+  if (existing?.id) return existing.id as string;
+
+  // Fallback: colleagues' orgs. Ambiguous (several distinct orgs) → give up.
+  const { data: list } = await supabase.auth.admin.listUsers({ perPage: 1000 });
+  const suffix = `@${companyDomain}`;
+  const colleagueIds = ((list?.users ?? []) as { id: string; email?: string | null }[])
+    .filter((u) => u.id !== excludeUserId && (u.email ?? '').toLowerCase().endsWith(suffix))
+    .map((u) => u.id);
+  if (!colleagueIds.length) return null;
+  const { data: profs } = await supabase
+    .from('profiles')
+    .select('organization_id')
+    .in('id', colleagueIds)
+    .not('organization_id', 'is', null);
+  const orgIds = Array.from(
+    new Set(((profs ?? []) as { organization_id: string | null }[]).map((p) => p.organization_id).filter(Boolean))
+  ) as string[];
+  if (orgIds.length !== 1) return null;
+  const orgId = orgIds[0];
+
+  // Never adopt an org already claimed by another company domain.
+  const { data: org } = await supabase.from('organizations').select('email_domain').eq('id', orgId).maybeSingle();
+  if (!org || (org.email_domain != null && org.email_domain !== companyDomain)) return null;
+  if (org.email_domain == null) {
+    await supabase.from('organizations').update({ email_domain: companyDomain }).eq('id', orgId).is('email_domain', null);
+  }
+  return orgId;
+}
+
+/** On sign-in: a user with no organization joins the one their company email
+ * domain maps to (never creates one — that stays an onboarding concern).
+ * Covers colleagues invited out-of-band, e.g. support@ joining the reseller
+ * org its teammates already belong to. Best-effort. */
+export async function autoJoinOrgByEmailDomain(userId: string, email: string): Promise<void> {
+  const supabase = admin();
+  if (!supabase) return;
+  const companyDomain = companyDomainFromEmail(email);
+  if (!companyDomain) return;
+  try {
+    const { data: prof } = await supabase
+      .from('profiles')
+      .select('organization_id')
+      .eq('id', userId)
+      .maybeSingle();
+    if (!prof || prof.organization_id) return;
+    const orgId = await findOrgForCompanyDomain(supabase, companyDomain, userId);
+    if (!orgId) return;
+    await supabase
+      .from('organization_members')
+      .upsert(
+        { org_id: orgId, user_id: userId, role: 'member', status: 'active' },
+        { onConflict: 'org_id,user_id', ignoreDuplicates: true }
+      );
+    await supabase.from('profiles').update({ organization_id: orgId }).eq('id', userId);
+  } catch {
+    /* best-effort */
+  }
+}
+
 const XRITE_ORG_NAME = 'X-Rite PANTONE';
 
 /** X-Rite staff (@xrite.com) share one canonical distributor organization so
@@ -270,12 +344,8 @@ export async function ensurePersonalOrg(userId: string): Promise<string | null> 
       };
 
       if (companyDomain) {
-        const { data: existing } = await supabase
-          .from('organizations')
-          .select('id')
-          .eq('email_domain', companyDomain)
-          .maybeSingle();
-        if (existing?.id) return joinExisting(existing.id as string);
+        const found = await findOrgForCompanyDomain(supabase, companyDomain, userId);
+        if (found) return joinExisting(found);
       }
 
       const name = (
@@ -767,6 +837,52 @@ export async function adminRemoveMember(orgId: string, memberUserId: string): Pr
       .delete()
       .eq('org_id', orgId)
       .eq('user_id', memberUserId);
+    return !error;
+  } catch {
+    return false;
+  }
+}
+
+/** Admin: move a user into an org (or detach them with null). Replaces their
+ * existing memberships — a user belongs to one org at a time. Joins as
+ * 'member', or 'owner' when the org has no active member yet. */
+export async function adminSetUserOrg(userId: string, orgId: string | null): Promise<boolean> {
+  const supabase = admin();
+  if (!supabase || !userId) return false;
+  try {
+    if (orgId) {
+      const { data: org } = await supabase.from('organizations').select('id').eq('id', orgId).maybeSingle();
+      if (!org) return false;
+    }
+    const { data: current } = await supabase
+      .from('organization_members')
+      .select('org_id')
+      .eq('user_id', userId);
+    let alreadyIn = false;
+    for (const m of (current ?? []) as { org_id: string }[]) {
+      if (m.org_id === orgId) alreadyIn = true;
+      else await supabase.from('organization_members').delete().eq('org_id', m.org_id).eq('user_id', userId);
+    }
+    if (orgId) {
+      if (alreadyIn) {
+        // Keep the existing role, just make sure the membership is active.
+        await supabase
+          .from('organization_members')
+          .update({ status: 'active' })
+          .eq('org_id', orgId)
+          .eq('user_id', userId);
+      } else {
+        const { count } = await supabase
+          .from('organization_members')
+          .select('user_id', { count: 'exact', head: true })
+          .eq('org_id', orgId)
+          .eq('status', 'active');
+        await supabase
+          .from('organization_members')
+          .insert({ org_id: orgId, user_id: userId, role: (count ?? 0) > 0 ? 'member' : 'owner', status: 'active' });
+      }
+    }
+    const { error } = await supabase.from('profiles').update({ organization_id: orgId }).eq('id', userId);
     return !error;
   } catch {
     return false;

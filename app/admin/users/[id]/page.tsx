@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { notFound, redirect } from 'next/navigation';
 import { getAdminAccess } from '@/lib/admin-access';
 import { getAdminUserDetail } from '@/lib/admin';
+import { listOrgsForAdmin } from '@/lib/organizations';
 import { AdminUserDetail } from '@/components/admin-user-detail';
 
 export const metadata: Metadata = {
@@ -23,5 +24,10 @@ export default async function AdminUserRoute({ params }: { params: { id: string 
 
   const user = await getAdminUserDetail(params.id);
   if (!user) notFound();
-  return <AdminUserDetail user={user} canManage={access.canManage} isSelf={access.userId === params.id} />;
+  const orgs = access.canManage
+    ? (await listOrgsForAdmin()).map((o) => ({ id: o.id, name: o.name, type: o.type }))
+    : [];
+  return (
+    <AdminUserDetail user={user} orgs={orgs} canManage={access.canManage} isSelf={access.userId === params.id} />
+  );
 }

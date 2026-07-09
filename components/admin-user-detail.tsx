@@ -27,6 +27,11 @@ const ACCOUNT_TYPE_LABELS: Record<AccountType, string> = {
   team: 'Équipe',
 };
 
+export type OrgOption = { id: string; name: string; type: string };
+
+const orgTypeLabel = (type: string) =>
+  ACCOUNT_TYPE_LABELS[type as AccountType] ?? type;
+
 const CV_STATUS_LABELS: Record<string, string> = {
   submitted: 'Reçue',
   in_review: 'En revue',
@@ -88,13 +93,14 @@ function Fact({ label, value }: { label: string; value: string }) {
   );
 }
 
-function ManagePanel({ user, isSelf }: { user: Detail; isSelf: boolean }) {
+function ManagePanel({ user, orgs, isSelf }: { user: Detail; orgs: OrgOption[]; isSelf: boolean }) {
   const router = useRouter();
   const [fullName, setFullName] = useState(user.name ?? '');
   const [company, setCompany] = useState(user.company ?? '');
   const [country, setCountry] = useState(user.country ?? '');
   const [jobTitle, setJobTitle] = useState(isJobTitleKey(user.jobTitle ?? '') ? (user.jobTitle as string) : '');
   const [accountType, setAccountType] = useState<AccountType>(user.accountType);
+  const [orgId, setOrgId] = useState(user.org?.id ?? '');
   const [isAdmin, setIsAdmin] = useState(user.isAdmin);
   const [suspended, setSuspended] = useState(user.suspended);
   const [busy, setBusy] = useState(false);
@@ -116,6 +122,8 @@ function ManagePanel({ user, isSelf }: { user: Detail; isSelf: boolean }) {
           job_title: jobTitle,
           account_type: accountType,
           is_admin: isAdmin,
+          // Only sent when changed — moving orgs also moves the membership.
+          ...(orgId !== (user.org?.id ?? '') ? { organization_id: orgId || null } : {}),
         }),
       });
       if (!res.ok) {
@@ -224,6 +232,17 @@ function ManagePanel({ user, isSelf }: { user: Detail; isSelf: boolean }) {
           ))}
         </select>
       </div>
+      <div className="admin-field">
+        <label>Organisation</label>
+        <select className="admin-input" value={orgId} onChange={(e) => setOrgId(e.target.value)} disabled={busy}>
+          <option value="">— Aucune —</option>
+          {orgs.map((o) => (
+            <option key={o.id} value={o.id}>
+              {o.name} · {orgTypeLabel(o.type)}
+            </option>
+          ))}
+        </select>
+      </div>
       <label className="admin-check">
         <input
           type="checkbox"
@@ -285,10 +304,12 @@ function ManagePanel({ user, isSelf }: { user: Detail; isSelf: boolean }) {
 
 export function AdminUserDetail({
   user,
+  orgs,
   canManage,
   isSelf,
 }: {
   user: Detail;
+  orgs: OrgOption[];
   canManage: boolean;
   isSelf: boolean;
 }) {
@@ -359,7 +380,7 @@ export function AdminUserDetail({
           </div>
 
           {canManage ? (
-            <ManagePanel user={user} isSelf={isSelf} />
+            <ManagePanel user={user} orgs={orgs} isSelf={isSelf} />
           ) : (
             <p className="admin-modal-section-status">Lecture seule — la gestion des comptes est réservée aux admins.</p>
           )}

@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { createSupabaseServerClient, createSupabaseAdminClient } from '@/lib/supabase/server';
 import { isAccountType } from '@/data/account-types';
 import { isJobTitleKey, isKnownCountry } from '@/data/onboarding-options';
-import { ensurePersonalOrg } from '@/lib/organizations';
+import { adminSetUserOrg, ensurePersonalOrg } from '@/lib/organizations';
 
 export const dynamic = 'force-dynamic';
 
@@ -63,18 +63,36 @@ export async function PATCH(request: NextRequest) {
     patch.is_admin = body.is_admin;
   }
 
-  if (Object.keys(patch).length === 0) {
+  // Explicit org (re)assignment — '' or null detaches, an org id moves the
+  // user there. Handled apart from the profile patch: it also moves the
+  // organization_members row.
+  const setOrg = 'organization_id' in body;
+  const orgId =
+    typeof body.organization_id === 'string' && body.organization_id ? body.organization_id : null;
+  if (setOrg && body.organization_id != null && typeof body.organization_id !== 'string') {
+    return NextResponse.json({ error: 'bad_organization' }, { status: 400 });
+  }
+
+  if (Object.keys(patch).length === 0 && !setOrg) {
     return NextResponse.json({ error: 'nothing_to_update' }, { status: 400 });
   }
-  patch.updated_at = new Date().toISOString();
 
-  const admin = createSupabaseAdminClient();
-  const { error } = await admin.from('profiles').update(patch).eq('id', id);
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (Object.keys(patch).length > 0) {
+    patch.updated_at = new Date().toISOString();
+    const admin = createSupabaseAdminClient();
+    const { error } = await admin.from('profiles').update(patch).eq('id', id);
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  }
 
   // Reflect a type change in the back-office org list: ensure the user has an
   // organization and align its type when they own it.
   if (typeof patch.account_type === 'string') await ensurePersonalOrg(id);
+
+  // Applied last so an explicit choice wins over ensurePersonalOrg.
+  if (setOrg) {
+    const ok = await adminSetUserOrg(id, orgId);
+    if (!ok) return NextResponse.json({ error: 'org_failed' }, { status: 500 });
+  }
 
   return NextResponse.json({ ok: true });
 }
