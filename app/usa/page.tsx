@@ -4,15 +4,20 @@ import { REGIONS } from '@/data/regions';
 
 const region = REGIONS['usa'];
 
+// US market SEO builds on the international domain (go.colorloop.ai), not the
+// .fr: the page is served on both hosts, the canonical consolidates on
+// colorloop. Mirror-image of /offset360, whose canonical stays on rutherford.fr.
+const CANONICAL = `https://go.colorloop.ai/${region.slug}`;
+
 export const metadata: Metadata = {
   title: region.metaTitle,
   description: region.metaDescription,
   keywords: region.keywords,
-  alternates: { canonical: `https://rutherford.fr/${region.slug}` },
+  alternates: { canonical: CANONICAL },
   openGraph: {
     title: region.metaTitle,
     description: region.metaDescription,
-    url: `https://rutherford.fr/${region.slug}`,
+    url: CANONICAL,
     type: 'website',
   },
 };
@@ -23,7 +28,7 @@ const JSON_LD = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
   name: 'Rutherford',
-  url: 'https://rutherford.fr/usa',
+  url: 'https://go.colorloop.ai/usa',
   foundingDate: '2000',
   description:
     'Closed-loop color control and CIP3/CIP4 ink presetting for offset printers in the United States. G7-anchored, retrofit to all press brands, working with X-Rite and MeasureColor measurement.',

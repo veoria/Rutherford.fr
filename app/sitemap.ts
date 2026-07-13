@@ -53,7 +53,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
   );
 
   // Region conversion hubs (English-only for now → no hreflang language alternates).
-  const regionRoutes: MetadataRoute.Sitemap = ALL_REGIONS.map((region) => ({
+  // /usa and /canada canonicalize to go.colorloop.ai (US market builds SEO on the
+  // international domain), so they are left out of this rutherford.fr sitemap:
+  // a sitemap should only list canonical URLs of its own host.
+  const COLORLOOP_CANONICAL_REGIONS = new Set(['usa', 'canada']);
+  const regionRoutes: MetadataRoute.Sitemap = ALL_REGIONS.filter(
+    (region) => !COLORLOOP_CANONICAL_REGIONS.has(region.slug),
+  ).map((region) => ({
     url: `${BASE}/${region.slug}`,
     changeFrequency: 'monthly',
     priority: 0.8,

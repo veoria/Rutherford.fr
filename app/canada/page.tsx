@@ -4,15 +4,18 @@ import { REGIONS } from '@/data/regions';
 
 const region = REGIONS['canada'];
 
+// Like /usa: North America SEO consolidates on the international domain.
+const CANONICAL = `https://go.colorloop.ai/${region.slug}`;
+
 export const metadata: Metadata = {
   title: region.metaTitle,
   description: region.metaDescription,
   keywords: region.keywords,
-  alternates: { canonical: `https://rutherford.fr/${region.slug}` },
+  alternates: { canonical: CANONICAL },
   openGraph: {
     title: region.metaTitle,
     description: region.metaDescription,
-    url: `https://rutherford.fr/${region.slug}`,
+    url: CANONICAL,
     type: 'website',
   },
 };
@@ -21,7 +24,7 @@ const JSON_LD = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
   name: 'Rutherford',
-  url: 'https://rutherford.fr/canada',
+  url: 'https://go.colorloop.ai/canada',
   foundingDate: '2000',
   description:
     'Closed-loop color control and CIP3/CIP4 ink presetting for offset printers in Canada. G7-anchored, retrofit to all press brands, support in English and French.',
