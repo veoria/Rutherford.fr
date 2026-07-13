@@ -352,7 +352,7 @@ export function NorthAmericaPage({ country }: { country: Country }) {
 
   return (
     <main className="page-shell o360" ref={rootRef}>
-      <SiteNav current="home" />
+      <SiteNav current="home" brand="colorloop" />
 
       {/* Hero */}
       <section className="o360-section">

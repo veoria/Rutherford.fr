@@ -9,6 +9,8 @@ const NAV_PREFIX_LOCALES = ['fr', 'de', 'it', 'es', 'pt'];
 
 type SiteNavProps = {
   current?: 'home' | 'roi' | 'blog' | 'console-validation' | 'support' | 'academy' | 'account';
+  // 'colorloop' swaps the brandmark for the ColorLoop wordmark (NA landings).
+  brand?: 'rutherford' | 'colorloop';
 };
 
 const ACADEMY_ENABLED = process.env.NEXT_PUBLIC_ACADEMY_ENABLED === 'true';
@@ -23,7 +25,7 @@ const initials = (name: string | null, email: string): string => {
   return email.trim().slice(0, 2).toUpperCase();
 };
 
-export function SiteNav({ current = 'home' }: SiteNavProps) {
+export function SiteNav({ current = 'home', brand = 'rutherford' }: SiteNavProps) {
   const { locale } = useLanguage();
   // Prefix internal marketing links with the current locale so navigation stays in-language.
   const lhref = (path: string) =>
@@ -116,9 +118,15 @@ export function SiteNav({ current = 'home' }: SiteNavProps) {
   return (
     <header className="site-header">
       <div className="container header-inner">
-        <a className="brandmark" href={lhref('/')} aria-label="Rutherford.fr">
-          <Image src="/images/rutherford-logo-black.png" alt="Rutherford.fr" width={300} height={58} sizes="184px" priority />
-        </a>
+        {brand === 'colorloop' ? (
+          <a className="brandmark" href={lhref('/')} aria-label="ColorLoop">
+            <Image src="/images/colorloop-logo-black.png" alt="ColorLoop" width={300} height={67} sizes="184px" priority />
+          </a>
+        ) : (
+          <a className="brandmark" href={lhref('/')} aria-label="Rutherford.fr">
+            <Image src="/images/rutherford-logo-black.png" alt="Rutherford.fr" width={300} height={58} sizes="184px" priority />
+          </a>
+        )}
 
         <button
           type="button"
