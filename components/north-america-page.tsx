@@ -208,8 +208,8 @@ const FEATURES = [
     body:
       'ColorLoop works alongside the X-Rite and MeasureColor tools already installed in your pressroom, IntelliTrax2 included. The measurement you trust becomes the sensor of the loop: readings feed the console, corrections flow back, color holds.',
     chips: ['IntelliTrax2', 'MeasureColor', 'eXact family', 'Your investment stays'],
-    image: '/images/colorloop-screen.gif',
-    imageAlt: 'Rutherford ColorLoop interface in action',
+    image: '/images/intellitrax2-3.jpg',
+    imageAlt: 'X-Rite IntelliTrax2 scanning a printed sheet',
     href: 'https://colorloop.ai/',
     external: true,
   },
