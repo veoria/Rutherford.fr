@@ -25,7 +25,6 @@ const JSON_LD = {
   '@type': 'Organization',
   name: 'Rutherford',
   url: 'https://go.colorloop.ai/canada',
-  foundingDate: '2000',
   description:
     'Closed-loop color control and CIP3/CIP4 ink presetting for offset printers in Canada. G7-anchored, retrofit to all press brands, support in English and French.',
   areaServed: ['Canada', 'United States'],

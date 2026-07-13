@@ -31,7 +31,7 @@ export const REGIONS: Record<string, Region> = {
     angle: 'G7-anchored closed-loop color, on the presses and X-Rite measurement US pressrooms already run.',
     metaTitle: 'Closed-loop color control in the USA | Rutherford',
     metaDescription:
-      'Rutherford has closed the loop on offset color since 2000. G7-anchored closed-loop color control and CIP3/CIP4 ink presetting for US commercial and packaging printers, on the X-Rite measurement you already own. Free press check, figures in USD.',
+      'G7-anchored closed-loop color control and CIP3/CIP4 ink presetting for US commercial and packaging printers, on the X-Rite measurement you already own. Proven on 1,000+ systems in 30+ countries. Free press check, figures in USD.',
     keywords: ['closed-loop color control USA', 'G7 color control offset', 'ink key presetting CIP3', 'offset color management United States', 'makeready waste reduction', 'console validation'],
   },
   canada: {

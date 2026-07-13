@@ -121,13 +121,13 @@ type Country = 'usa' | 'canada';
 const COUNTRY = {
   usa: {
     eyebrow: 'United States',
-    lede: 'Closed-loop color for American pressrooms. Rutherford has closed the loop on offset color since 2000, from Dayton, Ohio to 30+ countries. Scan, compare, correct, automatically.',
+    lede: 'Closed-loop color for American pressrooms. ColorLoop scans the sheet, compares it to your target and corrects the ink keys, automatically. Proven on 1,000+ systems in 30+ countries.',
     proofLede: 'From high-volume commercial work in Michigan to packaging lines across the North American supply chain.',
     ctaBody: 'Every uncontrolled makeready burns sheets, ink and press time. Check free of charge whether your press qualifies: a few photos of your console, an answer within one business day. Figures in USD.',
   },
   canada: {
     eyebrow: 'Canada',
-    lede: 'Closed-loop color for Canadian pressrooms, with support in English and French. Rutherford has closed the loop on offset color since 2000, deployed in 30+ countries. Scan, compare, correct, automatically.',
+    lede: 'Closed-loop color for Canadian pressrooms, with support in English and French. ColorLoop scans the sheet, compares it to your target and corrects the ink keys, automatically. Proven on 1,000+ systems in 30+ countries.',
     proofLede: 'Proven across the North American supply chain, from commercial shops to packaging groups.',
     ctaBody: 'Every uncontrolled makeready burns sheets, ink and press time. Check free of charge whether your press qualifies: a few photos of your console, an answer within one business day. Support available in English and French.',
   },
@@ -412,7 +412,7 @@ export function NorthAmericaPage({ country }: { country: Country }) {
       <section className="o360-section">
         <div className="o360-narrow o360-reveal">
           <p className="o360-eyebrow">The idea</p>
-          <h2 className="o360-h2">One closed loop. Any press.</h2>
+          <h2 className="o360-h2">One closed loop. Any press.</h2>
           <p className="o360-lede">
             The Rutherford software that closes the loop, working with the X-Rite measurement tools North American pressrooms already run, plus expert support to keep it performing.
           </p>
