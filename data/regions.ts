@@ -23,6 +23,28 @@ export type Region = {
 };
 
 export const REGIONS: Record<string, Region> = {
+  usa: {
+    slug: 'usa',
+    name: 'the United States',
+    inName: 'in the United States',
+    forWhom: 'commercial and packaging offset printers in the United States',
+    angle: 'G7-anchored closed-loop color, on the presses and X-Rite measurement US pressrooms already run.',
+    metaTitle: 'Closed-loop color control in the USA | Rutherford',
+    metaDescription:
+      'Rutherford has closed the loop on offset color since 2000. G7-anchored closed-loop color control and CIP3/CIP4 ink presetting for US commercial and packaging printers, on the X-Rite measurement you already own. Free press check, figures in USD.',
+    keywords: ['closed-loop color control USA', 'G7 color control offset', 'ink key presetting CIP3', 'offset color management United States', 'makeready waste reduction', 'console validation'],
+  },
+  canada: {
+    slug: 'canada',
+    name: 'Canada',
+    inName: 'in Canada',
+    forWhom: 'commercial and packaging offset printers in Canada',
+    angle: 'G7-anchored closed-loop color for Canadian pressrooms, English and French support included.',
+    metaTitle: 'Closed-loop color control in Canada | Rutherford',
+    metaDescription:
+      'Closed-loop color control and CIP3/CIP4 ink presetting for Canadian commercial and packaging printers: G7-anchored, on the X-Rite measurement you already own, with support in English and French. Request a free press check.',
+    keywords: ['closed-loop color control Canada', 'G7 color control offset', 'ink key presetting CIP3', 'offset color management Canada', 'makeready waste reduction', 'console validation'],
+  },
   china: {
     slug: 'china',
     name: 'China',

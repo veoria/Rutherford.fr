@@ -8,7 +8,7 @@ const videos = [
   { id: 'r7_4EdplcdE', title: "Wauters B'Pack x Rutherford ENG" },
   { id: 'FTjkGK2K-wI', title: 'Testimonial - GS Monaco' },
   { id: '0bUlKQ-lIZs', title: 'LEFRANCQ Packaging' },
-  { id: 'vYN1mjCK9VU', title: 'Testimonial - Printware USA' },
+  { id: 'vYN1mjCK9VU', title: 'Testimonial - Moderna Printing' },
   { id: 'XjgKPUguTfw', title: 'ColorLoop Session 05' },
   { id: 'Zu79QlZnCPo', title: 'ColorLoop Session 06' },
   { id: '78a006Kulok', title: 'ColorLoop Session 07' },
