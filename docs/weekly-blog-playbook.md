@@ -70,6 +70,7 @@ Contenu : 800 à 1 200 mots EN. Traductions : **fr obligatoire**, de/it/es/pt bi
 
 ### Règles de style (non négociables)
 - Suivre le glossaire de `CLAUDE.md` (racine du repo). FR : « closed loop » (anglicisme, jamais « boucle fermée »), « vis d'encrier » (jamais « clés d'encrage »), « gâche », « calage », « tirage », vouvoiement.
+- Dans body, seul le lien markdown [label](href) est rendu : pas de **gras** ni d autre markdown.
 - **Aucun tiret cadratin (—) ni demi-cadratin (–)** nulle part. Virgules ou deux-points.
 - Produit d'abord : ne JAMAIS raconter l'histoire de l'entreprise, ne jamais écrire « since 2000 », « Dayton », « Rutherford Graphic Products ». Rutherford.fr est l'entité France/Europe, preuves = « 1,000+ systems in 30+ countries ».
 - Positionnement hybride : ColorLoop mène ; X-Rite/MeasureColor/IntelliTrax2 cités comme écosystème de mesure, sans en faire le héros.

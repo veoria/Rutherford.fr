@@ -1,5 +1,184 @@
 [
   {
+    "slug": "ppwr-august-2026-deadline-offset-printers",
+    "title": "PPWR: what changes for printers on August 12, 2026",
+    "excerpt": "The EU PPWR applies from August 12, 2026. What packaging printers worldwide must have ready, and why clean production data makes it easier.",
+    "lead": "The EU Packaging and Packaging Waste Regulation (PPWR) starts applying on August 12, 2026. From that date, every packaging type placed on the EU market needs a signed Declaration of Conformity backed by technical documentation. Here is what that means for offset and packaging printers, inside and outside Europe.",
+    "image": "/images/ppwr-dpp-hero.png",
+    "publishedAt": "2026-07-15",
+    "category": "Regulations",
+    "paragraphs": [
+      "The PPWR is the EU regulation that reshapes how packaging is designed, documented and recycled. It entered into force in early 2025, and its general application date is August 12, 2026. From that day, packaging placed on the EU market must be covered by a Declaration of Conformity and technical documentation that proves it meets the regulation.",
+      "This is not only a European story. Any printer or converter whose packaging ends up on the EU market is concerned, whether the plant is in the United States, Turkey, India or Brazil. Brand owners are already pushing the data request down the chain: substrates, inks, recycled content, recyclability, and proof.",
+      "For the pressroom, the practical work is data. Shops that already standardize color and log their production have most of the raw material: targets, measurements, DeltaE per job, substrates and run records. Shops that still manage color by eye will feel the documentation burden much more.",
+      "Closed loop color control does not make packaging compliant by itself, but it produces exactly the kind of clean, per-job production data that compliance files and brand owner audits are built on. That is the pragmatic way in for printers: fix the data at the press first."
+    ],
+    "body": [
+      {
+        "type": "p",
+        "text": "The EU Packaging and Packaging Waste Regulation, PPWR, entered into force in February 2025. Its general application date is August 12, 2026. From that date, every distinct packaging type placed on the EU market needs a signed Declaration of Conformity (DoC), backed by technical documentation that can be shown to authorities on request."
+      },
+      {
+        "type": "h2",
+        "text": "What actually changes on August 12, 2026"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "A Declaration of Conformity becomes mandatory for each packaging type placed on the EU market.",
+          "Technical documentation must exist behind each DoC: materials, substances, recyclability, recycled content where relevant.",
+          "Obligations follow the packaging, not the printer: importers and distributors placing packaging on the EU market carry duties too.",
+          "Further milestones follow, including recyclability performance grades and, on the current signals, a Digital Product Passport for packaging later in the decade."
+        ]
+      },
+      {
+        "type": "p",
+        "text": "The EU is also standing up its Digital Product Passport infrastructure: the EU DPP Registry is expected to come online in July 2026, and a packaging DPP has been signalled on the 2028 timeline. The exact scope will be fixed by delegated acts, but the direction is clear: packaging will carry a data record, and that record starts in production."
+      },
+      {
+        "type": "h2",
+        "text": "A worldwide deadline, not a European one"
+      },
+      {
+        "type": "p",
+        "text": "The PPWR applies to packaging placed on the EU market, wherever it was printed. A folding carton printed in Ohio, a label printed in Izmir or a flexible film printed in Guangzhou all fall under the same requirement the moment the packaged product is sold in the EU. This is why brand owners have started asking their converters worldwide for structured production data, and why pressrooms on every continent are standardizing now. Rutherford supports that shift with closed loop color deployed on more than 1,000 systems in over 30 countries, from [North American plants](/usa) to European packaging groups."
+      },
+      {
+        "type": "h2",
+        "text": "Where color data fits in the compliance file"
+      },
+      {
+        "type": "p",
+        "text": "Compliance is a documentation exercise, and documentation is only as good as the data behind it. A pressroom running closed loop color already produces, job after job: the agreed color targets, the measured values, DeltaE against the reference, the substrate used, and a time-stamped record of the run. That is exactly the kind of evidence brand owner audits and technical files feed on. The [Offset360](/offset360) workflow captures it at the press, and platforms like [PPWR Connect](https://ppwrconnect.com) consolidate production data into audit-ready reports per run."
+      },
+      {
+        "type": "h3",
+        "text": "Does the PPWR apply to printers outside the EU?"
+      },
+      {
+        "type": "p",
+        "text": "Yes, indirectly but firmly. The obligations attach to packaging placed on the EU market, so any printer or converter exporting packaging, or printing for a brand that sells in the EU, will be asked for conformity data. Non-EU printers who can hand over clean, structured production records will keep those contracts; those who cannot will create risk for their customers."
+      },
+      {
+        "type": "h3",
+        "text": "What should a printer have ready before August 12, 2026?"
+      },
+      {
+        "type": "p",
+        "text": "Three things. First, know which of your jobs end up on the EU market. Second, be able to document materials and production per job: substrates, inks, measured color, run records. Third, agree with your brand owners who signs the Declaration of Conformity and what data they need from you. Our [PPWR and DPP printer checklist](/blog/ppwr-dpp-readiness-checklist-packaging-printers) walks through the full list."
+      },
+      {
+        "type": "h3",
+        "text": "Does closed loop color make me PPWR compliant?"
+      },
+      {
+        "type": "p",
+        "text": "No single tool does. Compliance covers materials, design and documentation. What closed loop color control does is remove the weakest link: it standardizes color to the reference, measures every sheet, and logs the evidence automatically. If your press qualifies, the [free Rutherford Check](/console-validation) takes two minutes, and the [ROI calculator](/roi) shows what the same discipline saves in makeready waste."
+      },
+      {
+        "type": "h2",
+        "text": "The pragmatic path: fix the data at the press first"
+      },
+      {
+        "type": "p",
+        "text": "August 12, 2026 is close, and the packaging DPP is on the horizon behind it. Printers who treat this as a data problem, not a paperwork problem, will move faster: standardize color, measure every run, keep the records. The compliance file then writes itself from data you already trust."
+      }
+    ],
+    "i18n": {
+      "fr": {
+        "title": "PPWR : ce qui change pour les imprimeurs le 12 août 2026",
+        "excerpt": "Le PPWR s’applique à partir du 12 août 2026. Ce que les imprimeurs d’emballage du monde entier doivent préparer, et pourquoi des données propres aident.",
+        "lead": "Le règlement européen sur les emballages et déchets d’emballages (PPWR) s’applique à partir du 12 août 2026. Dès cette date, chaque type d’emballage mis sur le marché de l’UE doit être couvert par une déclaration de conformité signée, appuyée par une documentation technique. Voici ce que cela change pour les imprimeurs offset et packaging, en Europe et ailleurs.",
+        "body": [
+          {
+            "type": "p",
+            "text": "Le PPWR est entré en vigueur en février 2025. Sa date d’application générale est le 12 août 2026. À partir de cette date, chaque type d’emballage mis sur le marché de l’UE doit disposer d’une déclaration de conformité (DoC) signée, appuyée par une documentation technique présentable aux autorités sur demande."
+          },
+          {
+            "type": "h2",
+            "text": "Ce qui change concrètement le 12 août 2026"
+          },
+          {
+            "type": "ul",
+            "items": [
+              "La déclaration de conformité devient obligatoire pour chaque type d’emballage mis sur le marché de l’UE.",
+              "Une documentation technique doit exister derrière chaque DoC : matériaux, substances, recyclabilité, contenu recyclé le cas échéant.",
+              "Les obligations suivent l’emballage, pas l’imprimeur : importateurs et distributeurs qui mettent l’emballage sur le marché de l’UE ont aussi des devoirs.",
+              "D’autres échéances suivent, dont les grades de recyclabilité et, selon les signaux actuels, un passeport produit numérique pour l’emballage plus tard dans la décennie."
+            ]
+          },
+          {
+            "type": "p",
+            "text": "L’UE met aussi en place son infrastructure de passeport produit numérique : le registre DPP européen est attendu en ligne en juillet 2026, et un DPP emballage est évoqué à l’horizon 2028. Le périmètre exact sera fixé par actes délégués, mais la direction est claire : l’emballage portera un enregistrement de données, et cet enregistrement commence en production."
+          },
+          {
+            "type": "h2",
+            "text": "Une échéance mondiale, pas seulement européenne"
+          },
+          {
+            "type": "p",
+            "text": "Le PPWR s’applique à l’emballage mis sur le marché de l’UE, où qu’il ait été imprimé. Un étui imprimé aux États-Unis, une étiquette imprimée à Izmir ou un film souple imprimé à Canton tombent sous la même exigence dès que le produit emballé est vendu dans l’UE. C’est pourquoi les marques demandent déjà des données de production structurées à leurs converters du monde entier, et pourquoi les ateliers de tous les continents standardisent maintenant. Rutherford accompagne ce mouvement avec le closed loop déployé sur plus de 1 000 systèmes dans plus de 30 pays, des [sites nord-américains](/usa) aux groupes d’emballage européens."
+          },
+          {
+            "type": "h2",
+            "text": "Où les données couleur entrent dans le dossier de conformité"
+          },
+          {
+            "type": "p",
+            "text": "La conformité est un exercice de documentation, et la documentation vaut ce que valent les données derrière. Un atelier qui tourne en closed loop produit déjà, tirage après tirage : les cibles couleur convenues, les valeurs mesurées, le DeltaE par rapport à la référence, le support utilisé et un enregistrement horodaté du tirage. C’est exactement le type de preuve dont se nourrissent les audits des marques et les dossiers techniques. Le workflow [Offset360](/offset360) capture ces données au pied de la presse, et des plateformes comme [PPWR Connect](https://ppwrconnect.com) les consolident en rapports prêts pour l’audit, par tirage."
+          },
+          {
+            "type": "h3",
+            "text": "Le PPWR concerne-t-il les imprimeurs hors UE ?"
+          },
+          {
+            "type": "p",
+            "text": "Oui, indirectement mais fermement. Les obligations portent sur l’emballage mis sur le marché de l’UE. Tout imprimeur qui exporte de l’emballage, ou qui imprime pour une marque vendant dans l’UE, se verra demander des données de conformité. Les imprimeurs hors UE capables de fournir des enregistrements de production propres garderont ces contrats ; les autres créeront un risque pour leurs clients."
+          },
+          {
+            "type": "h3",
+            "text": "Que doit préparer un imprimeur avant le 12 août 2026 ?"
+          },
+          {
+            "type": "p",
+            "text": "Trois choses. Un : savoir quels travaux finissent sur le marché de l’UE. Deux : pouvoir documenter matériaux et production par travail : supports, encres, couleur mesurée, enregistrements de tirage. Trois : convenir avec vos donneurs d’ordres de qui signe la déclaration de conformité et des données attendues de votre part. Notre [checklist PPWR et DPP pour imprimeurs](/blog/ppwr-dpp-readiness-checklist-packaging-printers) détaille la liste complète."
+          },
+          {
+            "type": "h3",
+            "text": "Le closed loop me rend-il conforme au PPWR ?"
+          },
+          {
+            "type": "p",
+            "text": "Aucun outil ne le fait à lui seul. La conformité couvre matériaux, conception et documentation. Ce que le contrôle couleur closed loop apporte, c’est la suppression du maillon faible : il standardise la couleur sur la référence, mesure chaque feuille et journalise la preuve automatiquement. Si votre presse est éligible, le [Rutherford Check gratuit](/console-validation) prend deux minutes, et le [calculateur ROI](/roi) chiffre ce que cette même discipline économise en gâche au calage."
+          },
+          {
+            "type": "h2",
+            "text": "La voie pragmatique : fiabiliser les données au pied de la presse"
+          },
+          {
+            "type": "p",
+            "text": "Le 12 août 2026 est proche, et le DPP emballage se profile derrière. Les imprimeurs qui traitent le sujet comme un problème de données, pas comme un problème de paperasse, avanceront plus vite : standardiser la couleur, mesurer chaque tirage, conserver les enregistrements. Le dossier de conformité s’écrit alors tout seul, à partir de données déjà fiables."
+          }
+        ]
+      }
+    },
+    "originalUrl": "https://rutherford.fr/blog/ppwr-august-2026-deadline-offset-printers",
+    "sources": [
+      {
+        "label": "PPWR 2026: August 12 deadline and DoC requirements (dpp-tool.com)",
+        "href": "https://dpp-tool.com/en/guide/ppwr/"
+      },
+      {
+        "label": "PPWR, DPP and EPR: the EU packaging regulation explained (infodpp.eu)",
+        "href": "https://infodpp.eu/en/knowledge-base/ppwr-packaging-digital-labelling-dpp/"
+      },
+      {
+        "label": "EU PPWR: new compliance requirements (Greenberg Traurig)",
+        "href": "https://www.gtlaw.com/en/insights/2025/8/eu-packaging-and-packaging-waste-regulation-new-compliance-requirements-for-e-commerce"
+      }
+    ]
+  },
+  {
     "slug": "g7-vs-iso-12647-offset-color",
     "title": "G7 vs ISO 12647",
     "excerpt": "G7 and ISO 12647 both standardize offset color, but they take different routes. Here is how they differ and how to choose, or combine, them.",
