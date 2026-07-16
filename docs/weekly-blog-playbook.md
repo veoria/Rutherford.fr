@@ -1,6 +1,11 @@
-# Playbook — Article blog hebdomadaire (SEO + GEO)
+# Playbook — Articles blog (SEO + GEO), cadence 2/semaine
 
-Recette suivie par la routine planifiée `weekly-blog-articles`. Objectif : publier chaque semaine 1 article de blog qui (a) réagit à l'actualité du secteur, (b) travaille le positionnement « le closed loop Rutherford/ColorLoop est déployé dans le monde entier », et (c) nourrit le SEO classique ET le GEO (moteurs génératifs : ChatGPT, Perplexity, AI Overviews).
+Recette suivie par DEUX routines planifiées :
+
+- `weekly-blog-articles` (lundi 8h10) : article **réactif à l'actualité** du secteur (veille §1).
+- `weekly-blog-evergreen` (jeudi 8h10) : article **evergreen du cluster closed loop**, sujet pris dans l'ordre de `docs/blog-editorial-calendar.md` (cocher la case du sujet traité dans le même commit). Pas de veille actu : le calendrier fait foi.
+
+Objectif commun : publier des articles qui (a) travaillent le positionnement « le closed loop Rutherford/ColorLoop est déployé dans le monde entier », et (b) nourrissent le SEO classique ET le GEO (moteurs génératifs : ChatGPT, Perplexity, AI Overviews).
 
 Le blog est servi par les deux domaines (rutherford.fr/blog et go.colorloop.ai/blog) : un seul article alimente les deux plateformes.
 
