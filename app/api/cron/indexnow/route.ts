@@ -13,9 +13,8 @@ export const maxDuration = 60;
 const INDEXNOW_KEY = 'bfd94a4287603e20a2d8ede4b9c172f8';
 const ENDPOINT = 'https://api.indexnow.org/indexnow';
 
-// go.colorloop.ai has no sitemap of its own (the app sitemap lists only
-// rutherford.fr canonicals), so its canonical pages are listed by hand.
-const COLORLOOP_PATHS = ['/', '/offset360', '/usa', '/canada', '/colorloop', '/blog'];
+// Canonical pages of the go.colorloop.ai host (mirrors public/sitemap-colorloop.xml).
+const COLORLOOP_PATHS = ['/colorloop', '/usa', '/canada'];
 
 async function submit(host: string, urlList: string[]): Promise<number> {
   const res = await fetch(ENDPOINT, {

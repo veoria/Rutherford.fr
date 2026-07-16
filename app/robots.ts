@@ -37,6 +37,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: PRIVATE,
       })),
     ],
-    sitemap: 'https://rutherford.fr/sitemap.xml',
+    sitemap: ['https://rutherford.fr/sitemap.xml', 'https://go.colorloop.ai/sitemap-colorloop.xml'],
   };
 }
