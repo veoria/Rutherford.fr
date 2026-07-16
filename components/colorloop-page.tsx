@@ -408,8 +408,14 @@ export function ColorLoopPage() {
       {/* Testimonial */}
       <section className="o360-section o360-quiet">
         <div className="o360-feature o360-reveal">
-          <div className="o360-feature-media">
-            <img src="/images/colorloop/dsc7225.jpg" alt="Technician adjusting the ColorLoop press-side screen" loading="lazy" />
+          <div className="o360-feature-media is-vertical">
+            <iframe
+              src="https://www.youtube-nocookie.com/embed/rdwFGOICawE?rel=0&modestbranding=1"
+              title="Imprimerie Berger, ColorLoop testimonial"
+              loading="lazy"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowFullScreen
+            />
           </div>
           <div className="o360-feature-copy">
             <div className="o360-feature-eyebrow">
