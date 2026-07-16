@@ -84,6 +84,7 @@ Relier le sujet au déploiement international : au moins une phrase reliant l'ac
 - 1 mot-clé principal (dans title, excerpt, premier h2) + 2-3 secondaires.
 - **2 ou 3 sections h3 en forme de question** avec réponse directe en 2-4 phrases dessous (formats repris par les moteurs génératifs).
 - Liens internes : 2 à 4 parmi `/console-validation` (Rutherford Check), `/roi`, `/offset360`, un article de blog connexe, une page marché.
+- **Maillage pilier (obligatoire)** : tout article du cluster closed loop / couleur / calage / standards inclut un lien vers la page pilier `/closed-loop-color-control` (ancre du type « guide complet du closed loop »). Le glossaire `/glossary` peut aussi être lié quand un terme technique est central dans l'article.
 - Sources externes réelles (issues de la veille) dans `sources`.
 - GEO : ajouter l'article dans `public/llms.txt` sous une section `## Recent articles` (la créer sous « Key pages » si absente ; garder les 8 plus récents, format `- [Titre](https://rutherford.fr/blog/<slug>): résumé en 1 ligne`).
 

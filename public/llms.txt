@@ -21,6 +21,7 @@ The entry point for any printer is the free **console validation**: submit a few
 - [Home](https://rutherford.fr/): closed-loop color control for offset printing
 - [Console validation](https://rutherford.fr/console-validation): free press eligibility check
 - [Offset360](https://rutherford.fr/offset360): the X-Rite + Rutherford bundle
+- [Closed-loop color control guide](https://rutherford.fr/closed-loop-color-control): the complete pillar guide (how the loop works, waste and makeready numbers, ISO 12647-2 / G7, retrofit)
 - [Rutherford Academy](https://rutherford.fr/academy): online courses on offset color management (ΔE, M0/M1/M3, makeready, CIP3/CIP4, MeasureColor, IntelliTrax2, ColorLoop)
 - [Blog](https://rutherford.fr/blog): industry articles and case studies
 - [Glossary](https://rutherford.fr/glossary): 30+ definitions of offset color management terms (makeready, DeltaE, ink keys, G7, ISO 12647-2, closed loop)

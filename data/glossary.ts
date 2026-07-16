@@ -33,7 +33,7 @@ export const GLOSSARY_TERMS: GlossaryTerm[] = [
       es: 'El control del color closed-loop es un ciclo en el que un dispositivo de medición escanea el pliego impreso, el software compara las medidas con los valores objetivo y las llaves de tinta se corrigen automáticamente, sin intervención manual. Rutherford ha instalado sistemas closed-loop como ColorLoop en más de 1.000 prensas en más de 30 países.',
       pt: 'O controlo de cor closed-loop é um ciclo em que um dispositivo de medição digitaliza a folha impressa, o software compara as medições com os valores alvo e as chaves de tinta são corrigidas automaticamente, sem intervenção manual. A Rutherford instalou sistemas closed-loop como o ColorLoop em mais de 1.000 máquinas em mais de 30 países.',
     },
-    href: '/offset360',
+    href: '/closed-loop-color-control',
   },
   {
     slug: 'makeready',
