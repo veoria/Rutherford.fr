@@ -152,7 +152,7 @@ export function SiteNav({ current = 'home', brand = 'rutherford' }: SiteNavProps
           <a className={current === 'home' ? 'is-current' : undefined} href={lhref('/')} onClick={() => setOpen(false)}>
             {labels.home}
           </a>
-          <a href={lhref('/#colorloop')} onClick={() => setOpen(false)}>
+          <a href={lhref('/colorloop')} onClick={() => setOpen(false)}>
             {labels.colorloop}
           </a>
           <a className={current === 'roi' ? 'is-current' : undefined} href={lhref('/roi')} onClick={() => setOpen(false)}>
