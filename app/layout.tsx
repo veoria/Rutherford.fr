@@ -70,20 +70,44 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
+// Group entity graph (shared strategy across rutherford.fr / colorloop.ai /
+// veoria.fr / ppwrconnect.com): sameAs links the group's properties together
+// and parentOrganization anchors them under VEORIA, so search engines and AI
+// models learn the sites belong to one family.
 const ORG_JSON_LD = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
+  '@id': 'https://rutherford.fr/#organization',
   name: 'Rutherford.fr',
   url: 'https://rutherford.fr',
   logo: 'https://rutherford.fr/images/rutherford-logo-black.png',
   description:
     'European specialist in closed-loop color management for offset and flexo printing. X-Rite PANTONE partner. ColorLoop software, console validation and the Offset360 bundle.',
+  parentOrganization: {
+    '@type': 'Organization',
+    name: 'VEORIA',
+    url: 'https://veoria.fr',
+  },
   sameAs: [
     'https://www.linkedin.com/company/rutherford-graphic-products-llc',
     'https://www.instagram.com/rutherfordgraphic/',
     'https://www.youtube.com/channel/UChiClIodg9rbuTDnInE4GmQ',
     'https://www.tiktok.com/@rutherfordgraphic',
+    'https://go.colorloop.ai',
+    'https://colorloop.ai',
+    'https://veoria.fr',
+    'https://ppwrconnect.com',
   ],
+};
+
+const WEBSITE_JSON_LD = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  '@id': 'https://rutherford.fr/#website',
+  name: 'Rutherford.fr',
+  url: 'https://rutherford.fr',
+  publisher: { '@id': 'https://rutherford.fr/#organization' },
+  inLanguage: ['en', 'fr', 'de', 'it', 'es', 'pt'],
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
@@ -93,6 +117,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html lang={locale}>
       <body>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ORG_JSON_LD) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(WEBSITE_JSON_LD) }} />
         <LanguageProvider initialLocale={locale}>
           {children}
           <CookieConsent />

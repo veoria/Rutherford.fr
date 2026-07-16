@@ -37,6 +37,7 @@ const SOFTWARE_JSON_LD = {
     'AI-powered color control software for offset sheetfed printing. Automates job setup, optimizes makeready with adaptive corrections and learns continuously, with complete MeasureColor and IntelliTrax2 integration.',
   publisher: {
     '@type': 'Organization',
+    '@id': 'https://rutherford.fr/#organization',
     name: 'Rutherford',
     url: 'https://rutherford.fr',
   },
