@@ -30,7 +30,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: '/', changeFrequency: 'weekly' as const, priority: 1 },
     { path: '/offset360', changeFrequency: 'monthly' as const, priority: 0.9 },
     { path: '/console-validation', changeFrequency: 'monthly' as const, priority: 0.9 },
+    { path: '/roi', changeFrequency: 'monthly' as const, priority: 0.8 },
     { path: '/academy', changeFrequency: 'weekly' as const, priority: 0.8 },
+    { path: '/glossary', changeFrequency: 'monthly' as const, priority: 0.7 },
     { path: '/blog', changeFrequency: 'weekly' as const, priority: 0.7 },
     { path: '/support', changeFrequency: 'yearly' as const, priority: 0.3 },
   ].map(entry);

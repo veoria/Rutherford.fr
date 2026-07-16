@@ -31,7 +31,7 @@ const platformLinks = [
   { label: 'PPWRConnect.com', href: 'https://ppwrconnect.com/' },
 ];
 
-type ResourceKey = 'blog' | 'support' | 'console' | 'contact';
+type ResourceKey = 'blog' | 'glossary' | 'support' | 'console' | 'contact';
 type CompanyKey = 'about' | 'colorloop' | 'offset360' | 'cases';
 
 type Copy = {
@@ -55,7 +55,7 @@ const COPY: Record<Locale, Copy> = {
     follow: 'Follow',
     rights: 'All rights reserved',
     langAuto: 'Language · auto-detected',
-    resourceLabels: { blog: 'Blog', support: 'Support', console: 'Console Validation', contact: 'Contact' },
+    resourceLabels: { blog: 'Blog', glossary: 'Glossary', support: 'Support', console: 'Console Validation', contact: 'Contact' },
     companyLabels: { about: 'About Rutherford', colorloop: 'ColorLoop', offset360: 'Offset360', cases: 'Case Studies' },
   },
   fr: {
@@ -66,7 +66,7 @@ const COPY: Record<Locale, Copy> = {
     follow: 'Suivre',
     rights: 'Tous droits réservés',
     langAuto: 'Langue · détectée automatiquement',
-    resourceLabels: { blog: 'Blog', support: 'Support', console: 'Validation console', contact: 'Contact' },
+    resourceLabels: { blog: 'Blog', glossary: 'Glossaire', support: 'Support', console: 'Validation console', contact: 'Contact' },
     companyLabels: { about: 'À propos', colorloop: 'ColorLoop', offset360: 'Offset360', cases: 'Cas clients' },
   },
   de: {
@@ -77,7 +77,7 @@ const COPY: Record<Locale, Copy> = {
     follow: 'Folgen',
     rights: 'Alle Rechte vorbehalten',
     langAuto: 'Sprache · automatisch erkannt',
-    resourceLabels: { blog: 'Blog', support: 'Support', console: 'Konsolenvalidierung', contact: 'Kontakt' },
+    resourceLabels: { blog: 'Blog', glossary: 'Glossar', support: 'Support', console: 'Konsolenvalidierung', contact: 'Kontakt' },
     companyLabels: { about: 'Über Rutherford', colorloop: 'ColorLoop', offset360: 'Offset360', cases: 'Referenzen' },
   },
   it: {
@@ -88,7 +88,7 @@ const COPY: Record<Locale, Copy> = {
     follow: 'Seguici',
     rights: 'Tutti i diritti riservati',
     langAuto: 'Lingua · rilevata automaticamente',
-    resourceLabels: { blog: 'Blog', support: 'Supporto', console: 'Validazione console', contact: 'Contatti' },
+    resourceLabels: { blog: 'Blog', glossary: 'Glossario', support: 'Supporto', console: 'Validazione console', contact: 'Contatti' },
     companyLabels: { about: 'Chi è Rutherford', colorloop: 'ColorLoop', offset360: 'Offset360', cases: 'Case Study' },
   },
   es: {
@@ -99,7 +99,7 @@ const COPY: Record<Locale, Copy> = {
     follow: 'Seguir',
     rights: 'Todos los derechos reservados',
     langAuto: 'Idioma · detección automática',
-    resourceLabels: { blog: 'Blog', support: 'Soporte', console: 'Validación de consola', contact: 'Contacto' },
+    resourceLabels: { blog: 'Blog', glossary: 'Glosario', support: 'Soporte', console: 'Validación de consola', contact: 'Contacto' },
     companyLabels: { about: 'Sobre Rutherford', colorloop: 'ColorLoop', offset360: 'Offset360', cases: 'Casos prácticos' },
   },
   pt: {
@@ -110,7 +110,7 @@ const COPY: Record<Locale, Copy> = {
     follow: 'Seguir',
     rights: 'Todos os direitos reservados',
     langAuto: 'Idioma · detetado automaticamente',
-    resourceLabels: { blog: 'Blog', support: 'Apoio', console: 'Validação de consola', contact: 'Contacto' },
+    resourceLabels: { blog: 'Blog', glossary: 'Glossário', support: 'Apoio', console: 'Validação de consola', contact: 'Contacto' },
     companyLabels: { about: 'Sobre a Rutherford', colorloop: 'ColorLoop', offset360: 'Offset360', cases: 'Casos de sucesso' },
   },
 };
@@ -132,6 +132,7 @@ export function SiteFooter() {
 
   const resourceLinks: { key: ResourceKey; href: string }[] = [
     { key: 'blog', href: '/blog' },
+    { key: 'glossary', href: '/glossary' },
     { key: 'support', href: '/support' },
     { key: 'console', href: '/console-validation' },
     { key: 'contact', href: 'mailto:contact@rutherford.fr' },
@@ -139,7 +140,7 @@ export function SiteFooter() {
 
   const companyLinks: { key: CompanyKey; href: string }[] = [
     { key: 'about', href: '/#about' },
-    { key: 'colorloop', href: '/#colorloop' },
+    { key: 'colorloop', href: '/colorloop' },
     { key: 'offset360', href: '/offset360' },
     { key: 'cases', href: '/#cases' },
   ];

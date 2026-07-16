@@ -16840,3 +16840,26 @@ textarea.cv-input { resize: vertical; min-height: 74px; }
 .region-console-cta { margin-top: 8px; }
 
 @media (max-width: 920px) { .region-products-grid { grid-template-columns: 1fr; } }
+
+/* ── Glossary (SEO/GEO phase 2) ─────────────────────────────────────────── */
+.glossary-count { color: var(--muted); font-size: 14px; font-weight: 600; margin-top: 10px; }
+.glossary-section { padding-top: 12px; }
+.glossary-index { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 34px; }
+.glossary-index a { display: inline-flex; align-items: center; justify-content: center; min-width: 38px; height: 38px; padding: 0 10px; border: 1px solid var(--line); background: #fff; color: var(--muted); border-radius: 980px; font-size: 14px; font-weight: 700; transition: all .15s ease; }
+.glossary-index a:hover { color: var(--text); border-color: #cfcfc8; }
+.glossary-group { display: grid; grid-template-columns: 90px 1fr; gap: 24px; padding: 30px 0; border-top: 1px solid var(--line); }
+.glossary-letter { font-size: 44px; font-weight: 800; letter-spacing: -1px; color: var(--text); margin: 0; line-height: 1; scroll-margin-top: 110px; }
+.glossary-terms { display: flex; flex-direction: column; gap: 26px; }
+.glossary-term h3 { margin: 0 0 8px; font-size: 20px; font-weight: 700; letter-spacing: -0.3px; scroll-margin-top: 110px; }
+.glossary-term p { margin: 0; color: var(--muted); font-size: 16px; line-height: 1.65; max-width: 76ch; }
+.glossary-more { display: inline-block; margin-top: 8px; color: var(--accent); font-size: 15px; font-weight: 600; }
+.glossary-more:hover { text-decoration: underline; }
+.glossary-cta { margin-top: 46px; padding: 38px 34px; border-radius: 22px; background: var(--bg-soft); border: 1px solid var(--line); text-align: center; }
+.glossary-cta h2 { margin: 0 0 10px; font-size: 26px; letter-spacing: -0.4px; }
+.glossary-cta p { margin: 0 auto 20px; color: var(--muted); max-width: 60ch; line-height: 1.6; }
+.glossary-cta-btn { display: inline-flex; align-items: center; height: 46px; padding: 0 24px; border-radius: 980px; background: var(--text); color: #fff; font-weight: 600; font-size: 15px; transition: opacity .15s ease; }
+.glossary-cta-btn:hover { opacity: 0.85; }
+@media (max-width: 720px) {
+  .glossary-group { grid-template-columns: 1fr; gap: 12px; }
+  .glossary-letter { font-size: 32px; }
+}

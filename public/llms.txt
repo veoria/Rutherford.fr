@@ -23,6 +23,9 @@ The entry point for any printer is the free **console validation**: submit a few
 - [Offset360](https://rutherford.fr/offset360): the X-Rite + Rutherford bundle
 - [Rutherford Academy](https://rutherford.fr/academy): online courses on offset color management (ΔE, M0/M1/M3, makeready, CIP3/CIP4, MeasureColor, IntelliTrax2, ColorLoop)
 - [Blog](https://rutherford.fr/blog): industry articles and case studies
+- [Glossary](https://rutherford.fr/glossary): 30+ definitions of offset color management terms (makeready, DeltaE, ink keys, G7, ISO 12647-2, closed loop)
+- [ColorLoop](https://rutherford.fr/colorloop): AI-powered color control software for offset (30-second setup, up to 65% less waste)
+- [ROI calculator](https://rutherford.fr/roi): estimate savings on waste, makeready time, ink, paper and energy
 - Brand eligibility pages: /console-validation/heidelberg, /komori, /koenig-bauer, /manroland, /mitsubishi, /ryobi, /goss, /presstek
 
 ## Recent articles
