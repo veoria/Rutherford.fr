@@ -20,6 +20,14 @@ export const metadata: Metadata = {
       'Automatic color optimization for offset sheetfed printing: 30-second setup, up to 65% less waste, up to 45% faster makeready.',
     url: CANONICAL,
     type: 'website',
+    images: [{ url: '/images/og-colorloop.png', width: 1200, height: 630, alt: 'ColorLoop, AI-powered color control for offset printing' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'ColorLoop | AI-powered color control for offset printing',
+    description:
+      'Automatic color optimization for offset sheetfed printing: 30-second setup, up to 65% less waste, up to 45% faster makeready.',
+    images: ['/images/og-colorloop.png'],
   },
 };
 
