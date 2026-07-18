@@ -1,9 +1,10 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { Fragment, useEffect, useMemo, useState } from 'react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { SiteFooter } from '@/components/site-footer';
 import { SiteNav } from '@/components/site-nav';
+import { ALL_COURSES } from '@/data/academy-courses';
 import {
   COUNTRIES,
   JOB_TITLE_KEYS,
@@ -17,6 +18,7 @@ import { TEAM_ROLE_LABELS } from '@/data/team-role-labels';
 import { DISTRIBUTOR_ROLE_LABELS, RESELLER_ROLE_LABELS } from '@/data/partner-role-labels';
 import { ACCOUNT_TYPES, type AccountType } from '@/data/account-types';
 import type { AdminConsoleValidation, AdminOverview, AdminSupportTicket, AdminUser } from '@/lib/admin';
+import type { AuditEntry } from '@/lib/admin-audit';
 import type { AdminOrg, AdminOrgFull, MemberRole, OrgMember, PendingInvite } from '@/lib/organizations';
 
 const ROLE_LABELS: Record<JobTitleKey, string> = {
@@ -131,7 +133,90 @@ function fmtDate(value: string | null): string {
   }
 }
 
-type AdminTab = 'overview' | 'accounts' | 'validations' | 'support' | 'orgs' | 'courses';
+// Date + heure locale FR pour le journal d'audit (brief § 4.2.6).
+function fmtDateTime(value: string | null): string {
+  if (!value) return '—';
+  try {
+    return new Date(value).toLocaleString('fr-FR', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  } catch {
+    return '—';
+  }
+}
+
+// Nombre de modules par cours (slug → total) pour le drill-down « Cours »
+// (brief § 4.2.2) : AdminCourseStat ne porte pas le total, on le lit ici.
+const MODULE_TOTAL_BY_SLUG = new Map(ALL_COURSES.map((c) => [c.id, c.modules] as const));
+
+// ── Journal d'audit — libellés FR des codes d'action (brief § 4.2.6) ──
+// Codes explicites d'abord ; sinon composition « verbe + domaine » ; sinon le
+// code brut. Couvre les codes câblés par les mutations /api/admin/*.
+const AUDIT_ACTION_LABELS: Record<string, string> = {
+  'user.update': 'Modification compte',
+  'user.qualify': 'Qualification compte',
+  'user.set_admin': 'Droits admin modifiés',
+  'user.suspend': 'Suspension compte',
+  'user.delete': 'Suppression compte',
+  'org.create': 'Création organisation',
+  'org.update': 'Modification organisation',
+  'org.member_role': 'Rôle de membre modifié',
+  'org.member_remove': 'Retrait de membre',
+  'org.invite': 'Invitation envoyée',
+  'org.logo': 'Logo mis à jour',
+  'storage.cleanup': 'Nettoyage stockage',
+  'dropbox.move': 'Déplacement Dropbox',
+  'dropbox.backfill': 'Reprise Dropbox',
+};
+// Domaines (noms au singulier, minuscule) pour la composition de repli.
+const AUDIT_DOMAIN_LABELS: Record<string, string> = {
+  user: 'compte',
+  org: 'organisation',
+  site: 'usine',
+  system: 'système',
+  storage: 'stockage',
+  dropbox: 'Dropbox',
+};
+const AUDIT_VERB_LABELS: Record<string, string> = {
+  create: 'Création',
+  update: 'Modification',
+  delete: 'Suppression',
+  qualify: 'Qualification',
+  suspend: 'Suspension',
+  cleanup: 'Nettoyage',
+  move: 'Déplacement',
+  backfill: 'Reprise',
+  invite: 'Invitation',
+  logo: 'Logo',
+};
+function auditActionLabel(action: string): string {
+  const known = AUDIT_ACTION_LABELS[action];
+  if (known) return known;
+  const dot = action.indexOf('.');
+  if (dot > 0) {
+    const domain = AUDIT_DOMAIN_LABELS[action.slice(0, dot)];
+    const verb = AUDIT_VERB_LABELS[action.slice(dot + 1)];
+    if (domain && verb) return `${verb} ${domain}`;
+    if (domain) return `${domain} — ${action.slice(dot + 1)}`;
+  }
+  return action;
+}
+// « Cible » = type + identifiant court (les UUID sont tronqués).
+function auditTarget(entry: AuditEntry): string {
+  const shortId = entry.targetId
+    ? entry.targetId.length > 12
+      ? `${entry.targetId.slice(0, 8)}…`
+      : entry.targetId
+    : null;
+  if (entry.targetType && shortId) return `${entry.targetType} · ${shortId}`;
+  return entry.targetType ?? shortId ?? '—';
+}
+
+type AdminTab = 'overview' | 'accounts' | 'validations' | 'support' | 'orgs' | 'courses' | 'journal';
 type AccountSortKey = 'name' | 'company' | 'country' | 'signup' | 'activity' | 'level';
 
 // A saved view = a named snapshot of the accounts filter/sort, kept in
@@ -578,6 +663,10 @@ function UserDrawer({
   };
 
   const toggleSuspend = async () => {
+    // Confirmation avant suspension (brief § 4.2.9) ; la réactivation n'est pas
+    // destructive et ne demande pas de confirmation.
+    if (!suspended && !window.confirm('Suspendre ce compte ? La connexion sera bloquée jusqu’à réactivation.'))
+      return;
     setBusy(true);
     setError(null);
     try {
@@ -735,6 +824,11 @@ function OrgRow({
 }) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  // Le select est contrôlé par la prop `resellerOrgId` ; comme window.confirm
+  // est synchrone, un refus doit forcer une reconciliation pour rétablir la
+  // valeur affichée — on remonte le select via une clé qui change à chaque essai.
+  const [nonce, setNonce] = useState(0);
   if (!canManage) {
     const current = resellers.find((r) => r.id === client.resellerOrgId);
     return (
@@ -749,20 +843,32 @@ function OrgRow({
       <td>{client.name}</td>
       <td>
         <select
+          key={nonce}
           className="admin-org-select"
           value={client.resellerOrgId ?? ''}
           disabled={busy}
           onChange={async (e) => {
+            const next = e.target.value;
+            // Toujours forcer le remount (voir note sur le confirm synchrone).
+            setNonce((n) => n + 1);
+            // Confirmation avant de changer l'attribution revendeur (brief § 4.2.9).
+            if (!window.confirm(`Changer le revendeur attribué à « ${client.name} » ?`)) return;
             setBusy(true);
+            setError(null);
             try {
               const res = await fetch('/api/admin/orgs', {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id: client.id, reseller_org_id: e.target.value || null }),
+                body: JSON.stringify({ id: client.id, reseller_org_id: next || null }),
               });
-              if (res.ok) router.refresh();
+              if (!res.ok) {
+                setError(errorLabel((await res.json().catch(() => ({}))).error));
+                setBusy(false);
+                return;
+              }
+              router.refresh();
             } catch {
-              /* ignore */
+              setError('Erreur réseau.');
             }
             setBusy(false);
           }}
@@ -774,6 +880,7 @@ function OrgRow({
             </option>
           ))}
         </select>
+        {error ? <p className="admin-modal-error">{error}</p> : null}
       </td>
     </tr>
   );
@@ -1364,6 +1471,9 @@ function OrgDrawer({ org, allOrgs, onClose }: { org: AdminOrgFull | null; allOrg
   const [inviteEmail, setInviteEmail] = useState('');
   const [inviteRole, setInviteRole] = useState<'admin' | 'member'>('member');
   const [sites, setSites] = useState<OrgSite[]>([]);
+  // Voir la note OrgRow : force le remount du select de rôle quand un changement
+  // est annulé/échoue, pour rétablir le rôle réellement en base.
+  const [memberNonce, setMemberNonce] = useState(0);
 
   const refreshSites = async () => {
     if (!org) return;
@@ -1463,29 +1573,81 @@ function OrgDrawer({ org, allOrgs, onClose }: { org: AdminOrgFull | null; allOrg
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [org]);
 
-  const changeRole = async (userId: string, role: MemberRole) => {
+  const changeRole = async (userId: string, role: MemberRole, currentRole: MemberRole) => {
     if (!org) return;
-    await fetch('/api/admin/orgs/members', {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ orgId: org.id, userId, role }),
-    });
-    void refreshMembers();
-    router.refresh();
+    // Confirmation uniquement quand on rétrograde un propriétaire (brief § 4.2.9).
+    if (currentRole === 'owner' && role !== 'owner') {
+      if (!window.confirm('Rétrograder ce propriétaire ? Il perdra le contrôle de l’organisation.')) {
+        setMemberNonce((n) => n + 1); // annulé → rétablir le rôle affiché
+        return;
+      }
+    }
+    setBusy(true);
+    setError(null);
+    try {
+      const res = await fetch('/api/admin/orgs/members', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orgId: org.id, userId, role }),
+      });
+      if (!res.ok) {
+        setError(errorLabel((await res.json().catch(() => ({}))).error));
+        setMemberNonce((n) => n + 1); // échec → rétablir l'ancien rôle affiché
+        setBusy(false);
+        return;
+      }
+      void refreshMembers();
+      router.refresh();
+    } catch {
+      setError('Erreur réseau.');
+      setMemberNonce((n) => n + 1);
+    }
+    setBusy(false);
   };
 
-  const removeMem = async (userId: string) => {
+  const removeMem = async (userId: string, label: string) => {
     if (!org) return;
-    await fetch(`/api/admin/orgs/members?orgId=${encodeURIComponent(org.id)}&userId=${encodeURIComponent(userId)}`, {
-      method: 'DELETE',
-    });
-    void refreshMembers();
-    router.refresh();
+    // Confirmation avant de retirer un membre (brief § 4.2.9).
+    if (!window.confirm(`Retirer ${label} de l’organisation ?`)) return;
+    setBusy(true);
+    setError(null);
+    try {
+      const res = await fetch(
+        `/api/admin/orgs/members?orgId=${encodeURIComponent(org.id)}&userId=${encodeURIComponent(userId)}`,
+        { method: 'DELETE' }
+      );
+      if (!res.ok) {
+        setError(errorLabel((await res.json().catch(() => ({}))).error));
+        setBusy(false);
+        return;
+      }
+      void refreshMembers();
+      router.refresh();
+    } catch {
+      setError('Erreur réseau.');
+    }
+    setBusy(false);
   };
 
-  const revokeInvite = async (invitationId: string) => {
-    await fetch(`/api/admin/orgs/members?invitationId=${encodeURIComponent(invitationId)}`, { method: 'DELETE' });
-    void refreshMembers();
+  const revokeInvite = async (invitationId: string, email: string) => {
+    // Confirmation avant de révoquer une invitation (brief § 4.2.9).
+    if (!window.confirm(`Révoquer l’invitation de ${email} ?`)) return;
+    setBusy(true);
+    setError(null);
+    try {
+      const res = await fetch(`/api/admin/orgs/members?invitationId=${encodeURIComponent(invitationId)}`, {
+        method: 'DELETE',
+      });
+      if (!res.ok) {
+        setError(errorLabel((await res.json().catch(() => ({}))).error));
+        setBusy(false);
+        return;
+      }
+      void refreshMembers();
+    } catch {
+      setError('Erreur réseau.');
+    }
+    setBusy(false);
   };
 
   const sendInvite = async () => {
@@ -1683,16 +1845,20 @@ function OrgDrawer({ org, allOrgs, onClose }: { org: AdminOrgFull | null; allOrg
             {members.map((m) => (
               <div className="admin-mem-row" key={m.userId}>
                 <span className="admin-mem-main">
-                  <span className="admin-mem-name">{m.name || m.email || '—'}</span>
+                  {/* Lien croisé vers la fiche du membre (brief § 4.2.4). */}
+                  <a className="admin-mem-name admin-name-link" href={`/admin/users/${m.userId}`}>
+                    {m.name || m.email || '—'}
+                  </a>
                   {m.email ? <span className="admin-mem-email">{m.email}</span> : null}
                   {m.role === 'member' ? <MemberSiteAccess userId={m.userId} orgId={org!.id} sites={sites} /> : null}
                 </span>
                 <span className="ah-member-ctl">
                   <select
+                    key={`role-${m.userId}-${memberNonce}`}
                     className="ah-role-select"
                     value={m.role}
                     disabled={busy}
-                    onChange={(e) => void changeRole(m.userId, e.target.value as MemberRole)}
+                    onChange={(e) => void changeRole(m.userId, e.target.value as MemberRole, m.role)}
                   >
                     <option value="owner">Propriétaire</option>
                     <option value="admin">Admin</option>
@@ -1702,7 +1868,7 @@ function OrgDrawer({ org, allOrgs, onClose }: { org: AdminOrgFull | null; allOrg
                     type="button"
                     className="ah-member-remove"
                     disabled={busy}
-                    onClick={() => void removeMem(m.userId)}
+                    onClick={() => void removeMem(m.userId, m.name || m.email || 'ce membre')}
                     aria-label="Retirer"
                   >
                     ×
@@ -1718,7 +1884,12 @@ function OrgDrawer({ org, allOrgs, onClose }: { org: AdminOrgFull | null; allOrg
                     Invitation en attente · {MEMBER_ROLE_LABELS[p.role] ?? p.role}
                   </span>
                 </span>
-                <button type="button" className="ah-revoke" disabled={busy} onClick={() => void revokeInvite(p.id)}>
+                <button
+                  type="button"
+                  className="ah-revoke"
+                  disabled={busy}
+                  onClick={() => void revokeInvite(p.id, p.email)}
+                >
                   Révoquer
                 </button>
               </div>
@@ -1774,21 +1945,48 @@ function OrgDrawer({ org, allOrgs, onClose }: { org: AdminOrgFull | null; allOrg
   );
 }
 
+const TAB_KEYS: AdminTab[] = ['overview', 'accounts', 'validations', 'support', 'orgs', 'courses', 'journal'];
+
 export function AdminDashboard({
   overview,
   orgs,
   orgsFull,
+  auditLog,
   selfId,
   canManage,
 }: {
   overview: AdminOverview;
   orgs: { clients: AdminOrg[]; resellers: { id: string; name: string }[] };
   orgsFull: AdminOrgFull[];
+  auditLog: AuditEntry[];
   selfId: string;
   canManage: boolean;
 }) {
   const { users, courses, consoleValidations, supportTickets, totals } = overview;
-  const [tab, setTab] = useState<AdminTab>('overview');
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  // Onglet et cours ouverts initialisés depuis l'URL (?tab=&course=) : deep-link
+  // et refresh-safe (brief § 4.2.3 / § 4.4). Le set d'onglets est inchangé.
+  const [tab, setTab] = useState<AdminTab>(() => {
+    const t = searchParams.get('tab');
+    return t && (TAB_KEYS as string[]).includes(t) ? (t as AdminTab) : 'overview';
+  });
+  const [openCourse, setOpenCourse] = useState<string | null>(() => searchParams.get('course'));
+
+  // Synchronise l'URL avec (onglet, cours) SANS navigation ni refetch serveur.
+  // history.replaceState est la voie réellement « shallow » de l'App Router : la
+  // page est en force-dynamic, un router.replace relancerait getAdminOverview à
+  // chaque clic d'onglet. On garde le deep-link / refresh-safe puisque l'état
+  // initial est lu depuis les searchParams au montage.
+  useEffect(() => {
+    const params = new URLSearchParams();
+    params.set('tab', tab);
+    if (tab === 'courses' && openCourse) params.set('course', openCourse);
+    const qs = params.toString();
+    window.history.replaceState(null, '', qs ? `${pathname}?${qs}` : pathname);
+  }, [tab, openCourse, pathname]);
+
   const [query, setQuery] = useState('');
   const [editing, setEditing] = useState<AdminUser | null>(null);
   const [segment, setSegment] = useState('all');
@@ -1809,6 +2007,9 @@ export function AdminDashboard({
   );
 
   const orgById = useMemo(() => new Map(orgsFull.map((o) => [o.id, o] as const)), [orgsFull]);
+  // Identité par userId pour le drill-down « Cours » (brief § 4.2.2) : on joint
+  // course.learnerDetails.userId à la liste des comptes déjà en mémoire.
+  const userById = useMemo(() => new Map(users.map((u) => [u.id, u] as const)), [users]);
   // « Société » affichée / triée / cherchée / exportée : le nom de
   // l'organisation prime, l'ancien texte libre profiles.company n'est qu'un
   // repli hérité (brief § 3.2.2).
@@ -1968,6 +2169,7 @@ export function AdminDashboard({
     { key: 'support', label: 'Support', count: supportTickets.length },
     { key: 'orgs', label: 'Organisations', count: orgsFull.length },
     { key: 'courses', label: 'Cours', count: courses.length },
+    { key: 'journal', label: 'Journal', count: auditLog.length },
   ];
 
   const sortTh = (key: AccountSortKey, label: string) => (
@@ -2339,7 +2541,16 @@ export function AdminDashboard({
                         </td>
                         <td>{c.pipedriveDealId ? `ID ${c.pipedriveDealId}` : '—'}</td>
                         <td className="admin-email">{c.email}</td>
-                        <td className="admin-email">{c.userEmail ?? '—'}</td>
+                        <td className="admin-email">
+                          {/* Lien croisé vers la fiche du compte (brief § 4.2.4). */}
+                          {c.userId ? (
+                            <a className="admin-name-link" href={`/admin/users/${c.userId}`}>
+                              {c.userEmail ?? '—'}
+                            </a>
+                          ) : (
+                            c.userEmail ?? '—'
+                          )}
+                        </td>
                         <td>
                           {c.assignee ?? '—'}
                           {c.followers && c.followers.length ? (
@@ -2420,10 +2631,25 @@ export function AdminDashboard({
                       <tr key={t.id}>
                         <td>{fmtDate(t.createdAt)}</td>
                         <td>
-                          {t.name ?? '—'}
+                          {/* Lien croisé vers la fiche du compte (brief § 4.2.4). */}
+                          {t.userId ? (
+                            <a className="admin-name-link" href={`/admin/users/${t.userId}`}>
+                              {t.name ?? t.email}
+                            </a>
+                          ) : (
+                            t.name ?? '—'
+                          )}
                           <span className="admin-cv-sub">{t.email}</span>
                         </td>
-                        <td className="admin-email">{t.userEmail ?? '—'}</td>
+                        <td className="admin-email">
+                          {t.userId ? (
+                            <a className="admin-name-link" href={`/admin/users/${t.userId}`}>
+                              {t.userEmail ?? '—'}
+                            </a>
+                          ) : (
+                            t.userEmail ?? '—'
+                          )}
+                        </td>
                         <td>
                           <span className={`admin-status admin-status-${SUPPORT_STATUS_TONE[t.status] ?? 'review'}`}>
                             {SUPPORT_STATUS_LABELS[t.status] ?? t.status}
@@ -2554,6 +2780,7 @@ export function AdminDashboard({
               <div className="admin-block-head">
                 <h2>Par cours</h2>
               </div>
+              <p className="admin-modal-section-status">Cliquez sur un cours pour voir qui le suit.</p>
               <div className="admin-table-wrap">
                 <table className="admin-table">
                   <thead>
@@ -2566,15 +2793,141 @@ export function AdminDashboard({
                     </tr>
                   </thead>
                   <tbody>
-                    {courses.map((c) => (
-                      <tr key={c.slug}>
-                        <td>{c.title}</td>
-                        <td>{c.tone === 'premium' ? 'Premium' : 'Gratuit'}</td>
-                        <td className="admin-num">{c.learners}</td>
-                        <td className="admin-num">{c.certified}</td>
-                        <td className="admin-num">{c.avgQuizPct != null ? `${c.avgQuizPct}%` : '—'}</td>
+                    {courses.map((c) => {
+                      const isOpen = openCourse === c.slug;
+                      const total = MODULE_TOTAL_BY_SLUG.get(c.slug) ?? null;
+                      return (
+                        <Fragment key={c.slug}>
+                          <tr>
+                            <td>
+                              {/* Ligne cliquable → apprenants du cours, deep-linkée
+                                  via ?course=slug (brief § 4.2.2). */}
+                              <button
+                                type="button"
+                                className="admin-company-link"
+                                aria-expanded={isOpen}
+                                onClick={() => setOpenCourse(isOpen ? null : c.slug)}
+                              >
+                                <span aria-hidden="true">{isOpen ? '▾ ' : '▸ '}</span>
+                                <span>{c.title}</span>
+                              </button>
+                            </td>
+                            <td>{c.tone === 'premium' ? 'Premium' : 'Gratuit'}</td>
+                            <td className="admin-num">{c.learners}</td>
+                            <td className="admin-num">{c.certified}</td>
+                            <td className="admin-num">{c.avgQuizPct != null ? `${c.avgQuizPct}%` : '—'}</td>
+                          </tr>
+                          {isOpen ? (
+                            <tr>
+                              <td colSpan={5}>
+                                <div className="admin-modal-members">
+                                  <h4 className="admin-modal-subhead">{c.learnerDetails.length} apprenants</h4>
+                                  {c.learnerDetails.length === 0 ? (
+                                    <p className="admin-modal-section-status">Aucun apprenant pour ce cours.</p>
+                                  ) : (
+                                    <table className="admin-table">
+                                      <thead>
+                                        <tr>
+                                          <th>Nom</th>
+                                          <th>E-mail</th>
+                                          <th className="admin-num">Modules faits</th>
+                                          <th className="admin-num">Meilleur score QCM</th>
+                                          <th>Certifié</th>
+                                        </tr>
+                                      </thead>
+                                      <tbody>
+                                        {c.learnerDetails.map((l) => {
+                                          const u = userById.get(l.userId);
+                                          return (
+                                            <tr key={l.userId}>
+                                              <td>
+                                                <a
+                                                  className="admin-name-link"
+                                                  href={`/admin/users/${l.userId}`}
+                                                >
+                                                  {u?.name || u?.email || '—'}
+                                                </a>
+                                              </td>
+                                              <td className="admin-email">
+                                                {u?.email ? (
+                                                  <a
+                                                    className="admin-name-link"
+                                                    href={`/admin/users/${l.userId}`}
+                                                  >
+                                                    {u.email}
+                                                  </a>
+                                                ) : (
+                                                  '—'
+                                                )}
+                                              </td>
+                                              <td className="admin-num">
+                                                {total != null ? `${l.modulesDone}/${total}` : l.modulesDone}
+                                              </td>
+                                              <td className="admin-num">
+                                                {l.bestQuizPct != null ? `${l.bestQuizPct}%` : '—'}
+                                              </td>
+                                              <td>
+                                                {l.certified ? (
+                                                  <span className="admin-badge">Certifié</span>
+                                                ) : (
+                                                  '—'
+                                                )}
+                                              </td>
+                                            </tr>
+                                          );
+                                        })}
+                                      </tbody>
+                                    </table>
+                                  )}
+                                </div>
+                              </td>
+                            </tr>
+                          ) : null}
+                        </Fragment>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          ) : null}
+
+          {tab === 'journal' ? (
+            <div className="admin-block">
+              <div className="admin-block-head">
+                <h2>Journal d’audit ({auditLog.length})</h2>
+              </div>
+              <p className="admin-modal-section-status">
+                Trace des actions du back-office (les plus récentes en premier).
+              </p>
+              <div className="admin-table-wrap">
+                <table className="admin-table">
+                  <thead>
+                    <tr>
+                      <th>Date / heure</th>
+                      <th>Acteur</th>
+                      <th>Action</th>
+                      <th>Cible</th>
+                      <th>Résumé</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {auditLog.map((e) => (
+                      <tr key={e.id}>
+                        <td>{fmtDateTime(e.createdAt)}</td>
+                        <td className="admin-email">{e.actorEmail ?? e.actorId ?? '—'}</td>
+                        <td>{auditActionLabel(e.action)}</td>
+                        <td>{auditTarget(e)}</td>
+                        <td>{e.summary ?? '—'}</td>
                       </tr>
                     ))}
+                    {auditLog.length === 0 ? (
+                      <tr>
+                        <td colSpan={5} className="admin-empty">
+                          Aucune action enregistrée.
+                        </td>
+                      </tr>
+                    ) : null}
                   </tbody>
                 </table>
               </div>

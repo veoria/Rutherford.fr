@@ -438,6 +438,10 @@ function ManagePanel({ user, isSelf }: { user: Detail; isSelf: boolean }) {
   };
 
   const toggleSuspend = async () => {
+    // Confirmation avant suspension (brief § 4.2.9) ; la réactivation n'en
+    // demande pas (action non destructive).
+    if (!suspended && !window.confirm('Suspendre ce compte ? La connexion sera bloquée jusqu’à réactivation.'))
+      return;
     setBusy(true);
     setError(null);
     try {
