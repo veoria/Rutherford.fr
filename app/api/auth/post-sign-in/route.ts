@@ -23,7 +23,7 @@ export async function POST() {
     if (byDomain && process.env.SUPABASE_SERVICE_ROLE_KEY) {
       await createSupabaseAdminClient()
         .from('profiles')
-        .update({ account_type: byDomain })
+        .update({ account_type: byDomain, account_type_source: 'domain' })
         .eq('id', user.id);
     }
     if (user.email) await acceptPendingInvitations(user.id, user.email);

@@ -5,7 +5,15 @@ import { SiteFooter } from '@/components/site-footer';
 import { SiteNav } from '@/components/site-nav';
 import { AuthSteps } from '@/components/auth-steps';
 import { type Locale, useLanguage } from '@/components/language-provider';
-import { COUNTRIES, JOB_TITLE_KEYS, type JobTitleKey } from '@/data/onboarding-options';
+import {
+  COUNTRIES,
+  DISTRIBUTOR_ROLE_KEYS,
+  JOB_TITLE_KEYS,
+  RESELLER_ROLE_KEYS,
+  type JobTitleKey,
+} from '@/data/onboarding-options';
+import { DISTRIBUTOR_ROLE_LABELS, RESELLER_ROLE_LABELS } from '@/data/partner-role-labels';
+import type { AccountType } from '@/data/account-types';
 import { localizedCountryName } from '@/lib/countries';
 
 type OnboardingCopy = {
@@ -19,6 +27,12 @@ type OnboardingCopy = {
   companyPlaceholder: string;
   roleLabel: string;
   selectRole: string;
+  // Partner (reseller / distributor) multi-select + the explicit qualification
+  // question shown to unqualified accounts (brief § 2.3.a).
+  rolesLabel: string;
+  youAreLabel: string;
+  youArePrinter: string;
+  youArePartner: string;
   submit: string;
   saving: string;
   errorRequired: string;
@@ -41,6 +55,10 @@ const COPY: Record<Locale, OnboardingCopy> = {
     companyPlaceholder: 'Acme Printing',
     roleLabel: 'Your role',
     selectRole: 'Select your role',
+    rolesLabel: 'Your roles (select all that apply)',
+    youAreLabel: 'You are:',
+    youArePrinter: 'Printer',
+    youArePartner: 'Reseller or distributor',
     submit: 'Continue',
     saving: 'Saving…',
     errorRequired: 'Please fill in all fields.',
@@ -71,6 +89,10 @@ const COPY: Record<Locale, OnboardingCopy> = {
     companyPlaceholder: 'Imprimerie Dupont',
     roleLabel: 'Votre poste',
     selectRole: 'Sélectionnez votre poste',
+    rolesLabel: 'Vos rôles (plusieurs choix possibles)',
+    youAreLabel: 'Vous êtes :',
+    youArePrinter: 'Imprimeur',
+    youArePartner: 'Revendeur ou distributeur',
     submit: 'Continuer',
     saving: 'Enregistrement…',
     errorRequired: 'Veuillez remplir tous les champs.',
@@ -101,6 +123,10 @@ const COPY: Record<Locale, OnboardingCopy> = {
     companyPlaceholder: 'Musterdruck GmbH',
     roleLabel: 'Ihre Rolle',
     selectRole: 'Rolle auswählen',
+    rolesLabel: 'Ihre Rollen (Mehrfachauswahl möglich)',
+    youAreLabel: 'Sie sind:',
+    youArePrinter: 'Druckerei',
+    youArePartner: 'Wiederverkäufer oder Distributor',
     submit: 'Weiter',
     saving: 'Wird gespeichert…',
     errorRequired: 'Bitte füllen Sie alle Felder aus.',
@@ -131,6 +157,10 @@ const COPY: Record<Locale, OnboardingCopy> = {
     companyPlaceholder: 'Tipografia Rossi',
     roleLabel: 'Il suo ruolo',
     selectRole: 'Selezioni il suo ruolo',
+    rolesLabel: 'I suoi ruoli (più scelte possibili)',
+    youAreLabel: 'Lei è:',
+    youArePrinter: 'Stampatore',
+    youArePartner: 'Rivenditore o distributore',
     submit: 'Continua',
     saving: 'Salvataggio…',
     errorRequired: 'Compili tutti i campi.',
@@ -161,6 +191,10 @@ const COPY: Record<Locale, OnboardingCopy> = {
     companyPlaceholder: 'Imprenta Pérez',
     roleLabel: 'Su puesto',
     selectRole: 'Seleccione su puesto',
+    rolesLabel: 'Sus funciones (selección múltiple)',
+    youAreLabel: 'Usted es:',
+    youArePrinter: 'Impresor',
+    youArePartner: 'Revendedor o distribuidor',
     submit: 'Continuar',
     saving: 'Guardando…',
     errorRequired: 'Complete todos los campos.',
@@ -191,6 +225,10 @@ const COPY: Record<Locale, OnboardingCopy> = {
     companyPlaceholder: 'Tipografia Silva',
     roleLabel: 'A sua função',
     selectRole: 'Selecione a sua função',
+    rolesLabel: 'As suas funções (seleção múltipla)',
+    youAreLabel: 'O seu perfil:',
+    youArePrinter: 'Impressor',
+    youArePartner: 'Revendedor ou distribuidor',
     submit: 'Continuar',
     saving: 'A guardar…',
     errorRequired: 'Preencha todos os campos.',
@@ -226,18 +264,50 @@ type Props = {
   needsName: boolean;
   defaultName: string;
   defaultCompany?: string;
+  /** Server-resolved classification (never 'team' — that flow has its own form). */
+  accountType: AccountType;
+  /** True when nothing (domain, partner_domains, CRM) decided the type: the
+   * form then asks the explicit « Vous êtes : » question (brief § 2.3.a). */
+  unqualified: boolean;
 };
 
-export function OnboardingForm({ next, needsName, defaultName, defaultCompany }: Props) {
+export function OnboardingForm({ next, needsName, defaultName, defaultCompany, accountType, unqualified }: Props) {
   const { locale } = useLanguage();
   const t = COPY[locale];
   const [fullName, setFullName] = useState(defaultName);
   const [country, setCountry] = useState('');
   const [company, setCompany] = useState(defaultCompany ?? '');
   const [jobTitle, setJobTitle] = useState('');
+  // Partner accounts pick several roles (job_roles); unqualified accounts first
+  // declare printer vs reseller/distributor, which selects the referential.
+  const [jobRoles, setJobRoles] = useState<string[]>([]);
+  const [declared, setDeclared] = useState<'printer' | 'partner' | null>(null);
   const [consent, setConsent] = useState(false);
   const [status, setStatus] = useState<'idle' | 'saving' | 'error'>('idle');
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  const isPartnerType = accountType === 'reseller' || accountType === 'distributor';
+  // Which role field the form shows: the partner multi-select or the printer
+  // job-title select. Unqualified accounts choose via the explicit question.
+  const roleMode: 'roles' | 'title' | 'none' = isPartnerType
+    ? 'roles'
+    : unqualified
+      ? declared === 'partner'
+        ? 'roles'
+        : declared === 'printer'
+          ? 'title'
+          : 'none'
+      : 'title';
+  // Declared partners on an unqualified account use the reseller referential
+  // (the declaration alone never confirms the type — brief § 2.3.a).
+  const partnerKeys: readonly string[] =
+    accountType === 'distributor' ? DISTRIBUTOR_ROLE_KEYS : RESELLER_ROLE_KEYS;
+  const partnerLabels: Record<string, string> =
+    accountType === 'distributor' ? DISTRIBUTOR_ROLE_LABELS[locale] : RESELLER_ROLE_LABELS[locale];
+
+  const toggleRole = (key: string) => {
+    setJobRoles((prev) => (prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]));
+  };
 
   // Pre-select the visitor's country from IP geo (Vercel edge header). Only
   // fills when the field is still empty, so a manual choice is never overridden.
@@ -262,7 +332,8 @@ export function OnboardingForm({ next, needsName, defaultName, defaultCompany }:
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     const trimmedName = fullName.trim();
-    if (!country || !company.trim() || !jobTitle || (needsName && !trimmedName)) {
+    const roleMissing = roleMode === 'roles' ? jobRoles.length === 0 : roleMode === 'title' ? !jobTitle : true;
+    if (!country || !company.trim() || roleMissing || (needsName && !trimmedName)) {
       setStatus('error');
       setErrorMsg(t.errorRequired);
       return;
@@ -276,7 +347,7 @@ export function OnboardingForm({ next, needsName, defaultName, defaultCompany }:
         body: JSON.stringify({
           country,
           company: company.trim(),
-          job_title: jobTitle,
+          ...(roleMode === 'roles' ? { job_roles: jobRoles } : { job_title: jobTitle }),
           marketing_consent: consent,
           ...(needsName ? { full_name: trimmedName } : {}),
         }),
@@ -365,26 +436,79 @@ export function OnboardingForm({ next, needsName, defaultName, defaultCompany }:
                 disabled={status === 'saving'}
               />
 
-              <label htmlFor="onb-role" className="signin-label">
-                {t.roleLabel}
-              </label>
-              <select
-                id="onb-role"
-                className="signin-input"
-                value={jobTitle}
-                onChange={(e) => setJobTitle(e.target.value)}
-                required
-                disabled={status === 'saving'}
-              >
-                <option value="" disabled>
-                  {t.selectRole}
-                </option>
-                {JOB_TITLE_KEYS.map((key) => (
-                  <option key={key} value={key}>
-                    {t.roles[key]}
-                  </option>
-                ))}
-              </select>
+              {unqualified ? (
+                <>
+                  <span className="signin-label">{t.youAreLabel}</span>
+                  <div className="contact-intent-chips">
+                    <button
+                      type="button"
+                      className={`contact-intent-chip${declared === 'printer' ? ' is-active' : ''}`}
+                      aria-pressed={declared === 'printer'}
+                      onClick={() => setDeclared('printer')}
+                      disabled={status === 'saving'}
+                    >
+                      {t.youArePrinter}
+                    </button>
+                    <button
+                      type="button"
+                      className={`contact-intent-chip${declared === 'partner' ? ' is-active' : ''}`}
+                      aria-pressed={declared === 'partner'}
+                      onClick={() => setDeclared('partner')}
+                      disabled={status === 'saving'}
+                    >
+                      {t.youArePartner}
+                    </button>
+                  </div>
+                </>
+              ) : null}
+
+              {roleMode === 'title' ? (
+                <>
+                  <label htmlFor="onb-role" className="signin-label">
+                    {t.roleLabel}
+                  </label>
+                  <select
+                    id="onb-role"
+                    className="signin-input"
+                    value={jobTitle}
+                    onChange={(e) => setJobTitle(e.target.value)}
+                    required
+                    disabled={status === 'saving'}
+                  >
+                    <option value="" disabled>
+                      {t.selectRole}
+                    </option>
+                    {JOB_TITLE_KEYS.map((key) => (
+                      <option key={key} value={key}>
+                        {t.roles[key]}
+                      </option>
+                    ))}
+                  </select>
+                </>
+              ) : null}
+
+              {roleMode === 'roles' ? (
+                <>
+                  <span className="signin-label">{t.rolesLabel}</span>
+                  <div className="contact-intent-chips">
+                    {partnerKeys.map((key) => (
+                      <label
+                        key={key}
+                        className={`contact-intent-chip${jobRoles.includes(key) ? ' is-active' : ''}`}
+                      >
+                        <input
+                          type="checkbox"
+                          hidden
+                          checked={jobRoles.includes(key)}
+                          onChange={() => toggleRole(key)}
+                          disabled={status === 'saving'}
+                        />
+                        {partnerLabels[key] ?? key}
+                      </label>
+                    ))}
+                  </div>
+                </>
+              ) : null}
 
               <label className="signin-consent">
                 <input

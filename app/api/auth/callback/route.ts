@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
         if (byDomain && process.env.SUPABASE_SERVICE_ROLE_KEY) {
           await createSupabaseAdminClient()
             .from('profiles')
-            .update({ account_type: byDomain })
+            .update({ account_type: byDomain, account_type_source: 'domain' })
             .eq('id', user.id);
         }
         // Turn any pending team invitations for this email into memberships.
