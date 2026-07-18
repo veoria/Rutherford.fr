@@ -1,6 +1,7 @@
 {
   "crons": [
     { "path": "/api/cron/storage-check", "schedule": "0 8 1 * *" },
+    { "path": "/api/cron/partner-domains", "schedule": "0 4 * * *" },
     { "path": "/api/cron/indexnow", "schedule": "0 5 * * *" },
     { "path": "/api/cron/seo-report", "schedule": "0 6 * * 1" }
   ]
