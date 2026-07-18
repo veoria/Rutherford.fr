@@ -101,6 +101,23 @@ Le § 2.3 lit Pipedrive (étiquettes → domaines revendeurs) ; le flux inverse 
 
 Rattachement : flux 1 au lot 2 (il structure la prospection), flux 2-4 au lot 3 (org = source de vérité), flux 3 avec le modèle licences du lot 4.
 
+### 2.5 Reprise de l'historique Asana (acté à spécifier le 18/07/2026, faisabilité vérifiée)
+
+Les validations console vivent dans le projet Asana **« Console Validation V2 »** et, une fois commandées, passent dans **« Install »**. État constaté via l'API Asana le 18/07/2026 :
+
+- **Console Validation V2** : 1 482 tâches (1 470 terminées), nommage régulier `Pays - Société - Presse - IDxxxx` (ex. « Egypt - East Pack - Heidelberg CD 102 V+L - ID2411 »), sections = entonnoir (To do / In progress / **Can be connected** / Rejected), champs personnalisés Product stage / Console Validation stage.
+- **Install** : 687 tâches (583 terminées), nommage `Pays - Société - Machine[ - logiciel]`, sections = cycle d'installation (To Prepare → To ship → To install → **Install Done** / Done, plus **Demo - Try and Buy** et **Stock at dealer**), champs PO / SO Number / Hardware Type / Stage.
+- Bruit à gérer : variantes de casse (« CARTONAJES Pans » vs « Cartonajes Pans »), usine cachée dans le nom (« MMP Premium - Saint Hilaire »), tâches hors périmètre dans Install (formations, maintenance).
+
+**Cible — import avec réconciliation admin :**
+1. Job d'import (paginé, API Asana) qui parse `Pays - Société - Machine - ID` + section → statut, vers une table de staging `asana_import_candidates` avec score de confiance.
+2. **Écran admin de réconciliation** : pour chaque candidat, org proposée (fuzzy nom + pays), l'admin confirme / corrige / crée l'organisation, puis le candidat se matérialise en validation console historique (`source = 'asana'`) ou en **presse équipée** (machine, logiciel, usine si détectée, réfs PO/SO).
+3. **Visibilité par rôle** une fois rattaché : le client voit son historique et son parc, le revendeur ceux de ses clients (attribution), X-Rite le réseau, l'équipe les clients directs — c'est ce qui évite le démarrage à vide du nouveau hub pour les clients existants.
+4. Sections particulières : « Demo - Try and Buy » → marquer la presse en essai ; « Stock at dealer » → stock revendeur (donnée bonus pour la vue parc revendeur).
+5. Flux continu : le webhook Asana existant continue de synchroniser les statuts des nouvelles validations ; « Install » se synchronise en sens unique Asana → portail tant que l'admin n'est pas la surface opérationnelle (lot 4).
+
+Rattachement : dépend du lot 3 (organisation = source de vérité pour le matching) ; l'écran de réconciliation fait partie du lot 4.
+
 ---
 
 ## 3. Problème structurant n° 2 — Société vs Organisation
