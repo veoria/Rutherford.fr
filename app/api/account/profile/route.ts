@@ -4,6 +4,7 @@ import { isJobTitleKey, isKnownCountry, isTeamRoleKey, isValidPartnerRoles } fro
 import { teamOrgFromEmail } from '@/lib/account-type';
 import { deriveAccountTypeWithSource, isConfirmedSource, type AccountTypeSource } from '@/lib/account-classification';
 import type { AccountType } from '@/data/account-types';
+import { renameOwnedOrganization } from '@/lib/organizations';
 import { syncLeadToPipedrive } from '@/lib/pipedrive';
 
 export const dynamic = 'force-dynamic';
@@ -144,10 +145,46 @@ export async function POST(request: NextRequest) {
 
   const firstOnboarding = !existing?.onboarded_at;
 
+  const admin = HAS_ADMIN ? createSupabaseAdminClient() : null;
+
+  // Organization = source of truth for the company name (brief § 3.2). When the
+  // profile is linked to an org, ownership decides — read server-side from
+  // organization_members, never from a client flag: the owner renames the org
+  // and profiles.company follows (they move together — company is only written
+  // when the rename actually landed); a non-owner's submitted company is
+  // IGNORED and the stored value kept, since the org name governs what they
+  // see. Orgless profiles keep the free-text behaviour (their personal org is
+  // created at onboarding).
+  let companyUpdate: { company?: string } = { company };
+  if (admin) {
+    try {
+      const { data: pr } = await admin
+        .from('profiles')
+        .select('organization_id')
+        .eq('id', user.id)
+        .maybeSingle();
+      const orgId = (pr?.organization_id as string | null) ?? null;
+      if (orgId) {
+        const { data: membership } = await admin
+          .from('organization_members')
+          .select('role')
+          .eq('org_id', orgId)
+          .eq('user_id', user.id)
+          .eq('status', 'active')
+          .maybeSingle();
+        const isOwner = ((membership?.role as string | null) ?? null) === 'owner';
+        const renamed = isOwner ? await renameOwnedOrganization(user.id, company) : false;
+        if (!renamed) companyUpdate = {};
+      }
+    } catch {
+      companyUpdate = {}; // can't verify governance — leave the stored company untouched
+    }
+  }
+
   const base = {
     full_name: fullName.slice(0, 200),
     country,
-    company,
+    ...companyUpdate,
     ...roleFields,
     notification_email: notif || null,
     onboarded_at: existing?.onboarded_at ?? new Date().toISOString(),
@@ -158,7 +195,6 @@ export async function POST(request: NextRequest) {
   // (see 20260606 / 20260613 / 20260718), so only the service-role client can
   // set them. Fall back to a user-session write (without the classification)
   // when the admin key isn't configured.
-  const admin = HAS_ADMIN ? createSupabaseAdminClient() : null;
   const writer = admin ?? supabase;
   const update = admin && stamp ? { ...base, ...stamp } : base;
 
