@@ -1,13 +1,14 @@
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { AccountHub, type ResellerClient } from '@/components/account-hub';
-import { createSupabaseServerClient, createSupabaseAdminClient } from '@/lib/supabase/server';
+import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { isOnboarded } from '@/lib/profile';
 import { ALL_COURSES } from '@/data/academy-courses';
 import { courseHasQuiz } from '@/data/academy-quizzes';
 import { getLessonsForCourse } from '@/data/academy-lessons';
 import { overallStats, type CourseStat } from '@/lib/gamification';
-import { getDistributorResellers, getResellerClients, getTeamForUser } from '@/lib/organizations';
+import { getDistributorResellers, getTeamForUser } from '@/lib/organizations';
+import { getResellerClientsView, OPEN_CV } from '@/lib/reseller-clients';
 import { getSystemsForUser, toAccountInstallation } from '@/lib/client-systems';
 import { getVisibleSitesForUser, toAccountSite } from '@/lib/sites';
 import type { AccountType } from '@/data/account-types';
@@ -35,8 +36,6 @@ export const metadata: Metadata = {
 
 export const dynamic = 'force-dynamic';
 
-const OPEN_CV = ['submitted', 'in_review', 'changes_requested'];
-const HAS_ADMIN = Boolean(process.env.SUPABASE_SERVICE_ROLE_KEY && process.env.NEXT_PUBLIC_SUPABASE_URL);
 
 export default async function AccountHubRoute() {
   const supabase = createSupabaseServerClient();
@@ -182,56 +181,8 @@ export default async function AccountHubRoute() {
     }
   })();
 
-  // Reseller → clients: privileged read scoped to this reseller (the user RLS
-  // policy doesn't cover it), merged with the org-linked clients
-  // (organizations.reseller_org_id) so attribution shows whichever exists.
-  const resellerClientsP = (async (): Promise<ResellerClient[]> => {
-    let clients: ResellerClient[] = [];
-    if ((accountType === 'reseller' || accountType === 'distributor') && HAS_ADMIN) {
-      try {
-        const { data } = await createSupabaseAdminClient()
-          .from('console_validations')
-          .select('company, country, machine, status, email, created_at')
-          .eq('reseller_id', user.id)
-          .order('created_at', { ascending: false });
-        const byClient = new Map<string, ResellerClient>();
-        for (const r of (data ?? []) as {
-          company: string | null;
-          country: string | null;
-          machine: string | null;
-          status: string;
-          email: string;
-          created_at: string;
-        }[]) {
-          const key = (r.company || r.email || 'client').toLowerCase();
-          const cur =
-            byClient.get(key) ??
-            ({ name: r.company || r.email, country: r.country, presses: 0, eligible: 0, open: 0 } as ResellerClient);
-          cur.presses += 1;
-          if (r.status === 'can_be_connected') cur.eligible += 1;
-          if (OPEN_CV.includes(r.status)) cur.open += 1;
-          byClient.set(key, cur);
-        }
-        clients = [...byClient.values()];
-      } catch {
-        clients = [];
-      }
-    }
-
-    if (accountType === 'reseller' || accountType === 'distributor') {
-      const linked = await getResellerClients(user.id);
-      const byName = new Map(clients.map((c) => [c.name.toLowerCase(), c] as const));
-      for (const l of linked) {
-        const key = l.name.toLowerCase();
-        const cur = byName.get(key) ?? { name: l.name, country: l.country, presses: 0, eligible: 0, open: 0 };
-        cur.systems = l.systems;
-        cur.updates = l.updates;
-        byName.set(key, cur);
-      }
-      clients = [...byName.values()];
-    }
-    return clients;
-  })();
+  // Reseller → clients: shared aggregation (validations + org-linked clients).
+  const resellerClientsP = getResellerClientsView(user.id, accountType);
 
   const teamP = getTeamForUser(user.id);
   const networkResellersP =
