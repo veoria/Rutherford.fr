@@ -117,6 +117,7 @@ const ERROR_LABELS: Record<string, string> = {
   mfa_required: 'Activez la double authentification pour gérer les comptes.',
   bad_job_title: 'Poste invalide pour ce type de compte.',
   bad_job_roles: 'Rôles invalides pour ce type de compte.',
+  bad_organization: 'Organisation invalide ou introuvable.',
 };
 const errorLabel = (code: unknown) =>
   (typeof code === 'string' && ERROR_LABELS[code]) || 'Une erreur est survenue.';
@@ -171,7 +172,9 @@ const ACCOUNT_SEGMENTS: { key: string; label: string; match: (u: AdminUser) => b
   { key: 'suspended', label: 'Suspendus', match: (u) => u.suspended },
 ];
 
-function toCsv(users: AdminUser[]): string {
+// « Société » exportée = nom d'organisation prioritaire, texte libre hérité en
+// repli (brief § 3.2) — companyOf est fourni par le tableau de bord.
+function toCsv(users: AdminUser[], companyOf: (u: AdminUser) => string | null): string {
   const headers = [
     'Nom', 'Email', 'Société', 'Pays', 'Poste', 'Type de compte', 'Admin', 'Onboardé', 'Inscrit',
     'Dernière activité', 'Modules terminés', 'Cours terminés', 'Certificats', 'Niveau', 'XP', 'Série',
@@ -188,7 +191,7 @@ function toCsv(users: AdminUser[]): string {
   };
   const rows = users.map((u) =>
     [
-      u.name, u.email, u.company, u.country, posteOf(u), ACCOUNT_TYPE_LABELS[u.accountType],
+      u.name, u.email, companyOf(u), u.country, posteOf(u), ACCOUNT_TYPE_LABELS[u.accountType],
       u.isAdmin ? 'oui' : '', u.onboarded ? 'oui' : '',
       u.signupAt ? new Date(u.signupAt).toISOString().slice(0, 10) : '',
       u.lastActiveAt ? new Date(u.lastActiveAt).toISOString().slice(0, 10) : '',
@@ -270,6 +273,161 @@ function RoleField({
   );
 }
 
+type OrgOption = { id: string; name: string; type: string };
+
+const orgOptionLabel = (o: OrgOption): string =>
+  `${o.name} (${ACCOUNT_TYPE_LABELS[o.type as AccountType] ?? o.type})`;
+
+/** Sélecteur d'organisation (recherche + création) : remplace l'ancien champ
+ * « Société » libre — l'organisation est la source de vérité (brief § 3.2.1).
+ * « Créer une organisation » passe par POST /api/admin/orgs (name = texte
+ * cherché, type = type de compte de l'utilisateur) puis sélectionne l'org
+ * créée. L'ancien texte libre `company` reste visible en note quand il diverge
+ * du nom de l'org sélectionnée — il n'est plus éditable ici. */
+function OrgSelectField({
+  orgs,
+  value,
+  onChange,
+  accountType,
+  legacyCompany,
+  disabled,
+}: {
+  orgs: OrgOption[];
+  value: string | null;
+  onChange: (id: string | null) => void;
+  accountType: AccountType;
+  legacyCompany: string | null;
+  disabled: boolean;
+}) {
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState('');
+  // Orgs créées depuis ce champ : la liste reçue en props ne se rafraîchit
+  // qu'au prochain rendu serveur, on les garde localement pour l'affichage.
+  const [created, setCreated] = useState<OrgOption[]>([]);
+  const [creating, setCreating] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const known = new Set(orgs.map((o) => o.id));
+  const all = [...orgs, ...created.filter((o) => !known.has(o.id))];
+  const current = value ? all.find((o) => o.id === value) ?? null : null;
+  const q = search.trim().toLowerCase();
+  const filtered = q ? all.filter((o) => o.name.toLowerCase().includes(q)) : all;
+  const VISIBLE = 30;
+
+  const select = (id: string | null) => {
+    onChange(id);
+    setOpen(false);
+    setSearch('');
+    setError(null);
+  };
+
+  const createOrganization = async () => {
+    const name = search.trim();
+    if (!name) return;
+    setCreating(true);
+    setError(null);
+    try {
+      const res = await fetch('/api/admin/orgs', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        // Type de la nouvelle org = type de compte de l'utilisateur ('client'
+        // couvre le défaut : AccountType ne peut pas être vide).
+        body: JSON.stringify({ name, type: accountType }),
+      });
+      const data = (await res.json().catch(() => ({}))) as { id?: string; error?: string };
+      if (!res.ok || !data.id) {
+        setError(errorLabel(data.error));
+        setCreating(false);
+        return;
+      }
+      setCreated((list) => [...list, { id: data.id as string, name, type: accountType }]);
+      setCreating(false);
+      select(data.id);
+    } catch {
+      setError('Erreur réseau.');
+      setCreating(false);
+    }
+  };
+
+  // Boutons-options : styles de liste du tiroir réutilisés, reset minimal du
+  // rendu bouton natif (pas de classe dédiée en CSS).
+  const optionStyle = { background: 'none', border: 0, padding: 0, textAlign: 'left' as const };
+
+  return (
+    <div className="admin-field">
+      <label>Organisation</label>
+      {!open ? (
+        <button
+          type="button"
+          className="admin-input"
+          style={{ textAlign: 'left', cursor: 'pointer' }}
+          onClick={() => setOpen(true)}
+          disabled={disabled}
+        >
+          {current ? orgOptionLabel(current) : '— Aucune organisation —'}
+        </button>
+      ) : (
+        <>
+          <input
+            className="admin-input"
+            autoFocus
+            placeholder="Rechercher une organisation…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            disabled={disabled || creating}
+          />
+          <div className="admin-site-access-list">
+            <button
+              type="button"
+              className="admin-site-access-item"
+              style={optionStyle}
+              onClick={() => select(null)}
+              disabled={creating}
+            >
+              — Aucune organisation —{value === null ? ' ✓' : ''}
+            </button>
+            {filtered.slice(0, VISIBLE).map((o) => (
+              <button
+                key={o.id}
+                type="button"
+                className="admin-site-access-item"
+                style={optionStyle}
+                onClick={() => select(o.id)}
+                disabled={creating}
+              >
+                {orgOptionLabel(o)}
+                {o.id === value ? ' ✓' : ''}
+              </button>
+            ))}
+            {filtered.length > VISIBLE ? (
+              <p className="admin-site-access-hint">
+                {filtered.length - VISIBLE} autre(s) organisation(s) — affinez la recherche.
+              </p>
+            ) : null}
+            {q && filtered.length === 0 ? (
+              <p className="admin-site-access-hint">Aucune organisation trouvée.</p>
+            ) : null}
+            {search.trim() ? (
+              <button
+                type="button"
+                className="admin-link-btn"
+                onClick={() => void createOrganization()}
+                disabled={creating}
+              >
+                {creating ? 'Création…' : `+ Créer l'organisation « ${search.trim()} »`}
+              </button>
+            ) : null}
+          </div>
+        </>
+      )}
+      {legacyCompany && legacyCompany !== (current?.name ?? '') ? (
+        <p className="admin-site-access-hint">Société (texte libre hérité) : {legacyCompany}</p>
+      ) : null}
+      {error ? <p className="admin-modal-error">{error}</p> : null}
+    </div>
+  );
+}
+
 /** Bloc « Qualifier » d'un compte à qualifier : trois boutons qui fixent le
  * type ET account_type_source = 'admin' (action `qualify` de l'API). */
 function QualifyBlock({
@@ -309,10 +467,22 @@ function QualifyBlock({
   );
 }
 
-function UserDrawer({ user, isSelf, onClose }: { user: AdminUser; isSelf: boolean; onClose: () => void }) {
+function UserDrawer({
+  user,
+  orgOptions,
+  isSelf,
+  onClose,
+}: {
+  user: AdminUser;
+  orgOptions: OrgOption[];
+  isSelf: boolean;
+  onClose: () => void;
+}) {
   const router = useRouter();
   const [fullName, setFullName] = useState(user.name ?? '');
-  const [company, setCompany] = useState(user.company ?? '');
+  // L'org remplace le champ « Société » libre (brief § 3.2.1) ; company n'est
+  // plus éditable ici, seulement affiché en repli hérité.
+  const [orgId, setOrgId] = useState<string | null>(user.orgId ?? null);
   const [country, setCountry] = useState(user.country ?? '');
   // Valeur brute (pas filtrée) : une valeur héritée inconnue reste affichée et
   // n'est jamais renvoyée à l'API tant qu'elle n'est pas explicitement changée.
@@ -331,11 +501,13 @@ function UserDrawer({ user, isSelf, onClose }: { user: AdminUser; isSelf: boolea
     const body: Record<string, unknown> = {
       id: user.id,
       full_name: fullName.trim(),
-      company: company.trim(),
       country,
       account_type: accountType,
       is_admin: isAdmin,
     };
+    // Dirty-tracking : organization_id n'est envoyé que s'il a changé — même
+    // logique que les champs de rôle ci-dessous.
+    if ((orgId ?? null) !== (user.orgId ?? null)) body.organization_id = orgId;
     // N'envoyer que le champ de rôle réellement touché : renvoyer une valeur
     // héritée intacte la détruirait côté serveur (clé inconnue → 400).
     const initialRoles = user.jobRoles ?? [];
@@ -447,10 +619,14 @@ function UserDrawer({ user, isSelf, onClose }: { user: AdminUser; isSelf: boolea
           <label>Nom</label>
           <input className="admin-input" value={fullName} onChange={(e) => setFullName(e.target.value)} disabled={busy} />
         </div>
-        <div className="admin-field">
-          <label>Société</label>
-          <input className="admin-input" value={company} onChange={(e) => setCompany(e.target.value)} disabled={busy} />
-        </div>
+        <OrgSelectField
+          orgs={orgOptions}
+          value={orgId}
+          onChange={setOrgId}
+          accountType={accountType}
+          legacyCompany={user.company}
+          disabled={busy}
+        />
         <div className="admin-field">
           <label>Pays</label>
           <select className="admin-input" value={country} onChange={(e) => setCountry(e.target.value)} disabled={busy}>
@@ -1632,6 +1808,17 @@ export function AdminDashboard({
     [users]
   );
 
+  const orgById = useMemo(() => new Map(orgsFull.map((o) => [o.id, o] as const)), [orgsFull]);
+  // « Société » affichée / triée / cherchée / exportée : le nom de
+  // l'organisation prime, l'ancien texte libre profiles.company n'est qu'un
+  // repli hérité (brief § 3.2.2).
+  const companyOf = useMemo(
+    () =>
+      (u: AdminUser): string | null =>
+        (u.orgId ? orgById.get(u.orgId)?.name ?? null : null) ?? u.company,
+    [orgById]
+  );
+
   // Counts for the segment chips (computed over the full set, not the filtered one).
   const segmentCounts = useMemo(() => {
     const counts: Record<string, number> = {};
@@ -1649,7 +1836,7 @@ export function AdminDashboard({
       if (activityFilter === 'inactive' && (isAccountActive(u) || !u.onboarded)) return false;
       if (
         q &&
-        ![u.name, u.email, u.company, u.country, u.jobTitle].some((f) => (f ?? '').toLowerCase().includes(q))
+        ![u.name, u.email, companyOf(u), u.country, u.jobTitle].some((f) => (f ?? '').toLowerCase().includes(q))
       )
         return false;
       return true;
@@ -1660,7 +1847,7 @@ export function AdminDashboard({
         case 'name':
           return (u.name ?? u.email ?? '').toLowerCase();
         case 'company':
-          return (u.company ?? '').toLowerCase();
+          return (companyOf(u) ?? '').toLowerCase();
         case 'country':
           return (u.country ?? '').toLowerCase();
         case 'activity':
@@ -1678,7 +1865,7 @@ export function AdminDashboard({
       if (va > vb) return dir;
       return 0;
     });
-  }, [users, segment, countryFilter, activityFilter, query, sortKey, sortDir]);
+  }, [users, segment, countryFilter, activityFilter, query, sortKey, sortDir, companyOf]);
 
   const newThisWeek = useMemo(() => users.filter((u) => withinDays(u.signupAt, 7)).slice(0, 8), [users]);
   const toReengage = useMemo(
@@ -1753,8 +1940,6 @@ export function AdminDashboard({
     });
   }, [consoleValidations, cvFilter, cvQuery]);
 
-  const orgById = useMemo(() => new Map(orgsFull.map((o) => [o.id, o] as const)), [orgsFull]);
-
   const filteredSupport = useMemo(() => {
     const q = supportQuery.trim().toLowerCase();
     return supportTickets.filter((t) => {
@@ -1765,7 +1950,7 @@ export function AdminDashboard({
   }, [supportTickets, supportFilter, supportQuery]);
 
   const downloadCsv = () => {
-    const blob = new Blob(['﻿' + toCsv(filteredAccounts)], { type: 'text/csv;charset=utf-8;' });
+    const blob = new Blob(['﻿' + toCsv(filteredAccounts, companyOf)], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -1913,7 +2098,7 @@ export function AdminDashboard({
                         <li key={u.id}>
                           <a className="admin-mini-row" href={`/admin/users/${u.id}`}>
                             <span className="admin-mini-name">{u.name || u.email}</span>
-                            <span className="admin-mini-meta">{(u.company ?? '—') + ' · ' + fmtDate(u.signupAt)}</span>
+                            <span className="admin-mini-meta">{(companyOf(u) ?? '—') + ' · ' + fmtDate(u.signupAt)}</span>
                           </a>
                         </li>
                       ))}
@@ -1933,7 +2118,7 @@ export function AdminDashboard({
                         <li key={u.id}>
                           <a className="admin-mini-row" href={`/admin/users/${u.id}`}>
                             <span className="admin-mini-name">{u.name || u.email}</span>
-                            <span className="admin-mini-meta">{(u.company ?? '—') + ' · vu ' + fmtDate(u.lastActiveAt)}</span>
+                            <span className="admin-mini-meta">{(companyOf(u) ?? '—') + ' · vu ' + fmtDate(u.lastActiveAt)}</span>
                           </a>
                         </li>
                       ))}
@@ -2051,12 +2236,13 @@ export function AdminDashboard({
                           </td>
                           <td>
                             {org ? (
+                              // Le nom de l'org prime sur l'ancien texte libre (brief § 3.2.2).
                               <button type="button" className="admin-company-link" onClick={() => setEditingOrg(org)}>
                                 {org.logoUrl ? (
                                   // eslint-disable-next-line @next/next/no-img-element
                                   <img src={org.logoUrl} alt="" className="admin-company-logo" />
                                 ) : null}
-                                <span>{u.company ?? org.name}</span>
+                                <span>{org.name}</span>
                               </button>
                             ) : (
                               u.company ?? '—'
@@ -2397,7 +2583,9 @@ export function AdminDashboard({
         </div>
       </section>
 
-      {editing ? <UserDrawer user={editing} isSelf={editing.id === selfId} onClose={() => setEditing(null)} /> : null}
+      {editing ? (
+        <UserDrawer user={editing} orgOptions={orgsFull} isSelf={editing.id === selfId} onClose={() => setEditing(null)} />
+      ) : null}
       {creatingOrg || editingOrg ? (
         <OrgDrawer
           org={editingOrg}

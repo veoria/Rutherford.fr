@@ -351,6 +351,9 @@ export async function getAdminOverview(): Promise<AdminOverview> {
   };
 }
 
+/** Option du sélecteur d'organisation admin (brief § 3.2.1). */
+export type AdminOrgOption = { id: string; name: string; type: string };
+
 export type AdminUserCourse = {
   slug: string;
   title: string;
@@ -379,6 +382,9 @@ export type AdminUserDetail = {
   signupAt: string | null;
   lastSignInAt: string | null;
   org: { id: string; name: string; type: string; role: string | null; logoUrl: string | null } | null;
+  /** Toutes les organisations {id, name, type}, pour le sélecteur d'org de la
+   * fiche (l'org est la source de vérité pour « la société », brief § 3.2.1). */
+  orgOptions: AdminOrgOption[];
   level: number;
   xp: number;
   modulesCompleted: number;
@@ -398,7 +404,7 @@ export type AdminUserDetail = {
 export async function getAdminUserDetail(userId: string): Promise<AdminUserDetail | null> {
   const admin = createSupabaseAdminClient();
 
-  const [authRes, profRes, progRes, quizRes, enrollRes, passRes] = await Promise.all([
+  const [authRes, profRes, progRes, quizRes, enrollRes, passRes, orgListRes] = await Promise.all([
     admin.auth.admin.getUserById(userId),
     admin
       .from('profiles')
@@ -411,6 +417,8 @@ export async function getAdminUserDetail(userId: string): Promise<AdminUserDetai
     admin.from('quiz_attempts').select('course_slug, passed, score, total').eq('user_id', userId),
     admin.from('enrollments').select('source').eq('user_id', userId),
     admin.from('pass_subscriptions').select('status').eq('user_id', userId),
+    // Toutes les orgs pour le sélecteur d'organisation de la fiche.
+    admin.from('organizations').select('id, name, type').order('name'),
   ]);
 
   const authUser = authRes.data?.user as
@@ -431,6 +439,11 @@ export async function getAdminUserDetail(userId: string): Promise<AdminUserDetai
     notification_email: string | null;
   } | null;
   const email = authUser.email ?? '';
+  const orgOptions = ((orgListRes.data ?? []) as AdminOrgOption[]).map((o) => ({
+    id: o.id,
+    name: o.name,
+    type: o.type,
+  }));
 
   // Org membership + role.
   let org: AdminUserDetail['org'] = null;
@@ -577,6 +590,7 @@ export async function getAdminUserDetail(userId: string): Promise<AdminUserDetai
     signupAt: authUser.created_at ?? null,
     lastSignInAt: authUser.last_sign_in_at ?? null,
     org,
+    orgOptions,
     level: levelForXp(xp).level,
     xp,
     modulesCompleted,

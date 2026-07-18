@@ -27,10 +27,10 @@ async function requireAdmin() {
   return { user, error: null, status: 200 } as const;
 }
 
-/** Update a user's profile fields, account type, or admin flag — or, with
- * `action: 'qualify'`, qualify an account (brief § 2.3.a). Fields absent from
- * the body are NEVER touched: an unknown legacy value survives every save
- * unless the admin explicitly replaces it. */
+/** Update a user's profile fields, account type, organization or admin flag —
+ * or, with `action: 'qualify'`, qualify an account (brief § 2.3.a). Fields
+ * absent from the body are NEVER touched: an unknown legacy value survives
+ * every save unless the admin explicitly replaces it. */
 export async function PATCH(request: NextRequest) {
   const gate = await requireAdmin();
   if (gate.error) return NextResponse.json({ error: gate.error }, { status: gate.status });
@@ -131,6 +131,24 @@ export async function PATCH(request: NextRequest) {
     }
     patch.is_admin = body.is_admin;
   }
+  // Organisation — l'org est la source de vérité pour « la société » (brief
+  // § 3.2.1) : uuid d'une org existante, ou null pour détacher le profil (les
+  // adhésions organization_members restent intactes dans ce cas).
+  if (body.organization_id !== undefined) {
+    if (body.organization_id === null) {
+      patch.organization_id = null;
+    } else if (typeof body.organization_id === 'string' && body.organization_id) {
+      const { data: org } = await admin
+        .from('organizations')
+        .select('id')
+        .eq('id', body.organization_id)
+        .maybeSingle();
+      if (!org) return NextResponse.json({ error: 'bad_organization' }, { status: 400 });
+      patch.organization_id = body.organization_id;
+    } else {
+      return NextResponse.json({ error: 'bad_organization' }, { status: 400 });
+    }
+  }
 
   if (Object.keys(patch).length === 0) {
     return NextResponse.json({ error: 'nothing_to_update' }, { status: 400 });
@@ -140,9 +158,36 @@ export async function PATCH(request: NextRequest) {
   const { error } = await admin.from('profiles').update(patch).eq('id', id);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
+  // Rattachement à une org : garantir une adhésion active sans JAMAIS
+  // rétrograder un rôle owner/admin existant (même motif que
+  // ensureSharedXriteOrg) — on n'insère 'member' que si la ligne est absente,
+  // et on ne touche qu'au statut si elle existe inactive.
+  if (typeof patch.organization_id === 'string') {
+    const orgId = patch.organization_id;
+    const { data: mem } = await admin
+      .from('organization_members')
+      .select('status')
+      .eq('org_id', orgId)
+      .eq('user_id', id)
+      .maybeSingle();
+    if (!mem) {
+      await admin
+        .from('organization_members')
+        .upsert(
+          { org_id: orgId, user_id: id, role: 'member', status: 'active' },
+          { onConflict: 'org_id,user_id', ignoreDuplicates: true }
+        );
+    } else if ((mem as { status?: string }).status !== 'active') {
+      await admin.from('organization_members').update({ status: 'active' }).eq('org_id', orgId).eq('user_id', id);
+    }
+  }
+
   // Reflect a type change in the back-office org list: ensure the user has an
-  // organization and align its type when they own it.
-  if (typeof patch.account_type === 'string') await ensurePersonalOrg(id);
+  // organization and align its type when they own it — sauf si la requête vient
+  // de fixer explicitement l'organisation (y compris à null) : la décision de
+  // l'admin est autoritaire et ensurePersonalOrg ne doit pas la ré-écraser en
+  // recréant ou rattachant une org personnelle.
+  if (typeof patch.account_type === 'string' && !('organization_id' in patch)) await ensurePersonalOrg(id);
 
   return NextResponse.json({ ok: true });
 }
