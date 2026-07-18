@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { headers } from 'next/headers';
 import { notFound, redirect } from 'next/navigation';
 import { AccountPage } from '@/components/account-page';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
@@ -17,6 +18,12 @@ import { courseHasQuiz } from '@/data/academy-quizzes';
 
 export const metadata: Metadata = {
   title: 'Your Academy | Rutherford Academy',
+};
+
+// Fallback word for an untitled module in the "continue where you left off"
+// hero, keyed by the middleware's x-locale header.
+const MODULE_WORD: Record<string, string> = {
+  en: 'Module', fr: 'Module', de: 'Modul', it: 'Modulo', es: 'Módulo', pt: 'Módulo',
 };
 
 export const dynamic = 'force-dynamic';
@@ -159,6 +166,7 @@ export default async function AccountAcademyRoute() {
   });
 
   // "Continue where you left off": first library course with an unfinished module.
+  const moduleWord = MODULE_WORD[headers().get('x-locale') ?? 'en'] ?? 'Module';
   let resume: { slug: string; title: string; moduleIndex: number; moduleTitle: string } | null = null;
   for (const course of enrolledCourses) {
     if (course.completedCount >= course.modules) continue;
@@ -170,7 +178,7 @@ export default async function AccountAcademyRoute() {
       slug: course.slug,
       title: course.title,
       moduleIndex: nextIndex,
-      moduleTitle: lessons?.[nextIndex]?.title ?? `Module ${nextIndex + 1}`,
+      moduleTitle: lessons?.[nextIndex]?.title ?? `${moduleWord} ${nextIndex + 1}`,
     };
     break;
   }
