@@ -118,6 +118,18 @@ Les validations console vivent dans le projet Asana **« Console Validation V2 �
 
 Rattachement : dépend du lot 3 (organisation = source de vérité pour le matching) ; l'écran de réconciliation fait partie du lot 4.
 
+### 2.6 Attribution par presse et prévention des litiges entre canaux (acté le 18/07/2026)
+
+Cas d'école remonté par la direction : un revendeur fait une validation console pour un client final, X-Rite aussi pour le **même** client — et c'est X-Rite qui remporte la commande. Le revendeur ne doit alors **pas** voir ce client comme installé dans son parc. Règles :
+
+1. **Prospection cloisonnée par canal.** Chaque partenaire ne voit que les validations **qu'il a soumises**. Deux validations peuvent coexister pour le même client final via des canaux différents ; seule l'équipe Rutherford voit le rapprochement — l'admin lève une **alerte « double prospection »** (même société/pays ou même presse) pour gérer le conflit de canal en amont.
+2. **La visibilité du parc suit la commande, pas la prospection.** Nouvelle colonne `client_systems.sold_by_org_id` (revendeur, X-Rite, ou null = vente directe Rutherford) : la vue « Parc de mes clients » d'un revendeur ne contient que les presses **qu'il a vendues** ; idem pour le réseau X-Rite ; l'équipe voit tout. Un même client final peut donc apparaître dans deux parcs, chacun limité à ses propres presses.
+3. **L'attribution d'organisation (`reseller_org_id` / `distributor_org_id`) ne suffit pas** : elle reste utile pour le co-branding et la relation de compte, mais elle est au niveau client — la visibilité parc se calcule au niveau presse (§ 2). Corollaire : l'acceptation d'invitation qui re-pointe `reseller_org_id` (lot 0/B, `lib/organizations.ts:172-184`) ne doit jamais écraser une attribution existante sans validation admin (dernier-arrivé-gagnant = litige assuré).
+4. **Import Asana (§ 2.5)** : l'écran de réconciliation renseigne `sold_by_org_id` à partir des PO/SO et de la connaissance terrain — champ obligatoire avant matérialisation d'une presse équipée.
+5. Si un revendeur n'a aucune presse active chez un client final, ce client n'apparaît pas dans sa vue parc — même si une attribution de compte historique existe.
+
+Rattachement : modèle au lot 3, alerte double prospection et écran de réconciliation au lot 4. Les maquettes v3 restent valables en lisant « Parc de mes clients » comme « presses vendues par moi ».
+
 ---
 
 ## 3. Problème structurant n° 2 — Société vs Organisation
