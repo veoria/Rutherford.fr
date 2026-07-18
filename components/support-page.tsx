@@ -259,7 +259,7 @@ const COPY: Record<Locale, Copy> = {
     phoneLine: 'Foto machen und direkt vom Smartphone senden.',
     ctaPrimary: 'Ticket öffnen',
     ctaSecondary: 'Sprechen Sie mit einem Experten',
-    reassure: ['Experten-Team', 'Antwort < 1 Werktag', 'Verbindung nur mit Ihrer Zustimmung', 'Unverbindlich'],
+    reassure: ['Experten-Team', 'Antwort innerhalb von 1 Werktag', 'Verbindung nur mit Ihrer Zustimmung', 'Unverbindlich'],
     formTitle: 'Wie können wir helfen?',
     signedInPrefix: 'Angemeldet als',
     loginPrompt: 'Haben Sie ein Rutherford-Konto? Melden Sie sich an, um Ihre Angaben vorauszufüllen.',
@@ -389,7 +389,7 @@ const COPY: Record<Locale, Copy> = {
       },
       {
         q: 'Posso seguire il mio ticket?',
-        a: 'Sì. Con un account Rutherford, ogni ticket e il suo stato compaiono in Il mio account → Support, e le inviamo un’e-mail a ogni cambio di stato.',
+        a: 'Sì. Con un account Rutherford, ogni ticket e il suo stato compaiono in Il mio account → Supporto, e le inviamo un’e-mail a ogni cambio di stato.',
       },
     ],
     successTitle: 'Grazie per la sua richiesta.',

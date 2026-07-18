@@ -14,11 +14,20 @@ const STEP_LABELS: Record<Locale, [string, string, string]> = {
   pt: ['Conta', 'Email', 'Perfil'],
 };
 
+const PROGRESS_LABEL: Record<Locale, string> = {
+  en: 'Progress',
+  fr: 'Progression',
+  de: 'Fortschritt',
+  it: 'Avanzamento',
+  es: 'Progreso',
+  pt: 'Progresso',
+};
+
 export function AuthSteps({ active }: { active: 1 | 2 | 3 }) {
   const { locale } = useLanguage();
   const labels = STEP_LABELS[locale] ?? STEP_LABELS.en;
   return (
-    <ol className="auth-steps" aria-label="Progress">
+    <ol className="auth-steps" aria-label={PROGRESS_LABEL[locale] ?? PROGRESS_LABEL.en}>
       {labels.map((label, i) => {
         const n = (i + 1) as 1 | 2 | 3;
         const state = n < active ? 'done' : n === active ? 'current' : 'future';

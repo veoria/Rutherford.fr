@@ -6,6 +6,7 @@ import { SiteNav } from '@/components/site-nav';
 import { AuthSteps } from '@/components/auth-steps';
 import { type Locale, useLanguage } from '@/components/language-provider';
 import { COUNTRIES, JOB_TITLE_KEYS, type JobTitleKey } from '@/data/onboarding-options';
+import { localizedCountryName } from '@/lib/countries';
 
 type OnboardingCopy = {
   title: string;
@@ -345,7 +346,7 @@ export function OnboardingForm({ next, needsName, defaultName, defaultCompany }:
                 </option>
                 {COUNTRIES.map((c) => (
                   <option key={c} value={c}>
-                    {c}
+                    {localizedCountryName(c, locale)}
                   </option>
                 ))}
               </select>

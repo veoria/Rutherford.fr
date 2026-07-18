@@ -93,6 +93,7 @@ type CCopy = {
   send: string;
   writeMsg: string;
   attach: string;
+  removeFile: string;
   sent: string;
   addComment: string;
   uploadStart: string;
@@ -138,7 +139,7 @@ const COPY: Record<Locale, CCopy> = {
     tlChanges: 'Changes requested',
     tlChangesSub: 'A few details are needed before we can continue.',
     tlRejected: 'Not eligible',
-    tlRejectedSub: "This press isn't currently supported for closed-loop color.",
+    tlRejectedSub: 'This press isn’t currently supported for closed-loop color.',
     convTitle: 'Conversation',
     convEmpty: 'No messages yet — write below and our team will get it.',
     ourTeam: 'Rutherford team',
@@ -147,6 +148,7 @@ const COPY: Record<Locale, CCopy> = {
     send: 'Send',
     writeMsg: 'Write a message…',
     attach: 'Attach a file',
+    removeFile: 'Remove',
     sent: 'Sent — our team has it ✓',
     addComment: 'Add a comment or at least one photo.',
     uploadStart: 'Upload could not start, please retry.',
@@ -159,18 +161,18 @@ const COPY: Record<Locale, CCopy> = {
   fr: {
     title: 'Validation console',
     presses: (n) => `${n} presse${n > 1 ? 's' : ''}`,
-    eligible: (n) => `${n} éligible${n > 1 ? 's' : ''} à connecter`,
+    eligible: (n) => `${n} éligible${n > 1 ? 's' : ''} à la connexion`,
     all: 'Tous',
     search: 'Rechercher une presse…',
     newValidation: 'Nouvelle validation',
     st: {
       submitted: { short: 'En revue', long: 'En revue' },
       in_review: { short: 'En revue', long: 'En revue' },
-      changes_requested: { short: 'Modifs', long: 'Modifications demandées' },
+      changes_requested: { short: 'Modifications', long: 'Modifications demandées' },
       can_be_connected: { short: 'Éligible', long: 'Éligible à la connexion' },
       rejected: { short: 'Non éligible', long: 'Non éligible' },
     },
-    grp: { action: 'Modifs', review: 'En cours', green: 'Éligibles', red: 'Non éligibles' },
+    grp: { action: 'Modifications', review: 'En revue', green: 'Éligibles', red: 'Non éligibles' },
     openedOn: (d) => `Dossier ouvert le ${d}`,
     ctaConnect: 'Connecter la presse',
     ctaTalk: 'Parler à notre équipe',
@@ -199,6 +201,7 @@ const COPY: Record<Locale, CCopy> = {
     send: 'Envoyer',
     writeMsg: 'Écrire un message…',
     attach: 'Joindre un fichier',
+    removeFile: 'Retirer',
     sent: 'Envoyé — bien reçu ✓',
     addComment: 'Ajoutez un commentaire ou au moins une photo.',
     uploadStart: 'L’envoi n’a pas pu démarrer, veuillez réessayer.',
@@ -251,6 +254,7 @@ const COPY: Record<Locale, CCopy> = {
     send: 'Senden',
     writeMsg: 'Nachricht schreiben…',
     attach: 'Datei anhängen',
+    removeFile: 'Entfernen',
     sent: 'Gesendet — beim Team angekommen ✓',
     addComment: 'Fügen Sie einen Kommentar oder mindestens ein Foto hinzu.',
     uploadStart: 'Der Upload konnte nicht starten, bitte erneut versuchen.',
@@ -262,8 +266,8 @@ const COPY: Record<Locale, CCopy> = {
   },
   it: {
     title: 'Validazione console',
-    presses: (n) => `${n} macchina${n > 1 ? '/e' : ''}`,
-    eligible: (n) => `${n} idonea${n > 1 ? '/e' : ''} alla connessione`,
+    presses: (n) => `${n} ${n > 1 ? 'macchine' : 'macchina'}`,
+    eligible: (n) => `${n} ${n > 1 ? 'idonee' : 'idonea'} alla connessione`,
     all: 'Tutte',
     search: 'Cerca una macchina…',
     newValidation: 'Nuova validazione',
@@ -274,7 +278,7 @@ const COPY: Record<Locale, CCopy> = {
       can_be_connected: { short: 'Idonea', long: 'Idonea alla connessione' },
       rejected: { short: 'Non idonea', long: 'Non idonea' },
     },
-    grp: { action: 'Modifiche', review: 'In corso', green: 'Idonee', red: 'Non idonee' },
+    grp: { action: 'Modifiche', review: 'In revisione', green: 'Idonee', red: 'Non idonee' },
     openedOn: (d) => `Pratica aperta il ${d}`,
     ctaConnect: 'Connetti la macchina',
     ctaTalk: 'Parla con il team',
@@ -303,6 +307,7 @@ const COPY: Record<Locale, CCopy> = {
     send: 'Invia',
     writeMsg: 'Scriva un messaggio…',
     attach: 'Allega un file',
+    removeFile: 'Rimuovi',
     sent: 'Inviato — il team l’ha ricevuto ✓',
     addComment: 'Aggiunga un commento o almeno una foto.',
     uploadStart: 'Il caricamento non è partito, riprovi.',
@@ -326,7 +331,7 @@ const COPY: Record<Locale, CCopy> = {
       can_be_connected: { short: 'Apta', long: 'Apta para conectar' },
       rejected: { short: 'No apta', long: 'No apta' },
     },
-    grp: { action: 'Cambios', review: 'En curso', green: 'Aptas', red: 'No aptas' },
+    grp: { action: 'Cambios', review: 'En revisión', green: 'Aptas', red: 'No aptas' },
     openedOn: (d) => `Expediente abierto el ${d}`,
     ctaConnect: 'Conectar la prensa',
     ctaTalk: 'Hable con el equipo',
@@ -355,6 +360,7 @@ const COPY: Record<Locale, CCopy> = {
     send: 'Enviar',
     writeMsg: 'Escriba un mensaje…',
     attach: 'Adjuntar un archivo',
+    removeFile: 'Quitar',
     sent: 'Enviado — el equipo lo tiene ✓',
     addComment: 'Añada un comentario o al menos una foto.',
     uploadStart: 'No se pudo iniciar la subida, inténtelo de nuevo.',
@@ -379,7 +385,7 @@ const COPY: Record<Locale, CCopy> = {
       can_be_connected: { short: 'Elegível', long: 'Elegível para ligar' },
       rejected: { short: 'Não elegível', long: 'Não elegível' },
     },
-    grp: { action: 'Alterações', review: 'Em curso', green: 'Elegíveis', red: 'Não elegíveis' },
+    grp: { action: 'Alterações', review: 'Em análise', green: 'Elegíveis', red: 'Não elegíveis' },
     openedOn: (d) => `Processo aberto a ${d}`,
     ctaConnect: 'Ligar a máquina',
     ctaTalk: 'Fale com a nossa equipa',
@@ -407,6 +413,7 @@ const COPY: Record<Locale, CCopy> = {
     client: 'Cliente',
     send: 'Enviar',
     writeMsg: 'Escreva uma mensagem…',
+    removeFile: 'Remover',
     sent: 'Enviado, a equipa já a recebeu ✓',
     addComment: 'Adicione um comentário ou pelo menos uma foto.',
     uploadStart: 'Não foi possível iniciar o carregamento, tente novamente.',
@@ -823,7 +830,7 @@ export function ConsoleValidationsPortal({
                       {replyFiles.map((f, i) => (
                         <span key={i} className="cvp-file-chip">
                           {f.name}
-                          <button type="button" aria-label="Remove" onClick={() => setReplyFiles((cur) => cur.filter((_, j) => j !== i))}>
+                          <button type="button" aria-label={c.removeFile} onClick={() => setReplyFiles((cur) => cur.filter((_, j) => j !== i))}>
                             ×
                           </button>
                         </span>
