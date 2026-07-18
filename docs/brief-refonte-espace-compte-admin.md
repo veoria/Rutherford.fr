@@ -61,6 +61,22 @@ Prévoir la migration des valeurs existantes (un revendeur avec `operator` → �
 
 **d) Vocabulaire par type** : généraliser le mécanisme de `data/account-eyebrow.ts` (déjà correct) à toutes les surfaces qui disent « partenaire », et différencier les rangs Academy par filière (imprimeur / commercial / technique) quand les parcours existeront.
 
+### 2.3 Qualification des comptes — décisions actées (18/07/2026)
+
+Aujourd'hui, la classification revendeur/client repose sur la recherche de la **personne** par e-mail dans Pipedrive (`lib/pipedrive.ts:281-320`) ; introuvable ou CRM en panne → `client` par défaut, silencieusement (`lib/account-type.ts:81-91`). Deux mécanismes sont actés pour remplacer ce défaut deviné :
+
+**a) État « à qualifier ».**
+- Nouvelle colonne `profiles.account_type_source` : `'domain' | 'crm' | 'crm_domain' | 'admin' | 'unqualified'`. Le `account_type` reste l'un des quatre types existants (aucun switch UI à toucher) ; « à qualifier » = `account_type = 'client'` (accès sûr par défaut) + `source = 'unqualified'`.
+- Règles de re-dérivation : un type confirmé (`admin` ou `crm`) n'est **jamais** écrasé par un échec ou une absence de réponse CRM — seul un signal positif met à jour (corrige B3 proprement). La sauvegarde de profil ne rétrograde plus.
+- Onboarding d'un compte non qualifié : une question explicite « Vous êtes : imprimeur / revendeur ou distributeur » choisit le référentiel de postes affiché ; la réponse est stockée (`declared_profile`) mais ne confirme pas le type à elle seule.
+- Admin : segment/filtre « À qualifier » dans l'onglet Comptes + tuile KPI dédiée ; l'action « qualifier » fixe le type et passe `source = 'admin'`.
+
+**b) Domaines revendeurs alimentés par Pipedrive.**
+- Nouvelle table `partner_domains` (`domain` PK, id org Pipedrive, label, `synced_at`), alimentée par un job de synchronisation (cron quotidien) qui parcourt les organisations/personnes Pipedrive étiquetées Reseller / OEM / Distributor et en extrait les domaines e-mail (personnes + champ site web de l'org), en excluant les webmails publics (`FREE_EMAIL_DOMAINS`, `lib/account-type.ts:21-29`).
+- `deriveAccountType` devient : domaine équipe/X-Rite → team/distributor ; domaine ∈ `partner_domains` → `reseller` (`source = 'crm_domain'`) ; sinon recherche de la personne (`source = 'crm'`) ; sinon **à qualifier** (plus jamais `client` deviné).
+- Bénéfices : classification instantanée dès la connexion (chemin domaine, sans appel CRM), couverture des collègues d'un revendeur connus par leur domaine mais non fichés individuellement, et réduction mécanique de la file « à qualifier ».
+- Cas limites : une étiquette personne contredit le domaine → la personne l'emporte ; domaines retirés du CRM → purgés à la synchro suivante.
+
 ---
 
 ## 3. Problème structurant n° 2 — Société vs Organisation
@@ -144,7 +160,7 @@ Champs libres à transformer en référentiels au passage : `client_systems.prod
 |---|---|---|
 | B1 | Achat de cours + Pass actif = deux lignes → `maybeSingle()` erreur → **accès au cours refusé** au meilleur client | `lib/entitlements.ts:66-71` |
 | B2 | La connexion par mot de passe n'accepte jamais les invitations (seul le callback OAuth/magic-link le fait) | `app/api/auth/callback/route.ts:36-38` vs `sign-in-page.tsx:400` |
-| B3 | Enregistrer son profil pendant une panne Pipedrive rétrograde un revendeur en `client` | `app/api/account/profile/route.ts:109-113`, `lib/account-type.ts:81-91` |
+| B3 | Enregistrer son profil pendant une panne Pipedrive rétrograde un revendeur en `client` — correctif immédiat : ne jamais écraser sur échec/absence CRM ; solution cible : § 2.3 | `app/api/account/profile/route.ts:109-113`, `lib/account-type.ts:81-91` |
 | B4 | `getManageableOrg` plante pour un owner/admin de 2+ orgs → 403 sur invitations/membres/logo | `lib/organizations.ts:141-147` |
 | B5 | Sous-nav : client admin créé sans garde `HAS_ADMIN` → 500 systémiques si la clé manque ; le client user-scoped suffirait | `app/api/account/subnav/route.ts:18` |
 | B6 | Le quiz renvoie le corrigé complet à chaque tentative, sans limite d'essais | `app/api/account/quiz/route.ts:60-77` |
@@ -180,7 +196,7 @@ Points bloquants (le reste en annexe des rapports d'audit) :
 |---|---|---|---|
 | **0 — Sécurité & bugs** | S1-S7, B1-B5, B8 | rien | S ; diffs ciblés, sans design |
 | **1 — Textes** | § 5.3 complet | rien | S |
-| **2 — Référentiels par rôle** | postes reseller/distributor, validation par type (API + admin), migration des valeurs, gating usines/systèmes/« Mes presses », vocabulaire par type | décisions D2, D3 | M |
+| **2 — Référentiels par rôle & qualification** | postes reseller/distributor, validation par type (API + admin), migration des valeurs, gating usines/systèmes/« Mes presses », vocabulaire par type ; état « à qualifier » + table `partner_domains` et job de synchro Pipedrive (§ 2.3, acté) | décisions D2, D3 | M |
 | **3 — Organisation source de vérité** | sélecteur d'org admin, PATCH `organization_id`, dérivation de `company`, réconciliation invitations, matching CRM par org | lot 0 (B4) | M |
 | **4 — Admin v2** | top 10 du § 4.2 (URL, pages orgs, drill-down cours, liens croisés, audit log, maintenance POST, unification, confirmations, pagination) | lots 2-3 pour les formulaires | L |
 | **5 — Parcours Academy par filière** | ciblage des cours et rangs par rôle | lot 2 | M/L, contenu compris |
@@ -190,6 +206,8 @@ Lots 0 et 1 peuvent partir immédiatement sur cette branche. Les lots 2-4 mérit
 ---
 
 ## 7. Décisions à trancher (bloquantes pour les lots 2-4)
+
+**Actées le 18/07/2026** : l'état « à qualifier » (fin du `client` par défaut deviné) et l'alimentation des domaines revendeurs depuis Pipedrive — spécifiés au § 2.3, rattachés au lot 2.
 
 - **D1 — Locale `pt`** : un sixième locale portugais est câblé partout (sous-nav, PDF, middleware) mais absent du CLAUDE.md — l'officialiser (ajouter glossaire/ton pt) ou le sortir du périmètre ?
 - **D2 — Distributeurs non-X-Rite** : le type `distributor` est réservé au domaine `@xrite.com` et Pipedrive mappe « Distributor » → `reseller`. Prévoir plusieurs distributeurs (logo co-brand par org plutôt que codé en dur) ou entériner « distributeur = X-Rite » ?
