@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { getAdminAccess } from '@/lib/admin-access';
 import { createSupabaseAdminClient } from '@/lib/supabase/server';
 import { dropboxEnabled, dropboxDiagnostics, dropboxMoveFolder, getAccessToken } from '@/lib/dropbox';
+import { recordAudit } from '@/lib/admin-audit';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 120;
@@ -104,5 +105,13 @@ async function handle(request: NextRequest, allowMove: boolean) {
   }
 
   const movedCount = results.filter((x) => x.status.startsWith('moved')).length;
+  await recordAudit({
+    actorId: access.userId,
+    action: 'dropbox.move',
+    targetType: 'dropbox',
+    targetId: BASE_FOLDER,
+    summary: `Dropbox : ${movedCount} dossier(s) déplacé(s) depuis /${memberFolder}${BASE_FOLDER}`,
+    metadata: { moved: movedCount, from: `/${memberFolder}${BASE_FOLDER}` },
+  });
   return NextResponse.json({ moved: movedCount, from: `/${memberFolder}${BASE_FOLDER}`, to: BASE_FOLDER, results });
 }

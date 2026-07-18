@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { getAdminAccess } from '@/lib/admin-access';
 import { createSupabaseAdminClient } from '@/lib/supabase/server';
+import { recordAudit } from '@/lib/admin-audit';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 120;
@@ -114,6 +115,16 @@ async function handle(request: NextRequest, allowConfirm: boolean) {
   }
 
   const removableBytes = results.reduce((s, r) => s + r.bytes, 0);
+  if (confirm) {
+    await recordAudit({
+      actorId: access.userId,
+      action: 'storage.cleanup',
+      targetType: 'storage',
+      targetId: BUCKET,
+      summary: `Nettoyage stockage : ${results.filter((r) => r.deleted).length} dossier(s), ${Number((freedBytes / 1024 / 1024).toFixed(1))} Mo libérés`,
+      metadata: { days, candidates: results.length, freedMb: Number((freedBytes / 1024 / 1024).toFixed(1)) },
+    });
+  }
   return NextResponse.json({
     mode: confirm ? 'deleted' : 'dry-run',
     days,
