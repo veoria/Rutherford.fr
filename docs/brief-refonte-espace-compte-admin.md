@@ -14,6 +14,14 @@ L'espace compte a grandi par accrétion : Academy d'abord, puis le hub partenair
 2. **Deux sources de vérité pour « la société »** : `profiles.company` (texte libre) et `profiles.organization_id` (relation), jamais synchronisées, avec des surfaces qui lisent l'une ou l'autre.
 3. **Un admin mono-composant** : six onglets en `useState` dans un seul fichier, sans URL, sans drill-down, avec des modales qui contiennent des workflows entiers et des mutations silencieuses.
 
+### 1.1 Objectifs produit et orientations (actés le 18/07/2026)
+
+- **Double objectif : rétention et génération de leads.** Le client doit sentir que l'espace est utile pour suivre ses systèmes ; le prospect qui passe par la validation console doit percevoir du sérieux et de la solidité. Pour les revendeurs, l'ambition est d'en faire la plateforme incontournable pour leurs prospects et leurs clients Rutherford — la vue « parc revendeur » (§ 4.2) monte donc en priorité.
+- **Asana reste le back-office** de gestion des projets : support et validations console continuent de l'alimenter. Mais la **conversation avec le client se fait dans l'admin** — le point 5 du § 4.2 est confirmé : détail de la demande + fil de réponse dans l'admin, synchronisation des statuts Asana conservée.
+- **Academy : lead-gen ET montée en compétence, avec objectif de revenus** (vente de formation) et de position de référence pour Rutherford.fr → travail SEO/GEO sur les pages publiques Academy et cours, certificats pensés comme preuves partageables.
+- **Échelle cible : ~1 000 utilisateurs à 12-18 mois.** Les caps silencieux à 1 000 lignes (`lib/admin.ts:99`, `lib/organizations.ts:68,699`) sont exactement au niveau de la cible : la pagination serveur est à traiter comme un bug (lot 0/4), pas comme une amélioration.
+- **Licences perpétuelles ET abonnements annuels coexistent.** Le modèle `client_systems` doit porter le type de licence et l'échéance ; rappels de renouvellement automatiques côté client ; côté revendeur, l'espace devient un mini-CRM du parc (échéances et opportunités chez leurs clients) pour vendre plus.
+
 ---
 
 ## 2. Problème structurant n° 1 — Un espace, quatre métiers
@@ -194,11 +202,11 @@ Points bloquants (le reste en annexe des rapports d'audit) :
 
 | Lot | Contenu | Dépend de | Taille indicative |
 |---|---|---|---|
-| **0 — Sécurité & bugs** | S1-S7, B1-B5, B8 | rien | S ; diffs ciblés, sans design |
+| **0 — Sécurité & bugs** | S1-S7, B1-B5, B8 ; instrumentation PostHog (§ 8) | rien | S ; diffs ciblés, sans design |
 | **1 — Textes** | § 5.3 complet | rien | S |
 | **2 — Référentiels par rôle & qualification** | postes reseller/distributor, validation par type (API + admin), migration des valeurs, gating usines/systèmes/« Mes presses », vocabulaire par type ; état « à qualifier » + table `partner_domains` et job de synchro Pipedrive (§ 2.3, acté) | décisions D2, D3 | M |
 | **3 — Organisation source de vérité** | sélecteur d'org admin, PATCH `organization_id`, dérivation de `company`, réconciliation invitations, matching CRM par org | lot 0 (B4) | M |
-| **4 — Admin v2** | top 10 du § 4.2 (URL, pages orgs, drill-down cours, liens croisés, audit log, maintenance POST, unification, confirmations, pagination) | lots 2-3 pour les formulaires | L |
+| **4 — Admin v2** | top 10 du § 4.2 (URL, pages orgs, drill-down cours, liens croisés, audit log, maintenance POST, unification, confirmations, pagination) ; validations/support = conversation client dans l'admin, Asana conservé en back-office (acté § 1.1) ; modèle licences (type + échéance + rappels) et vue parc revendeur (acté § 1.1) | lots 2-3 pour les formulaires | L |
 | **5 — Parcours Academy par filière** | ciblage des cours et rangs par rôle | lot 2 | M/L, contenu compris |
 
 Lots 0 et 1 peuvent partir immédiatement sur cette branche. Les lots 2-4 méritent une validation de ce brief (et des décisions ci-dessous) avant implémentation.
@@ -207,7 +215,7 @@ Lots 0 et 1 peuvent partir immédiatement sur cette branche. Les lots 2-4 mérit
 
 ## 7. Décisions à trancher (bloquantes pour les lots 2-4)
 
-**Actées le 18/07/2026** : l'état « à qualifier » (fin du `client` par défaut deviné) et l'alimentation des domaines revendeurs depuis Pipedrive — spécifiés au § 2.3, rattachés au lot 2.
+**Actées le 18/07/2026** : l'état « à qualifier » (fin du `client` par défaut deviné) et l'alimentation des domaines revendeurs depuis Pipedrive — spécifiés au § 2.3, rattachés au lot 2. Également actés : les objectifs produit et orientations du § 1.1 (rétention + leads, Asana back-office avec conversation dans l'admin, Academy à double vocation + SEO/GEO, cible 1 000 utilisateurs, licences perpétuelles/abonnement) et l'étape zéro d'instrumentation du § 8.
 
 - **D1 — Locale `pt`** : un sixième locale portugais est câblé partout (sous-nav, PDF, middleware) mais absent du CLAUDE.md — l'officialiser (ajouter glossaire/ton pt) ou le sortir du périmètre ?
 - **D2 — Distributeurs non-X-Rite** : le type `distributor` est réservé au domaine `@xrite.com` et Pipedrive mappe « Distributor » → `reseller`. Prévoir plusieurs distributeurs (logo co-brand par org plutôt que codé en dur) ou entériner « distributeur = X-Rite » ?
@@ -216,3 +224,20 @@ Lots 0 et 1 peuvent partir immédiatement sur cette branche. Les lots 2-4 mérit
 - **D5 — Pages de démo** : à conserver derrière une auth/flag, ou à supprimer ?
 - **D6 — Quiz** : limite de tentatives et masquage du corrigé — quel niveau d'exigence pour la valeur des certificats ?
 - **D7 — Sites pour non-clients** : les revendeurs ont-ils besoin d'un concept de localisation (« agences ») ou les sites restent-ils strictement client ?
+
+---
+
+## 8. Métriques & instrumentation (étape zéro)
+
+**Constat (18/07/2026) : le site ne mesure rien.** Le composant PostHog est intégré au layout (`components/posthog-analytics.tsx:11`, monté dans `app/layout.tsx:126`) mais aucune clé `NEXT_PUBLIC_POSTHOG_KEY` n'est configurée ni documentée (absente de `.env.local.example`), et l'unique projet PostHog de l'organisation reçoit les données d'un autre site (ppwrconnect.com). Aucune donnée d'usage de l'espace compte n'existe : les priorités des lots 2-5 ne pourront pas être vérifiées sans instrumentation préalable.
+
+**Actions (à rattacher au lot 0)** :
+1. Créer un projet PostHog dédié à Rutherford.fr et configurer la clé (+ la documenter dans `.env.local.example`).
+2. Instrumenter les événements clés : connexion, étapes d'onboarding (démarrée/complétée), section du hub consultée, validation console soumise / statut consulté, ticket support créé / réponse lue, cours commencé / terminé / certifié, achat / Pass, clic renouvellement de licence.
+3. Un tableau de bord par objectif du § 1.1.
+
+**KPI par objectif** :
+- *Rétention client* : comptes actifs à 30/90 jours par type ; % de clients ayant consulté « Mon système » ; licences à échéance vues / renouvelées.
+- *Leads* : entonnoir validation console → compte créé → converti (avec source).
+- *Revendeurs* : connexions revendeur par mois ; actions sur le parc (validations soumises pour des clients, invitations envoyées).
+- *Academy* : cours commencés → certifiés → revenus (achats + Pass) ; part du trafic organique (SEO/GEO) sur les pages cours.
