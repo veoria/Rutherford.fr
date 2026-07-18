@@ -5,7 +5,17 @@ import { useRouter } from 'next/navigation';
 import { SiteFooter } from '@/components/site-footer';
 import { SiteNav } from '@/components/site-nav';
 import type { AdminUserDetail as Detail } from '@/lib/admin';
-import { COUNTRIES, JOB_TITLE_KEYS, isJobTitleKey, type JobTitleKey } from '@/data/onboarding-options';
+import {
+  COUNTRIES,
+  JOB_TITLE_KEYS,
+  TEAM_ROLE_KEYS,
+  isJobTitleKey,
+  isTeamRoleKey,
+  partnerRoleKeysFor,
+  type JobTitleKey,
+} from '@/data/onboarding-options';
+import { TEAM_ROLE_LABELS } from '@/data/team-role-labels';
+import { DISTRIBUTOR_ROLE_LABELS, RESELLER_ROLE_LABELS } from '@/data/partner-role-labels';
 import { ACCOUNT_TYPES, type AccountType } from '@/data/account-types';
 
 const ROLE_LABELS: Record<JobTitleKey, string> = {
@@ -26,6 +36,38 @@ const ACCOUNT_TYPE_LABELS: Record<AccountType, string> = {
   distributor: 'Distributeur',
   team: 'Équipe',
 };
+
+// L'admin est en français uniquement : on résout chaque référentiel vers ses
+// libellés FR (les clés restent la valeur stockée).
+const TEAM_ROLE_LABELS_FR = TEAM_ROLE_LABELS.fr as Record<string, string>;
+const PARTNER_ROLE_LABELS_FR: Record<'reseller' | 'distributor', Record<string, string>> = {
+  reseller: RESELLER_ROLE_LABELS.fr as Record<string, string>,
+  distributor: DISTRIBUTOR_ROLE_LABELS.fr as Record<string, string>,
+};
+
+/** Libellé « Poste » selon le type de compte : client → poste imprimerie,
+ * team → rôle interne, reseller/distributor → job_roles joints par « · ».
+ * Une valeur héritée inconnue est affichée telle quelle, jamais masquée. */
+function roleLabel(accountType: AccountType, jobTitle: string | null, jobRoles: string[] | null): string {
+  if (accountType === 'reseller' || accountType === 'distributor') {
+    const labels = PARTNER_ROLE_LABELS_FR[accountType];
+    if (jobRoles && jobRoles.length) return jobRoles.map((r) => labels[r] ?? r).join(' · ');
+    // Partenaire pré-migration sans job_roles : on retombe sur le job_title stocké.
+    return jobTitle ? (isJobTitleKey(jobTitle) ? ROLE_LABELS[jobTitle] : jobTitle) : '—';
+  }
+  if (accountType === 'team') {
+    return jobTitle ? (isTeamRoleKey(jobTitle) ? TEAM_ROLE_LABELS_FR[jobTitle] : jobTitle) : '—';
+  }
+  return jobTitle ? (isJobTitleKey(jobTitle) ? ROLE_LABELS[jobTitle] : jobTitle) : '—';
+}
+
+// Un compte typé client qui a déclaré des rôles partenaires à l'onboarding
+// « se déclare partenaire » : signal fort pour la qualification.
+const declaresPartner = (u: { accountType: AccountType; jobRoles: string[] | null }): boolean =>
+  u.accountType === 'client' && (u.jobRoles?.length ?? 0) > 0;
+
+const declaredRoleLabel = (key: string): string =>
+  PARTNER_ROLE_LABELS_FR.reseller[key] ?? PARTNER_ROLE_LABELS_FR.distributor[key] ?? key;
 
 const CV_STATUS_LABELS: Record<string, string> = {
   submitted: 'Reçue',
@@ -66,6 +108,8 @@ const ERROR_LABELS: Record<string, string> = {
   forbidden: 'Action réservée aux admins.',
   unauthorized: 'Session expirée — reconnectez-vous.',
   mfa_required: 'Activez la double authentification pour gérer les comptes.',
+  bad_job_title: 'Poste invalide pour ce type de compte.',
+  bad_job_roles: 'Rôles invalides pour ce type de compte.',
 };
 const errorLabel = (code: unknown) =>
   (typeof code === 'string' && ERROR_LABELS[code]) || 'Une erreur est survenue.';
@@ -88,12 +132,80 @@ function Fact({ label, value }: { label: string; value: string }) {
   );
 }
 
+/** Champ « Poste » qui s'adapte au type de compte sélectionné dans le
+ * formulaire : choix unique pour client (référentiel imprimerie) et team
+ * (rôles internes), cases à cocher multi-sélection pour les partenaires
+ * (job_roles). Une valeur héritée inconnue reste visible comme option dédiée —
+ * on ne la détruit jamais tant que l'admin ne la remplace pas. */
+function RoleField({
+  accountType,
+  jobTitle,
+  onJobTitle,
+  jobRoles,
+  onJobRoles,
+  disabled,
+}: {
+  accountType: AccountType;
+  jobTitle: string;
+  onJobTitle: (v: string) => void;
+  jobRoles: string[];
+  onJobRoles: (v: string[]) => void;
+  disabled: boolean;
+}) {
+  const partnerKeys = partnerRoleKeysFor(accountType);
+  if (partnerKeys) {
+    const labels = PARTNER_ROLE_LABELS_FR[accountType as 'reseller' | 'distributor'];
+    return (
+      <div className="admin-field">
+        <label>Rôles (multi-sélection)</label>
+        <div className="admin-site-access-list">
+          {partnerKeys.map((k) => {
+            const checked = jobRoles.includes(k);
+            return (
+              <label key={k} className="admin-site-access-item">
+                <input
+                  type="checkbox"
+                  checked={checked}
+                  disabled={disabled}
+                  onChange={() => onJobRoles(checked ? jobRoles.filter((r) => r !== k) : [...jobRoles, k])}
+                />
+                {labels[k] ?? k}
+              </label>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+  const keys: readonly string[] = accountType === 'team' ? TEAM_ROLE_KEYS : JOB_TITLE_KEYS;
+  const labelOf = (k: string) =>
+    accountType === 'team' ? TEAM_ROLE_LABELS_FR[k] ?? k : ROLE_LABELS[k as JobTitleKey] ?? k;
+  const legacy = jobTitle && !keys.includes(jobTitle) ? jobTitle : null;
+  return (
+    <div className="admin-field">
+      <label>Poste</label>
+      <select className="admin-input" value={jobTitle} onChange={(e) => onJobTitle(e.target.value)} disabled={disabled}>
+        <option value="">—</option>
+        {legacy ? <option value={legacy}>{legacy} (valeur héritée)</option> : null}
+        {keys.map((k) => (
+          <option key={k} value={k}>
+            {labelOf(k)}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
+}
+
 function ManagePanel({ user, isSelf }: { user: Detail; isSelf: boolean }) {
   const router = useRouter();
   const [fullName, setFullName] = useState(user.name ?? '');
   const [company, setCompany] = useState(user.company ?? '');
   const [country, setCountry] = useState(user.country ?? '');
-  const [jobTitle, setJobTitle] = useState(isJobTitleKey(user.jobTitle ?? '') ? (user.jobTitle as string) : '');
+  // Valeur brute (pas filtrée) : une valeur héritée inconnue reste affichée et
+  // n'est jamais renvoyée à l'API tant qu'elle n'est pas explicitement changée.
+  const [jobTitle, setJobTitle] = useState(user.jobTitle ?? '');
+  const [jobRoles, setJobRoles] = useState<string[]>(user.jobRoles ?? []);
   const [accountType, setAccountType] = useState<AccountType>(user.accountType);
   const [isAdmin, setIsAdmin] = useState(user.isAdmin);
   const [suspended, setSuspended] = useState(user.suspended);
@@ -104,25 +216,59 @@ function ManagePanel({ user, isSelf }: { user: Detail; isSelf: boolean }) {
   const save = async () => {
     setBusy(true);
     setError(null);
+    const body: Record<string, unknown> = {
+      id: user.id,
+      full_name: fullName.trim(),
+      company: company.trim(),
+      country,
+      account_type: accountType,
+      is_admin: isAdmin,
+    };
+    // N'envoyer que le champ de rôle réellement touché : renvoyer une valeur
+    // héritée intacte la détruirait côté serveur (clé inconnue → 400).
+    const initialRoles = user.jobRoles ?? [];
+    const rolesChanged =
+      jobRoles.length !== initialRoles.length || jobRoles.some((r) => !initialRoles.includes(r));
+    if (partnerRoleKeysFor(accountType)) {
+      if (rolesChanged) body.job_roles = jobRoles;
+    } else if (jobTitle !== (user.jobTitle ?? '')) {
+      body.job_title = jobTitle;
+    }
     try {
       const res = await fetch('/api/admin/users', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          id: user.id,
-          full_name: fullName.trim(),
-          company: company.trim(),
-          country,
-          job_title: jobTitle,
-          account_type: accountType,
-          is_admin: isAdmin,
-        }),
+        body: JSON.stringify(body),
       });
       if (!res.ok) {
         setError(errorLabel((await res.json().catch(() => ({}))).error));
         setBusy(false);
         return;
       }
+      router.refresh();
+      setBusy(false);
+    } catch {
+      setError('Erreur réseau.');
+      setBusy(false);
+    }
+  };
+
+  const qualify = async (t: 'client' | 'reseller' | 'distributor') => {
+    setBusy(true);
+    setError(null);
+    try {
+      const res = await fetch('/api/admin/users', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: user.id, action: 'qualify', account_type: t }),
+      });
+      if (!res.ok) {
+        setError(errorLabel((await res.json().catch(() => ({}))).error));
+        setBusy(false);
+        return;
+      }
+      // Le refresh recharge la fiche : le bloc disparaît et le type affiché
+      // reflète la qualification.
       router.refresh();
       setBusy(false);
     } catch {
@@ -177,6 +323,33 @@ function ManagePanel({ user, isSelf }: { user: Detail; isSelf: boolean }) {
         <h2>Gérer le compte</h2>
       </div>
 
+      {user.accountTypeSource === 'unqualified' ? (
+        <div className="admin-modal-members">
+          <h4 className="admin-modal-subhead">Qualifier</h4>
+          <p className="admin-modal-section-status">
+            Type de compte non déterminé automatiquement — choisissez le bon profil.
+            {declaresPartner(user) ? (
+              <>
+                {' '}
+                <span className="admin-badge">Se déclare partenaire</span>{' '}
+                {(user.jobRoles ?? []).map(declaredRoleLabel).join(' · ')}
+              </>
+            ) : null}
+          </p>
+          <div className="admin-modal-danger-row">
+            <button type="button" className="button button-light" onClick={() => void qualify('client')} disabled={busy}>
+              Client
+            </button>
+            <button type="button" className="button button-light" onClick={() => void qualify('reseller')} disabled={busy}>
+              Revendeur
+            </button>
+            <button type="button" className="button button-light" onClick={() => void qualify('distributor')} disabled={busy}>
+              Distributeur
+            </button>
+          </div>
+        </div>
+      ) : null}
+
       <div className="admin-field">
         <label>Nom</label>
         <input className="admin-input" value={fullName} onChange={(e) => setFullName(e.target.value)} disabled={busy} />
@@ -197,17 +370,14 @@ function ManagePanel({ user, isSelf }: { user: Detail; isSelf: boolean }) {
             ))}
           </select>
         </div>
-        <div className="admin-field">
-          <label>Poste</label>
-          <select className="admin-input" value={jobTitle} onChange={(e) => setJobTitle(e.target.value)} disabled={busy}>
-            <option value="">—</option>
-            {JOB_TITLE_KEYS.map((k) => (
-              <option key={k} value={k}>
-                {ROLE_LABELS[k]}
-              </option>
-            ))}
-          </select>
-        </div>
+        <RoleField
+          accountType={accountType}
+          jobTitle={jobTitle}
+          onJobTitle={setJobTitle}
+          jobRoles={jobRoles}
+          onJobRoles={setJobRoles}
+          disabled={busy}
+        />
       </div>
       <div className="admin-field">
         <label>Type de compte</label>
@@ -334,7 +504,7 @@ export function AdminUserDetail({
           <div className="admin-detail-grid">
             <Fact label="Société" value={user.company ?? '—'} />
             <Fact label="Pays" value={user.country ?? '—'} />
-            <Fact label="Poste" value={user.jobTitle && isJobTitleKey(user.jobTitle) ? ROLE_LABELS[user.jobTitle] : '—'} />
+            <Fact label="Poste" value={roleLabel(user.accountType, user.jobTitle, user.jobRoles)} />
             <div className="admin-fact">
               <span className="admin-fact-label">Organisation</span>
               <span className="admin-fact-value">

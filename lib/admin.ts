@@ -14,8 +14,12 @@ export type AdminUser = {
   company: string | null;
   country: string | null;
   jobTitle: string | null;
+  jobRoles: string[] | null;
   isAdmin: boolean;
   accountType: AccountType;
+  /** How account_type was decided ('unqualified' = à qualifier queue). NULL =
+   * legacy row classified before the qualification migration. */
+  accountTypeSource: string | null;
   suspended: boolean;
   onboarded: boolean;
   signupAt: string | null;
@@ -99,7 +103,9 @@ export async function getAdminOverview(): Promise<AdminOverview> {
     admin.auth.admin.listUsers({ perPage: 1000 }),
     admin
       .from('profiles')
-      .select('id, full_name, company, country, job_title, onboarded_at, is_admin, account_type, organization_id'),
+      .select(
+        'id, full_name, company, country, job_title, job_roles, onboarded_at, is_admin, account_type, account_type_source, organization_id'
+      ),
     admin.from('course_progress').select('user_id, course_slug, lesson_index, completed_at'),
     admin.from('quiz_attempts').select('user_id, course_slug, passed, score, total, created_at'),
     admin.from('enrollments').select('user_id, course_slug, source'),
@@ -130,9 +136,11 @@ export async function getAdminOverview(): Promise<AdminOverview> {
     company: string | null;
     country: string | null;
     job_title: string | null;
+    job_roles: string[] | null;
     onboarded_at: string | null;
     is_admin: boolean;
     account_type: string;
+    account_type_source: string | null;
     organization_id: string | null;
   }[];
   const progress = (progressRes.data ?? []) as (ProgressRow & { user_id: string })[];
@@ -217,8 +225,10 @@ export async function getAdminOverview(): Promise<AdminOverview> {
       company: p?.company ?? null,
       country: p?.country ?? null,
       jobTitle: p?.job_title ?? null,
+      jobRoles: p?.job_roles ?? null,
       isAdmin: Boolean(p?.is_admin),
       accountType: (p?.account_type as AccountType) ?? 'client',
+      accountTypeSource: p?.account_type_source ?? null,
       suspended: Boolean(u.banned_until) && new Date(u.banned_until as string).getTime() > Date.now(),
       onboarded: Boolean(p?.onboarded_at),
       signupAt: u.created_at ?? null,
@@ -359,7 +369,10 @@ export type AdminUserDetail = {
   company: string | null;
   country: string | null;
   jobTitle: string | null;
+  jobRoles: string[] | null;
   accountType: AccountType;
+  /** See AdminUser.accountTypeSource. */
+  accountTypeSource: string | null;
   isAdmin: boolean;
   suspended: boolean;
   onboarded: boolean;
@@ -390,7 +403,7 @@ export async function getAdminUserDetail(userId: string): Promise<AdminUserDetai
     admin
       .from('profiles')
       .select(
-        'full_name, company, country, job_title, onboarded_at, is_admin, account_type, organization_id, notification_email'
+        'full_name, company, country, job_title, job_roles, onboarded_at, is_admin, account_type, account_type_source, organization_id, notification_email'
       )
       .eq('id', userId)
       .maybeSingle(),
@@ -409,9 +422,11 @@ export async function getAdminUserDetail(userId: string): Promise<AdminUserDetai
     company: string | null;
     country: string | null;
     job_title: string | null;
+    job_roles: string[] | null;
     onboarded_at: string | null;
     is_admin: boolean;
     account_type: string;
+    account_type_source: string | null;
     organization_id: string | null;
     notification_email: string | null;
   } | null;
@@ -553,7 +568,9 @@ export async function getAdminUserDetail(userId: string): Promise<AdminUserDetai
     company: p?.company ?? null,
     country: p?.country ?? null,
     jobTitle: p?.job_title ?? null,
+    jobRoles: p?.job_roles ?? null,
     accountType: (p?.account_type as AccountType) ?? 'client',
+    accountTypeSource: p?.account_type_source ?? null,
     isAdmin: Boolean(p?.is_admin),
     suspended: Boolean(authUser.banned_until) && new Date(authUser.banned_until as string).getTime() > Date.now(),
     onboarded: Boolean(p?.onboarded_at),
