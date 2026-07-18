@@ -13,3 +13,6 @@ dist
 
 # Local Claude Code settings (may contain tokens in allowed-command strings)
 .claude/settings.local.json
+
+# TypeScript incremental build cache (regenerated on every check)
+tsconfig.tsbuildinfo
