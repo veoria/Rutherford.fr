@@ -77,7 +77,7 @@ For each product, after creating, copy the **Price ID** (starts with `price_`).
 
 ## 4. Vercel environment variables
 
-In the Vercel dashboard for project `website5` → **Settings → Environment Variables** → add the following for Production:
+In the Vercel dashboard for project `rutherford-fr` → **Settings → Environment Variables** → add the following for Production:
 
 | Variable | Where to find it |
 |---|---|

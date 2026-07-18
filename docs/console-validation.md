@@ -44,7 +44,7 @@ Written by the service role only; read via RLS.
 
 ## Environment variables
 
-Set in **Vercel → `website5` (serves rutherford.fr) → Production**, and `.env.local`.
+Set in **Vercel → `rutherford-fr` (serves rutherford.fr) → Production**, and `.env.local`.
 Template: `.env.local.example`.
 
 ```
