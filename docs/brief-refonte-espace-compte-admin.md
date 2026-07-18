@@ -57,12 +57,14 @@ La multi-sélection (un petit revendeur porte souvent plusieurs casquettes) impl
 
 **b) Cycle de vie d'une presse — deux catégories distinctes (précision du 18/07/2026).** La **validation console est de la prospection** : le prospect ou client demande si sa presse est compatible Rutherford — c'est l'entonnoir de leads, une catégorie à part. Ce n'est qu'**après la commande** que la presse bascule dans les **« Presses équipées »**, où l'on affiche la licence (type perpétuelle/abonnement, version, échéance), AnyDesk et **l'usine où se trouve la machine**. Le hub actuel mélange les deux (« Mes presses » est dérivé des validations) ; la cible les sépare strictement : validation console (prospection) → commande → presse équipée.
 
+**Clients directs (précision du 18/07/2026).** L'équipe Rutherford gère aussi des clients **en direct**, sans revendeur : l'attribution d'une organisation cliente connaît donc trois cas — via revendeur (`reseller_org_id`), via distributeur, ou **directe** (aucun des deux → portefeuille Rutherford). La vue équipe reprend alors la même mécanique que la vue revendeur (parc équipé + pipeline de prospection) appliquée aux clients directs, en plus de l'aperçu transversal admin.
+
 **c) Sections du hub gatées par rôle.** Matrice de visibilité cible :
 
 | Section | client | reseller | distributor | team |
 |---|---|---|---|---|
-| Presses équipées (licence type/version/échéance, usine, AnyDesk) | ✔ | vue parc de ses clients | agrégé réseau | ✖ |
-| Validation console — prospection (avant commande) | ✔ | « Validations de mes clients » | idem reseller | ✖ |
+| Presses équipées (licence type/version/échéance, usine, AnyDesk) | ✔ | vue parc de ses clients | agrégé réseau | parc des **clients directs** |
+| Validation console — prospection (avant commande) | ✔ | « Validations de mes clients » | idem reseller | pipeline des clients directs |
 | Tuile Console validation | ✔ | ✔ (voix client tiers) | ✔ (voix client tiers) | ✖ |
 | Clients / Réseau (ManagePanel) | ✖ (Équipe seulement) | Clients | Réseau + revendeurs | Admin |
 | Academy | parcours imprimeur | parcours commercial/technique (à créer) | idem | tout |
@@ -86,6 +88,18 @@ Aujourd'hui, la classification revendeur/client repose sur la recherche de la **
 - `deriveAccountType` devient : domaine équipe/X-Rite → team/distributor ; domaine ∈ `partner_domains` → `reseller` (`source = 'crm_domain'`) ; sinon recherche de la personne (`source = 'crm'`) ; sinon **à qualifier** (plus jamais `client` deviné).
 - Bénéfices : classification instantanée dès la connexion (chemin domaine, sans appel CRM), couverture des collègues d'un revendeur connus par leur domaine mais non fichés individuellement, et réduction mécanique de la file « à qualifier ».
 - Cas limites : une étiquette personne contredit le domaine → la personne l'emporte ; domaines retirés du CRM → purgés à la synchro suivante.
+
+### 2.4 Alimentation automatique de Pipedrive (portail → CRM)
+
+Le § 2.3 lit Pipedrive (étiquettes → domaines revendeurs) ; le flux inverse doit exister aussi — aujourd'hui seul l'onboarding avec consentement marketing crée un lead (`syncLeadToPipedrive`). Cible :
+
+1. **Validation console soumise → deal Pipedrive** dans un pipeline « Prospection console » : presse, constructeur, société, pays en champs/note ; le statut du deal suit celui de la validation (en revue / compatible / dossier à compléter) ; un deal gagné correspond à la commande → la presse bascule en « équipée ».
+2. **Commande / presse équipée → organisation et personne CRM à jour** (produit installé, type de licence, échéance) — c'est ce qui permet ensuite les deals de renouvellement.
+3. **Licence à échéance → deal de renouvellement** créé automatiquement (pipeline « Renouvellements »), attribué au revendeur de l'org ou à l'équipe pour un client direct — le pendant CRM du rappel affiché dans le hub (§ 1.1).
+4. **Dédoublonnage par identifiant** : stocker l'id d'organisation Pipedrive sur `organizations` (cf. § 3.2) et matcher par id, plus jamais par chaîne « Société ».
+5. **RGPD** : le lead d'onboarding reste soumis au consentement marketing ; les flux 1-3 relèvent de l'exécution du contrat / intérêt légitime B2B (demande de validation, gestion de licence) — à documenter dans la politique de confidentialité.
+
+Rattachement : flux 1 au lot 2 (il structure la prospection), flux 2-4 au lot 3 (org = source de vérité), flux 3 avec le modèle licences du lot 4.
 
 ---
 
