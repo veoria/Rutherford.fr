@@ -320,3 +320,48 @@ export async function getPersonLabelByEmail(
     return null;
   }
 }
+
+const PARTNER_LABEL_RE = /reseller|revendeur|oem|distributor|distributeur/;
+
+/**
+ * Walk every Pipedrive person carrying a partner label (Reseller / OEM /
+ * Distributor) and collect their e-mail domains, deduplicated + lowercased.
+ * Feeds the partner_domains table (brief § 2.3.b) so colleagues of a known
+ * reseller are classified at sign-in without a per-person CRM call.
+ * Returns Map<domain, label>. Throws on API failure (the cron reports it).
+ */
+export async function listPartnerEmailDomains(): Promise<Map<string, string>> {
+  if (!TOKEN) return new Map();
+  const names = await personLabelNames();
+  const partnerLabelIds = new Set(
+    [...names.entries()].filter(([, n]) => PARTNER_LABEL_RE.test(n.toLowerCase())).map(([id]) => id)
+  );
+  const domains = new Map<string, string>();
+  if (!partnerLabelIds.size) return domains;
+
+  let start = 0;
+  for (let page = 0; page < 40; page++) {
+    const res = await pd(`/persons?start=${start}&limit=500`);
+    const rows = Array.isArray(res?.data) ? res.data : [];
+    for (const person of rows) {
+      const ids: number[] = Array.isArray(person?.label_ids)
+        ? person.label_ids
+        : typeof person?.label === 'number'
+          ? [person.label]
+          : [];
+      const hit = ids.find((id) => partnerLabelIds.has(id));
+      if (hit === undefined) continue;
+      const emails: { value?: string }[] = Array.isArray(person?.email) ? person.email : [];
+      for (const e of emails) {
+        const at = (e?.value ?? '').lastIndexOf('@');
+        if (at === -1) continue;
+        const domain = (e.value as string).slice(at + 1).trim().toLowerCase();
+        if (domain.includes('.')) domains.set(domain, names.get(hit) ?? 'partner');
+      }
+    }
+    const pagination = res?.additional_data?.pagination;
+    if (!pagination?.more_items_in_collection) break;
+    start = Number(pagination.next_start ?? start + 500);
+  }
+  return domains;
+}

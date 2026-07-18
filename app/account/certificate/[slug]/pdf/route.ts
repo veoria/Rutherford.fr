@@ -145,7 +145,7 @@ export async function GET(request: NextRequest, { params }: { params: { slug: st
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('full_name, company, country, job_title, onboarded_at')
+    .select('full_name, company, country, job_title, job_roles, onboarded_at')
     .eq('id', user.id)
     .maybeSingle();
   if (!isOnboarded(profile)) return new NextResponse('Onboarding required', { status: 403 });

@@ -28,7 +28,7 @@ export default async function CertificateRoute({ params }: { params: { slug: str
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('full_name, company, country, job_title, onboarded_at')
+    .select('full_name, company, country, job_title, job_roles, onboarded_at')
     .eq('id', user.id)
     .maybeSingle();
   if (!isOnboarded(profile)) {

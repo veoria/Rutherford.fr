@@ -19,7 +19,7 @@ const PATH_ROOT = process.env.DROPBOX_PATH_ROOT;
  *     see WHERE the console-validation folders landed and the exact
  *     DROPBOX_PATH_ROOT value to set so writes target the team space.
  *
- *   GET /api/admin/dropbox-debug?move=1[&from=<member folder name>]
+ *   POST /api/admin/dropbox-debug?move=1[&from=<member folder name>]
  *     Relocate the already-created folders out of the member's personal home and
  *     into the team-space base folder. Run this AFTER setting DROPBOX_PATH_ROOT
  *     to the team root namespace and redeploying. The member folder name
@@ -28,6 +28,16 @@ const PATH_ROOT = process.env.DROPBOX_PATH_ROOT;
  *     found" and is reported, never duplicated destructively).
  */
 export async function GET(request: NextRequest) {
+  return handle(request, false);
+}
+
+// The folder relocation is a mutation — POST only, so a crafted link opened by
+// an authenticated admin can't trigger it via ambient cookies.
+export async function POST(request: NextRequest) {
+  return handle(request, true);
+}
+
+async function handle(request: NextRequest, allowMove: boolean) {
   const access = await getAdminAccess();
   if (!access.ok || !access.canManage) {
     return NextResponse.json({ error: 'forbidden' }, { status: 403 });
@@ -37,7 +47,14 @@ export async function GET(request: NextRequest) {
   }
 
   const params = request.nextUrl.searchParams;
-  const move = ['1', 'true', 'yes'].includes((params.get('move') || '').toLowerCase());
+  const moveRequested = ['1', 'true', 'yes'].includes((params.get('move') || '').toLowerCase());
+  if (moveRequested && !allowMove) {
+    return NextResponse.json(
+      { error: 'move requires POST', hint: 'Re-run the same URL as a POST request to relocate the folders.' },
+      { status: 405 }
+    );
+  }
+  const move = moveRequested && allowMove;
 
   const diagnostics = await dropboxDiagnostics();
   if (!move) return NextResponse.json(diagnostics);

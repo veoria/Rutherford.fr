@@ -220,3 +220,26 @@ export function countryNameFromCode(code: string | null | undefined): string | n
 export function isKnownCountry(name: string | null | undefined): boolean {
   return Boolean(name && COUNTRY_NAMES.includes(name));
 }
+
+const CODE_BY_NAME = new Map(COUNTRIES.map((c) => [c.name, c.code]));
+
+// data/onboarding-options.ts keeps an 'Other' entry that has no ISO code.
+const OTHER_LABEL: Record<string, string> = {
+  en: 'Other', fr: 'Autre', de: 'Anderes Land', it: 'Altro', es: 'Otro', pt: 'Outro',
+};
+
+/**
+ * Display name of a stored (English) country value in the given locale.
+ * Forms keep storing/submitting the English name — this localizes display only.
+ * Falls back to the stored name when the code or the translation is missing.
+ */
+export function localizedCountryName(name: string, locale: string): string {
+  if (name === 'Other') return OTHER_LABEL[locale] ?? name;
+  const code = CODE_BY_NAME.get(name);
+  if (!code) return name;
+  try {
+    return new Intl.DisplayNames([locale], { type: 'region' }).of(code) ?? name;
+  } catch {
+    return name;
+  }
+}

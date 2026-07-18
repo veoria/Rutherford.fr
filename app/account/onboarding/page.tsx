@@ -3,7 +3,7 @@ import { notFound, redirect } from 'next/navigation';
 import { OnboardingForm } from '@/components/onboarding-form';
 import { TeamOnboardingForm } from '@/components/team-onboarding-form';
 import { getCurrentUserAndProfile, isOnboarded } from '@/lib/profile';
-import { accountTypeFromDomain } from '@/lib/account-type';
+import { deriveAccountTypeWithSource } from '@/lib/account-classification';
 
 export const metadata: Metadata = {
   title: 'Complete your profile — Rutherford Academy',
@@ -42,9 +42,14 @@ export default async function OnboardingRoute({
     '';
   const defaultName = profile?.full_name || metaName || '';
 
+  // Classification with provenance (brief § 2.3.a): decides which role
+  // referential the form shows. 'unqualified' (no domain, no CRM signal) asks
+  // the explicit « Vous êtes : » question instead of guessing 'client'.
+  const derived = await deriveAccountTypeWithSource(user.email ?? '');
+
   // Internal team (rutherford.fr / veoria.fr / studiodelaroche.fr): a dedicated
   // step — company + country come from the domain, so we only ask name + role.
-  if (accountTypeFromDomain(user.email ?? '') === 'team') {
+  if (derived.type === 'team') {
     return <TeamOnboardingForm next={next} needsName={!defaultName} defaultName={defaultName} />;
   }
 
@@ -52,6 +57,13 @@ export default async function OnboardingRoute({
   const defaultCompany = (user.email ?? '').toLowerCase().endsWith('@xrite.com') ? 'X-Rite PANTONE' : '';
 
   return (
-    <OnboardingForm next={next} needsName={!defaultName} defaultName={defaultName} defaultCompany={defaultCompany} />
+    <OnboardingForm
+      next={next}
+      needsName={!defaultName}
+      defaultName={defaultName}
+      defaultCompany={defaultCompany}
+      accountType={derived.type}
+      unqualified={derived.source === 'unqualified'}
+    />
   );
 }

@@ -70,15 +70,15 @@ type Copy = {
 const COPY: Record<Locale, Copy> = {
   en: {
     heading: 'My presses',
-    status: { eligible: 'Eligible to connect', review: 'Under review', action: 'Action needed', rejected: 'Not eligible', closed: 'Closed' },
+    status: { eligible: 'Eligible to connect', review: 'In review', action: 'Action needed', rejected: 'Not eligible', closed: 'Closed' },
     gSupport: 'Support', gTraining: 'Training', gHelp: 'Help',
     supportCta: 'Get support for this press', guides: 'Guides & docs', email: 'Email us',
     validations: (n) => `${n} validation${n === 1 ? '' : 's'}`,
   },
   fr: {
-    heading: 'Mes machines',
-    status: { eligible: 'Éligible à la connexion', review: 'En analyse', action: 'Action requise', rejected: 'Non éligible', closed: 'Clôturée' },
-    gSupport: 'Support', gTraining: 'Formations', gHelp: 'Aides',
+    heading: 'Mes presses',
+    status: { eligible: 'Éligible à la connexion', review: 'En revue', action: 'Action requise', rejected: 'Non éligible', closed: 'Clôturée' },
+    gSupport: 'Support', gTraining: 'Formations', gHelp: 'Aide',
     supportCta: 'Support sur cette presse', guides: 'Guides & docs', email: 'Nous écrire',
     validations: (n) => `${n} validation${n === 1 ? '' : 's'}`,
   },
@@ -91,13 +91,13 @@ const COPY: Record<Locale, Copy> = {
   },
   it: {
     heading: 'Le mie macchine',
-    status: { eligible: 'Idonea alla connessione', review: 'In analisi', action: 'Azione richiesta', rejected: 'Non idonea', closed: 'Chiusa' },
-    gSupport: 'Support', gTraining: 'Formazione', gHelp: 'Aiuto',
+    status: { eligible: 'Idonea alla connessione', review: 'In revisione', action: 'Azione richiesta', rejected: 'Non idonea', closed: 'Chiusa' },
+    gSupport: 'Supporto', gTraining: 'Formazione', gHelp: 'Aiuto',
     supportCta: 'Assistenza per questa macchina', guides: 'Guide & doc', email: 'Scrivici',
     validations: (n) => `${n} validazion${n === 1 ? 'e' : 'i'}`,
   },
   es: {
-    heading: 'Mis máquinas',
+    heading: 'Mis prensas',
     status: { eligible: 'Apta para conexión', review: 'En revisión', action: 'Acción requerida', rejected: 'No apta', closed: 'Cerrada' },
     gSupport: 'Soporte', gTraining: 'Formación', gHelp: 'Ayuda',
     supportCta: 'Soporte para esta prensa', guides: 'Guías & docs', email: 'Escríbanos',
@@ -106,8 +106,8 @@ const COPY: Record<Locale, Copy> = {
   pt: {
     heading: 'As minhas máquinas',
     status: { eligible: 'Elegível para ligação', review: 'Em análise', action: 'Ação necessária', rejected: 'Não elegível', closed: 'Encerrada' },
-    gSupport: 'Support', gTraining: 'Formação', gHelp: 'Ajuda',
-    supportCta: 'Support para esta máquina', guides: 'Guias & docs', email: 'Escreva-nos',
+    gSupport: 'Suporte', gTraining: 'Formação', gHelp: 'Ajuda',
+    supportCta: 'Suporte para esta máquina', guides: 'Guias & docs', email: 'Escreva-nos',
     validations: (n) => `${n} validaç${n === 1 ? 'ão' : 'ões'}`,
   },
 };

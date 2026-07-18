@@ -18,12 +18,12 @@ const TABS: { key: Exclude<AccountTab, 'profile'>; href: string }[] = [
 ];
 
 const LABELS: Record<Locale, Record<Exclude<AccountTab, 'profile'>, string>> = {
-  en: { dashboard: 'Dashboard', console: 'Console Validation', academy: 'Academy', team: 'My team', support: 'Support' },
+  en: { dashboard: 'Dashboard', console: 'Console validation', academy: 'Academy', team: 'My team', support: 'Support' },
   fr: { dashboard: 'Tableau de bord', console: 'Validation console', academy: 'Academy', team: 'Mon équipe', support: 'Support' },
   de: { dashboard: 'Dashboard', console: 'Konsolenvalidierung', academy: 'Academy', team: 'Mein Team', support: 'Support' },
-  it: { dashboard: 'Dashboard', console: 'Validazione console', academy: 'Academy', team: 'Il mio team', support: 'Support' },
+  it: { dashboard: 'Dashboard', console: 'Validazione console', academy: 'Academy', team: 'Il mio team', support: 'Supporto' },
   es: { dashboard: 'Panel', console: 'Validación de consola', academy: 'Academy', team: 'Mi equipo', support: 'Soporte' },
-  pt: { dashboard: 'Painel', console: 'Validação de consola', academy: 'Academy', team: 'A minha equipa', support: 'Support' },
+  pt: { dashboard: 'Painel', console: 'Validação de consola', academy: 'Academy', team: 'A minha equipa', support: 'Suporte' },
 };
 
 export function AccountSubnav({ current }: { current: AccountTab }) {

@@ -8,7 +8,10 @@ export const dynamic = 'force-dynamic';
 export async function GET(request: NextRequest) {
   const url = new URL(request.url);
   const code = url.searchParams.get('code');
-  const next = url.searchParams.get('next') ?? '/account';
+  // Same-site relative paths only ('/x' but not '//x' or '/\x') — anything else
+  // would let a crafted auth link redirect to an attacker host (open redirect).
+  const rawNext = url.searchParams.get('next') ?? '';
+  const next = /^\/(?![/\\])/.test(rawNext) ? rawNext : '/account';
   const origin = url.origin;
 
   if (code) {
@@ -29,7 +32,7 @@ export async function GET(request: NextRequest) {
         if (byDomain && process.env.SUPABASE_SERVICE_ROLE_KEY) {
           await createSupabaseAdminClient()
             .from('profiles')
-            .update({ account_type: byDomain })
+            .update({ account_type: byDomain, account_type_source: 'domain' })
             .eq('id', user.id);
         }
         // Turn any pending team invitations for this email into memberships.

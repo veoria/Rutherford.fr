@@ -4,7 +4,17 @@ import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { SiteFooter } from '@/components/site-footer';
 import { SiteNav } from '@/components/site-nav';
-import { COUNTRIES, JOB_TITLE_KEYS, isJobTitleKey, type JobTitleKey } from '@/data/onboarding-options';
+import {
+  COUNTRIES,
+  JOB_TITLE_KEYS,
+  TEAM_ROLE_KEYS,
+  isJobTitleKey,
+  isTeamRoleKey,
+  partnerRoleKeysFor,
+  type JobTitleKey,
+} from '@/data/onboarding-options';
+import { TEAM_ROLE_LABELS } from '@/data/team-role-labels';
+import { DISTRIBUTOR_ROLE_LABELS, RESELLER_ROLE_LABELS } from '@/data/partner-role-labels';
 import { ACCOUNT_TYPES, type AccountType } from '@/data/account-types';
 import type { AdminConsoleValidation, AdminOverview, AdminSupportTicket, AdminUser } from '@/lib/admin';
 import type { AdminOrg, AdminOrgFull, MemberRole, OrgMember, PendingInvite } from '@/lib/organizations';
@@ -27,6 +37,38 @@ const ACCOUNT_TYPE_LABELS: Record<AccountType, string> = {
   distributor: 'Distributeur',
   team: 'Équipe',
 };
+
+// L'admin est en français uniquement : on résout chaque référentiel vers ses
+// libellés FR (les clés restent la valeur stockée).
+const TEAM_ROLE_LABELS_FR = TEAM_ROLE_LABELS.fr as Record<string, string>;
+const PARTNER_ROLE_LABELS_FR: Record<'reseller' | 'distributor', Record<string, string>> = {
+  reseller: RESELLER_ROLE_LABELS.fr as Record<string, string>,
+  distributor: DISTRIBUTOR_ROLE_LABELS.fr as Record<string, string>,
+};
+
+/** Libellé « Poste » selon le type de compte : client → poste imprimerie,
+ * team → rôle interne, reseller/distributor → job_roles joints par « · ».
+ * Une valeur héritée inconnue est affichée telle quelle, jamais masquée. */
+function roleLabel(accountType: AccountType, jobTitle: string | null, jobRoles: string[] | null): string {
+  if (accountType === 'reseller' || accountType === 'distributor') {
+    const labels = PARTNER_ROLE_LABELS_FR[accountType];
+    if (jobRoles && jobRoles.length) return jobRoles.map((r) => labels[r] ?? r).join(' · ');
+    // Partenaire pré-migration sans job_roles : on retombe sur le job_title stocké.
+    return jobTitle ? (isJobTitleKey(jobTitle) ? ROLE_LABELS[jobTitle] : jobTitle) : '—';
+  }
+  if (accountType === 'team') {
+    return jobTitle ? (isTeamRoleKey(jobTitle) ? TEAM_ROLE_LABELS_FR[jobTitle] : jobTitle) : '—';
+  }
+  return jobTitle ? (isJobTitleKey(jobTitle) ? ROLE_LABELS[jobTitle] : jobTitle) : '—';
+}
+
+// Un compte typé client qui a déclaré des rôles partenaires à l'onboarding
+// « se déclare partenaire » : signal fort pour la file « À qualifier ».
+const declaresPartner = (u: { accountType: AccountType; jobRoles: string[] | null }): boolean =>
+  u.accountType === 'client' && (u.jobRoles?.length ?? 0) > 0;
+
+const declaredRoleLabel = (key: string): string =>
+  PARTNER_ROLE_LABELS_FR.reseller[key] ?? PARTNER_ROLE_LABELS_FR.distributor[key] ?? key;
 
 const MEMBER_ROLE_LABELS: Record<MemberRole, string> = {
   owner: 'Propriétaire',
@@ -73,6 +115,8 @@ const ERROR_LABELS: Record<string, string> = {
   forbidden: 'Action réservée aux admins.',
   unauthorized: 'Session expirée — reconnectez-vous.',
   mfa_required: 'Activez la double authentification pour gérer les comptes.',
+  bad_job_title: 'Poste invalide pour ce type de compte.',
+  bad_job_roles: 'Rôles invalides pour ce type de compte.',
 };
 const errorLabel = (code: unknown) =>
   (typeof code === 'string' && ERROR_LABELS[code]) || 'Une erreur est survenue.';
@@ -120,6 +164,9 @@ const ACCOUNT_SEGMENTS: { key: string; label: string; match: (u: AdminUser) => b
   { key: 'reseller', label: 'Revendeurs', match: (u) => u.accountType === 'reseller' },
   { key: 'distributor', label: 'Distributeurs', match: (u) => u.accountType === 'distributor' },
   { key: 'team', label: 'Équipe', match: (u) => u.accountType === 'team' },
+  // File de qualification (brief § 2.3.a) : comptes dont le type n'a pas pu
+  // être déterminé automatiquement. NULL (lignes pré-migration) = confirmé.
+  { key: 'unqualified', label: 'À qualifier', match: (u) => u.accountTypeSource === 'unqualified' },
   { key: 'admin', label: 'Admins', match: (u) => u.isAdmin },
   { key: 'suspended', label: 'Suspendus', match: (u) => u.suspended },
 ];
@@ -134,9 +181,14 @@ function toCsv(users: AdminUser[]): string {
     const s = v === null || v === undefined ? '' : String(v);
     return /[",\n;]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
   };
+  // Poste exporté en libellé lisible selon le type ('' quand rien n'est renseigné).
+  const posteOf = (u: AdminUser) => {
+    const label = roleLabel(u.accountType, u.jobTitle, u.jobRoles);
+    return label === '—' ? '' : label;
+  };
   const rows = users.map((u) =>
     [
-      u.name, u.email, u.company, u.country, u.jobTitle, ACCOUNT_TYPE_LABELS[u.accountType],
+      u.name, u.email, u.company, u.country, posteOf(u), ACCOUNT_TYPE_LABELS[u.accountType],
       u.isAdmin ? 'oui' : '', u.onboarded ? 'oui' : '',
       u.signupAt ? new Date(u.signupAt).toISOString().slice(0, 10) : '',
       u.lastActiveAt ? new Date(u.lastActiveAt).toISOString().slice(0, 10) : '',
@@ -153,12 +205,119 @@ function AccountTypeBadge({ type }: { type: AccountType }) {
   return <span className={`account-type-badge account-type-${type}`}>{ACCOUNT_TYPE_LABELS[type]}</span>;
 }
 
+/** Champ « Poste » qui s'adapte au type de compte sélectionné dans le
+ * formulaire : choix unique pour client (référentiel imprimerie) et team
+ * (rôles internes), cases à cocher multi-sélection pour les partenaires
+ * (job_roles). Une valeur héritée inconnue reste visible comme option dédiée —
+ * on ne la détruit jamais tant que l'admin ne la remplace pas. */
+function RoleField({
+  accountType,
+  jobTitle,
+  onJobTitle,
+  jobRoles,
+  onJobRoles,
+  disabled,
+}: {
+  accountType: AccountType;
+  jobTitle: string;
+  onJobTitle: (v: string) => void;
+  jobRoles: string[];
+  onJobRoles: (v: string[]) => void;
+  disabled: boolean;
+}) {
+  const partnerKeys = partnerRoleKeysFor(accountType);
+  if (partnerKeys) {
+    const labels = PARTNER_ROLE_LABELS_FR[accountType as 'reseller' | 'distributor'];
+    return (
+      <div className="admin-field">
+        <label>Rôles (multi-sélection)</label>
+        <div className="admin-site-access-list">
+          {partnerKeys.map((k) => {
+            const checked = jobRoles.includes(k);
+            return (
+              <label key={k} className="admin-site-access-item">
+                <input
+                  type="checkbox"
+                  checked={checked}
+                  disabled={disabled}
+                  onChange={() => onJobRoles(checked ? jobRoles.filter((r) => r !== k) : [...jobRoles, k])}
+                />
+                {labels[k] ?? k}
+              </label>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+  const keys: readonly string[] = accountType === 'team' ? TEAM_ROLE_KEYS : JOB_TITLE_KEYS;
+  const labelOf = (k: string) =>
+    accountType === 'team' ? TEAM_ROLE_LABELS_FR[k] ?? k : ROLE_LABELS[k as JobTitleKey] ?? k;
+  const legacy = jobTitle && !keys.includes(jobTitle) ? jobTitle : null;
+  return (
+    <div className="admin-field">
+      <label>Poste</label>
+      <select className="admin-input" value={jobTitle} onChange={(e) => onJobTitle(e.target.value)} disabled={disabled}>
+        <option value="">—</option>
+        {legacy ? <option value={legacy}>{legacy} (valeur héritée)</option> : null}
+        {keys.map((k) => (
+          <option key={k} value={k}>
+            {labelOf(k)}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
+}
+
+/** Bloc « Qualifier » d'un compte à qualifier : trois boutons qui fixent le
+ * type ET account_type_source = 'admin' (action `qualify` de l'API). */
+function QualifyBlock({
+  user,
+  busy,
+  onQualify,
+}: {
+  user: { accountType: AccountType; jobRoles: string[] | null };
+  busy: boolean;
+  onQualify: (t: 'client' | 'reseller' | 'distributor') => void;
+}) {
+  return (
+    <div className="admin-modal-members">
+      <h4 className="admin-modal-subhead">Qualifier</h4>
+      <p className="admin-modal-section-status">
+        Type de compte non déterminé automatiquement — choisissez le bon profil.
+        {declaresPartner(user) ? (
+          <>
+            {' '}
+            <span className="admin-badge">Se déclare partenaire</span>{' '}
+            {(user.jobRoles ?? []).map(declaredRoleLabel).join(' · ')}
+          </>
+        ) : null}
+      </p>
+      <div className="admin-modal-danger-row">
+        <button type="button" className="button button-light" onClick={() => onQualify('client')} disabled={busy}>
+          Client
+        </button>
+        <button type="button" className="button button-light" onClick={() => onQualify('reseller')} disabled={busy}>
+          Revendeur
+        </button>
+        <button type="button" className="button button-light" onClick={() => onQualify('distributor')} disabled={busy}>
+          Distributeur
+        </button>
+      </div>
+    </div>
+  );
+}
+
 function UserDrawer({ user, isSelf, onClose }: { user: AdminUser; isSelf: boolean; onClose: () => void }) {
   const router = useRouter();
   const [fullName, setFullName] = useState(user.name ?? '');
   const [company, setCompany] = useState(user.company ?? '');
   const [country, setCountry] = useState(user.country ?? '');
-  const [jobTitle, setJobTitle] = useState(isJobTitleKey(user.jobTitle ?? '') ? (user.jobTitle as string) : '');
+  // Valeur brute (pas filtrée) : une valeur héritée inconnue reste affichée et
+  // n'est jamais renvoyée à l'API tant qu'elle n'est pas explicitement changée.
+  const [jobTitle, setJobTitle] = useState(user.jobTitle ?? '');
+  const [jobRoles, setJobRoles] = useState<string[]>(user.jobRoles ?? []);
   const [accountType, setAccountType] = useState<AccountType>(user.accountType);
   const [isAdmin, setIsAdmin] = useState(user.isAdmin);
   const [busy, setBusy] = useState(false);
@@ -169,19 +328,51 @@ function UserDrawer({ user, isSelf, onClose }: { user: AdminUser; isSelf: boolea
   const save = async () => {
     setBusy(true);
     setError(null);
+    const body: Record<string, unknown> = {
+      id: user.id,
+      full_name: fullName.trim(),
+      company: company.trim(),
+      country,
+      account_type: accountType,
+      is_admin: isAdmin,
+    };
+    // N'envoyer que le champ de rôle réellement touché : renvoyer une valeur
+    // héritée intacte la détruirait côté serveur (clé inconnue → 400).
+    const initialRoles = user.jobRoles ?? [];
+    const rolesChanged =
+      jobRoles.length !== initialRoles.length || jobRoles.some((r) => !initialRoles.includes(r));
+    if (partnerRoleKeysFor(accountType)) {
+      if (rolesChanged) body.job_roles = jobRoles;
+    } else if (jobTitle !== (user.jobTitle ?? '')) {
+      body.job_title = jobTitle;
+    }
     try {
       const res = await fetch('/api/admin/users', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          id: user.id,
-          full_name: fullName.trim(),
-          company: company.trim(),
-          country,
-          job_title: jobTitle,
-          account_type: accountType,
-          is_admin: isAdmin,
-        }),
+        body: JSON.stringify(body),
+      });
+      if (!res.ok) {
+        setError(errorLabel((await res.json().catch(() => ({}))).error));
+        setBusy(false);
+        return;
+      }
+      router.refresh();
+      onClose();
+    } catch {
+      setError('Erreur réseau.');
+      setBusy(false);
+    }
+  };
+
+  const qualify = async (t: 'client' | 'reseller' | 'distributor') => {
+    setBusy(true);
+    setError(null);
+    try {
+      const res = await fetch('/api/admin/users', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: user.id, action: 'qualify', account_type: t }),
       });
       if (!res.ok) {
         setError(errorLabel((await res.json().catch(() => ({}))).error));
@@ -248,6 +439,10 @@ function UserDrawer({ user, isSelf, onClose }: { user: AdminUser; isSelf: boolea
         </div>
         <p className="admin-modal-email">{user.email}</p>
 
+        {user.accountTypeSource === 'unqualified' ? (
+          <QualifyBlock user={user} busy={busy} onQualify={(t) => void qualify(t)} />
+        ) : null}
+
         <div className="admin-field">
           <label>Nom</label>
           <input className="admin-input" value={fullName} onChange={(e) => setFullName(e.target.value)} disabled={busy} />
@@ -267,17 +462,14 @@ function UserDrawer({ user, isSelf, onClose }: { user: AdminUser; isSelf: boolea
             ))}
           </select>
         </div>
-        <div className="admin-field">
-          <label>Poste</label>
-          <select className="admin-input" value={jobTitle} onChange={(e) => setJobTitle(e.target.value)} disabled={busy}>
-            <option value="">—</option>
-            {JOB_TITLE_KEYS.map((k) => (
-              <option key={k} value={k}>
-                {ROLE_LABELS[k]}
-              </option>
-            ))}
-          </select>
-        </div>
+        <RoleField
+          accountType={accountType}
+          jobTitle={jobTitle}
+          onJobTitle={setJobTitle}
+          jobRoles={jobRoles}
+          onJobRoles={setJobRoles}
+          disabled={busy}
+        />
         <div className="admin-field">
           <label>Type de compte</label>
           <select
@@ -1385,9 +1577,11 @@ function OrgDrawer({ org, allOrgs, onClose }: { org: AdminOrgFull | null; allOrg
           </div>
         ) : null}
 
-        {!isNew ? <OrgSitesSection orgId={org!.id} sites={sites} onChange={refreshSites} /> : null}
+        {/* Usines et systèmes sous licence sont des concepts CLIENT (brief
+            § 2.2.d) : jamais affichés pour une org revendeur/distributeur/équipe. */}
+        {!isNew && type === 'client' ? <OrgSitesSection orgId={org!.id} sites={sites} onChange={refreshSites} /> : null}
 
-        {!isNew ? <OrgSystemsSection orgId={org!.id} sites={sites} /> : null}
+        {!isNew && type === 'client' ? <OrgSystemsSection orgId={org!.id} sites={sites} /> : null}
 
         {error ? <p className="admin-modal-error">{error}</p> : null}
 
@@ -1688,6 +1882,24 @@ export function AdminDashboard({
                     <span className="admin-total-label">Academy Pass actifs</span>
                   </button>
                 </li>
+                <li>
+                  <button
+                    type="button"
+                    className="admin-total admin-total-btn"
+                    onClick={() => {
+                      // Cette tuile applique réellement son filtre : onglet
+                      // Comptes ouvert directement sur le segment « À qualifier ».
+                      setSegment('unqualified');
+                      setCountryFilter('');
+                      setActivityFilter('');
+                      setQuery('');
+                      setTab('accounts');
+                    }}
+                  >
+                    <span className="admin-total-value">{segmentCounts.unqualified ?? 0}</span>
+                    <span className="admin-total-label">Comptes à qualifier</span>
+                  </button>
+                </li>
               </ul>
 
               <div className="admin-overview-grid">
@@ -1832,6 +2044,9 @@ export function AdminDashboard({
                             </a>
                             {u.isAdmin ? <span className="admin-badge">admin</span> : null}
                             {u.suspended ? <span className="admin-badge admin-badge-warn">suspendu</span> : null}
+                            {u.accountTypeSource === 'unqualified' && declaresPartner(u) ? (
+                              <span className="admin-badge">Se déclare partenaire</span>
+                            ) : null}
                             {u.name ? <span className="admin-cv-sub">{u.email}</span> : null}
                           </td>
                           <td>

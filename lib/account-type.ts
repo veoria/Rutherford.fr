@@ -75,10 +75,12 @@ export function teamOrgFromEmail(email: string): { company: string; country: str
 }
 
 /**
- * Full derivation: domain first, then the Pipedrive person label. Defaults to
- * 'client'. Never throws — a CRM hiccup just yields 'client'.
+ * Positive-signal derivation: domain first, then the Pipedrive person label.
+ * Returns null when nothing decides it (person unknown, CRM down) so callers
+ * updating an EXISTING profile can keep the current type instead of silently
+ * downgrading it to the 'client' default. Never throws.
  */
-export async function deriveAccountType(email: string): Promise<AccountType> {
+export async function deriveAccountTypeSignal(email: string): Promise<AccountType | null> {
   const byDomain = accountTypeFromDomain(email);
   if (byDomain) return byDomain;
   try {
@@ -87,5 +89,14 @@ export async function deriveAccountType(email: string): Promise<AccountType> {
   } catch {
     /* fall through */
   }
-  return 'client';
+  return null;
+}
+
+/**
+ * Full derivation: domain first, then the Pipedrive person label. Defaults to
+ * 'client'. Never throws — a CRM hiccup just yields 'client'. Use only where a
+ * type MUST exist (first onboarding); profile saves use deriveAccountTypeSignal.
+ */
+export async function deriveAccountType(email: string): Promise<AccountType> {
+  return (await deriveAccountTypeSignal(email)) ?? 'client';
 }
