@@ -138,16 +138,27 @@ export async function getManageableOrg(
   const supabase = admin();
   if (!supabase) return null;
   try {
-    const { data } = await supabase
+    const { data: rows } = await supabase
       .from('organization_members')
       .select('org_id, role, organizations(name, type)')
       .eq('user_id', userId)
       .eq('status', 'active')
-      .in('role', ['owner', 'admin'])
-      .maybeSingle();
-    if (!data) return null;
-    const org = (data as { organizations?: { name?: string; type?: string } | null }).organizations ?? null;
-    return { orgId: data.org_id as string, role: data.role as MemberRole, orgName: org?.name ?? null, orgType: org?.type ?? null };
+      .in('role', ['owner', 'admin']);
+    if (!rows?.length) return null;
+    // A user can hold owner/admin in several orgs (own org + accepted admin
+    // invite); prefer the profile's home org so UI and mutations agree.
+    let row = rows[0];
+    if (rows.length > 1) {
+      const { data: prof } = await supabase
+        .from('profiles')
+        .select('organization_id')
+        .eq('id', userId)
+        .maybeSingle();
+      const homeOrg = (prof?.organization_id as string | null) ?? null;
+      row = rows.find((r) => (r.org_id as string) === homeOrg) ?? rows[0];
+    }
+    const org = (row as { organizations?: { name?: string; type?: string } | null }).organizations ?? null;
+    return { orgId: row.org_id as string, role: row.role as MemberRole, orgName: org?.name ?? null, orgType: org?.type ?? null };
   } catch {
     return null;
   }
@@ -159,11 +170,15 @@ export async function acceptPendingInvitations(userId: string, email: string): P
   const supabase = admin();
   if (!supabase || !email) return;
   try {
+    // Exact match only — invitations store emails lowercased, and an ilike
+    // pattern would let '%'/'_' in an address match someone else's invitation.
+    // Expired invitations (null = legacy rows without expiry) are never accepted.
     const { data: invites } = await supabase
       .from('invitations')
       .select('id, org_id, role, kind')
       .eq('status', 'pending')
-      .ilike('email', email);
+      .eq('email', email.trim().toLowerCase())
+      .or(`expires_at.is.null,expires_at.gt.${new Date().toISOString()}`);
     for (const inv of (invites ?? []) as { id: string; org_id: string; role: MemberRole; kind: string }[]) {
       if (inv.kind === 'member') {
         await supabase

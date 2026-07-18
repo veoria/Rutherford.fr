@@ -273,7 +273,7 @@ const COPY: Record<Locale, AccountCopy> = {
     viewCertificate: 'Voir le certificat',
     takeAssessment: 'Passer l’évaluation',
     assessmentToPass: 'Évaluation finale à passer',
-    certScoreLine: (pct) => `Réussi à ${pct}%`,
+    certScoreLine: (pct) => `Réussi à ${pct} %`,
     certHeading: 'Certificat de réussite',
     certAwardedTo: 'Ce certificat atteste que',
     certCompleted: 'a suivi avec succès',

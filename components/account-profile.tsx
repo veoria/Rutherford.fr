@@ -7,6 +7,7 @@ import { SiteNav } from '@/components/site-nav';
 import { AccountSubnav } from '@/components/account-subnav';
 import { type Locale, useLanguage } from '@/components/language-provider';
 import { COUNTRIES, JOB_TITLE_KEYS, TEAM_ROLE_KEYS, type JobTitleKey } from '@/data/onboarding-options';
+import { localizedCountryName } from '@/lib/countries';
 import { TEAM_ROLE_LABELS } from '@/data/team-role-labels';
 import type { AccountType } from '@/data/account-types';
 
@@ -15,7 +16,7 @@ const BANNER: Record<Locale, { title: (pct: number) => string; sub: string }> = 
   en: { title: (p) => `Profile ${p}% complete`, sub: 'Complete your profile to unlock all partner features.' },
   fr: { title: (p) => `Profil complété à ${p} %`, sub: 'Complétez votre profil pour débloquer toutes les fonctionnalités partenaire.' },
   de: { title: (p) => `Profil zu ${p}% ausgefüllt`, sub: 'Vervollständigen Sie Ihr Profil, um alle Partnerfunktionen freizuschalten.' },
-  it: { title: (p) => `Profilo completato al ${p}%`, sub: 'Completa il tuo profilo per sbloccare tutte le funzionalità partner.' },
+  it: { title: (p) => `Profilo completato al ${p}%`, sub: 'Completi il suo profilo per sbloccare tutte le funzionalità partner.' },
   es: { title: (p) => `Perfil completado al ${p}%`, sub: 'Complete su perfil para desbloquear todas las funciones de partner.' },
   pt: { title: (p) => `Perfil ${p}% completo`, sub: 'Complete o seu perfil para desbloquear todas as funcionalidades de parceiro.' },
 };
@@ -176,8 +177,8 @@ const VIEW: Record<Locale, View> = {
     edit: 'Editar',
     notProvided: 'No indicado',
     funcLabel: 'Función',
-    emailField: 'Correo',
-    notifField: 'Email de notificación',
+    emailField: 'Correo electrónico',
+    notifField: 'Correo de notificación',
     raisonLabel: 'Razón social',
     logoField: 'Logo de la empresa',
     logoEmpty: 'Sin logo',
@@ -338,10 +339,10 @@ const COPY: Record<Locale, Copy> = {
     companyPlaceholder: 'Imprimerie Dupont',
     roleLabel: 'Votre poste',
     selectRole: 'Sélectionnez votre poste',
-    loginEmailLabel: 'Email de connexion',
-    notifLabel: 'Email de notification (facultatif)',
+    loginEmailLabel: 'E-mail de connexion',
+    notifLabel: 'E-mail de notification (facultatif)',
     notifPlaceholder: 'notifications@entreprise.com',
-    notifHint: 'L’adresse où nous envoyons le suivi de vos demandes. Laissez vide pour utiliser votre email de connexion.',
+    notifHint: 'L’adresse où nous envoyons le suivi de vos demandes. Laissez vide pour utiliser votre e-mail de connexion.',
     typeLabel: 'Type de compte',
     typeHint: 'Défini par Rutherford — selon votre organisation.',
     submit: 'Enregistrer',
@@ -434,10 +435,10 @@ const COPY: Record<Locale, Copy> = {
     companyPlaceholder: 'Tipografia Rossi',
     roleLabel: 'Il suo ruolo',
     selectRole: 'Selezioni il suo ruolo',
-    loginEmailLabel: 'Email di accesso',
-    notifLabel: 'Email di notifica (facoltativa)',
+    loginEmailLabel: 'E-mail di accesso',
+    notifLabel: 'E-mail di notifica (facoltativa)',
     notifPlaceholder: 'notifiche@azienda.com',
-    notifHint: 'Dove inviamo gli aggiornamenti sulle sue richieste. Lasci vuoto per usare l’email di accesso.',
+    notifHint: 'Dove inviamo gli aggiornamenti sulle sue richieste. Lasci vuoto per usare l’e-mail di accesso.',
     typeLabel: 'Tipo di account',
     typeHint: 'Definito da Rutherford — in base alla sua organizzazione.',
     submit: 'Salva',
@@ -482,10 +483,10 @@ const COPY: Record<Locale, Copy> = {
     companyPlaceholder: 'Imprenta Pérez',
     roleLabel: 'Su puesto',
     selectRole: 'Seleccione su puesto',
-    loginEmailLabel: 'Email de acceso',
-    notifLabel: 'Email de notificación (opcional)',
+    loginEmailLabel: 'Correo de acceso',
+    notifLabel: 'Correo de notificación (opcional)',
     notifPlaceholder: 'notificaciones@empresa.com',
-    notifHint: 'Dónde enviamos las novedades de sus solicitudes. Déjelo vacío para usar su email de acceso.',
+    notifHint: 'Dónde enviamos las novedades de sus solicitudes. Déjelo vacío para usar su correo de acceso.',
     typeLabel: 'Tipo de cuenta',
     typeHint: 'Definido por Rutherford — según su organización.',
     submit: 'Guardar',
@@ -1053,13 +1054,13 @@ export function AccountProfile({
                       </option>
                       {COUNTRIES.map((co) => (
                         <option key={co} value={co}>
-                          {co}
+                          {localizedCountryName(co, locale)}
                         </option>
                       ))}
                     </select>
                   </label>
                 ) : (
-                  <ProfileField label={t.countryLabel} value={country} empty={v.notProvided} />
+                  <ProfileField label={t.countryLabel} value={country ? localizedCountryName(country, locale) : ''} empty={v.notProvided} />
                 )}
                 <div className="profile-field">
                   <span className="profile-field-k">{v.logoField}</span>

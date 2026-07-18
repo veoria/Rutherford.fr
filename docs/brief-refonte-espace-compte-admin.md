@@ -49,11 +49,11 @@ Le code ne possède qu'un aiguillage binaire « team / tous les autres », à ch
 **a) Quatre référentiels de postes** dans `data/onboarding-options.ts`, sélectionnés par `account_type`, validés côté API par type, avec contrainte (ou validation) en base :
 
 - **client** — inchangé : Conducteur de presse, Prépresse / Photogravure, Responsable de production, Qualité / Responsable couleur, Achats, Direction, Marque / Acheteur packaging, Commercial / Marketing, Autre.
-- **reseller** (nouveau) : Commercial, Technicien / Installateur, Support technique, Direction / Gérant, Marketing, Autre.
-- **distributor** (nouveau) : Commercial, Spécialiste applications, Responsable produit, Marketing, Direction, Autre.
+- **reseller** (acté 18/07/2026, **multi-sélection**) : Gérant / Direction (`owner_manager`), Commercial (`sales`), Technique / Installation (`technical`), Formateur (`trainer`), Autre (`other`).
+- **distributor** (X-Rite — acté 18/07/2026, **multi-sélection**) : Commercial (`sales`), Spécialiste applications (`application_specialist`), Responsable produit (`product_manager`), Formateur (`trainer`), Direction (`management`), Autre (`other`).
 - **team** — inchangé : Commercial, Technique-Couleur, Support, Direction, Marketing, Opérations.
 
-Prévoir la migration des valeurs existantes (un revendeur avec `operator` → à requalifier ou à conserver en lecture avec bandeau « à mettre à jour »).
+La multi-sélection (un petit revendeur porte souvent plusieurs casquettes) implique un poste multi-valué pour les types partenaires : nouvelle colonne `profiles.job_roles text[]` validée par clé côté API, `job_title` restant celle des clients/équipe. Prévoir la migration des valeurs existantes (un revendeur avec `operator` → à requalifier, avec bandeau « à mettre à jour » dans le profil).
 
 **b) Sections du hub gatées par rôle.** Matrice de visibilité cible :
 
@@ -218,8 +218,8 @@ Lots 0 et 1 peuvent partir immédiatement sur cette branche. Les lots 2-4 mérit
 **Actées le 18/07/2026** : l'état « à qualifier » (fin du `client` par défaut deviné) et l'alimentation des domaines revendeurs depuis Pipedrive — spécifiés au § 2.3, rattachés au lot 2. Également actés : les objectifs produit et orientations du § 1.1 (rétention + leads, Asana back-office avec conversation dans l'admin, Academy à double vocation + SEO/GEO, cible 1 000 utilisateurs, licences perpétuelles/abonnement) et l'étape zéro d'instrumentation du § 8.
 
 - **D1 — Locale `pt`** : un sixième locale portugais est câblé partout (sous-nav, PDF, middleware) mais absent du CLAUDE.md — l'officialiser (ajouter glossaire/ton pt) ou le sortir du périmètre ?
-- **D2 — Distributeurs non-X-Rite** : le type `distributor` est réservé au domaine `@xrite.com` et Pipedrive mappe « Distributor » → `reseller`. Prévoir plusieurs distributeurs (logo co-brand par org plutôt que codé en dur) ou entériner « distributeur = X-Rite » ?
-- **D3 — Référentiels de postes** proposés au § 2.2.a : valider/amender les listes reseller et distributor.
+- ~~**D2 — Distributeurs non-X-Rite**~~ → **acté (18/07/2026)** : X-Rite est le seul distributeur ; le mapping actuel (domaine `@xrite.com`, co-branding X-Rite) est entériné. À revisiter seulement si un second distributeur apparaît.
+- ~~**D3 — Référentiels de postes**~~ → **acté (18/07/2026)** : listes du § 2.2.a validées, avec **multi-sélection** pour reseller et distributor.
 - **D4 — Auto-rattachement par domaine e-mail** (S8) : conserver tel quel, ou exiger une approbation owner/admin ?
 - **D5 — Pages de démo** : à conserver derrière une auth/flag, ou à supprimer ?
 - **D6 — Quiz** : limite de tentatives et masquage du corrigé — quel niveau d'exigence pour la valeur des certificats ?

@@ -1,7 +1,8 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { createSupabaseServerClient, createSupabaseAdminClient } from '@/lib/supabase/server';
 import { isJobTitleKey, isKnownCountry, isTeamRoleKey } from '@/data/onboarding-options';
-import { deriveAccountType, teamOrgFromEmail } from '@/lib/account-type';
+import { deriveAccountTypeSignal, teamOrgFromEmail } from '@/lib/account-type';
+import type { AccountType } from '@/data/account-types';
 import { syncLeadToPipedrive } from '@/lib/pipedrive';
 
 export const dynamic = 'force-dynamic';
@@ -40,7 +41,7 @@ export async function POST(request: NextRequest) {
 
   const { data: existing } = await supabase
     .from('profiles')
-    .select('full_name, onboarded_at')
+    .select('full_name, onboarded_at, account_type')
     .eq('id', user.id)
     .maybeSingle();
 
@@ -90,7 +91,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid notification email' }, { status: 400 });
   }
 
-  const accountType = await deriveAccountType(user.email ?? '');
+  // Re-derive only on a POSITIVE signal — when the CRM is down or silent, keep
+  // the existing classification instead of downgrading a reseller to 'client'.
+  const signal = await deriveAccountTypeSignal(user.email ?? '');
+  const accountType: AccountType = signal ?? ((existing?.account_type as AccountType | null) ?? 'client');
   const firstOnboarding = !existing?.onboarded_at;
 
   const base = {

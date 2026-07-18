@@ -8,7 +8,10 @@ export const dynamic = 'force-dynamic';
 export async function GET(request: NextRequest) {
   const url = new URL(request.url);
   const code = url.searchParams.get('code');
-  const next = url.searchParams.get('next') ?? '/account';
+  // Same-site relative paths only ('/x' but not '//x' or '/\x') — anything else
+  // would let a crafted auth link redirect to an attacker host (open redirect).
+  const rawNext = url.searchParams.get('next') ?? '';
+  const next = /^\/(?![/\\])/.test(rawNext) ? rawNext : '/account';
   const origin = url.origin;
 
   if (code) {
