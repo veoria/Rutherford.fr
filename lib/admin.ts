@@ -36,6 +36,13 @@ export type AdminUser = {
   purchases: number;
 };
 
+export type AdminCourseLearner = {
+  userId: string;
+  modulesDone: number;
+  bestQuizPct: number | null;
+  certified: boolean;
+};
+
 export type AdminCourseStat = {
   slug: string;
   title: string;
@@ -44,6 +51,9 @@ export type AdminCourseStat = {
   learners: number; // users with >= 1 completed module
   certified: number; // users who earned the certificate
   avgQuizPct: number | null; // average best score among users who attempted
+  // Per-course learner rows for the drill-down (brief § 4.2.2). Identity is
+  // joined UI-side from the overview's users list by userId — no duplication.
+  learnerDetails: AdminCourseLearner[];
 };
 
 export type AdminConsoleValidation = {
@@ -62,6 +72,7 @@ export type AdminConsoleValidation = {
   reviewedAt: string | null;
   assignee: string | null;
   followers: string[];
+  userId: string | null;
   userEmail: string | null;
 };
 
@@ -73,6 +84,7 @@ export type AdminSupportTicket = {
   status: string;
   assignee: string | null;
   asanaUrl: string | null;
+  userId: string | null;
   userEmail: string | null;
   customerReplyAt: string | null;
 };
@@ -251,12 +263,24 @@ export async function getAdminOverview(): Promise<AdminOverview> {
     let learners = 0;
     let certified = 0;
     const scores: number[] = [];
+    const learnerDetails: AdminCourseLearner[] = [];
     for (const u of authUsers) {
       const done = doneByUserCourse.get(`${u.id}::${c.id}`)?.size ?? 0;
-      if (done > 0) learners += 1;
-      if (isCertified(u.id, c.id)) certified += 1;
       const q = quizByUserCourse.get(`${u.id}::${c.id}`);
+      const isCert = isCertified(u.id, c.id);
+      if (done > 0) learners += 1;
+      if (isCert) certified += 1;
       if (q) scores.push(q.bestPct);
+      // A learner row for anyone who has engaged with the course (a module done
+      // or a quiz attempt) — the drill-down "who follows this course".
+      if (done > 0 || q) {
+        learnerDetails.push({
+          userId: u.id,
+          modulesDone: done,
+          bestQuizPct: q ? q.bestPct : null,
+          certified: isCert,
+        });
+      }
     }
     return {
       slug: c.id,
@@ -266,6 +290,7 @@ export async function getAdminOverview(): Promise<AdminOverview> {
       learners,
       certified,
       avgQuizPct: scores.length ? Math.round(scores.reduce((s, n) => s + n, 0) / scores.length) : null,
+      learnerDetails,
     };
   });
 
@@ -303,6 +328,7 @@ export async function getAdminOverview(): Promise<AdminOverview> {
     reviewedAt: r.reviewed_at,
     assignee: r.assignee,
     followers: r.followers ?? [],
+    userId: r.user_id,
     userEmail: r.user_id ? emailByUserId.get(r.user_id) ?? null : null,
   }));
   const consoleOpen = consoleValidations.filter((c) =>
@@ -328,6 +354,7 @@ export async function getAdminOverview(): Promise<AdminOverview> {
     status: r.status,
     assignee: r.assignee_name,
     asanaUrl: asanaTaskUrl(r.asana_task_gid),
+    userId: r.user_id,
     userEmail: r.user_id ? emailByUserId.get(r.user_id) ?? null : null,
     customerReplyAt: r.customer_reply_at,
   }));
@@ -350,6 +377,9 @@ export async function getAdminOverview(): Promise<AdminOverview> {
     },
   };
 }
+
+/** Option du sélecteur d'organisation admin (brief § 3.2.1). */
+export type AdminOrgOption = { id: string; name: string; type: string };
 
 export type AdminUserCourse = {
   slug: string;
@@ -379,6 +409,9 @@ export type AdminUserDetail = {
   signupAt: string | null;
   lastSignInAt: string | null;
   org: { id: string; name: string; type: string; role: string | null; logoUrl: string | null } | null;
+  /** Toutes les organisations {id, name, type}, pour le sélecteur d'org de la
+   * fiche (l'org est la source de vérité pour « la société », brief § 3.2.1). */
+  orgOptions: AdminOrgOption[];
   level: number;
   xp: number;
   modulesCompleted: number;
@@ -398,7 +431,7 @@ export type AdminUserDetail = {
 export async function getAdminUserDetail(userId: string): Promise<AdminUserDetail | null> {
   const admin = createSupabaseAdminClient();
 
-  const [authRes, profRes, progRes, quizRes, enrollRes, passRes] = await Promise.all([
+  const [authRes, profRes, progRes, quizRes, enrollRes, passRes, orgListRes] = await Promise.all([
     admin.auth.admin.getUserById(userId),
     admin
       .from('profiles')
@@ -411,6 +444,8 @@ export async function getAdminUserDetail(userId: string): Promise<AdminUserDetai
     admin.from('quiz_attempts').select('course_slug, passed, score, total').eq('user_id', userId),
     admin.from('enrollments').select('source').eq('user_id', userId),
     admin.from('pass_subscriptions').select('status').eq('user_id', userId),
+    // Toutes les orgs pour le sélecteur d'organisation de la fiche.
+    admin.from('organizations').select('id, name, type').order('name'),
   ]);
 
   const authUser = authRes.data?.user as
@@ -431,6 +466,11 @@ export async function getAdminUserDetail(userId: string): Promise<AdminUserDetai
     notification_email: string | null;
   } | null;
   const email = authUser.email ?? '';
+  const orgOptions = ((orgListRes.data ?? []) as AdminOrgOption[]).map((o) => ({
+    id: o.id,
+    name: o.name,
+    type: o.type,
+  }));
 
   // Org membership + role.
   let org: AdminUserDetail['org'] = null;
@@ -531,6 +571,7 @@ export async function getAdminUserDetail(userId: string): Promise<AdminUserDetai
       reviewedAt: (r.reviewed_at as string | null) ?? null,
       assignee: (r.assignee as string | null) ?? null,
       followers: (r.followers as string[] | null) ?? [],
+      userId: (r.user_id as string | null) ?? null,
       userEmail: email || null,
     }));
 
@@ -556,6 +597,7 @@ export async function getAdminUserDetail(userId: string): Promise<AdminUserDetai
       status: r.status as string,
       assignee: (r.assignee_name as string | null) ?? null,
       asanaUrl: asanaTaskUrl((r.asana_task_gid as string | null) ?? null),
+      userId: (r.user_id as string | null) ?? null,
       userEmail: email || null,
       customerReplyAt: (r.customer_reply_at as string | null) ?? null,
     }));
@@ -577,6 +619,7 @@ export async function getAdminUserDetail(userId: string): Promise<AdminUserDetai
     signupAt: authUser.created_at ?? null,
     lastSignInAt: authUser.last_sign_in_at ?? null,
     org,
+    orgOptions,
     level: levelForXp(xp).level,
     xp,
     modulesCompleted,

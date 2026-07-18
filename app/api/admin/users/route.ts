@@ -9,8 +9,16 @@ import {
   partnerRoleKeysFor,
 } from '@/data/onboarding-options';
 import { ensurePersonalOrg } from '@/lib/organizations';
+import { recordAudit } from '@/lib/admin-audit';
 
 export const dynamic = 'force-dynamic';
+
+const ACCOUNT_TYPE_FR: Record<string, string> = {
+  client: 'client',
+  reseller: 'revendeur',
+  distributor: 'distributeur',
+  team: 'équipe',
+};
 
 // Verify the caller is a signed-in admin with 2FA this session. RLS lets a user
 // self-read is_admin; the AAL2 check matches the /admin access policy.
@@ -27,10 +35,10 @@ async function requireAdmin() {
   return { user, error: null, status: 200 } as const;
 }
 
-/** Update a user's profile fields, account type, or admin flag — or, with
- * `action: 'qualify'`, qualify an account (brief § 2.3.a). Fields absent from
- * the body are NEVER touched: an unknown legacy value survives every save
- * unless the admin explicitly replaces it. */
+/** Update a user's profile fields, account type, organization or admin flag —
+ * or, with `action: 'qualify'`, qualify an account (brief § 2.3.a). Fields
+ * absent from the body are NEVER touched: an unknown legacy value survives
+ * every save unless the admin explicitly replaces it. */
 export async function PATCH(request: NextRequest) {
   const gate = await requireAdmin();
   if (gate.error) return NextResponse.json({ error: gate.error }, { status: gate.status });
@@ -63,6 +71,14 @@ export async function PATCH(request: NextRequest) {
       .eq('id', id);
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
     await ensurePersonalOrg(id);
+    await recordAudit({
+      actorId: gate.user.id,
+      actorEmail: gate.user.email ?? null,
+      action: 'user.qualify',
+      targetType: 'user',
+      targetId: id,
+      summary: `Compte qualifié : ${ACCOUNT_TYPE_FR[t] ?? t}`,
+    });
     return NextResponse.json({ ok: true });
   }
 
@@ -131,6 +147,24 @@ export async function PATCH(request: NextRequest) {
     }
     patch.is_admin = body.is_admin;
   }
+  // Organisation — l'org est la source de vérité pour « la société » (brief
+  // § 3.2.1) : uuid d'une org existante, ou null pour détacher le profil (les
+  // adhésions organization_members restent intactes dans ce cas).
+  if (body.organization_id !== undefined) {
+    if (body.organization_id === null) {
+      patch.organization_id = null;
+    } else if (typeof body.organization_id === 'string' && body.organization_id) {
+      const { data: org } = await admin
+        .from('organizations')
+        .select('id')
+        .eq('id', body.organization_id)
+        .maybeSingle();
+      if (!org) return NextResponse.json({ error: 'bad_organization' }, { status: 400 });
+      patch.organization_id = body.organization_id;
+    } else {
+      return NextResponse.json({ error: 'bad_organization' }, { status: 400 });
+    }
+  }
 
   if (Object.keys(patch).length === 0) {
     return NextResponse.json({ error: 'nothing_to_update' }, { status: 400 });
@@ -140,9 +174,56 @@ export async function PATCH(request: NextRequest) {
   const { error } = await admin.from('profiles').update(patch).eq('id', id);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
+  // Audit — one entry per save, with a French summary of the salient change and
+  // the changed field names in metadata. is_admin toggles and type changes are
+  // called out explicitly (the most sensitive edits).
+  const changed = Object.keys(patch).filter((k) => k !== 'updated_at');
+  const bits: string[] = [];
+  if ('account_type' in patch) bits.push(`type → ${ACCOUNT_TYPE_FR[patch.account_type as string] ?? patch.account_type}`);
+  if ('is_admin' in patch) bits.push(patch.is_admin ? 'administrateur activé' : 'administrateur retiré');
+  if ('organization_id' in patch) bits.push(patch.organization_id ? 'organisation rattachée' : 'organisation détachée');
+  const otherFields = changed.filter((k) => !['account_type', 'account_type_source', 'is_admin', 'organization_id'].includes(k));
+  if (otherFields.length) bits.push(`champs : ${otherFields.join(', ')}`);
+  await recordAudit({
+    actorId: gate.user.id,
+    actorEmail: gate.user.email ?? null,
+    action: 'is_admin' in patch ? 'user.set_admin' : 'user.update',
+    targetType: 'user',
+    targetId: id,
+    summary: bits.join(' · ') || 'Modification du compte',
+    metadata: { fields: changed },
+  });
+
+  // Rattachement à une org : garantir une adhésion active sans JAMAIS
+  // rétrograder un rôle owner/admin existant (même motif que
+  // ensureSharedXriteOrg) — on n'insère 'member' que si la ligne est absente,
+  // et on ne touche qu'au statut si elle existe inactive.
+  if (typeof patch.organization_id === 'string') {
+    const orgId = patch.organization_id;
+    const { data: mem } = await admin
+      .from('organization_members')
+      .select('status')
+      .eq('org_id', orgId)
+      .eq('user_id', id)
+      .maybeSingle();
+    if (!mem) {
+      await admin
+        .from('organization_members')
+        .upsert(
+          { org_id: orgId, user_id: id, role: 'member', status: 'active' },
+          { onConflict: 'org_id,user_id', ignoreDuplicates: true }
+        );
+    } else if ((mem as { status?: string }).status !== 'active') {
+      await admin.from('organization_members').update({ status: 'active' }).eq('org_id', orgId).eq('user_id', id);
+    }
+  }
+
   // Reflect a type change in the back-office org list: ensure the user has an
-  // organization and align its type when they own it.
-  if (typeof patch.account_type === 'string') await ensurePersonalOrg(id);
+  // organization and align its type when they own it — sauf si la requête vient
+  // de fixer explicitement l'organisation (y compris à null) : la décision de
+  // l'admin est autoritaire et ensurePersonalOrg ne doit pas la ré-écraser en
+  // recréant ou rattachant une org personnelle.
+  if (typeof patch.account_type === 'string' && !('organization_id' in patch)) await ensurePersonalOrg(id);
 
   return NextResponse.json({ ok: true });
 }
@@ -160,6 +241,14 @@ export async function DELETE(request: NextRequest) {
   const admin = createSupabaseAdminClient();
   const { error } = await admin.auth.admin.deleteUser(id);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  await recordAudit({
+    actorId: gate.user.id,
+    actorEmail: gate.user.email ?? null,
+    action: 'user.delete',
+    targetType: 'user',
+    targetId: id,
+    summary: 'Compte supprimé',
+  });
   return NextResponse.json({ ok: true });
 }
 
@@ -187,5 +276,13 @@ export async function POST(request: NextRequest) {
     ban_duration: suspend ? '876000h' : 'none',
   });
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  await recordAudit({
+    actorId: gate.user.id,
+    actorEmail: gate.user.email ?? null,
+    action: 'user.suspend',
+    targetType: 'user',
+    targetId: id,
+    summary: suspend ? 'Compte suspendu' : 'Compte réactivé',
+  });
   return NextResponse.json({ ok: true });
 }

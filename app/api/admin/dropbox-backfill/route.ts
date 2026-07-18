@@ -3,6 +3,7 @@ import { getAdminAccess } from '@/lib/admin-access';
 import { createSupabaseAdminClient } from '@/lib/supabase/server';
 import { dropboxEnabled, uploadConsoleValidation } from '@/lib/dropbox';
 import { getConsoleValidationTaskState } from '@/lib/asana';
+import { recordAudit } from '@/lib/admin-audit';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 300;
@@ -114,5 +115,16 @@ export async function POST(request: NextRequest) {
     .select('id', { count: 'exact', head: true })
     .is('dropbox_link', null);
 
+  const ok = results.filter((x) => x.status.startsWith('ok')).length;
+  if (ok > 0) {
+    await recordAudit({
+      actorId: access.userId,
+      action: 'dropbox.backfill',
+      targetType: 'dropbox',
+      targetId: BUCKET,
+      summary: `Backfill Dropbox : ${ok} dossier(s) créé(s), ${remaining ?? '?'} restant(s)`,
+      metadata: { processed: results.length, remaining: remaining ?? null },
+    });
+  }
   return NextResponse.json({ processed: results.length, remaining: remaining ?? null, results });
 }

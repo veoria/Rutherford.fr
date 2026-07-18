@@ -110,6 +110,7 @@ const ERROR_LABELS: Record<string, string> = {
   mfa_required: 'Activez la double authentification pour gérer les comptes.',
   bad_job_title: 'Poste invalide pour ce type de compte.',
   bad_job_roles: 'Rôles invalides pour ce type de compte.',
+  bad_organization: 'Organisation invalide ou introuvable.',
 };
 const errorLabel = (code: unknown) =>
   (typeof code === 'string' && ERROR_LABELS[code]) || 'Une erreur est survenue.';
@@ -197,10 +198,167 @@ function RoleField({
   );
 }
 
+type OrgOption = { id: string; name: string; type: string };
+
+const orgOptionLabel = (o: OrgOption): string =>
+  `${o.name} (${ACCOUNT_TYPE_LABELS[o.type as AccountType] ?? o.type})`;
+
+/** Sélecteur d'organisation (recherche + création) : remplace l'ancien champ
+ * « Société » libre — l'organisation est la source de vérité (brief § 3.2.1).
+ * « Créer une organisation » passe par POST /api/admin/orgs (name = texte
+ * cherché, type = type de compte de l'utilisateur) puis sélectionne l'org
+ * créée. L'ancien texte libre `company` reste visible en note quand il diverge
+ * du nom de l'org sélectionnée — il n'est plus éditable ici. */
+function OrgSelectField({
+  orgs,
+  value,
+  onChange,
+  accountType,
+  legacyCompany,
+  disabled,
+}: {
+  orgs: OrgOption[];
+  value: string | null;
+  onChange: (id: string | null) => void;
+  accountType: AccountType;
+  legacyCompany: string | null;
+  disabled: boolean;
+}) {
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState('');
+  // Orgs créées depuis ce champ : la liste reçue en props ne se rafraîchit
+  // qu'au prochain rendu serveur, on les garde localement pour l'affichage.
+  const [created, setCreated] = useState<OrgOption[]>([]);
+  const [creating, setCreating] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const known = new Set(orgs.map((o) => o.id));
+  const all = [...orgs, ...created.filter((o) => !known.has(o.id))];
+  const current = value ? all.find((o) => o.id === value) ?? null : null;
+  const q = search.trim().toLowerCase();
+  const filtered = q ? all.filter((o) => o.name.toLowerCase().includes(q)) : all;
+  const VISIBLE = 30;
+
+  const select = (id: string | null) => {
+    onChange(id);
+    setOpen(false);
+    setSearch('');
+    setError(null);
+  };
+
+  const createOrganization = async () => {
+    const name = search.trim();
+    if (!name) return;
+    setCreating(true);
+    setError(null);
+    try {
+      const res = await fetch('/api/admin/orgs', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        // Type de la nouvelle org = type de compte de l'utilisateur ('client'
+        // couvre le défaut : AccountType ne peut pas être vide).
+        body: JSON.stringify({ name, type: accountType }),
+      });
+      const data = (await res.json().catch(() => ({}))) as { id?: string; error?: string };
+      if (!res.ok || !data.id) {
+        setError(errorLabel(data.error));
+        setCreating(false);
+        return;
+      }
+      setCreated((list) => [...list, { id: data.id as string, name, type: accountType }]);
+      setCreating(false);
+      select(data.id);
+    } catch {
+      setError('Erreur réseau.');
+      setCreating(false);
+    }
+  };
+
+  // Boutons-options : styles de liste du tiroir réutilisés, reset minimal du
+  // rendu bouton natif (pas de classe dédiée en CSS).
+  const optionStyle = { background: 'none', border: 0, padding: 0, textAlign: 'left' as const };
+
+  return (
+    <div className="admin-field">
+      <label>Organisation</label>
+      {!open ? (
+        <button
+          type="button"
+          className="admin-input"
+          style={{ textAlign: 'left', cursor: 'pointer' }}
+          onClick={() => setOpen(true)}
+          disabled={disabled}
+        >
+          {current ? orgOptionLabel(current) : '— Aucune organisation —'}
+        </button>
+      ) : (
+        <>
+          <input
+            className="admin-input"
+            autoFocus
+            placeholder="Rechercher une organisation…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            disabled={disabled || creating}
+          />
+          <div className="admin-site-access-list">
+            <button
+              type="button"
+              className="admin-site-access-item"
+              style={optionStyle}
+              onClick={() => select(null)}
+              disabled={creating}
+            >
+              — Aucune organisation —{value === null ? ' ✓' : ''}
+            </button>
+            {filtered.slice(0, VISIBLE).map((o) => (
+              <button
+                key={o.id}
+                type="button"
+                className="admin-site-access-item"
+                style={optionStyle}
+                onClick={() => select(o.id)}
+                disabled={creating}
+              >
+                {orgOptionLabel(o)}
+                {o.id === value ? ' ✓' : ''}
+              </button>
+            ))}
+            {filtered.length > VISIBLE ? (
+              <p className="admin-site-access-hint">
+                {filtered.length - VISIBLE} autre(s) organisation(s) — affinez la recherche.
+              </p>
+            ) : null}
+            {q && filtered.length === 0 ? (
+              <p className="admin-site-access-hint">Aucune organisation trouvée.</p>
+            ) : null}
+            {search.trim() ? (
+              <button
+                type="button"
+                className="admin-link-btn"
+                onClick={() => void createOrganization()}
+                disabled={creating}
+              >
+                {creating ? 'Création…' : `+ Créer l'organisation « ${search.trim()} »`}
+              </button>
+            ) : null}
+          </div>
+        </>
+      )}
+      {legacyCompany && legacyCompany !== (current?.name ?? '') ? (
+        <p className="admin-site-access-hint">Société (texte libre hérité) : {legacyCompany}</p>
+      ) : null}
+      {error ? <p className="admin-modal-error">{error}</p> : null}
+    </div>
+  );
+}
+
 function ManagePanel({ user, isSelf }: { user: Detail; isSelf: boolean }) {
   const router = useRouter();
   const [fullName, setFullName] = useState(user.name ?? '');
-  const [company, setCompany] = useState(user.company ?? '');
+  // L'org remplace le champ « Société » libre (brief § 3.2.1) ; company n'est
+  // plus éditable ici, seulement affiché en repli hérité.
+  const [orgId, setOrgId] = useState<string | null>(user.org?.id ?? null);
   const [country, setCountry] = useState(user.country ?? '');
   // Valeur brute (pas filtrée) : une valeur héritée inconnue reste affichée et
   // n'est jamais renvoyée à l'API tant qu'elle n'est pas explicitement changée.
@@ -219,11 +377,13 @@ function ManagePanel({ user, isSelf }: { user: Detail; isSelf: boolean }) {
     const body: Record<string, unknown> = {
       id: user.id,
       full_name: fullName.trim(),
-      company: company.trim(),
       country,
       account_type: accountType,
       is_admin: isAdmin,
     };
+    // Dirty-tracking : organization_id n'est envoyé que s'il a changé — même
+    // logique que les champs de rôle ci-dessous.
+    if ((orgId ?? null) !== (user.org?.id ?? null)) body.organization_id = orgId;
     // N'envoyer que le champ de rôle réellement touché : renvoyer une valeur
     // héritée intacte la détruirait côté serveur (clé inconnue → 400).
     const initialRoles = user.jobRoles ?? [];
@@ -278,6 +438,10 @@ function ManagePanel({ user, isSelf }: { user: Detail; isSelf: boolean }) {
   };
 
   const toggleSuspend = async () => {
+    // Confirmation avant suspension (brief § 4.2.9) ; la réactivation n'en
+    // demande pas (action non destructive).
+    if (!suspended && !window.confirm('Suspendre ce compte ? La connexion sera bloquée jusqu’à réactivation.'))
+      return;
     setBusy(true);
     setError(null);
     try {
@@ -354,10 +518,14 @@ function ManagePanel({ user, isSelf }: { user: Detail; isSelf: boolean }) {
         <label>Nom</label>
         <input className="admin-input" value={fullName} onChange={(e) => setFullName(e.target.value)} disabled={busy} />
       </div>
-      <div className="admin-field">
-        <label>Société</label>
-        <input className="admin-input" value={company} onChange={(e) => setCompany(e.target.value)} disabled={busy} />
-      </div>
+      <OrgSelectField
+        orgs={user.orgOptions}
+        value={orgId}
+        onChange={setOrgId}
+        accountType={accountType}
+        legacyCompany={user.company}
+        disabled={busy}
+      />
       <div className="admin-field-row">
         <div className="admin-field">
           <label>Pays</label>
@@ -502,9 +670,8 @@ export function AdminUserDetail({
           </header>
 
           <div className="admin-detail-grid">
-            <Fact label="Société" value={user.company ?? '—'} />
-            <Fact label="Pays" value={user.country ?? '—'} />
-            <Fact label="Poste" value={roleLabel(user.accountType, user.jobTitle, user.jobRoles)} />
+            {/* L'organisation est la valeur canonique de « la société » (brief
+                § 3.2) ; sans org, l'ancien texte libre sert de repli signalé. */}
             <div className="admin-fact">
               <span className="admin-fact-label">Organisation</span>
               <span className="admin-fact-value">
@@ -514,14 +681,23 @@ export function AdminUserDetail({
                       // eslint-disable-next-line @next/next/no-img-element
                       <img src={user.org.logoUrl} alt="" className="admin-company-logo" />
                     ) : null}
-                    {user.org.name}
+                    {user.org.name} ({ACCOUNT_TYPE_LABELS[user.org.type as AccountType] ?? user.org.type})
                     {user.org.role ? ` · ${user.org.role}` : ''}
                   </span>
+                ) : user.company ? (
+                  `${user.company} (texte libre hérité)`
                 ) : (
                   '—'
                 )}
               </span>
             </div>
+            {/* Divergence org / ancien texte libre rendue visible — la ligne
+                disparaît quand les deux concordent (ou sans texte hérité). */}
+            {user.org && user.company && user.company !== user.org.name ? (
+              <Fact label="Société (texte hérité)" value={user.company} />
+            ) : null}
+            <Fact label="Pays" value={user.country ?? '—'} />
+            <Fact label="Poste" value={roleLabel(user.accountType, user.jobTitle, user.jobRoles)} />
             <Fact label="Inscrit" value={fmtDate(user.signupAt)} />
             <Fact label="Dernière connexion" value={fmtDate(user.lastSignInAt)} />
             <Fact label="E-mail de notification" value={user.notificationEmail ?? '—'} />

@@ -629,6 +629,11 @@ type Props = {
   avatarUrl: string | null;
   logoUrl: string | null;
   canManageLogo: boolean;
+  /** The organization's name when the profile is linked to one — the source of
+   * truth for the company field (brief § 3.2). Null when there is no org. */
+  orgName: string | null;
+  /** Whether the signed-in user owns that org (only owners rename it here). */
+  canRenameOrg: boolean;
   defaults: {
     fullName: string;
     country: string;
@@ -636,6 +641,36 @@ type Props = {
     jobTitle: string;
     notificationEmail: string;
   };
+};
+
+// Company-name governance notes (brief § 3.2): when the profile is linked to an
+// organization, the org name is what the company field shows — its owner edits
+// it here (which renames the org), everyone else gets a read-only field.
+const ORG_COMPANY: Record<Locale, { ownerNote: string; managedNote: string }> = {
+  en: {
+    ownerNote: 'Your organization’s name — editable by its owner.',
+    managedNote: 'Managed by your organization.',
+  },
+  fr: {
+    ownerNote: 'Le nom de votre organisation — modifiable par son propriétaire.',
+    managedNote: 'Géré par votre organisation.',
+  },
+  de: {
+    ownerNote: 'Der Name Ihrer Organisation — änderbar durch den Inhaber.',
+    managedNote: 'Von Ihrer Organisation verwaltet.',
+  },
+  it: {
+    ownerNote: 'Il nome della sua organizzazione — modificabile dal proprietario.',
+    managedNote: 'Gestito dalla sua organizzazione.',
+  },
+  es: {
+    ownerNote: 'El nombre de su organización — editable por su propietario.',
+    managedNote: 'Gestionado por su organización.',
+  },
+  pt: {
+    ownerNote: 'O nome da sua organização, editável pelo proprietário.',
+    managedNote: 'Gerido pela sua organização.',
+  },
 };
 
 // Media-upload copy (profile photo + company logo, edited inline on this page).
@@ -722,12 +757,20 @@ export function AccountProfile({
   avatarUrl: avatarUrl0,
   logoUrl: logoUrl0,
   canManageLogo,
+  orgName,
+  canRenameOrg,
   defaults,
 }: Props) {
   const { locale } = useLanguage();
   const t = COPY[locale];
   const v = VIEW[locale];
   const media = MEDIA[locale];
+  const orgCopy = ORG_COMPANY[locale];
+  // Company field governance (brief § 3.2): an org-linked profile shows the org
+  // name; only the org's owner may edit it (the API renames the org). Profiles
+  // without an org keep the free-text company field.
+  const hasOrg = Boolean(orgName);
+  const canEditCompany = !hasOrg || canRenameOrg;
   // Internal team: company + country are fixed by the domain, so we hide those
   // fields and offer the internal role taxonomy instead of the printing roles.
   const isTeam = accountType === 'team';
@@ -741,7 +784,8 @@ export function AccountProfile({
     accountType === 'distributor' ? DISTRIBUTOR_ROLE_KEYS : RESELLER_ROLE_KEYS;
   const [fullName, setFullName] = useState(defaults.fullName);
   const [country, setCountry] = useState(defaults.country);
-  const [company, setCompany] = useState(defaults.company);
+  // The org name is the source of truth for the company field when present.
+  const [company, setCompany] = useState(orgName ?? defaults.company);
   const [jobTitle, setJobTitle] = useState(defaults.jobTitle);
   // job_roles isn't part of the server-passed defaults yet, so partners load it
   // from their own profile row (self-read RLS). savedRoles = last persisted
@@ -865,7 +909,7 @@ export function AccountProfile({
   const handleCancel = () => {
     setFullName(defaults.fullName);
     setCountry(defaults.country);
-    setCompany(defaults.company);
+    setCompany(orgName ?? defaults.company);
     setJobTitle(defaults.jobTitle);
     setJobRoles(savedRoles);
     setNotif(defaults.notificationEmail);
@@ -1182,17 +1226,27 @@ export function AccountProfile({
               </div>
               <div className="profile-fields">
                 {editing && !isTeam ? (
-                  <label className="profile-field profile-field-edit">
-                    <span className="profile-field-k">{v.raisonLabel}</span>
-                    <input
-                      className="profile-input"
-                      type="text"
-                      value={company}
-                      placeholder={t.companyPlaceholder}
-                      onChange={(e) => setCompany(e.target.value)}
-                      disabled={status === 'saving'}
-                    />
-                  </label>
+                  canEditCompany ? (
+                    <label className="profile-field profile-field-edit">
+                      <span className="profile-field-k">{v.raisonLabel}</span>
+                      <input
+                        className="profile-input"
+                        type="text"
+                        value={company}
+                        placeholder={t.companyPlaceholder}
+                        onChange={(e) => setCompany(e.target.value)}
+                        disabled={status === 'saving'}
+                      />
+                      {hasOrg ? <span className="profile-field-note">{orgCopy.ownerNote}</span> : null}
+                    </label>
+                  ) : (
+                    // Org-linked, not the owner: the org name governs — read-only.
+                    <div className="profile-field">
+                      <span className="profile-field-k">{v.raisonLabel}</span>
+                      <span className="profile-field-v">{company}</span>
+                      <span className="profile-field-note">{orgCopy.managedNote}</span>
+                    </div>
+                  )
                 ) : (
                   <ProfileField label={v.raisonLabel} value={company} empty={v.notProvided} />
                 )}
