@@ -50,7 +50,7 @@ export default async function AccountHubRoute() {
     await Promise.all([
       supabase
         .from('profiles')
-        .select('full_name, avatar_url, country, company, job_title, onboarded_at, account_type, is_admin')
+        .select('full_name, avatar_url, country, company, job_title, job_roles, onboarded_at, account_type, is_admin')
         .eq('id', user.id)
         .maybeSingle(),
       supabase.from('course_progress').select('course_slug, lesson_index').eq('user_id', user.id),

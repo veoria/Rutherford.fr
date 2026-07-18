@@ -45,7 +45,7 @@ export async function getCourseAccess(course: AcademyCourse): Promise<CourseAcce
   if (user) {
     const { data: profile } = await supabase
       .from('profiles')
-      .select('country, company, job_title, onboarded_at')
+      .select('country, company, job_title, job_roles, onboarded_at')
       .eq('id', user.id)
       .maybeSingle();
     onboarded = isOnboarded(profile);

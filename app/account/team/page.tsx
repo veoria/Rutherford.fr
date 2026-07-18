@@ -25,7 +25,7 @@ export default async function AccountTeamRoute() {
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('full_name, country, company, job_title, onboarded_at, account_type, is_admin')
+    .select('full_name, country, company, job_title, job_roles, onboarded_at, account_type, is_admin')
     .eq('id', user.id)
     .maybeSingle();
   if (!isOnboarded(profile)) {

@@ -58,7 +58,7 @@ export default async function AccountAcademyRoute() {
       .maybeSingle(),
     supabase
       .from('profiles')
-      .select('full_name, avatar_url, country, company, job_title, onboarded_at')
+      .select('full_name, avatar_url, country, company, job_title, job_roles, onboarded_at')
       .eq('id', user.id)
       .maybeSingle(),
     supabase

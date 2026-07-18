@@ -9,23 +9,29 @@ export type Profile = {
   country: string | null;
   company: string | null;
   job_title: string | null;
+  job_roles: string[] | null;
   onboarded_at: string | null;
   account_type: AccountType;
   notification_email: string | null;
 };
 
-type OnboardingFields = Pick<Profile, 'country' | 'company' | 'job_title' | 'onboarded_at'>;
+type OnboardingFields = Pick<Profile, 'country' | 'company' | 'job_title' | 'onboarded_at'> &
+  Partial<Pick<Profile, 'job_roles'>>;
 
 /**
  * A profile is "onboarded" once the lead-capture step is complete: it has a
- * stamped onboarded_at plus the three required fields.
+ * stamped onboarded_at, country + company, and a role — either the single
+ * job_title (clients / team) or the multi-valued job_roles (partners, whose
+ * job_title is null by design since lot 2). Callers whose select doesn't
+ * include job_roles keep the historical job_title-only behaviour.
  */
 export function isOnboarded(profile: OnboardingFields | null | undefined): boolean {
-  return Boolean(profile?.onboarded_at && profile.country && profile.company && profile.job_title);
+  if (!profile?.onboarded_at || !profile.country || !profile.company) return false;
+  return Boolean(profile.job_title || (profile.job_roles && profile.job_roles.length > 0));
 }
 
 const PROFILE_COLUMNS =
-  'id, full_name, avatar_url, country, company, job_title, onboarded_at, account_type, notification_email';
+  'id, full_name, avatar_url, country, company, job_title, job_roles, onboarded_at, account_type, notification_email';
 
 /**
  * Fetch the signed-in user and their profile in one place. Returns nulls when
