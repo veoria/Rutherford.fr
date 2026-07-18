@@ -55,19 +55,21 @@ Le code ne possède qu'un aiguillage binaire « team / tous les autres », à ch
 
 La multi-sélection (un petit revendeur porte souvent plusieurs casquettes) implique un poste multi-valué pour les types partenaires : nouvelle colonne `profiles.job_roles text[]` validée par clé côté API, `job_title` restant celle des clients/équipe. Prévoir la migration des valeurs existantes (un revendeur avec `operator` → à requalifier, avec bandeau « à mettre à jour » dans le profil).
 
-**b) Sections du hub gatées par rôle.** Matrice de visibilité cible :
+**b) Cycle de vie d'une presse — deux catégories distinctes (précision du 18/07/2026).** La **validation console est de la prospection** : le prospect ou client demande si sa presse est compatible Rutherford — c'est l'entonnoir de leads, une catégorie à part. Ce n'est qu'**après la commande** que la presse bascule dans les **« Presses équipées »**, où l'on affiche la licence (type perpétuelle/abonnement, version, échéance), AnyDesk et **l'usine où se trouve la machine**. Le hub actuel mélange les deux (« Mes presses » est dérivé des validations) ; la cible les sépare strictement : validation console (prospection) → commande → presse équipée.
+
+**c) Sections du hub gatées par rôle.** Matrice de visibilité cible :
 
 | Section | client | reseller | distributor | team |
 |---|---|---|---|---|
-| Mon système (licences, AnyDesk, usines) | ✔ | ✖ | ✖ | ✖ |
-| Mes presses / validations « à moi » | ✔ | reformulé « Validations de mes clients » | idem reseller | ✖ |
+| Presses équipées (licence type/version/échéance, usine, AnyDesk) | ✔ | vue parc de ses clients | agrégé réseau | ✖ |
+| Validation console — prospection (avant commande) | ✔ | « Validations de mes clients » | idem reseller | ✖ |
 | Tuile Console validation | ✔ | ✔ (voix client tiers) | ✔ (voix client tiers) | ✖ |
 | Clients / Réseau (ManagePanel) | ✖ (Équipe seulement) | Clients | Réseau + revendeurs | Admin |
 | Academy | parcours imprimeur | parcours commercial/technique (à créer) | idem | tout |
 
-**c) Sites réservés aux orgs client** : garde `type === 'client'` sur les sections Usines/Systèmes du tiroir org admin et du hub ; contrainte ou vérification API côté `app/api/admin/orgs/sites` et `systems`. Si les revendeurs ont besoin de localisations, c'est un autre concept (« agences »), pas des usines.
+**d) Sites réservés aux orgs client** : garde `type === 'client'` sur les sections Usines/Systèmes du tiroir org admin et du hub ; contrainte ou vérification API côté `app/api/admin/orgs/sites` et `systems`. Si les revendeurs ont besoin de localisations, c'est un autre concept (« agences »), pas des usines.
 
-**d) Vocabulaire par type** : généraliser le mécanisme de `data/account-eyebrow.ts` (déjà correct) à toutes les surfaces qui disent « partenaire », et différencier les rangs Academy par filière (imprimeur / commercial / technique) quand les parcours existeront.
+**e) Vocabulaire par type** : généraliser le mécanisme de `data/account-eyebrow.ts` (déjà correct) à toutes les surfaces qui disent « partenaire », et différencier les rangs Academy par filière (imprimeur / commercial / technique) quand les parcours existeront.
 
 ### 2.3 Qualification des comptes — décisions actées (18/07/2026)
 
