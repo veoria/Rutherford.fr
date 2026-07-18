@@ -602,17 +602,23 @@ export function AccountHub(props: Props) {
     roleTile = { ic: 'team', cls: 'green', t: t.tiles.teamT, s: t.tiles.teamS, href: '/account/team', statV: t.stat.youOnly };
   }
 
+  // Console tile is hidden for the Rutherford team (per-role visibility
+  // matrix): press validations are meaningless on a staff account.
   const tiles: Tile[] =
     accountType === 'reseller'
       ? [academyTile, roleTile, consoleTile, supportTile]
       : accountType === 'distributor'
         ? [roleTile, consoleTile, academyTile, supportTile]
-        : [academyTile, consoleTile, roleTile, supportTile];
+        : accountType === 'team'
+          ? [academyTile, roleTile, supportTile]
+          : [academyTile, consoleTile, roleTile, supportTile];
 
   // "À faire maintenant" — surface the single most important action.
   const h = HERO[locale];
   let hero: { title: string; sub: string; cta: string; href: string };
-  if (!preview && consoleStat.eligible > 0) {
+  // The "connect my presses" variant is client-only: a partner's eligible
+  // validations belong to their clients and must not read first-person.
+  if (!preview && accountType === 'client' && consoleStat.eligible > 0) {
     hero = { title: h.eligibleTitle(consoleStat.eligible), sub: h.eligibleSub, cta: h.eligibleCta, href: '/account/console-validations' };
   } else if (!preview && (supportStat.newMessage || supportStat.status === 'waiting_customer')) {
     hero = { title: h.supportTitle, sub: h.supportSub, cta: h.supportCta, href: '/account/support' };
@@ -622,7 +628,9 @@ export function AccountHub(props: Props) {
     hero = { title: h.okTitle, sub: h.okSub, cta: h.okCta, href: '/account/academy' };
   }
   const reminders: { ic: ReactNode; title: string; sub: string; href: string }[] = [];
-  const pendingUpdates = installations.filter((s) => s.updateAvailable);
+  // Update reminders anchor into the client-only "My system" section below,
+  // so they are gated the same way.
+  const pendingUpdates = accountType === 'client' ? installations.filter((s) => s.updateAvailable) : [];
   if (pendingUpdates.length) {
     reminders.push({
       ic: ICON.console,
@@ -770,12 +778,18 @@ export function AccountHub(props: Props) {
             ))}
           </div>
 
-          {/* My system — licenses, AnyDesk, updates (set in the org back-office;
-              renders nothing until the Rutherford team adds a system) */}
-          <AccountInstallations installations={installations} sites={sites} accent={accent} />
+          {/* Client-only sections (per-role visibility matrix): plants/licenses
+              and first-person presses make no sense for partners or team. */}
+          {accountType === 'client' ? (
+            <>
+              {/* My system — licenses, AnyDesk, updates (set in the org back-office;
+                  renders nothing until the Rutherford team adds a system) */}
+              <AccountInstallations installations={installations} sites={sites} accent={accent} />
 
-          {/* My presses — clients (renders nothing when there are none) */}
-          <AccountSystems systems={systems} accent={accent} />
+              {/* My presses — renders nothing when there are none */}
+              <AccountSystems systems={systems} accent={accent} />
+            </>
+          ) : null}
 
           {/* Body */}
           <div className="ah-grid">

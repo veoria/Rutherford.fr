@@ -188,19 +188,25 @@ export default async function AccountHubRoute() {
   const networkResellersP =
     accountType === 'distributor' ? getDistributorResellers(user.id) : Promise.resolve([]);
   // "Mon système" — the installed base (license, AnyDesk, updates) the
-  // Rutherford team maintains on the user's organization.
-  const installationsP = getSystemsForUser(user.id).then((rows) => rows.map(toAccountInstallation));
+  // Rutherford team maintains on the user's organization. The section is
+  // client-only (per-role visibility matrix), so skip the read otherwise.
+  const installationsP =
+    accountType === 'client'
+      ? getSystemsForUser(user.id).then((rows) => rows.map(toAccountInstallation))
+      : Promise.resolve([]);
 
   const [{ status: supportStatus, newMessage: supportNewMessage }, resellerClients, team, networkResellers, installations] =
     await Promise.all([supportSummaryP, resellerClientsP, teamP, networkResellersP, installationsP]);
 
   // Plants (usines) the user may see — owners/admins see all their org's sites,
-  // other members are narrowed by any site_members restriction.
+  // other members are narrowed by any site_members restriction. Sites feed the
+  // client-only "Mon système" section, so skip the read for other types.
   const orgId = team.org?.id ?? null;
   const canManageOrg = team.myRole === 'owner' || team.myRole === 'admin';
-  const sites = orgId
-    ? (await getVisibleSitesForUser(user.id, orgId, canManageOrg)).map(toAccountSite)
-    : [];
+  const sites =
+    accountType === 'client' && orgId
+      ? (await getVisibleSitesForUser(user.id, orgId, canManageOrg)).map(toAccountSite)
+      : [];
 
   return (
     <AccountHub
