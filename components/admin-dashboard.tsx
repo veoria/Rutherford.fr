@@ -19,7 +19,7 @@ import { DISTRIBUTOR_ROLE_LABELS, RESELLER_ROLE_LABELS } from '@/data/partner-ro
 import { ACCOUNT_TYPES, type AccountType } from '@/data/account-types';
 import type { AdminConsoleValidation, AdminOverview, AdminSupportTicket, AdminUser } from '@/lib/admin';
 import type { AuditEntry } from '@/lib/admin-audit';
-import type { AdminOrg, AdminOrgFull, MemberRole, OrgMember, PendingInvite } from '@/lib/organizations';
+import type { AdminOrg, AdminOrgFull } from '@/lib/organizations';
 
 const ROLE_LABELS: Record<JobTitleKey, string> = {
   operator: 'Conducteur de presse',
@@ -72,12 +72,6 @@ const declaresPartner = (u: { accountType: AccountType; jobRoles: string[] | nul
 const declaredRoleLabel = (key: string): string =>
   PARTNER_ROLE_LABELS_FR.reseller[key] ?? PARTNER_ROLE_LABELS_FR.distributor[key] ?? key;
 
-const MEMBER_ROLE_LABELS: Record<MemberRole, string> = {
-  owner: 'Propriétaire',
-  admin: 'Admin',
-  member: 'Membre',
-};
-
 const CV_STATUS_LABELS: Record<string, string> = {
   submitted: 'Reçue',
   in_review: 'En revue',
@@ -123,6 +117,14 @@ const ERROR_LABELS: Record<string, string> = {
 };
 const errorLabel = (code: unknown) =>
   (typeof code === 'string' && ERROR_LABELS[code]) || 'Une erreur est survenue.';
+
+// Monogramme de repli quand l'org n'a pas de logo (mêmes initiales que la fiche
+// organisation) — la liste des organisations affiche logo OU monogramme.
+function orgInitials(name: string): string {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length >= 2) return ((parts[0][0] ?? '') + (parts[1][0] ?? '')).toUpperCase();
+  return name.trim().slice(0, 2).toUpperCase() || '?';
+}
 
 function fmtDate(value: string | null): string {
   if (!value) return '—';
@@ -886,788 +888,39 @@ function OrgRow({
   );
 }
 
-// ── Systèmes & licences (client_systems) — édités dans la fiche organisation ──
-
-type OrgSystem = {
-  id: string;
-  siteId: string | null;
-  product: string;
-  machine: string | null;
-  licenseKey: string | null;
-  licenseStatus: 'active' | 'trial' | 'expired' | 'suspended';
-  licenseExpiresAt: string | null;
-  anydeskId: string | null;
-  installedVersion: string | null;
-  latestVersion: string | null;
-  notes: string | null;
-};
-
-type OrgSite = {
-  id: string;
-  name: string;
-  country: string | null;
-  city: string | null;
-  address: string | null;
-  postalCode: string | null;
-  anydeskId: string | null;
-  notes: string | null;
-};
-
-const LICENSE_STATUS_LABELS: Record<OrgSystem['licenseStatus'], string> = {
-  active: 'Active',
-  trial: 'Essai',
-  expired: 'Expirée',
-  suspended: 'Suspendue',
-};
-
-// Suggestions produit — champ libre, mais on pousse les noms canoniques.
-const SYSTEM_PRODUCTS = ['ColorLoop', 'ColorLoop Connect', 'EasySet', 'EasyLoop', 'MeasureColor', 'IntelliTrax2'];
-
-type SystemDraft = Omit<OrgSystem, 'id'>;
-
-const EMPTY_SYSTEM: SystemDraft = {
-  siteId: null,
-  product: '',
-  machine: null,
-  licenseKey: null,
-  licenseStatus: 'active',
-  licenseExpiresAt: null,
-  anydeskId: null,
-  installedVersion: null,
-  latestVersion: null,
-  notes: null,
-};
-
-function SystemForm({
-  initial,
-  submitLabel,
-  sites,
-  onSubmit,
-  onDelete,
-}: {
-  initial: SystemDraft;
-  submitLabel: string;
-  sites: OrgSite[];
-  onSubmit: (draft: SystemDraft) => Promise<boolean>;
-  onDelete?: () => Promise<void>;
-}) {
-  const [draft, setDraft] = useState<SystemDraft>(initial);
-  const [busy, setBusy] = useState(false);
-  const [saved, setSaved] = useState(false);
-  const set = (patch: Partial<SystemDraft>) => {
-    setDraft((d) => ({ ...d, ...patch }));
-    setSaved(false);
-  };
-  const text = (v: string) => v || null;
-  const updateReady =
-    Boolean((draft.installedVersion ?? '').trim()) &&
-    Boolean((draft.latestVersion ?? '').trim()) &&
-    (draft.installedVersion ?? '').trim() !== (draft.latestVersion ?? '').trim();
-
-  return (
-    <div className="admin-sys-card">
-      <div className="admin-field-row">
-        <div className="admin-field">
-          <label>Produit</label>
-          <input
-            className="admin-input"
-            list="admin-sys-products"
-            value={draft.product}
-            onChange={(e) => set({ product: e.target.value })}
-            disabled={busy}
-            placeholder="ColorLoop"
-          />
-        </div>
-        <div className="admin-field">
-          <label>Presse / machine</label>
-          <input
-            className="admin-input"
-            value={draft.machine ?? ''}
-            onChange={(e) => set({ machine: text(e.target.value) })}
-            disabled={busy}
-            placeholder="Heidelberg XL 106"
-          />
-        </div>
-        <div className="admin-field">
-          <label>Usine</label>
-          <select
-            className="admin-input"
-            value={draft.siteId ?? ''}
-            onChange={(e) => set({ siteId: e.target.value || null })}
-            disabled={busy || !sites.length}
-          >
-            <option value="">{sites.length ? '— Non affectée —' : 'Aucune usine — créez-en une'}</option>
-            {sites.map((s) => (
-              <option key={s.id} value={s.id}>
-                {s.name}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
-      <div className="admin-field-row">
-        <div className="admin-field">
-          <label>Licence (clé)</label>
-          <input
-            className="admin-input"
-            value={draft.licenseKey ?? ''}
-            onChange={(e) => set({ licenseKey: text(e.target.value) })}
-            disabled={busy}
-          />
-        </div>
-        <div className="admin-field">
-          <label>Statut</label>
-          <select
-            className="admin-input"
-            value={draft.licenseStatus}
-            onChange={(e) => set({ licenseStatus: e.target.value as OrgSystem['licenseStatus'] })}
-            disabled={busy}
-          >
-            {(Object.keys(LICENSE_STATUS_LABELS) as OrgSystem['licenseStatus'][]).map((s) => (
-              <option key={s} value={s}>
-                {LICENSE_STATUS_LABELS[s]}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="admin-field">
-          <label>Expiration</label>
-          <input
-            className="admin-input"
-            type="date"
-            value={draft.licenseExpiresAt ?? ''}
-            onChange={(e) => set({ licenseExpiresAt: text(e.target.value) })}
-            disabled={busy}
-          />
-        </div>
-      </div>
-      <div className="admin-field-row">
-        <div className="admin-field">
-          <label>N° AnyDesk</label>
-          <input
-            className="admin-input"
-            value={draft.anydeskId ?? ''}
-            onChange={(e) => set({ anydeskId: text(e.target.value) })}
-            disabled={busy}
-            placeholder="123 456 789"
-          />
-        </div>
-        <div className="admin-field">
-          <label>Version installée</label>
-          <input
-            className="admin-input"
-            value={draft.installedVersion ?? ''}
-            onChange={(e) => set({ installedVersion: text(e.target.value) })}
-            disabled={busy}
-            placeholder="3.2.1"
-          />
-        </div>
-        <div className="admin-field">
-          <label>Dernière version</label>
-          <input
-            className="admin-input"
-            value={draft.latestVersion ?? ''}
-            onChange={(e) => set({ latestVersion: text(e.target.value) })}
-            disabled={busy}
-            placeholder="3.4.0"
-          />
-        </div>
-      </div>
-      <div className="admin-field">
-        <label>Notes internes</label>
-        <input
-          className="admin-input"
-          value={draft.notes ?? ''}
-          onChange={(e) => set({ notes: text(e.target.value) })}
-          disabled={busy}
-        />
-      </div>
-      <div className="admin-sys-actions">
-        {updateReady ? <span className="ah-sys-pill amber">Mise à jour à proposer</span> : null}
-        {onDelete ? (
-          <button
-            type="button"
-            className="ah-revoke"
-            disabled={busy}
-            onClick={async () => {
-              if (!window.confirm('Supprimer ce système ?')) return;
-              setBusy(true);
-              await onDelete();
-              setBusy(false);
-            }}
-          >
-            Supprimer
-          </button>
-        ) : null}
-        <button
-          type="button"
-          className="button button-light"
-          disabled={busy || !draft.product.trim()}
-          onClick={async () => {
-            setBusy(true);
-            const ok = await onSubmit(draft);
-            setSaved(ok);
-            setBusy(false);
-          }}
-        >
-          {busy ? '…' : saved ? 'Enregistré ✓' : submitLabel}
-        </button>
-      </div>
-    </div>
-  );
-}
-
-function OrgSystemsSection({ orgId, sites }: { orgId: string; sites: OrgSite[] }) {
+/** Création d'organisation — modale minimale (nom + type). L'édition complète
+ * (adresse, logo, membres, usines, systèmes, attribution) vit désormais sur la
+ * fiche /admin/orgs/[id] (décision du 19/07/2026), donc on POST /api/admin/orgs
+ * puis on redirige vers la fiche fraîchement créée. */
+function OrgCreateModal({ onClose }: { onClose: () => void }) {
   const router = useRouter();
-  const [systems, setSystems] = useState<OrgSystem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [adding, setAdding] = useState(false);
-
-  const refresh = async () => {
-    try {
-      const res = await fetch(`/api/admin/orgs/systems?orgId=${encodeURIComponent(orgId)}`);
-      if (res.ok) {
-        const d = (await res.json()) as { systems?: OrgSystem[] };
-        setSystems(d.systems ?? []);
-      }
-    } catch {
-      /* ignore */
-    }
-    setLoading(false);
-  };
-
-  useEffect(() => {
-    void refresh();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [orgId]);
-
-  const save = async (id: string | null, draft: SystemDraft): Promise<boolean> => {
-    try {
-      const res = await fetch('/api/admin/orgs/systems', {
-        method: id ? 'PATCH' : 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(id ? { id, ...draft } : { orgId, ...draft }),
-      });
-      if (!res.ok) return false;
-      if (!id) setAdding(false);
-      await refresh();
-      router.refresh();
-      return true;
-    } catch {
-      return false;
-    }
-  };
-
-  return (
-    <div className="admin-modal-members">
-      <h4 className="admin-modal-subhead">
-        Systèmes & licences{loading ? ' …' : ` (${systems.length})`}
-      </h4>
-      <p className="admin-modal-section-status">
-        Licence, n° AnyDesk et versions affichés dans l&apos;espace client (« Mon système »). Une « Dernière
-        version » différente de la version installée signale une mise à jour disponible au client et à son
-        revendeur.
-      </p>
-      <datalist id="admin-sys-products">
-        {SYSTEM_PRODUCTS.map((p) => (
-          <option key={p} value={p} />
-        ))}
-      </datalist>
-      {systems.map((s) => (
-        <SystemForm
-          key={s.id}
-          initial={s}
-          submitLabel="Enregistrer"
-          sites={sites}
-          onSubmit={(draft) => save(s.id, draft)}
-          onDelete={async () => {
-            try {
-              await fetch(`/api/admin/orgs/systems?id=${encodeURIComponent(s.id)}`, { method: 'DELETE' });
-            } catch {
-              /* ignore */
-            }
-            await refresh();
-            router.refresh();
-          }}
-        />
-      ))}
-      {adding ? (
-        <SystemForm initial={EMPTY_SYSTEM} submitLabel="Ajouter" sites={sites} onSubmit={(draft) => save(null, draft)} />
-      ) : (
-        <button type="button" className="admin-link-btn" onClick={() => setAdding(true)}>
-          + Ajouter un système
-        </button>
-      )}
-    </div>
-  );
-}
-
-// ── Usines (sites) — plant list of a client org, edited in the org drawer ──
-
-type SiteDraft = Omit<OrgSite, 'id'>;
-
-const EMPTY_SITE: SiteDraft = {
-  name: '',
-  country: null,
-  city: null,
-  address: null,
-  postalCode: null,
-  anydeskId: null,
-  notes: null,
-};
-
-function SiteForm({
-  initial,
-  submitLabel,
-  onSubmit,
-  onDelete,
-}: {
-  initial: SiteDraft;
-  submitLabel: string;
-  onSubmit: (draft: SiteDraft) => Promise<boolean>;
-  onDelete?: () => Promise<void>;
-}) {
-  const [draft, setDraft] = useState<SiteDraft>(initial);
-  const [busy, setBusy] = useState(false);
-  const [saved, setSaved] = useState(false);
-  const set = (patch: Partial<SiteDraft>) => {
-    setDraft((d) => ({ ...d, ...patch }));
-    setSaved(false);
-  };
-  const text = (v: string) => v || null;
-  return (
-    <div className="admin-sys-card">
-      <div className="admin-field-row">
-        <div className="admin-field">
-          <label>Nom de l&apos;usine</label>
-          <input
-            className="admin-input"
-            value={draft.name}
-            onChange={(e) => set({ name: e.target.value })}
-            disabled={busy}
-            placeholder="Site de Lyon"
-          />
-        </div>
-        <div className="admin-field">
-          <label>Ville</label>
-          <input
-            className="admin-input"
-            value={draft.city ?? ''}
-            onChange={(e) => set({ city: text(e.target.value) })}
-            disabled={busy}
-          />
-        </div>
-        <div className="admin-field">
-          <label>Pays</label>
-          <select className="admin-input" value={draft.country ?? ''} onChange={(e) => set({ country: e.target.value || null })} disabled={busy}>
-            <option value="">—</option>
-            {COUNTRIES.map((c) => (
-              <option key={c} value={c}>
-                {c}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
-      <div className="admin-field-row">
-        <div className="admin-field">
-          <label>Adresse</label>
-          <input className="admin-input" value={draft.address ?? ''} onChange={(e) => set({ address: text(e.target.value) })} disabled={busy} />
-        </div>
-        <div className="admin-field">
-          <label>Code postal</label>
-          <input className="admin-input" value={draft.postalCode ?? ''} onChange={(e) => set({ postalCode: text(e.target.value) })} disabled={busy} />
-        </div>
-        <div className="admin-field">
-          <label>N° AnyDesk du site</label>
-          <input className="admin-input" value={draft.anydeskId ?? ''} onChange={(e) => set({ anydeskId: text(e.target.value) })} disabled={busy} placeholder="123 456 789" />
-        </div>
-      </div>
-      <div className="admin-sys-actions">
-        {onDelete ? (
-          <button
-            type="button"
-            className="ah-revoke"
-            disabled={busy}
-            onClick={async () => {
-              if (!window.confirm('Supprimer cette usine ? Les systèmes rattachés deviendront « non affectés ».')) return;
-              setBusy(true);
-              await onDelete();
-              setBusy(false);
-            }}
-          >
-            Supprimer
-          </button>
-        ) : null}
-        <button
-          type="button"
-          className="button button-light"
-          disabled={busy || !draft.name.trim()}
-          onClick={async () => {
-            setBusy(true);
-            const ok = await onSubmit(draft);
-            setSaved(ok);
-            setBusy(false);
-          }}
-        >
-          {busy ? '…' : saved ? 'Enregistré ✓' : submitLabel}
-        </button>
-      </div>
-    </div>
-  );
-}
-
-function OrgSitesSection({ orgId, sites, onChange }: { orgId: string; sites: OrgSite[]; onChange: () => void }) {
-  const router = useRouter();
-  const [adding, setAdding] = useState(false);
-
-  const save = async (id: string | null, draft: SiteDraft): Promise<boolean> => {
-    try {
-      const res = await fetch('/api/admin/orgs/sites', {
-        method: id ? 'PATCH' : 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(id ? { id, ...draft } : { orgId, ...draft }),
-      });
-      if (!res.ok) return false;
-      if (!id) setAdding(false);
-      onChange();
-      router.refresh();
-      return true;
-    } catch {
-      return false;
-    }
-  };
-
-  return (
-    <div className="admin-modal-members">
-      <h4 className="admin-modal-subhead">Usines{` (${sites.length})`}</h4>
-      <p className="admin-modal-section-status">
-        Les sites de ce client. Chaque système peut être rattaché à une usine, et un membre peut être limité à
-        certaines usines (voir la liste des membres ci-dessous).
-      </p>
-      {sites.map((s) => (
-        <SiteForm
-          key={s.id}
-          initial={s}
-          submitLabel="Enregistrer"
-          onSubmit={(draft) => save(s.id, draft)}
-          onDelete={async () => {
-            try {
-              await fetch(`/api/admin/orgs/sites?id=${encodeURIComponent(s.id)}`, { method: 'DELETE' });
-            } catch {
-              /* ignore */
-            }
-            onChange();
-            router.refresh();
-          }}
-        />
-      ))}
-      {adding ? (
-        <SiteForm initial={EMPTY_SITE} submitLabel="Ajouter" onSubmit={(draft) => save(null, draft)} />
-      ) : (
-        <button type="button" className="admin-link-btn" onClick={() => setAdding(true)}>
-          + Ajouter une usine
-        </button>
-      )}
-    </div>
-  );
-}
-
-// Per-member site restriction: no checked boxes = access to all sites.
-function MemberSiteAccess({ userId, orgId, sites }: { userId: string; orgId: string; sites: OrgSite[] }) {
-  const [restricted, setRestricted] = useState<string[] | null>(null);
-  const [open, setOpen] = useState(false);
-  const [busy, setBusy] = useState(false);
-
-  const load = async () => {
-    try {
-      const res = await fetch(`/api/admin/orgs/site-members?userId=${encodeURIComponent(userId)}`);
-      if (res.ok) {
-        const d = (await res.json()) as { siteIds?: string[] };
-        // Keep only ids that belong to this org's sites.
-        const valid = new Set(sites.map((s) => s.id));
-        setRestricted((d.siteIds ?? []).filter((id) => valid.has(id)));
-      }
-    } catch {
-      /* ignore */
-    }
-  };
-
-  const toggleOpen = () => {
-    const next = !open;
-    setOpen(next);
-    if (next && restricted === null) void load();
-  };
-
-  const save = async (ids: string[]) => {
-    setBusy(true);
-    setRestricted(ids);
-    try {
-      await fetch('/api/admin/orgs/site-members', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId, orgId, siteIds: ids }),
-      });
-    } catch {
-      /* ignore */
-    }
-    setBusy(false);
-  };
-
-  if (!sites.length) return null;
-
-  const current = restricted ?? [];
-  const label = restricted === null ? 'Usines' : current.length ? `${current.length} usine(s)` : 'Toutes les usines';
-
-  return (
-    <div className="admin-site-access">
-      <button type="button" className="admin-link-btn" onClick={toggleOpen} disabled={busy}>
-        {open ? '▾ ' : '▸ '}
-        {label}
-      </button>
-      {open ? (
-        <div className="admin-site-access-list">
-          {sites.map((s) => {
-            const checked = current.includes(s.id);
-            return (
-              <label key={s.id} className="admin-site-access-item">
-                <input
-                  type="checkbox"
-                  checked={checked}
-                  disabled={busy}
-                  onChange={() => {
-                    const next = checked ? current.filter((id) => id !== s.id) : [...current, s.id];
-                    void save(next);
-                  }}
-                />
-                {s.name}
-              </label>
-            );
-          })}
-          <p className="admin-site-access-hint">Aucune case cochée = accès à toutes les usines.</p>
-        </div>
-      ) : null}
-    </div>
-  );
-}
-
-function OrgDrawer({ org, allOrgs, onClose }: { org: AdminOrgFull | null; allOrgs: AdminOrgFull[]; onClose: () => void }) {
-  const router = useRouter();
-  const isNew = !org;
-  const [name, setName] = useState(org?.name ?? '');
-  const [type, setType] = useState<AccountType>((org?.type as AccountType) ?? 'client');
-  const [country, setCountry] = useState(org?.country ?? '');
-  const [address, setAddress] = useState(org?.address ?? '');
-  const [postalCode, setPostalCode] = useState(org?.postalCode ?? '');
-  const [city, setCity] = useState(org?.city ?? '');
-  const [resellerOrgId, setResellerOrgId] = useState(org?.resellerOrgId ?? '');
-  const [distributorOrgId, setDistributorOrgId] = useState(org?.distributorOrgId ?? '');
-  const [logoUrl, setLogoUrl] = useState<string | null>(org?.logoUrl ?? null);
+  const [name, setName] = useState('');
+  const [type, setType] = useState<AccountType>('client');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [members, setMembers] = useState<OrgMember[]>([]);
-  const [pending, setPending] = useState<PendingInvite[]>([]);
-  const [loadingMembers, setLoadingMembers] = useState(false);
-  const [inviteEmail, setInviteEmail] = useState('');
-  const [inviteRole, setInviteRole] = useState<'admin' | 'member'>('member');
-  const [sites, setSites] = useState<OrgSite[]>([]);
-  // Voir la note OrgRow : force le remount du select de rôle quand un changement
-  // est annulé/échoue, pour rétablir le rôle réellement en base.
-  const [memberNonce, setMemberNonce] = useState(0);
 
-  const refreshSites = async () => {
-    if (!org) return;
-    try {
-      const res = await fetch(`/api/admin/orgs/sites?orgId=${encodeURIComponent(org.id)}`);
-      if (res.ok) {
-        const d = (await res.json()) as { sites?: OrgSite[] };
-        setSites(d.sites ?? []);
-      }
-    } catch {
-      /* ignore */
-    }
-  };
-
-  const resellerOptions = allOrgs.filter((o) => o.type === 'reseller' && o.id !== org?.id);
-  const distributorOptions = allOrgs.filter((o) => o.type === 'distributor' && o.id !== org?.id);
-
-  const save = async () => {
+  const create = async () => {
     if (!name.trim()) {
       setError('Le nom est requis.');
       return;
     }
     setBusy(true);
     setError(null);
-    const fields = {
-      name: name.trim(),
-      type,
-      country,
-      address,
-      postal_code: postalCode,
-      city,
-      reseller_org_id: type === 'client' ? resellerOrgId || null : null,
-      distributor_org_id: type === 'reseller' ? distributorOrgId || null : null,
-    };
     try {
       const res = await fetch('/api/admin/orgs', {
-        method: isNew ? 'POST' : 'PATCH',
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(isNew ? fields : { id: org!.id, ...fields }),
+        body: JSON.stringify({ name: name.trim(), type }),
       });
-      if (!res.ok) {
-        setError(errorLabel((await res.json().catch(() => ({}))).error));
-        setBusy(false);
-        return;
-      }
-      router.refresh();
-      onClose();
-    } catch {
-      setError('Erreur réseau.');
-      setBusy(false);
-    }
-  };
-
-  const uploadLogo = async (file: File) => {
-    if (!org) return;
-    setBusy(true);
-    setError(null);
-    try {
-      const fd = new FormData();
-      fd.append('file', file);
-      fd.append('orgId', org.id);
-      const res = await fetch('/api/admin/orgs/logo', { method: 'POST', body: fd });
-      const data = (await res.json().catch(() => ({}))) as { url?: string; error?: string };
-      if (!res.ok) {
+      const data = (await res.json().catch(() => ({}))) as { id?: string; error?: string };
+      if (!res.ok || !data.id) {
         setError(errorLabel(data.error));
         setBusy(false);
         return;
       }
-      setLogoUrl(data.url ?? null);
-      router.refresh();
-      setBusy(false);
-    } catch {
-      setError('Erreur réseau.');
-      setBusy(false);
-    }
-  };
-
-  const refreshMembers = async () => {
-    if (!org) return;
-    setLoadingMembers(true);
-    try {
-      const res = await fetch(`/api/admin/orgs/members?orgId=${encodeURIComponent(org.id)}`);
-      if (res.ok) {
-        const d = (await res.json()) as { members?: OrgMember[]; pending?: PendingInvite[] };
-        setMembers(d.members ?? []);
-        setPending(d.pending ?? []);
-      }
-    } catch {
-      /* ignore */
-    }
-    setLoadingMembers(false);
-  };
-
-  useEffect(() => {
-    void refreshMembers();
-    void refreshSites();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [org]);
-
-  const changeRole = async (userId: string, role: MemberRole, currentRole: MemberRole) => {
-    if (!org) return;
-    // Confirmation uniquement quand on rétrograde un propriétaire (brief § 4.2.9).
-    if (currentRole === 'owner' && role !== 'owner') {
-      if (!window.confirm('Rétrograder ce propriétaire ? Il perdra le contrôle de l’organisation.')) {
-        setMemberNonce((n) => n + 1); // annulé → rétablir le rôle affiché
-        return;
-      }
-    }
-    setBusy(true);
-    setError(null);
-    try {
-      const res = await fetch('/api/admin/orgs/members', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ orgId: org.id, userId, role }),
-      });
-      if (!res.ok) {
-        setError(errorLabel((await res.json().catch(() => ({}))).error));
-        setMemberNonce((n) => n + 1); // échec → rétablir l'ancien rôle affiché
-        setBusy(false);
-        return;
-      }
-      void refreshMembers();
-      router.refresh();
-    } catch {
-      setError('Erreur réseau.');
-      setMemberNonce((n) => n + 1);
-    }
-    setBusy(false);
-  };
-
-  const removeMem = async (userId: string, label: string) => {
-    if (!org) return;
-    // Confirmation avant de retirer un membre (brief § 4.2.9).
-    if (!window.confirm(`Retirer ${label} de l’organisation ?`)) return;
-    setBusy(true);
-    setError(null);
-    try {
-      const res = await fetch(
-        `/api/admin/orgs/members?orgId=${encodeURIComponent(org.id)}&userId=${encodeURIComponent(userId)}`,
-        { method: 'DELETE' }
-      );
-      if (!res.ok) {
-        setError(errorLabel((await res.json().catch(() => ({}))).error));
-        setBusy(false);
-        return;
-      }
-      void refreshMembers();
-      router.refresh();
-    } catch {
-      setError('Erreur réseau.');
-    }
-    setBusy(false);
-  };
-
-  const revokeInvite = async (invitationId: string, email: string) => {
-    // Confirmation avant de révoquer une invitation (brief § 4.2.9).
-    if (!window.confirm(`Révoquer l’invitation de ${email} ?`)) return;
-    setBusy(true);
-    setError(null);
-    try {
-      const res = await fetch(`/api/admin/orgs/members?invitationId=${encodeURIComponent(invitationId)}`, {
-        method: 'DELETE',
-      });
-      if (!res.ok) {
-        setError(errorLabel((await res.json().catch(() => ({}))).error));
-        setBusy(false);
-        return;
-      }
-      void refreshMembers();
-    } catch {
-      setError('Erreur réseau.');
-    }
-    setBusy(false);
-  };
-
-  const sendInvite = async () => {
-    if (!org || !inviteEmail.trim()) return;
-    setBusy(true);
-    setError(null);
-    try {
-      const res = await fetch('/api/admin/orgs/members', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ orgId: org.id, email: inviteEmail.trim(), role: inviteRole }),
-      });
-      if (!res.ok) {
-        setError(errorLabel((await res.json().catch(() => ({}))).error));
-        setBusy(false);
-        return;
-      }
-      setInviteEmail('');
-      void refreshMembers();
-      setBusy(false);
+      // On atterrit sur la fiche pour compléter le reste (busy reste vrai le temps
+      // de la navigation : évite un double envoi).
+      router.push(`/admin/orgs/${data.id}`);
     } catch {
       setError('Erreur réseau.');
       setBusy(false);
@@ -1676,22 +929,22 @@ function OrgDrawer({ org, allOrgs, onClose }: { org: AdminOrgFull | null; allOrg
 
   return (
     <div className="admin-modal-overlay" onClick={onClose} role="presentation">
-      <div
-        className="admin-modal admin-modal-wide"
-        onClick={(e) => e.stopPropagation()}
-        role="dialog"
-        aria-modal="true"
-      >
+      <div className="admin-modal" onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true">
         <div className="admin-modal-head">
-          <h3>{isNew ? 'Nouvelle organisation' : org!.name}</h3>
+          <h3>Nouvelle organisation</h3>
           <button type="button" className="admin-modal-close" onClick={onClose} aria-label="Fermer">
             ×
           </button>
         </div>
-
         <div className="admin-field">
           <label>Nom</label>
-          <input className="admin-input" value={name} onChange={(e) => setName(e.target.value)} disabled={busy} />
+          <input
+            className="admin-input"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            disabled={busy}
+            autoFocus
+          />
         </div>
         <div className="admin-field">
           <label>Type</label>
@@ -1708,236 +961,16 @@ function OrgDrawer({ org, allOrgs, onClose }: { org: AdminOrgFull | null; allOrg
             ))}
           </select>
         </div>
-
-        {type === 'client' ? (
-          <div className="admin-field">
-            <label>Revendeur rattaché</label>
-            <select
-              className="admin-input"
-              value={resellerOrgId}
-              onChange={(e) => setResellerOrgId(e.target.value)}
-              disabled={busy}
-            >
-              <option value="">— Aucun —</option>
-              {resellerOptions.map((o) => (
-                <option key={o.id} value={o.id}>
-                  {o.name}
-                </option>
-              ))}
-            </select>
-          </div>
-        ) : null}
-        {type === 'reseller' ? (
-          <div className="admin-field">
-            <label>Distributeur rattaché</label>
-            <select
-              className="admin-input"
-              value={distributorOrgId}
-              onChange={(e) => setDistributorOrgId(e.target.value)}
-              disabled={busy}
-            >
-              <option value="">— Aucun —</option>
-              {distributorOptions.map((o) => (
-                <option key={o.id} value={o.id}>
-                  {o.name}
-                </option>
-              ))}
-            </select>
-          </div>
-        ) : null}
-
-        <div className="admin-field">
-          <label>Adresse</label>
-          <input className="admin-input" value={address} onChange={(e) => setAddress(e.target.value)} disabled={busy} />
-        </div>
-        <div className="admin-field-row">
-          <div className="admin-field">
-            <label>Code postal</label>
-            <input
-              className="admin-input"
-              value={postalCode}
-              onChange={(e) => setPostalCode(e.target.value)}
-              disabled={busy}
-            />
-          </div>
-          <div className="admin-field">
-            <label>Ville</label>
-            <input className="admin-input" value={city} onChange={(e) => setCity(e.target.value)} disabled={busy} />
-          </div>
-        </div>
-        <div className="admin-field">
-          <label>Pays</label>
-          <select className="admin-input" value={country} onChange={(e) => setCountry(e.target.value)} disabled={busy}>
-            <option value="">—</option>
-            {COUNTRIES.map((c) => (
-              <option key={c} value={c}>
-                {c}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="admin-field">
-          <label>Logo</label>
-          {isNew ? (
-            <p className="admin-modal-section-status">Enregistrez l&apos;organisation pour pouvoir téléverser un logo.</p>
-          ) : (
-            <div className="admin-logo-edit">
-              {logoUrl ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={logoUrl} alt="" className="admin-logo-preview" />
-              ) : (
-                <span className="admin-logo-empty">Aucun logo</span>
-              )}
-              <label className="admin-link-btn">
-                {busy ? '…' : logoUrl ? 'Remplacer' : 'Téléverser'}
-                <input
-                  type="file"
-                  accept="image/png,image/jpeg,image/webp,image/svg+xml,image/gif"
-                  style={{ display: 'none' }}
-                  disabled={busy}
-                  onChange={(e) => {
-                    const f = e.target.files?.[0];
-                    if (f) void uploadLogo(f);
-                    e.target.value = '';
-                  }}
-                />
-              </label>
-            </div>
-          )}
-        </div>
-
-        <div className="admin-field">
-          <label>Aperçu — en-tête de l&apos;espace revendeur</label>
-          {type === 'reseller' ? (
-            logoUrl ? (
-              <div className="admin-cobrand-preview">
-                <div className="ah-cobrand">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img className="ah-cobrand-logo" src={logoUrl} alt={name} />
-                  <span className="ah-cobrand-badge">Partenaire officiel Rutherford</span>
-                </div>
-              </div>
-            ) : (
-              <p className="admin-modal-section-status">
-                Téléversez un logo : il s&apos;affichera en haut de l&apos;espace de ce revendeur, comme le bandeau X-Rite.
-              </p>
-            )
-          ) : type === 'distributor' ? (
-            <div className="admin-cobrand-preview">
-              <div className="ah-cobrand">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img className="ah-cobrand-logo" src="/images/xrite-logo-black.png" alt="X-Rite PANTONE" />
-                <span className="ah-cobrand-badge">Partenaire officiel X-Rite PANTONE</span>
-              </div>
-            </div>
-          ) : (
-            <p className="admin-modal-section-status">Pas de bandeau co-marqué pour ce type de compte.</p>
-          )}
-        </div>
-
-        {!isNew ? (
-          <div className="admin-modal-members">
-            <h4 className="admin-modal-subhead">Membres{loadingMembers ? ' …' : ` (${members.length})`}</h4>
-            {!loadingMembers && members.length === 0 ? (
-              <p className="admin-modal-section-status">Aucun membre.</p>
-            ) : null}
-            {members.map((m) => (
-              <div className="admin-mem-row" key={m.userId}>
-                <span className="admin-mem-main">
-                  {/* Lien croisé vers la fiche du membre (brief § 4.2.4). */}
-                  <a className="admin-mem-name admin-name-link" href={`/admin/users/${m.userId}`}>
-                    {m.name || m.email || '—'}
-                  </a>
-                  {m.email ? <span className="admin-mem-email">{m.email}</span> : null}
-                  {m.role === 'member' ? <MemberSiteAccess userId={m.userId} orgId={org!.id} sites={sites} /> : null}
-                </span>
-                <span className="ah-member-ctl">
-                  <select
-                    key={`role-${m.userId}-${memberNonce}`}
-                    className="ah-role-select"
-                    value={m.role}
-                    disabled={busy}
-                    onChange={(e) => void changeRole(m.userId, e.target.value as MemberRole, m.role)}
-                  >
-                    <option value="owner">Propriétaire</option>
-                    <option value="admin">Admin</option>
-                    <option value="member">Membre</option>
-                  </select>
-                  <button
-                    type="button"
-                    className="ah-member-remove"
-                    disabled={busy}
-                    onClick={() => void removeMem(m.userId, m.name || m.email || 'ce membre')}
-                    aria-label="Retirer"
-                  >
-                    ×
-                  </button>
-                </span>
-              </div>
-            ))}
-            {pending.map((p) => (
-              <div className="admin-mem-row" key={p.id}>
-                <span className="admin-mem-main">
-                  <span className="admin-mem-name">{p.email}</span>
-                  <span className="admin-mem-email">
-                    Invitation en attente · {MEMBER_ROLE_LABELS[p.role] ?? p.role}
-                  </span>
-                </span>
-                <button
-                  type="button"
-                  className="ah-revoke"
-                  disabled={busy}
-                  onClick={() => void revokeInvite(p.id, p.email)}
-                >
-                  Révoquer
-                </button>
-              </div>
-            ))}
-            <div className="ah-invite-form">
-              <input
-                className="ah-invite-input"
-                type="email"
-                placeholder="email@société.com"
-                value={inviteEmail}
-                onChange={(e) => setInviteEmail(e.target.value)}
-                disabled={busy}
-              />
-              <select
-                className="ah-role-select"
-                value={inviteRole}
-                onChange={(e) => setInviteRole(e.target.value as 'admin' | 'member')}
-                disabled={busy}
-              >
-                <option value="member">Membre</option>
-                <option value="admin">Admin</option>
-              </select>
-              <button
-                type="button"
-                className="ah-invite-send"
-                onClick={() => void sendInvite()}
-                disabled={busy || !inviteEmail.trim()}
-              >
-                Inviter
-              </button>
-            </div>
-          </div>
-        ) : null}
-
-        {/* Usines et systèmes sous licence sont des concepts CLIENT (brief
-            § 2.2.d) : jamais affichés pour une org revendeur/distributeur/équipe. */}
-        {!isNew && type === 'client' ? <OrgSitesSection orgId={org!.id} sites={sites} onChange={refreshSites} /> : null}
-
-        {!isNew && type === 'client' ? <OrgSystemsSection orgId={org!.id} sites={sites} /> : null}
-
+        <p className="admin-modal-section-status">
+          Renseignez adresse, logo, membres, usines et systèmes sur la fiche de l&apos;organisation, une fois créée.
+        </p>
         {error ? <p className="admin-modal-error">{error}</p> : null}
-
         <div className="admin-modal-actions">
           <button type="button" className="button button-light" onClick={onClose} disabled={busy}>
             Annuler
           </button>
-          <button type="button" className="button button-accent" onClick={save} disabled={busy}>
-            {busy ? 'Enregistrement…' : isNew ? 'Créer' : 'Enregistrer'}
+          <button type="button" className="button button-accent" onClick={() => void create()} disabled={busy}>
+            {busy ? 'Création…' : 'Créer'}
           </button>
         </div>
       </div>
@@ -1998,7 +1031,6 @@ export function AdminDashboard({
   const [cvQuery, setCvQuery] = useState('');
   const [supportFilter, setSupportFilter] = useState('');
   const [supportQuery, setSupportQuery] = useState('');
-  const [editingOrg, setEditingOrg] = useState<AdminOrgFull | null>(null);
   const [creatingOrg, setCreatingOrg] = useState(false);
 
   const countryOptions = useMemo(
@@ -2717,12 +1749,13 @@ export function AdminDashboard({
                               // eslint-disable-next-line @next/next/no-img-element
                               <img src={o.logoUrl} alt="" className="admin-logo-thumb" />
                             ) : (
-                              <span className="admin-logo-empty">—</span>
+                              <span className="admin-logo-empty">{orgInitials(o.name)}</span>
                             )}
                           </td>
                           <td>
-                            {/* Vraie page organisation (brief § 4.2.3) ; le bouton
-                                « Gérer » conserve le tiroir d'édition. */}
+                            {/* Nom cliquable vers la fiche organisation (brief § 4.2.3) :
+                                consultation ET édition. Le tiroir « Gérer » est retiré —
+                                tout se passe sur la page (décision du 19/07/2026). */}
                             <a className="admin-name-link" href={`/admin/orgs/${o.id}`}>
                               {o.name}
                             </a>
@@ -2735,11 +1768,11 @@ export function AdminDashboard({
                           <td className="admin-num">{o.memberCount}</td>
                           <td>{o.resellerName ?? o.distributorName ?? '—'}</td>
                           <td>
-                            {canManage ? (
-                              <button type="button" className="admin-link-btn" onClick={() => setEditingOrg(o)}>
-                                Gérer
-                              </button>
-                            ) : null}
+                            {/* L'édition vit sur la page : simple lien « Ouvrir »
+                                (accessible même en lecture seule, la fiche gère les droits). */}
+                            <a className="admin-link-btn" href={`/admin/orgs/${o.id}`}>
+                              Ouvrir
+                            </a>
                           </td>
                         </tr>
                       ))}
@@ -2949,16 +1982,7 @@ export function AdminDashboard({
       {editing ? (
         <UserDrawer user={editing} orgOptions={orgsFull} isSelf={editing.id === selfId} onClose={() => setEditing(null)} />
       ) : null}
-      {creatingOrg || editingOrg ? (
-        <OrgDrawer
-          org={editingOrg}
-          allOrgs={orgsFull}
-          onClose={() => {
-            setEditingOrg(null);
-            setCreatingOrg(false);
-          }}
-        />
-      ) : null}
+      {creatingOrg ? <OrgCreateModal onClose={() => setCreatingOrg(false)} /> : null}
 
       <SiteFooter />
     </main>
