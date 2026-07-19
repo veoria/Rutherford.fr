@@ -179,7 +179,7 @@ Le gating d'accès lui-même est **sain** : is_admin + AAL2 vérifiés partout, 
 
 1. Sélecteur d'organisation sur la fiche utilisateur (+ PATCH `organization_id`, cf. § 3).
 2. Drill-down Cours → liste des apprenants, liés à leurs fiches.
-3. Onglets synchronisés à l'URL + orgs promues en pages (`/admin/orgs/[id]`).
+3. Onglets synchronisés à l'URL + orgs promues en pages (`/admin/orgs/[id]`) — **livré (lots 4C/4D, 19/07/2026)**.
 4. Liens croisés partout : fiche → org, membres org → fiches, validations/support → fiches (ajouter `userId` aux types), cours → apprenants.
 5. Validations & support actionnables dans l'admin (statut, détail, fil).
 6. Journal d'audit (acteur, action, cible, avant/après) alimenté par toutes les mutations `/api/admin/*`, avec un onglet de consultation.

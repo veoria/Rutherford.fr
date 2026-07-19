@@ -681,8 +681,14 @@ export function AdminUserDetail({
                       // eslint-disable-next-line @next/next/no-img-element
                       <img src={user.org.logoUrl} alt="" className="admin-company-logo" />
                     ) : null}
-                    {user.org.name} ({ACCOUNT_TYPE_LABELS[user.org.type as AccountType] ?? user.org.type})
-                    {user.org.role ? ` · ${user.org.role}` : ''}
+                    {/* Lien croisé vers la vraie page organisation (brief § 4.2.3-4). */}
+                    <a className="admin-name-link" href={`/admin/orgs/${user.org.id}`}>
+                      {user.org.name}
+                    </a>
+                    <span>
+                      ({ACCOUNT_TYPE_LABELS[user.org.type as AccountType] ?? user.org.type})
+                      {user.org.role ? ` · ${user.org.role}` : ''}
+                    </span>
                   </span>
                 ) : user.company ? (
                   `${user.company} (texte libre hérité)`

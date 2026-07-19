@@ -2438,14 +2438,18 @@ export function AdminDashboard({
                           </td>
                           <td>
                             {org ? (
-                              // Le nom de l'org prime sur l'ancien texte libre (brief § 3.2.2).
-                              <button type="button" className="admin-company-link" onClick={() => setEditingOrg(org)}>
+                              // Le nom de l'org prime sur l'ancien texte libre (brief
+                              // § 3.2.2). Simple lien vers la page organisation : plus
+                              // de tiroir ici — l'ancienne entrée n'était pas gatée
+                              // canManage et ouvrait un formulaire mort en lecture
+                              // seule (brief § 4.2.10).
+                              <a className="admin-company-link" href={`/admin/orgs/${org.id}`}>
                                 {org.logoUrl ? (
                                   // eslint-disable-next-line @next/next/no-img-element
                                   <img src={org.logoUrl} alt="" className="admin-company-logo" />
                                 ) : null}
                                 <span>{org.name}</span>
-                              </button>
+                              </a>
                             ) : (
                               u.company ?? '—'
                             )}
@@ -2716,7 +2720,13 @@ export function AdminDashboard({
                               <span className="admin-logo-empty">—</span>
                             )}
                           </td>
-                          <td>{o.name}</td>
+                          <td>
+                            {/* Vraie page organisation (brief § 4.2.3) ; le bouton
+                                « Gérer » conserve le tiroir d'édition. */}
+                            <a className="admin-name-link" href={`/admin/orgs/${o.id}`}>
+                              {o.name}
+                            </a>
+                          </td>
                           <td>
                             <AccountTypeBadge type={o.type as AccountType} />
                           </td>
