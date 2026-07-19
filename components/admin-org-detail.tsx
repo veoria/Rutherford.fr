@@ -258,10 +258,10 @@ export function AdminOrgDetail({
             {org.previewUserId ? (
               <a
                 className="button button-light"
-                href={`/admin/users/${org.previewUserId}/preview`}
+                href={`/admin/users/${org.previewUserId}/preview?back=/admin/orgs/${org.id}`}
                 style={{ marginTop: 12, display: 'inline-flex', alignItems: 'center', gap: 6 }}
               >
-                👁 {previewLabel}
+                {previewLabel}
               </a>
             ) : null}
           </header>

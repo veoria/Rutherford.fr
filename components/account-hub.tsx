@@ -56,6 +56,9 @@ type Props = {
   // Read-only admin preview ("view as client"): hides every action that would
   // act on the admin's own session (edit profile, sign out, uploads, team mgmt).
   preview?: boolean;
+  // Where the preview's « Retour admin » link goes (fiche utilisateur par
+  // défaut, ou page organisation quand l'aperçu est ouvert depuis celle-ci).
+  previewBack?: string;
 };
 
 export type AccountHubProps = Props;
@@ -108,13 +111,15 @@ const PREVIEW_NOTE: Record<Locale, string> = {
   pt: 'Pré-visualização da área do cliente — apenas leitura',
 };
 
+// Neutre : le retour peut viser la fiche utilisateur OU la page organisation
+// selon d'où l'aperçu a été ouvert (prop previewBack).
 const PREVIEW_BACK: Record<Locale, string> = {
-  en: '← Admin record',
-  fr: '← Fiche admin',
-  de: '← Admin-Akte',
-  it: '← Scheda admin',
-  es: '← Ficha admin',
-  pt: '← Ficha admin',
+  en: '← Back to admin',
+  fr: '← Retour admin',
+  de: '← Zurück zum Admin',
+  it: '← Torna all’admin',
+  es: '← Volver al admin',
+  pt: '← Voltar ao admin',
 };
 
 const RANK_NAMES: Record<Locale, string[]> = {
@@ -556,7 +561,8 @@ function fmtMonth(iso: string | null, locale: Locale): string {
 type Tile = { ic: string; cls: string; t: string; s: string; href: string; statDot?: string; statV: string; statM?: string };
 
 export function AccountHub(props: Props) {
-  const { accountType, team, selfId, networkResellers, email, memberSince, profile, academy, consoleStat, supportStat, resume, resellerClients, systems, installations = [], sites = [], preview = false } = props;
+  const { accountType, team, selfId, networkResellers, email, memberSince, profile, academy, consoleStat, supportStat, resume, resellerClients, systems, installations = [], sites = [], preview = false, previewBack } = props;
+  const previewBackHref = previewBack || `/admin/users/${selfId}`;
   const { locale } = useLanguage();
   const t = COPY[locale];
   const accent = TONE[accountType];
@@ -654,7 +660,7 @@ export function AccountHub(props: Props) {
             <span style={{ fontSize: '0.88rem', fontWeight: 600, color: '#7a5b00' }}>
               {PREVIEW_NOTE[locale]}{profile.fullName ? ` · ${profile.fullName}` : ''}
             </span>
-            <a className="button button-light" href={`/admin/users/${selfId}`}>{PREVIEW_BACK[locale]}</a>
+            <a className="button button-light" href={previewBackHref}>{PREVIEW_BACK[locale]}</a>
           </div>
         </div>
       ) : (
@@ -717,18 +723,16 @@ export function AccountHub(props: Props) {
                 </span>
               </div>
             </div>
-            <div className="ah-actions">
-              {preview ? (
-                <a className="button button-light" href={`/admin/users/${selfId}`}>{PREVIEW_BACK[locale]}</a>
-              ) : (
-                <>
-                  <a className="button button-light" href="/account/profile">{t.editProfile}</a>
-                  <form action="/api/auth/sign-out" method="post">
-                    <button type="submit" className="button button-light">{t.signOut}</button>
-                  </form>
-                </>
-              )}
-            </div>
+            {/* En aperçu, le retour vit dans le bandeau supérieur — pas de
+                doublon ici. */}
+            {preview ? null : (
+              <div className="ah-actions">
+                <a className="button button-light" href="/account/profile">{t.editProfile}</a>
+                <form action="/api/auth/sign-out" method="post">
+                  <button type="submit" className="button button-light">{t.signOut}</button>
+                </form>
+              </div>
+            )}
           </div>
 
           {/* À faire maintenant — top action + reminders (not in admin preview) */}

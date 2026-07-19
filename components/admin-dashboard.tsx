@@ -114,6 +114,8 @@ const ERROR_LABELS: Record<string, string> = {
   bad_job_title: 'Poste invalide pour ce type de compte.',
   bad_job_roles: 'Rôles invalides pour ce type de compte.',
   bad_organization: 'Organisation invalide ou introuvable.',
+  forbidden_admin_grant: 'Seul le super-administrateur peut nommer un administrateur.',
+  admin_requires_team: 'Seuls les membres de l’équipe Rutherford peuvent être administrateurs.',
 };
 const errorLabel = (code: unknown) =>
   (typeof code === 'string' && ERROR_LABELS[code]) || 'Une erreur est survenue.';
@@ -558,11 +560,13 @@ function UserDrawer({
   user,
   orgOptions,
   isSelf,
+  canGrantAdmin,
   onClose,
 }: {
   user: AdminUser;
   orgOptions: OrgOption[];
   isSelf: boolean;
+  canGrantAdmin: boolean;
   onClose: () => void;
 }) {
   const router = useRouter();
@@ -590,8 +594,10 @@ function UserDrawer({
       full_name: fullName.trim(),
       country,
       account_type: accountType,
-      is_admin: isAdmin,
     };
+    // is_admin dirty-tracké : envoyé uniquement s'il change (modification
+    // réservée au super-admin côté serveur).
+    if (isAdmin !== user.isAdmin) body.is_admin = isAdmin;
     // Dirty-tracking : organization_id n'est envoyé que s'il a changé — même
     // logique que les champs de rôle ci-dessous.
     if ((orgId ?? null) !== (user.orgId ?? null)) body.organization_id = orgId;
@@ -752,15 +758,19 @@ function UserDrawer({
             ))}
           </select>
         </div>
-        <label className="admin-check">
-          <input
-            type="checkbox"
-            checked={isAdmin}
-            onChange={(e) => setIsAdmin(e.target.checked)}
-            disabled={busy || isSelf}
-          />
-          <span>Administrateur{isSelf ? ' (vous — non modifiable)' : ''}</span>
-        </label>
+        {/* Administrateur : comptes équipe uniquement, bascule réservée au
+            super-admin (même règle appliquée côté serveur). */}
+        {canGrantAdmin && accountType === 'team' ? (
+          <label className="admin-check">
+            <input
+              type="checkbox"
+              checked={isAdmin}
+              onChange={(e) => setIsAdmin(e.target.checked)}
+              disabled={busy || isSelf}
+            />
+            <span>Administrateur{isSelf ? ' (vous — non modifiable)' : ''}</span>
+          </label>
+        ) : null}
 
         {error ? <p className="admin-modal-error">{error}</p> : null}
 
@@ -987,6 +997,7 @@ export function AdminDashboard({
   auditLog,
   selfId,
   canManage,
+  canGrantAdmin = false,
 }: {
   overview: AdminOverview;
   orgs: { clients: AdminOrg[]; resellers: { id: string; name: string }[] };
@@ -994,6 +1005,7 @@ export function AdminDashboard({
   auditLog: AuditEntry[];
   selfId: string;
   canManage: boolean;
+  canGrantAdmin?: boolean;
 }) {
   const { users, courses, consoleValidations, supportTickets, totals } = overview;
   const pathname = usePathname();
@@ -1980,7 +1992,7 @@ export function AdminDashboard({
       </section>
 
       {editing ? (
-        <UserDrawer user={editing} orgOptions={orgsFull} isSelf={editing.id === selfId} onClose={() => setEditing(null)} />
+        <UserDrawer user={editing} orgOptions={orgsFull} isSelf={editing.id === selfId} canGrantAdmin={canGrantAdmin} onClose={() => setEditing(null)} />
       ) : null}
       {creatingOrg ? <OrgCreateModal onClose={() => setCreatingOrg(false)} /> : null}
 

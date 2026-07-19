@@ -111,6 +111,8 @@ const ERROR_LABELS: Record<string, string> = {
   bad_job_title: 'Poste invalide pour ce type de compte.',
   bad_job_roles: 'Rôles invalides pour ce type de compte.',
   bad_organization: 'Organisation invalide ou introuvable.',
+  forbidden_admin_grant: 'Seul le super-administrateur peut nommer un administrateur.',
+  admin_requires_team: 'Seuls les membres de l’équipe Rutherford peuvent être administrateurs.',
 };
 const errorLabel = (code: unknown) =>
   (typeof code === 'string' && ERROR_LABELS[code]) || 'Une erreur est survenue.';
@@ -353,7 +355,7 @@ function OrgSelectField({
   );
 }
 
-function ManagePanel({ user, isSelf }: { user: Detail; isSelf: boolean }) {
+function ManagePanel({ user, isSelf, canGrantAdmin }: { user: Detail; isSelf: boolean; canGrantAdmin: boolean }) {
   const router = useRouter();
   const [fullName, setFullName] = useState(user.name ?? '');
   // L'org remplace le champ « Société » libre (brief § 3.2.1) ; company n'est
@@ -379,8 +381,11 @@ function ManagePanel({ user, isSelf }: { user: Detail; isSelf: boolean }) {
       full_name: fullName.trim(),
       country,
       account_type: accountType,
-      is_admin: isAdmin,
     };
+    // is_admin dirty-tracké : envoyé UNIQUEMENT s'il change (le serveur réserve
+    // sa modification au super-admin ; l'inclure à chaque save bloquerait un
+    // admin normal éditant un autre champ).
+    if (isAdmin !== user.isAdmin) body.is_admin = isAdmin;
     // Dirty-tracking : organization_id n'est envoyé que s'il a changé — même
     // logique que les champs de rôle ci-dessous.
     if ((orgId ?? null) !== (user.org?.id ?? null)) body.organization_id = orgId;
@@ -562,15 +567,19 @@ function ManagePanel({ user, isSelf }: { user: Detail; isSelf: boolean }) {
           ))}
         </select>
       </div>
-      <label className="admin-check">
-        <input
-          type="checkbox"
-          checked={isAdmin}
-          onChange={(e) => setIsAdmin(e.target.checked)}
-          disabled={busy || isSelf}
-        />
-        <span>Administrateur{isSelf ? ' (vous — non modifiable)' : ''}</span>
-      </label>
+      {/* Administrateur : réservé aux comptes équipe, et seul le super-admin
+          peut le basculer. Masqué sinon (le serveur applique la même règle). */}
+      {canGrantAdmin && accountType === 'team' ? (
+        <label className="admin-check">
+          <input
+            type="checkbox"
+            checked={isAdmin}
+            onChange={(e) => setIsAdmin(e.target.checked)}
+            disabled={busy || isSelf}
+          />
+          <span>Administrateur{isSelf ? ' (vous — non modifiable)' : ''}</span>
+        </label>
+      ) : null}
 
       {error ? <p className="admin-modal-error">{error}</p> : null}
 
@@ -625,10 +634,12 @@ export function AdminUserDetail({
   user,
   canManage,
   isSelf,
+  canGrantAdmin = false,
 }: {
   user: Detail;
   canManage: boolean;
   isSelf: boolean;
+  canGrantAdmin?: boolean;
 }) {
   const access = user.activePass
     ? 'Academy Pass'
@@ -711,7 +722,7 @@ export function AdminUserDetail({
           </div>
 
           {canManage ? (
-            <ManagePanel user={user} isSelf={isSelf} />
+            <ManagePanel user={user} isSelf={isSelf} canGrantAdmin={canGrantAdmin} />
           ) : (
             <p className="admin-modal-section-status">Lecture seule — la gestion des comptes est réservée aux admins.</p>
           )}

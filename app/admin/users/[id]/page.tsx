@@ -23,5 +23,12 @@ export default async function AdminUserRoute({ params }: { params: { id: string 
 
   const user = await getAdminUserDetail(params.id);
   if (!user) notFound();
-  return <AdminUserDetail user={user} canManage={access.canManage} isSelf={access.userId === params.id} />;
+  return (
+    <AdminUserDetail
+      user={user}
+      canManage={access.canManage}
+      isSelf={access.userId === params.id}
+      canGrantAdmin={access.isSuperAdmin}
+    />
+  );
 }

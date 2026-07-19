@@ -10,6 +10,7 @@ import {
 } from '@/data/onboarding-options';
 import { ensurePersonalOrg } from '@/lib/organizations';
 import { recordAudit } from '@/lib/admin-audit';
+import { isSuperAdminEmail } from '@/lib/admin-access';
 
 export const dynamic = 'force-dynamic';
 
@@ -141,9 +142,25 @@ export async function PATCH(request: NextRequest) {
     if (body.account_type !== storedType) patch.account_type_source = 'admin';
   }
   if (typeof body.is_admin === 'boolean') {
+    // Only the super-admin may grant/revoke the admin flag (« seul le vrai
+    // admin nomme un administrateur »).
+    if (!isSuperAdminEmail(gate.user.email)) {
+      return NextResponse.json({ error: 'forbidden_admin_grant' }, { status: 403 });
+    }
     // Lockout guard: an admin can't strip their own admin rights.
     if (body.is_admin === false && id === gate.user.id) {
       return NextResponse.json({ error: 'cannot_self_demote' }, { status: 400 });
+    }
+    // Admin is reserved to Rutherford team accounts.
+    if (body.is_admin === true) {
+      let targetType = effectiveType;
+      if (!targetType) {
+        const { data: tp } = await admin.from('profiles').select('account_type').eq('id', id).maybeSingle();
+        targetType = ((tp as { account_type: string | null } | null)?.account_type as string | null) ?? 'client';
+      }
+      if (targetType !== 'team') {
+        return NextResponse.json({ error: 'admin_requires_team' }, { status: 400 });
+      }
     }
     patch.is_admin = body.is_admin;
   }
