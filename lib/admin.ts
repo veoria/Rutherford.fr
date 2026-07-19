@@ -679,6 +679,27 @@ export type AdminOrgAttributedRow = {
   systemsCount: number;
 };
 
+// Métriques d'une organisation (brief § 4.2 — retours du 19/07/2026). Le
+// « périmètre » = les membres de l'org + (pour un revendeur/distributeur) les
+// membres de ses clients attribués. Les validations sont scopées précisément
+// via user_id OU reseller_id ; le support via user_id (pas de reseller_id sur
+// support_tickets). La conversion validation→install est APPROXIMATIVE (pas de
+// lien dur validation↔presse équipée aujourd'hui) : ratio presses équipées /
+// validations soumises dans le périmètre.
+export type AdminOrgMetrics = {
+  consoleTotal: number;
+  consoleByStatus: { status: string; count: number }[];
+  consoleCompatible: number; // status 'can_be_connected'
+  supportTotal: number;
+  equippedSystems: number; // presses équipées du périmètre (propres + clients attribués)
+  conversionPct: number | null; // equippedSystems / consoleTotal, approx.
+  licensesExpiringSoon: number; // échéance ≤ 90 jours
+  nextLicenseExpiry: string | null;
+  lastValidationAt: string | null;
+  lastInstallAt: string | null;
+  lastMemberSignInAt: string | null;
+};
+
 export type AdminOrgDetail = {
   id: string;
   name: string;
@@ -701,6 +722,10 @@ export type AdminOrgDetail = {
   /** Orgs revendeur/distributeur : les organisations qui leur sont attribuées
    * (reseller_org_id resp. distributor_org_id = cette org). */
   attributedOrgs: AdminOrgAttributedRow[];
+  metrics: AdminOrgMetrics;
+  /** Membre pour l'aperçu « voir la vue du client » — le propriétaire actif de
+   * l'org (fallback : premier membre actif), ou null si aucun. */
+  previewUserId: string | null;
 };
 
 /** Tout ce que la page /admin/orgs/[id] affiche pour UNE organisation :
@@ -751,7 +776,7 @@ export async function getAdminOrgDetail(orgId: string): Promise<AdminOrgDetail |
     admin
       .from('client_systems')
       .select(
-        'id, product, machine, site_id, license_key, license_status, license_expires_at, installed_version, latest_version, anydesk_id, sold_by_org_id'
+        'id, product, machine, site_id, license_key, license_status, license_expires_at, installed_version, latest_version, anydesk_id, sold_by_org_id, created_at'
       )
       .eq('org_id', orgId)
       .order('created_at', { ascending: true }),
@@ -782,6 +807,7 @@ export async function getAdminOrgDetail(orgId: string): Promise<AdminOrgDetail |
     latest_version: string | null;
     anydesk_id: string | null;
     sold_by_org_id: string | null;
+    created_at: string | null;
   }[];
   const attribRows = (attribRes.data ?? []) as { id: string; name: string; type: string }[];
 
@@ -822,25 +848,97 @@ export async function getAdminOrgDetail(orgId: string): Promise<AdminOrgDetail |
       )
     )
   );
-  const [attribMemRes, attribSysRes, relatedRes] = await Promise.all([
+  const [attribMemRes, attribSysRes, relatedRes, cvRes, supRes] = await Promise.all([
     attribIds.length
-      ? admin.from('organization_members').select('org_id').in('org_id', attribIds).eq('status', 'active')
+      ? admin.from('organization_members').select('org_id, user_id').in('org_id', attribIds).eq('status', 'active')
       : Promise.resolve({ data: [] as Record<string, unknown>[] }),
     attribIds.length
-      ? admin.from('client_systems').select('org_id').in('org_id', attribIds)
+      ? admin.from('client_systems').select('org_id, created_at, license_expires_at').in('org_id', attribIds)
       : Promise.resolve({ data: [] as Record<string, unknown>[] }),
     relatedOrgIds.length
       ? admin.from('organizations').select('id, name').in('id', relatedOrgIds)
       : Promise.resolve({ data: [] as Record<string, unknown>[] }),
+    // Périmètre validations/support : filtrées en JS par les ids de membres
+    // (peu de lignes ; le filtre .or serait fragile avec des listes d'uuid).
+    admin.from('console_validations').select('user_id, reseller_id, status, created_at'),
+    admin.from('support_tickets').select('user_id, created_at'),
   ]);
+  const attribMemberRows = (attribMemRes.data ?? []) as { org_id: string; user_id: string }[];
   const memberCountByOrg = new Map<string, number>();
-  for (const r of (attribMemRes.data ?? []) as { org_id: string }[]) {
+  for (const r of attribMemberRows) {
     memberCountByOrg.set(r.org_id, (memberCountByOrg.get(r.org_id) ?? 0) + 1);
   }
+  const attribSysRows = (attribSysRes.data ?? []) as {
+    org_id: string;
+    created_at: string | null;
+    license_expires_at: string | null;
+  }[];
   const systemsCountByOrg = new Map<string, number>();
-  for (const r of (attribSysRes.data ?? []) as { org_id: string }[]) {
+  for (const r of attribSysRows) {
     systemsCountByOrg.set(r.org_id, (systemsCountByOrg.get(r.org_id) ?? 0) + 1);
   }
+
+  // --- Métriques du périmètre (org + membres des clients attribués) ---------
+  const inScopeUserIds = new Set<string>(
+    [...memberRows.map((m) => m.user_id), ...attribMemberRows.map((m) => m.user_id)].filter(Boolean)
+  );
+  const cvAll = (cvRes.data ?? []) as {
+    user_id: string | null;
+    reseller_id: string | null;
+    status: string;
+    created_at: string;
+  }[];
+  const cvScoped = cvAll.filter(
+    (c) =>
+      (c.user_id && inScopeUserIds.has(c.user_id)) || (c.reseller_id && inScopeUserIds.has(c.reseller_id))
+  );
+  const supAll = (supRes.data ?? []) as { user_id: string | null; created_at: string }[];
+  const supScoped = supAll.filter((t) => t.user_id && inScopeUserIds.has(t.user_id));
+
+  // Presses équipées du périmètre = les systèmes propres (org cliente) + ceux
+  // des clients attribués (un revendeur pilote le parc de SES clients).
+  const scopedSystems = [
+    ...sysRows.map((s) => ({ createdAt: s.created_at, expires: s.license_expires_at })),
+    ...attribSysRows.map((s) => ({ createdAt: s.created_at, expires: s.license_expires_at })),
+  ];
+  const cvByStatus = new Map<string, number>();
+  for (const c of cvScoped) cvByStatus.set(c.status, (cvByStatus.get(c.status) ?? 0) + 1);
+
+  const now = Date.now();
+  const soonCutoff = now + 90 * 86_400_000;
+  let licensesExpiringSoon = 0;
+  let nextLicenseExpiry: string | null = null;
+  for (const s of scopedSystems) {
+    if (!s.expires) continue;
+    const t = new Date(s.expires).getTime();
+    if (Number.isNaN(t) || t < now) continue;
+    if (t <= soonCutoff) licensesExpiringSoon += 1;
+    if (!nextLicenseExpiry || s.expires < nextLicenseExpiry) nextLicenseExpiry = s.expires;
+  }
+  const maxOf = (vals: (string | null)[]): string | null =>
+    vals.filter((v): v is string => Boolean(v)).sort().at(-1) ?? null;
+  const lastSignInByUser = (authList?.users ?? []) as { id: string; last_sign_in_at?: string | null }[];
+  const lastMemberSignInAt = maxOf(
+    lastSignInByUser.filter((u) => inScopeUserIds.has(u.id)).map((u) => u.last_sign_in_at ?? null)
+  );
+
+  const metrics: AdminOrgMetrics = {
+    consoleTotal: cvScoped.length,
+    consoleByStatus: [...cvByStatus.entries()].map(([status, count]) => ({ status, count })),
+    consoleCompatible: cvByStatus.get('can_be_connected') ?? 0,
+    supportTotal: supScoped.length,
+    equippedSystems: scopedSystems.length,
+    conversionPct: cvScoped.length ? Math.round((scopedSystems.length / cvScoped.length) * 100) : null,
+    licensesExpiringSoon,
+    nextLicenseExpiry,
+    lastValidationAt: maxOf(cvScoped.map((c) => c.created_at)),
+    lastInstallAt: maxOf(scopedSystems.map((s) => s.createdAt)),
+    lastMemberSignInAt,
+  };
+  const previewUserId =
+    memberRows.find((m) => m.role === 'owner' && m.status === 'active')?.user_id ??
+    memberRows.find((m) => m.status === 'active')?.user_id ??
+    null;
   const relatedNameById = new Map(
     ((relatedRes.data ?? []) as { id: string; name: string }[]).map((r) => [r.id, r.name])
   );
@@ -894,5 +992,7 @@ export async function getAdminOrgDetail(orgId: string): Promise<AdminOrgDetail |
       memberCount: memberCountByOrg.get(a.id) ?? 0,
       systemsCount: systemsCountByOrg.get(a.id) ?? 0,
     })),
+    metrics,
+    previewUserId,
   };
 }
