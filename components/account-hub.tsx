@@ -122,6 +122,18 @@ const PREVIEW_BACK: Record<Locale, string> = {
   pt: '← Voltar ao admin',
 };
 
+// En aperçu, les tuiles ne peuvent pas ouvrir /account/* (ces routes rendent
+// l'espace de l'admin connecté, pas celui du client). Elles pointent donc vers
+// la vue admin des données de CE compte (fiche user / page org).
+const PREVIEW_TILES_ADMIN: Record<Locale, string> = {
+  en: 'Tiles open the matching admin view of this account',
+  fr: 'Les tuiles ouvrent la vue admin correspondante de ce compte',
+  de: 'Kacheln öffnen die entsprechende Admin-Ansicht dieses Kontos',
+  it: 'I riquadri aprono la vista admin corrispondente di questo account',
+  es: 'Las tarjetas abren la vista de administración correspondiente de esta cuenta',
+  pt: 'Os cartões abrem a vista de administração correspondente desta conta',
+};
+
 const RANK_NAMES: Record<Locale, string[]> = {
   en: ['Apprentice', 'Operator', 'Colorist', 'Color Expert', 'Closed-Loop Master'],
   fr: ['Apprenti', 'Opérateur', 'Coloriste', 'Expert couleur', 'Maître closed-loop'],
@@ -558,7 +570,10 @@ function fmtMonth(iso: string | null, locale: Locale): string {
   }
 }
 
-type Tile = { ic: string; cls: string; t: string; s: string; href: string; statDot?: string; statV: string; statM?: string };
+// adminHref : destination de la tuile en aperçu admin — la vue admin des mêmes
+// données pour CE compte (fiche user / page org), jamais /account/* qui rendrait
+// l'espace de l'admin connecté.
+type Tile = { ic: string; cls: string; t: string; s: string; href: string; adminHref?: string; statDot?: string; statV: string; statM?: string };
 
 export function AccountHub(props: Props) {
   const { accountType, team, selfId, networkResellers, email, memberSince, profile, academy, consoleStat, supportStat, resume, resellerClients, systems, installations = [], sites = [], preview = false, previewBack } = props;
@@ -578,8 +593,12 @@ export function AccountHub(props: Props) {
   const consoleStatV = consoleStat.eligible > 0 ? t.stat.eligible(consoleStat.eligible) : t.stat.open(consoleStat.open);
   const consoleStatM = consoleStat.eligible > 0 && consoleStat.open > 0 ? t.stat.open(consoleStat.open) : '';
 
-  const academyTile: Tile = { ic: 'acad', cls: 'blue', t: t.tiles.academyT, s: t.tiles.academyS, href: '/account/academy', statDot: 'blue', statV: academyStat, statM: `${academy.xp} ${t.xpUnit}` };
-  const consoleTile: Tile = { ic: 'console', cls: 'ink', t: t.tiles.consoleT, s: t.tiles.consoleS, href: '/account/console-validations', statDot: consoleStat.eligible > 0 ? 'green' : 'amber', statV: consoleStatV, statM: consoleStatM };
+  // En aperçu : équipe/clients → page org quand le compte en a une, sinon fiche user.
+  const previewFiche = `/admin/users/${selfId}`;
+  const previewOrgHref = team.org?.id ? `/admin/orgs/${team.org.id}` : previewFiche;
+
+  const academyTile: Tile = { ic: 'acad', cls: 'blue', t: t.tiles.academyT, s: t.tiles.academyS, href: '/account/academy', adminHref: `${previewFiche}#academy`, statDot: 'blue', statV: academyStat, statM: `${academy.xp} ${t.xpUnit}` };
+  const consoleTile: Tile = { ic: 'console', cls: 'ink', t: t.tiles.consoleT, s: t.tiles.consoleS, href: '/account/console-validations', adminHref: `${previewFiche}#validations`, statDot: consoleStat.eligible > 0 ? 'green' : 'amber', statV: consoleStatV, statM: consoleStatM };
   const supportStatV = supportStat.newMessage
     ? t.stat.supportNewMsg
     : supportStat.status === 'waiting_customer'
@@ -593,19 +612,19 @@ export function AccountHub(props: Props) {
       : supportStat.status
         ? 'blue'
         : undefined;
-  const supportTile: Tile = { ic: 'support', cls: 'ink', t: t.tiles.supportT, s: t.tiles.supportS, href: '/account/support', statDot: supportDot, statV: supportStatV };
+  const supportTile: Tile = { ic: 'support', cls: 'ink', t: t.tiles.supportT, s: t.tiles.supportS, href: '/account/support', adminHref: `${previewFiche}#support`, statDot: supportDot, statV: supportStatV };
 
   let roleTile: Tile;
   if (accountType === 'reseller') {
-    roleTile = { ic: 'clients', cls: 'green', t: t.tiles.clientsT, s: t.tiles.clientsS, href: '/account/team', statDot: 'green', statV: t.stat.clientsCount(resellerClients.length) };
+    roleTile = { ic: 'clients', cls: 'green', t: t.tiles.clientsT, s: t.tiles.clientsS, href: '/account/team', adminHref: previewOrgHref, statDot: 'green', statV: t.stat.clientsCount(resellerClients.length) };
   } else if (accountType === 'distributor') {
-    roleTile = { ic: 'network', cls: 'violet', t: t.tiles.networkT, s: t.tiles.networkS, href: '/account/team', statV: t.stat.networkSoon };
+    roleTile = { ic: 'network', cls: 'violet', t: t.tiles.networkT, s: t.tiles.networkS, href: '/account/team', adminHref: previewOrgHref, statV: t.stat.networkSoon };
   } else if (accountType === 'team') {
     // Back-office entry for all staff. /admin enforces the real gate (team
     // domain + 2FA); non-admins land in a read-only view there.
-    roleTile = { ic: 'admin', cls: 'ink', t: t.tiles.adminT, s: t.tiles.adminS, href: '/admin', statV: t.stat.backoffice };
+    roleTile = { ic: 'admin', cls: 'ink', t: t.tiles.adminT, s: t.tiles.adminS, href: '/admin', adminHref: previewFiche, statV: t.stat.backoffice };
   } else {
-    roleTile = { ic: 'team', cls: 'green', t: t.tiles.teamT, s: t.tiles.teamS, href: '/account/team', statV: t.stat.youOnly };
+    roleTile = { ic: 'team', cls: 'green', t: t.tiles.teamT, s: t.tiles.teamS, href: '/account/team', adminHref: previewOrgHref, statV: t.stat.youOnly };
   }
 
   // Console tile is hidden for the Rutherford team (per-role visibility
@@ -765,21 +784,34 @@ export function AccountHub(props: Props) {
             </>
           ) : null}
 
-          {/* Quick access */}
-          <div className="ah-section-h"><span className="ah-section-t">{t.quickAccess}</span></div>
+          {/* Quick access — en aperçu, /account/* rendrait l'espace de l'admin
+              connecté : chaque tuile pointe donc vers la vue admin des mêmes
+              données pour ce compte (fiche user #ancre / page org). */}
+          <div className="ah-section-h">
+            <span className="ah-section-t">{t.quickAccess}</span>
+            {preview ? <span className="ah-section-note">{PREVIEW_TILES_ADMIN[locale]}</span> : null}
+          </div>
           <div className="ah-tiles">
-            {tiles.map((tile, i) => (
-              <a className="ah-tile" href={tile.href} key={i}>
-                <div className={`ah-tile-ic ${tile.cls}`}>{ICON[tile.ic]}</div>
-                <div className="ah-tile-t">{tile.t}{ICON.arrow}</div>
-                <div className="ah-tile-s">{tile.s}</div>
-                <div className="ah-tile-stat">
-                  {tile.statDot ? <span className={`ah-pulse ${tile.statDot}`} /> : null}
-                  {tile.statV}
-                  {tile.statM ? <span className="ah-mono"> · {tile.statM}</span> : null}
-                </div>
-              </a>
-            ))}
+            {tiles.map((tile, i) => {
+              const href = preview ? tile.adminHref : tile.href;
+              const body = (
+                <>
+                  <div className={`ah-tile-ic ${tile.cls}`}>{ICON[tile.ic]}</div>
+                  <div className="ah-tile-t">{tile.t}{href ? ICON.arrow : null}</div>
+                  <div className="ah-tile-s">{tile.s}</div>
+                  <div className="ah-tile-stat">
+                    {tile.statDot ? <span className={`ah-pulse ${tile.statDot}`} /> : null}
+                    {tile.statV}
+                    {tile.statM ? <span className="ah-mono"> · {tile.statM}</span> : null}
+                  </div>
+                </>
+              );
+              return href ? (
+                <a className="ah-tile" href={href} key={i}>{body}</a>
+              ) : (
+                <div className="ah-tile ah-tile-static" aria-disabled="true" key={i}>{body}</div>
+              );
+            })}
           </div>
 
           {/* Client-only sections (per-role visibility matrix): plants/licenses
@@ -788,10 +820,10 @@ export function AccountHub(props: Props) {
             <>
               {/* My system — licenses, AnyDesk, updates (set in the org back-office;
                   renders nothing until the Rutherford team adds a system) */}
-              <AccountInstallations installations={installations} sites={sites} accent={accent} />
+              <AccountInstallations installations={installations} sites={sites} accent={accent} preview={preview} />
 
               {/* My presses — renders nothing when there are none */}
-              <AccountSystems systems={systems} accent={accent} />
+              <AccountSystems systems={systems} accent={accent} preview={preview} />
             </>
           ) : null}
 
@@ -805,11 +837,12 @@ export function AccountHub(props: Props) {
                 selfId={selfId}
                 networkResellers={networkResellers}
                 clients={resellerClients}
+                preview={preview}
               />
             </div>
             <aside className="ah-aside">
               <AcademyMini t={t} academy={academy} rank={rank} nextRank={nextRank} />
-              <SupportMini t={t} />
+              <SupportMini t={t} preview={preview} />
             </aside>
           </div>
         </div>
@@ -1098,12 +1131,16 @@ export function ManagePanel({
   selfId,
   networkResellers,
   clients,
+  preview = false,
 }: {
   accountType: AccountType;
   team: Team;
   selfId: string;
   networkResellers: ResellerClientOrg[];
   clients: ResellerClient[];
+  // Aperçu admin : masque les actions (inviter/retirer/back-office) qui, sinon,
+  // s'exécuteraient sur la session de l'admin connecté, pas sur le client montré.
+  preview?: boolean;
 }) {
   const { locale } = useLanguage();
   const t = COPY[locale];
@@ -1113,7 +1150,7 @@ export function ManagePanel({
   const accent = TONE[accountType];
   const title = accountType === 'distributor' ? t.manage.networkTitle : accountType === 'reseller' ? t.manage.clientsTitle : t.manage.teamTitle;
   const sub = accountType === 'distributor' ? t.manage.networkSub : accountType === 'reseller' ? t.manage.clientsSub : t.manage.teamSub;
-  const canManage = team.myRole === 'owner' || team.myRole === 'admin';
+  const canManage = !preview && (team.myRole === 'owner' || team.myRole === 'admin');
 
   // Rutherford staff reach the back-office from here. /admin enforces the real
   // gate (team domain + 2FA) and shows non-admins a read-only view.
@@ -1127,7 +1164,11 @@ export function ManagePanel({
           </div>
         </div>
         <div className="ah-card-bd">
-          <a className="button button-dark" href="/admin">{t.manage.adminCta} →</a>
+          {preview ? (
+            <span className="button button-dark" aria-disabled="true" style={{ opacity: 0.55, pointerEvents: 'none' }}>{t.manage.adminCta} →</span>
+          ) : (
+            <a className="button button-dark" href="/admin">{t.manage.adminCta} →</a>
+          )}
         </div>
       </div>
     );
@@ -1259,7 +1300,7 @@ function AcademyMini({ t, academy, rank, nextRank }: { t: Copy; academy: Props['
   );
 }
 
-function SupportMini({ t }: { t: Copy }) {
+function SupportMini({ t, preview = false }: { t: Copy; preview?: boolean }) {
   const rows: [ReactNode, string, string, string][] = [
     [ICON.chat, t.supportChat, t.supportChatS, '/support'],
     [ICON.doc, t.supportHelp, t.supportHelpS, '/blog'],
@@ -1268,13 +1309,22 @@ function SupportMini({ t }: { t: Copy }) {
   return (
     <div className="ah-mini">
       <div className="ah-mini-h">{t.supportH}</div>
-      {rows.map(([ic, title, s, href], i) => (
-        <a className="ah-support-row" href={href as string} key={i}>
-          <span className="ah-support-ic">{ic}</span>
-          <span className="ah-support-main"><span className="ah-support-t">{title}</span><span className="ah-support-s">{s}</span></span>
-          {ICON.chevR}
-        </a>
-      ))}
+      {rows.map(([ic, title, s, href], i) => {
+        const body = (
+          <>
+            <span className="ah-support-ic">{ic}</span>
+            <span className="ah-support-main"><span className="ah-support-t">{title}</span><span className="ah-support-s">{s}</span></span>
+            {ICON.chevR}
+          </>
+        );
+        // Aperçu admin : /support s'ouvrirait avec la session de l'admin
+        // connecté (formulaire pré-rempli à son nom) — rangées inertes.
+        return preview ? (
+          <span className="ah-support-row ah-static" aria-disabled="true" key={i}>{body}</span>
+        ) : (
+          <a className="ah-support-row" href={href as string} key={i}>{body}</a>
+        );
+      })}
     </div>
   );
 }

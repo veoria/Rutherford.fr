@@ -15385,6 +15385,10 @@ textarea.cv-input { resize: vertical; min-height: 74px; }
 }
 
 .ah-section-h {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
   margin: 30px 0 14px;
 }
 .ah-section-t {
@@ -15393,6 +15397,11 @@ textarea.cv-input { resize: vertical; min-height: 74px; }
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--ah-muted);
+}
+.ah-section-note {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #b98900;
 }
 
 /* tiles */
@@ -15415,6 +15424,15 @@ textarea.cv-input { resize: vertical; min-height: 74px; }
   border-color: #d9d9d5;
   box-shadow: 0 7px 18px rgba(20, 16, 12, 0.07);
   transform: translateY(-1px);
+}
+/* Aperçu admin : tuiles inertes (pas de lien vers /account/* de l'admin). */
+.ah-tile-static {
+  cursor: default;
+}
+.ah-tile-static:hover {
+  border-color: var(--ah-border);
+  box-shadow: none;
+  transform: none;
 }
 .ah-tile-ic {
   width: 42px;
@@ -16037,6 +16055,11 @@ textarea.cv-input { resize: vertical; min-height: 74px; }
 }
 .ah-support-row:first-of-type {
   border-top: 0;
+}
+/* Aperçu admin : rangées d'aide inertes (pas de /support avec la session admin). */
+.ah-support-row.ah-static {
+  cursor: default;
+  opacity: 0.6;
 }
 .ah-support-ic {
   flex: 0 0 auto;
