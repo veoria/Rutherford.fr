@@ -112,7 +112,9 @@ const COPY: Record<Locale, Copy> = {
   },
 };
 
-export function AccountSystems({ systems, accent }: { systems: ClientSystem[]; accent: string }) {
+// preview : aperçu admin « vue client » — on masque le CTA support, qui
+// ouvrirait le formulaire avec la session de l'admin connecté, pas du client.
+export function AccountSystems({ systems, accent, preview = false }: { systems: ClientSystem[]; accent: string; preview?: boolean }) {
   const { locale } = useLanguage();
   const t = COPY[locale];
   if (!systems.length) return null;
@@ -135,12 +137,14 @@ export function AccountSystems({ systems, accent }: { systems: ClientSystem[]; a
                 <span className={`ah-sys-pill ${PILL[kind]}`}>{t.status[kind]}</span>
               </div>
 
-              <div className="ah-sys-group">
-                <div className="ah-sys-glabel">{t.gSupport}</div>
-                <div className="ah-sys-links">
-                  <a className="ah-sys-link primary" href={`/support?${q}`}>{t.supportCta}</a>
+              {preview ? null : (
+                <div className="ah-sys-group">
+                  <div className="ah-sys-glabel">{t.gSupport}</div>
+                  <div className="ah-sys-links">
+                    <a className="ah-sys-link primary" href={`/support?${q}`}>{t.supportCta}</a>
+                  </div>
                 </div>
-              </div>
+              )}
 
               <div className="ah-sys-group">
                 <div className="ah-sys-glabel">{t.gTraining}</div>

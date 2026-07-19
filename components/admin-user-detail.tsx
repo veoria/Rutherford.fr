@@ -727,7 +727,9 @@ export function AdminUserDetail({
             <p className="admin-modal-section-status">Lecture seule — la gestion des comptes est réservée aux admins.</p>
           )}
 
-          <div className="admin-block">
+          {/* Ancres #academy/#validations/#support : cibles des tuiles de
+              l'aperçu « vue client » (deep-link vers la fiche admin). */}
+          <div className="admin-block" id="academy">
             <div className="admin-block-head">
               <h2>
                 Academy — niveau {user.level} · {user.coursesCompleted} cours · {user.certificates} certif.
@@ -761,7 +763,7 @@ export function AdminUserDetail({
             </div>
           </div>
 
-          <div className="admin-block">
+          <div className="admin-block" id="validations">
             <div className="admin-block-head">
               <h2>Validations console ({user.validations.length})</h2>
             </div>
@@ -817,7 +819,7 @@ export function AdminUserDetail({
             )}
           </div>
 
-          <div className="admin-block">
+          <div className="admin-block" id="support">
             <div className="admin-block-head">
               <h2>Support ({user.supportTickets.length})</h2>
             </div>

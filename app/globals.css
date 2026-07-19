@@ -16056,6 +16056,11 @@ textarea.cv-input { resize: vertical; min-height: 74px; }
 .ah-support-row:first-of-type {
   border-top: 0;
 }
+/* Aperçu admin : rangées d'aide inertes (pas de /support avec la session admin). */
+.ah-support-row.ah-static {
+  cursor: default;
+  opacity: 0.6;
+}
 .ah-support-ic {
   flex: 0 0 auto;
   color: var(--role, #2563eb);
