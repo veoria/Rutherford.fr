@@ -632,3 +632,267 @@ export async function getAdminUserDetail(userId: string): Promise<AdminUserDetai
     supportTickets,
   };
 }
+
+// ── Fiche organisation — /admin/orgs/[id] (brief § 4.2.3 : les organisations
+// deviennent de vraies pages, plus seulement un tiroir) ──
+
+export type AdminOrgMemberRow = {
+  userId: string;
+  name: string | null;
+  email: string;
+  role: string;
+  status: string;
+};
+
+export type AdminOrgInviteRow = { id: string; email: string; role: string; createdAt: string };
+
+export type AdminOrgSiteRow = {
+  id: string;
+  name: string;
+  country: string | null;
+  city: string | null;
+  address: string | null;
+  postalCode: string | null;
+  anydeskId: string | null;
+};
+
+export type AdminOrgSystemRow = {
+  id: string;
+  product: string;
+  machine: string | null;
+  siteName: string | null;
+  licenseKey: string | null;
+  licenseStatus: string;
+  licenseExpiresAt: string | null;
+  installedVersion: string | null;
+  latestVersion: string | null;
+  anydeskId: string | null;
+  /** Org qui a porté la COMMANDE (§ 2.6.2) — null = vente directe Rutherford. */
+  soldByOrgName: string | null;
+};
+
+export type AdminOrgAttributedRow = {
+  id: string;
+  name: string;
+  type: string;
+  memberCount: number;
+  systemsCount: number;
+};
+
+export type AdminOrgDetail = {
+  id: string;
+  name: string;
+  type: string;
+  logoUrl: string | null;
+  country: string | null;
+  address: string | null;
+  postalCode: string | null;
+  city: string | null;
+  resellerOrgId: string | null;
+  resellerName: string | null;
+  distributorOrgId: string | null;
+  distributorName: string | null;
+  pipedriveOrgId: number | null;
+  createdAt: string | null;
+  members: AdminOrgMemberRow[];
+  pendingInvites: AdminOrgInviteRow[];
+  sites: AdminOrgSiteRow[];
+  systems: AdminOrgSystemRow[];
+  /** Orgs revendeur/distributeur : les organisations qui leur sont attribuées
+   * (reseller_org_id resp. distributor_org_id = cette org). */
+  attributedOrgs: AdminOrgAttributedRow[];
+};
+
+/** Tout ce que la page /admin/orgs/[id] affiche pour UNE organisation :
+ * identité + attribution, membres (noms via profiles, e-mails via auth —
+ * même approche que getTeamForUser), invitations en attente, usines et
+ * systèmes (orgs clientes), et organisations attribuées (orgs revendeur /
+ * distributeur). Lectures service-role — l'appelant DOIT avoir vérifié
+ * l'accès admin avant d'invoquer. */
+export async function getAdminOrgDetail(orgId: string): Promise<AdminOrgDetail | null> {
+  const admin = createSupabaseAdminClient();
+
+  const { data: orgRow } = await admin
+    .from('organizations')
+    .select(
+      'id, name, type, logo_url, country, address, postal_code, city, reseller_org_id, distributor_org_id, pipedrive_org_id, created_at'
+    )
+    .eq('id', orgId)
+    .maybeSingle();
+  if (!orgRow) return null;
+  const o = orgRow as {
+    id: string;
+    name: string;
+    type: string;
+    logo_url: string | null;
+    country: string | null;
+    address: string | null;
+    postal_code: string | null;
+    city: string | null;
+    reseller_org_id: string | null;
+    distributor_org_id: string | null;
+    pipedrive_org_id: number | null;
+    created_at: string | null;
+  };
+
+  // Organisations attribuées : celles dont reseller_org_id (org revendeur)
+  // resp. distributor_org_id (org distributeur) pointe vers cette org.
+  const attributionColumn =
+    o.type === 'reseller' ? 'reseller_org_id' : o.type === 'distributor' ? 'distributor_org_id' : null;
+
+  const [memRes, invRes, sitesRes, sysRes, attribRes] = await Promise.all([
+    admin.from('organization_members').select('user_id, role, status').eq('org_id', orgId),
+    admin.from('invitations').select('id, email, role, created_at').eq('org_id', orgId).eq('status', 'pending'),
+    admin
+      .from('sites')
+      .select('id, name, country, city, address, postal_code, anydesk_id')
+      .eq('org_id', orgId)
+      .order('name'),
+    admin
+      .from('client_systems')
+      .select(
+        'id, product, machine, site_id, license_key, license_status, license_expires_at, installed_version, latest_version, anydesk_id, sold_by_org_id'
+      )
+      .eq('org_id', orgId)
+      .order('created_at', { ascending: true }),
+    attributionColumn
+      ? admin.from('organizations').select('id, name, type').eq(attributionColumn, orgId).order('name')
+      : Promise.resolve({ data: [] as Record<string, unknown>[] }),
+  ]);
+
+  const memberRows = (memRes.data ?? []) as { user_id: string; role: string; status: string }[];
+  const siteRows = (sitesRes.data ?? []) as {
+    id: string;
+    name: string;
+    country: string | null;
+    city: string | null;
+    address: string | null;
+    postal_code: string | null;
+    anydesk_id: string | null;
+  }[];
+  const sysRows = (sysRes.data ?? []) as {
+    id: string;
+    product: string;
+    machine: string | null;
+    site_id: string | null;
+    license_key: string | null;
+    license_status: string;
+    license_expires_at: string | null;
+    installed_version: string | null;
+    latest_version: string | null;
+    anydesk_id: string | null;
+    sold_by_org_id: string | null;
+  }[];
+  const attribRows = (attribRes.data ?? []) as { id: string; name: string; type: string }[];
+
+  // Noms (profiles) + e-mails (auth listUsers) des membres.
+  const memberIds = memberRows.map((m) => m.user_id).filter(Boolean);
+  const [profsRes, { data: authList }] = await Promise.all([
+    admin
+      .from('profiles')
+      .select('id, full_name')
+      .in('id', memberIds.length ? memberIds : ['00000000-0000-0000-0000-000000000000']),
+    admin.auth.admin.listUsers({ perPage: 1000 }),
+  ]);
+  const nameById = new Map(
+    ((profsRes.data ?? []) as { id: string; full_name: string | null }[]).map((p) => [p.id, p.full_name])
+  );
+  const emailById = new Map(
+    ((authList?.users ?? []) as { id: string; email?: string | null }[]).map((u) => [u.id, u.email ?? ''])
+  );
+
+  const roleRank: Record<string, number> = { owner: 0, admin: 1, member: 2 };
+  const members: AdminOrgMemberRow[] = memberRows
+    .map((m) => ({
+      userId: m.user_id,
+      name: nameById.get(m.user_id) ?? null,
+      email: emailById.get(m.user_id) ?? '',
+      role: m.role,
+      status: m.status,
+    }))
+    .sort((a, b) => (roleRank[a.role] ?? 9) - (roleRank[b.role] ?? 9));
+
+  // Compteurs (membres actifs, systèmes) des orgs attribuées + noms des orgs
+  // liées (revendeur, distributeur, « vendu par ») en un aller-retour chacun.
+  const attribIds = attribRows.map((a) => a.id);
+  const relatedOrgIds = Array.from(
+    new Set(
+      [o.reseller_org_id, o.distributor_org_id, ...sysRows.map((s) => s.sold_by_org_id)].filter(
+        (id): id is string => Boolean(id)
+      )
+    )
+  );
+  const [attribMemRes, attribSysRes, relatedRes] = await Promise.all([
+    attribIds.length
+      ? admin.from('organization_members').select('org_id').in('org_id', attribIds).eq('status', 'active')
+      : Promise.resolve({ data: [] as Record<string, unknown>[] }),
+    attribIds.length
+      ? admin.from('client_systems').select('org_id').in('org_id', attribIds)
+      : Promise.resolve({ data: [] as Record<string, unknown>[] }),
+    relatedOrgIds.length
+      ? admin.from('organizations').select('id, name').in('id', relatedOrgIds)
+      : Promise.resolve({ data: [] as Record<string, unknown>[] }),
+  ]);
+  const memberCountByOrg = new Map<string, number>();
+  for (const r of (attribMemRes.data ?? []) as { org_id: string }[]) {
+    memberCountByOrg.set(r.org_id, (memberCountByOrg.get(r.org_id) ?? 0) + 1);
+  }
+  const systemsCountByOrg = new Map<string, number>();
+  for (const r of (attribSysRes.data ?? []) as { org_id: string }[]) {
+    systemsCountByOrg.set(r.org_id, (systemsCountByOrg.get(r.org_id) ?? 0) + 1);
+  }
+  const relatedNameById = new Map(
+    ((relatedRes.data ?? []) as { id: string; name: string }[]).map((r) => [r.id, r.name])
+  );
+  const siteNameById = new Map(siteRows.map((s) => [s.id, s.name] as const));
+
+  return {
+    id: o.id,
+    name: o.name,
+    type: o.type,
+    logoUrl: o.logo_url ?? null,
+    country: o.country,
+    address: o.address,
+    postalCode: o.postal_code,
+    city: o.city,
+    resellerOrgId: o.reseller_org_id,
+    resellerName: o.reseller_org_id ? relatedNameById.get(o.reseller_org_id) ?? null : null,
+    distributorOrgId: o.distributor_org_id,
+    distributorName: o.distributor_org_id ? relatedNameById.get(o.distributor_org_id) ?? null : null,
+    pipedriveOrgId: o.pipedrive_org_id ?? null,
+    createdAt: o.created_at ?? null,
+    members,
+    pendingInvites: (
+      (invRes.data ?? []) as { id: string; email: string; role: string; created_at: string }[]
+    ).map((i) => ({ id: i.id, email: i.email, role: i.role, createdAt: i.created_at })),
+    sites: siteRows.map((s) => ({
+      id: s.id,
+      name: s.name,
+      country: s.country,
+      city: s.city,
+      address: s.address,
+      postalCode: s.postal_code,
+      anydeskId: s.anydesk_id,
+    })),
+    systems: sysRows.map((s) => ({
+      id: s.id,
+      product: s.product,
+      machine: s.machine,
+      siteName: s.site_id ? siteNameById.get(s.site_id) ?? null : null,
+      licenseKey: s.license_key,
+      licenseStatus: s.license_status,
+      licenseExpiresAt: s.license_expires_at,
+      installedVersion: s.installed_version,
+      latestVersion: s.latest_version,
+      anydeskId: s.anydesk_id,
+      soldByOrgName: s.sold_by_org_id ? relatedNameById.get(s.sold_by_org_id) ?? null : null,
+    })),
+    attributedOrgs: attribRows.map((a) => ({
+      id: a.id,
+      name: a.name,
+      type: a.type,
+      memberCount: memberCountByOrg.get(a.id) ?? 0,
+      systemsCount: systemsCountByOrg.get(a.id) ?? 0,
+    })),
+  };
+}

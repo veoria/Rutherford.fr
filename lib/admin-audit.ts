@@ -53,14 +53,20 @@ export async function recordAudit(input: RecordInput): Promise<void> {
 }
 
 /** Most recent audit entries for the viewer tab. Service-role read — the caller
- * must already have verified admin access. */
-export async function listAuditLog(limit = 200): Promise<AuditEntry[]> {
+ * must already have verified admin access. Pass `target` to narrow the log to
+ * one entity (e.g. { type: 'organization', id } for the org page's Journal). */
+export async function listAuditLog(
+  limit = 200,
+  target?: { type: string; id: string }
+): Promise<AuditEntry[]> {
   const supabase = admin();
   if (!supabase) return [];
   try {
-    const { data } = await supabase
+    let query = supabase
       .from('admin_audit_log')
-      .select('id, actor_id, actor_email, action, target_type, target_id, summary, metadata, created_at')
+      .select('id, actor_id, actor_email, action, target_type, target_id, summary, metadata, created_at');
+    if (target) query = query.eq('target_type', target.type).eq('target_id', target.id);
+    const { data } = await query
       .order('created_at', { ascending: false })
       .limit(Math.min(Math.max(limit, 1), 1000));
     return ((data ?? []) as Record<string, unknown>[]).map((r) => ({
