@@ -827,7 +827,9 @@ export function OrgMembersEditor({
 
 // ── Identité & attribution + logo ────────────────────────────────────────────
 
-export function OrgIdentityEditor({ org }: { org: AdminOrgDetail }) {
+export type OrgOption = { id: string; name: string; type: string };
+
+export function OrgIdentityEditor({ org, orgOptions }: { org: AdminOrgDetail; orgOptions: OrgOption[] }) {
   const router = useRouter();
   const [name, setName] = useState(org.name ?? '');
   const [type, setType] = useState<AccountType>((org.type as AccountType) ?? 'client');
@@ -835,10 +837,17 @@ export function OrgIdentityEditor({ org }: { org: AdminOrgDetail }) {
   const [address, setAddress] = useState(org.address ?? '');
   const [postalCode, setPostalCode] = useState(org.postalCode ?? '');
   const [city, setCity] = useState(org.city ?? '');
+  const [resellerOrgId, setResellerOrgId] = useState(org.resellerOrgId ?? '');
+  const [distributorOrgId, setDistributorOrgId] = useState(org.distributorOrgId ?? '');
   const [logoUrl, setLogoUrl] = useState<string | null>(org.logoUrl ?? null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
+
+  // Attribution : ne proposer que les revendeurs / distributeurs, et jamais
+  // l'org elle-même (une org ne peut pas être son propre revendeur).
+  const resellerChoices = orgOptions.filter((o) => o.type === 'reseller' && o.id !== org.id);
+  const distributorChoices = orgOptions.filter((o) => o.type === 'distributor' && o.id !== org.id);
 
   const save = async () => {
     if (!name.trim()) {
@@ -860,6 +869,10 @@ export function OrgIdentityEditor({ org }: { org: AdminOrgDetail }) {
           address,
           postal_code: postalCode,
           city,
+          // Attribution du canal : seulement pour une org cliente ; null = aucun.
+          ...(type === 'client'
+            ? { reseller_org_id: resellerOrgId || null, distributor_org_id: distributorOrgId || null }
+            : {}),
         }),
       });
       if (!res.ok) {
@@ -947,17 +960,43 @@ export function OrgIdentityEditor({ org }: { org: AdminOrgDetail }) {
         </div>
       </div>
 
-      {/* Attribution revendeur / distributeur : lecture seule sur cette page.
-          La modification exige la liste complète des organisations, qu'aucun
-          endpoint GET atteignable ne fournit ici (brief § 4.2 — à câbler). */}
+      {/* Attribution du canal (org cliente) : quel revendeur / distributeur
+          gère ce client. La visibilité du parc, elle, suit la vente presse par
+          presse (§ 2.6) — indépendante de cette attribution de compte. */}
       {type === 'client' ? (
-        <div className="admin-field">
-          <label>Attribution (canal)</label>
-          <p className="admin-modal-section-status">
-            Revendeur : {org.resellerName ?? '— aucun —'} · Distributeur : {org.distributorName ?? '— aucun —'}.
-            <br />
-            Modification de l&apos;attribution : à venir — pas de liste d&apos;organisations disponible sur cette page.
-          </p>
+        <div className="admin-field-row">
+          <div className="admin-field">
+            <label>Revendeur</label>
+            <select
+              className="admin-input"
+              value={resellerOrgId}
+              onChange={(e) => setResellerOrgId(e.target.value)}
+              disabled={busy}
+            >
+              <option value="">— aucun —</option>
+              {resellerChoices.map((o) => (
+                <option key={o.id} value={o.id}>
+                  {o.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="admin-field">
+            <label>Distributeur</label>
+            <select
+              className="admin-input"
+              value={distributorOrgId}
+              onChange={(e) => setDistributorOrgId(e.target.value)}
+              disabled={busy}
+            >
+              <option value="">— aucun —</option>
+              {distributorChoices.map((o) => (
+                <option key={o.id} value={o.id}>
+                  {o.name}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
       ) : null}
 

@@ -16,6 +16,7 @@ import {
   OrgMembersEditor,
   OrgSitesEditor,
   OrgSystemsEditor,
+  type OrgOption,
   type OrgSite,
 } from '@/components/admin-org-editors';
 
@@ -146,7 +147,17 @@ function FunnelBar({ label, count, tone, max }: { label: string; count: number; 
   );
 }
 
-export function AdminOrgDetail({ org, auditLog }: { org: Detail; auditLog: AuditEntry[] }) {
+export function AdminOrgDetail({
+  org,
+  auditLog,
+  orgOptions = [],
+  canManage = true,
+}: {
+  org: Detail;
+  auditLog: AuditEntry[];
+  orgOptions?: OrgOption[];
+  canManage?: boolean;
+}) {
   const isClient = org.type === 'client';
   const isPartner = org.type === 'reseller' || org.type === 'distributor';
   // Périmètre des métriques : propre à un client, « eux + clients » pour un
@@ -361,7 +372,7 @@ export function AdminOrgDetail({ org, auditLog }: { org: Detail; auditLog: Audit
           </div>
 
           {/* ── Édition inline (brief § 4.2 — l'édition vit sur la page) ── */}
-          <OrgIdentityEditor org={org} />
+          {canManage ? <OrgIdentityEditor org={org} orgOptions={orgOptions} /> : null}
 
           <div className="admin-block">
             <div className="admin-block-head">
@@ -399,7 +410,9 @@ export function AdminOrgDetail({ org, auditLog }: { org: Detail; auditLog: Audit
               <p className="admin-modal-section-status">Aucun membre.</p>
             )}
             {/* Édition des membres : rôle, retrait, invitation, accès usines. */}
-            <OrgMembersEditor orgId={org.id} members={org.members} pending={org.pendingInvites} sites={sites} />
+            {canManage ? (
+              <OrgMembersEditor orgId={org.id} members={org.members} pending={org.pendingInvites} sites={sites} />
+            ) : null}
           </div>
 
           <div className="admin-block">
@@ -465,7 +478,7 @@ export function AdminOrgDetail({ org, auditLog }: { org: Detail; auditLog: Audit
               ) : (
                 <p className="admin-modal-section-status">Aucune usine déclarée.</p>
               )}
-              <OrgSitesEditor orgId={org.id} sites={sites} onChange={refreshSites} />
+              {canManage ? <OrgSitesEditor orgId={org.id} sites={sites} onChange={refreshSites} /> : null}
             </div>
           ) : null}
 
@@ -514,7 +527,7 @@ export function AdminOrgDetail({ org, auditLog }: { org: Detail; auditLog: Audit
               ) : (
                 <p className="admin-modal-section-status">Aucun système installé.</p>
               )}
-              <OrgSystemsEditor orgId={org.id} sites={sites} />
+              {canManage ? <OrgSystemsEditor orgId={org.id} sites={sites} /> : null}
             </div>
           ) : null}
 
