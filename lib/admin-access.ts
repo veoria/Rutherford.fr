@@ -10,8 +10,20 @@
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { accountTypeFromDomain } from '@/lib/account-type';
 
+// Super-admins : les seuls comptes autorisés à NOMMER un administrateur (basculer
+// is_admin). Configurable via SUPER_ADMIN_EMAILS (liste séparée par des virgules) ;
+// défaut : le propriétaire Rutherford. Être admin ≠ pouvoir créer des admins.
+const SUPER_ADMIN_EMAILS = (process.env.SUPER_ADMIN_EMAILS ?? 'fx@rutherford.fr')
+  .split(',')
+  .map((s) => s.trim().toLowerCase())
+  .filter(Boolean);
+
+export function isSuperAdminEmail(email: string | null | undefined): boolean {
+  return Boolean(email && SUPER_ADMIN_EMAILS.includes(email.toLowerCase()));
+}
+
 export type AdminAccess =
-  | { ok: true; userId: string; canManage: boolean }
+  | { ok: true; userId: string; canManage: boolean; isSuperAdmin: boolean }
   | { ok: false; reason: 'unauthenticated' | 'forbidden' | 'needs_2fa_setup' | 'needs_2fa_challenge' };
 
 export async function getAdminAccess(): Promise<AdminAccess> {
@@ -37,7 +49,7 @@ export async function getAdminAccess(): Promise<AdminAccess> {
     return { ok: false, reason: aal?.nextLevel === 'aal2' ? 'needs_2fa_challenge' : 'needs_2fa_setup' };
   }
 
-  return { ok: true, userId: user.id, canManage: isAdmin };
+  return { ok: true, userId: user.id, canManage: isAdmin, isSuperAdmin: isSuperAdminEmail(user.email) };
 }
 
 /**

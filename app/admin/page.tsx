@@ -38,6 +38,7 @@ export default async function AdminRoute() {
       auditLog={auditLog}
       selfId={access.userId}
       canManage={access.canManage}
+      canGrantAdmin={access.isSuperAdmin}
     />
   );
 }
