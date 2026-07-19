@@ -122,6 +122,17 @@ const PREVIEW_BACK: Record<Locale, string> = {
   pt: '← Voltar ao admin',
 };
 
+// En aperçu, les tuiles/actions ne naviguent pas : sinon elles ouvriraient
+// l'espace de l'admin connecté (routes /account/*), pas la vue du client.
+const PREVIEW_NAV_OFF: Record<Locale, string> = {
+  en: 'Navigation disabled in preview',
+  fr: 'Navigation désactivée en aperçu',
+  de: 'Navigation in der Vorschau deaktiviert',
+  it: 'Navigazione disattivata in anteprima',
+  es: 'Navegación desactivada en la vista previa',
+  pt: 'Navegação desativada na pré-visualização',
+};
+
 const RANK_NAMES: Record<Locale, string[]> = {
   en: ['Apprentice', 'Operator', 'Colorist', 'Color Expert', 'Closed-Loop Master'],
   fr: ['Apprenti', 'Opérateur', 'Coloriste', 'Expert couleur', 'Maître closed-loop'],
@@ -765,21 +776,33 @@ export function AccountHub(props: Props) {
             </>
           ) : null}
 
-          {/* Quick access */}
-          <div className="ah-section-h"><span className="ah-section-t">{t.quickAccess}</span></div>
+          {/* Quick access — en aperçu, les tuiles sont inertes : elles pointent
+              vers /account/* qui s'affichent avec la session de l'admin connecté
+              (= son propre espace), pas les données du client prévisualisé. */}
+          <div className="ah-section-h">
+            <span className="ah-section-t">{t.quickAccess}</span>
+            {preview ? <span className="ah-section-note">{PREVIEW_NAV_OFF[locale]}</span> : null}
+          </div>
           <div className="ah-tiles">
-            {tiles.map((tile, i) => (
-              <a className="ah-tile" href={tile.href} key={i}>
-                <div className={`ah-tile-ic ${tile.cls}`}>{ICON[tile.ic]}</div>
-                <div className="ah-tile-t">{tile.t}{ICON.arrow}</div>
-                <div className="ah-tile-s">{tile.s}</div>
-                <div className="ah-tile-stat">
-                  {tile.statDot ? <span className={`ah-pulse ${tile.statDot}`} /> : null}
-                  {tile.statV}
-                  {tile.statM ? <span className="ah-mono"> · {tile.statM}</span> : null}
-                </div>
-              </a>
-            ))}
+            {tiles.map((tile, i) => {
+              const body = (
+                <>
+                  <div className={`ah-tile-ic ${tile.cls}`}>{ICON[tile.ic]}</div>
+                  <div className="ah-tile-t">{tile.t}{preview ? null : ICON.arrow}</div>
+                  <div className="ah-tile-s">{tile.s}</div>
+                  <div className="ah-tile-stat">
+                    {tile.statDot ? <span className={`ah-pulse ${tile.statDot}`} /> : null}
+                    {tile.statV}
+                    {tile.statM ? <span className="ah-mono"> · {tile.statM}</span> : null}
+                  </div>
+                </>
+              );
+              return preview ? (
+                <div className="ah-tile ah-tile-static" aria-disabled="true" key={i}>{body}</div>
+              ) : (
+                <a className="ah-tile" href={tile.href} key={i}>{body}</a>
+              );
+            })}
           </div>
 
           {/* Client-only sections (per-role visibility matrix): plants/licenses
@@ -805,6 +828,7 @@ export function AccountHub(props: Props) {
                 selfId={selfId}
                 networkResellers={networkResellers}
                 clients={resellerClients}
+                preview={preview}
               />
             </div>
             <aside className="ah-aside">
@@ -1098,12 +1122,16 @@ export function ManagePanel({
   selfId,
   networkResellers,
   clients,
+  preview = false,
 }: {
   accountType: AccountType;
   team: Team;
   selfId: string;
   networkResellers: ResellerClientOrg[];
   clients: ResellerClient[];
+  // Aperçu admin : masque les actions (inviter/retirer/back-office) qui, sinon,
+  // s'exécuteraient sur la session de l'admin connecté, pas sur le client montré.
+  preview?: boolean;
 }) {
   const { locale } = useLanguage();
   const t = COPY[locale];
@@ -1113,7 +1141,7 @@ export function ManagePanel({
   const accent = TONE[accountType];
   const title = accountType === 'distributor' ? t.manage.networkTitle : accountType === 'reseller' ? t.manage.clientsTitle : t.manage.teamTitle;
   const sub = accountType === 'distributor' ? t.manage.networkSub : accountType === 'reseller' ? t.manage.clientsSub : t.manage.teamSub;
-  const canManage = team.myRole === 'owner' || team.myRole === 'admin';
+  const canManage = !preview && (team.myRole === 'owner' || team.myRole === 'admin');
 
   // Rutherford staff reach the back-office from here. /admin enforces the real
   // gate (team domain + 2FA) and shows non-admins a read-only view.
@@ -1127,7 +1155,11 @@ export function ManagePanel({
           </div>
         </div>
         <div className="ah-card-bd">
-          <a className="button button-dark" href="/admin">{t.manage.adminCta} →</a>
+          {preview ? (
+            <span className="button button-dark" aria-disabled="true" style={{ opacity: 0.55, pointerEvents: 'none' }}>{t.manage.adminCta} →</span>
+          ) : (
+            <a className="button button-dark" href="/admin">{t.manage.adminCta} →</a>
+          )}
         </div>
       </div>
     );
