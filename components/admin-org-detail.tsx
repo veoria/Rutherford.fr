@@ -1,13 +1,23 @@
 'use client';
 
-// Vraie page organisation du back-office (brief § 4.2.3) — lecture seule :
-// l'édition reste dans le tiroir « Gérer » de l'onglet Organisations. Calquée
-// sur admin-user-detail.tsx (en-tête, grille de faits, tables, lien retour).
+// Fiche organisation du back-office (brief § 4.2.3) — désormais l'unique surface
+// pour CONSULTER et MODIFIER une organisation (décision du 19/07/2026 : l'édition
+// quitte le tiroir « Gérer » pour la page /admin/orgs/[id]). Calquée sur
+// admin-user-detail.tsx (en-tête, grille de faits, tuiles de métriques, tables,
+// lien retour) ; les widgets d'édition sont dans components/admin-org-editors.tsx.
 
+import { useEffect, useState } from 'react';
 import { SiteFooter } from '@/components/site-footer';
 import { SiteNav } from '@/components/site-nav';
 import type { AdminOrgDetail as Detail } from '@/lib/admin';
 import type { AuditEntry } from '@/lib/admin-audit';
+import {
+  OrgIdentityEditor,
+  OrgMembersEditor,
+  OrgSitesEditor,
+  OrgSystemsEditor,
+  type OrgSite,
+} from '@/components/admin-org-editors';
 
 // L'admin est en français uniquement. Sur cette page le badge dit « Client »
 // (une organisation, pas un « client direct » — le canal se lit dans
@@ -42,6 +52,12 @@ const LICENSE_STATUS_TONE: Record<string, string> = {
   trial: 'review',
   expired: 'red',
   suspended: 'action',
+};
+
+// Libellé du bouton d'aperçu selon le type d'org (owner ask 19/07/2026).
+const PREVIEW_LABELS: Record<string, string> = {
+  reseller: 'Voir l’espace du revendeur',
+  distributor: 'Voir l’espace du distributeur',
 };
 
 function fmtDate(value: string | null): string {
@@ -86,14 +102,100 @@ function Fact({ label, value }: { label: string; value: string }) {
   );
 }
 
+// Barre fine de l'entonnoir de statuts (brief § 4.2 — retours du 19/07/2026).
+// Couleurs alignées sur la palette admin-status (review / action / green / red).
+const FUNNEL_FILL: Record<string, string> = {
+  review: '#2433c9',
+  action: '#b06a12',
+  green: '#1f8a4c',
+  red: '#c4332b',
+};
+function FunnelBar({ label, count, tone, max }: { label: string; count: number; tone: string; max: number }) {
+  const pct = max > 0 ? Math.round((count / max) * 100) : 0;
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
+      <span style={{ flex: '0 0 130px', fontSize: '0.86rem', color: '#1d1d1f' }}>{label}</span>
+      <span
+        style={{
+          flex: 1,
+          height: 10,
+          borderRadius: 999,
+          background: 'rgba(0,0,0,0.06)',
+          overflow: 'hidden',
+        }}
+        aria-hidden="true"
+      >
+        <span
+          style={{
+            display: 'block',
+            height: '100%',
+            width: `${pct}%`,
+            minWidth: count > 0 ? 6 : 0,
+            borderRadius: 999,
+            background: FUNNEL_FILL[tone] ?? '#8a8a8a',
+          }}
+        />
+      </span>
+      <span
+        className="admin-num"
+        style={{ flex: '0 0 40px', textAlign: 'right', fontVariantNumeric: 'tabular-nums', fontWeight: 600 }}
+      >
+        {count}
+      </span>
+    </div>
+  );
+}
+
 export function AdminOrgDetail({ org, auditLog }: { org: Detail; auditLog: AuditEntry[] }) {
   const isClient = org.type === 'client';
   const isPartner = org.type === 'reseller' || org.type === 'distributor';
+  // Périmètre des métriques : propre à un client, « eux + clients » pour un
+  // partenaire — on l'explicite dans les libellés des tuiles.
+  const scopeSuffix = isPartner ? ' (eux + clients)' : '';
+
+  const m = org.metrics;
+
+  // Usines partagées (client orgs) : le sélecteur d'usine des systèmes et la
+  // restriction d'accès par membre en dépendent. Rechargées après chaque
+  // mutation d'usine via refreshSites (et router.refresh côté éditeur).
+  const [sites, setSites] = useState<OrgSite[]>([]);
+  const refreshSites = async () => {
+    if (org.type !== 'client') return;
+    try {
+      const res = await fetch(`/api/admin/orgs/sites?orgId=${encodeURIComponent(org.id)}`);
+      if (res.ok) {
+        const d = (await res.json()) as { sites?: OrgSite[] };
+        setSites(d.sites ?? []);
+      }
+    } catch {
+      /* ignore */
+    }
+  };
+  useEffect(() => {
+    void refreshSites();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [org.id]);
 
   const cityLine =
     [org.address, [org.postalCode, org.city].filter(Boolean).join(' ')].filter(Boolean).join(', ') ||
     org.city ||
     '—';
+
+  // Entonnoir de statuts (brief § 4.2) : buckets FR agrégés depuis consoleByStatus.
+  const byStatus = new Map(m.consoleByStatus.map((s) => [s.status, s.count] as const));
+  const funnel = [
+    { label: 'Soumises', tone: 'review', count: byStatus.get('submitted') ?? 0 },
+    {
+      label: 'En revue',
+      tone: 'action',
+      count: (byStatus.get('in_review') ?? 0) + (byStatus.get('changes_requested') ?? 0),
+    },
+    { label: 'Compatibles', tone: 'green', count: byStatus.get('can_be_connected') ?? 0 },
+    { label: 'Rejetées', tone: 'red', count: byStatus.get('rejected') ?? 0 },
+  ];
+  const funnelMax = Math.max(1, ...funnel.map((f) => f.count));
+
+  const previewLabel = PREVIEW_LABELS[org.type] ?? 'Voir l’espace du client';
 
   return (
     <main className="page-shell" id="top">
@@ -140,7 +242,114 @@ export function AdminOrgDetail({ org, auditLog }: { org: Detail; auditLog: Audit
                 </span>
               ) : null}
             </p>
+            {/* Aperçu de l'espace du client / revendeur (owner ask 19/07/2026) —
+                masqué quand aucun membre exploitable. */}
+            {org.previewUserId ? (
+              <a
+                className="button button-light"
+                href={`/admin/users/${org.previewUserId}/preview`}
+                style={{ marginTop: 12, display: 'inline-flex', alignItems: 'center', gap: 6 }}
+              >
+                👁 {previewLabel}
+              </a>
+            ) : null}
           </header>
+
+          {/* ── Métriques (brief § 4.2 — retours du 19/07/2026) ── */}
+          <ul className="admin-totals">
+            <li>
+              <div className="admin-total">
+                <span className="admin-total-value">{m.consoleTotal}</span>
+                <span className="admin-total-label">Validations console{scopeSuffix}</span>
+                <span className="admin-total-label" style={{ opacity: 0.7 }}>
+                  dont {m.consoleCompatible} compatible(s)
+                </span>
+              </div>
+            </li>
+            <li>
+              <div className="admin-total">
+                <span className="admin-total-value">{m.supportTotal}</span>
+                <span className="admin-total-label">Support{scopeSuffix}</span>
+              </div>
+            </li>
+            <li>
+              <div className="admin-total">
+                <span className="admin-total-value">{m.equippedSystems}</span>
+                <span className="admin-total-label">Presses équipées{scopeSuffix}</span>
+              </div>
+            </li>
+            <li>
+              <div
+                className="admin-total"
+                title="Approx. : presses équipées ÷ validations soumises dans le périmètre"
+              >
+                <span className="admin-total-value">{m.conversionPct != null ? `${m.conversionPct} %` : '—'}</span>
+                <span className="admin-total-label">Taux de conversion{scopeSuffix}</span>
+                <span className="admin-total-label" style={{ opacity: 0.7 }}>
+                  approx. — équipées / soumises
+                </span>
+              </div>
+            </li>
+          </ul>
+
+          {/* Licences à échéance — opportunités de renouvellement (accent amber si > 0). */}
+          <div className="admin-block">
+            <div className="admin-block-head">
+              <h2>Licences à échéance{scopeSuffix}</h2>
+            </div>
+            <ul className="admin-totals">
+              <li>
+                <div
+                  className="admin-total"
+                  style={m.licensesExpiringSoon > 0 ? { borderColor: '#e5a100', borderWidth: 2 } : undefined}
+                >
+                  <span className="admin-total-value">{m.licensesExpiringSoon}</span>
+                  <span className="admin-total-label">licence(s) à renouveler sous 90 j</span>
+                  {m.licensesExpiringSoon > 0 ? (
+                    <span className="ah-sys-pill amber" style={{ marginTop: 6 }}>
+                      Opportunité de renouvellement
+                    </span>
+                  ) : null}
+                </div>
+              </li>
+              <li>
+                <div className="admin-total">
+                  <span className="admin-total-value" style={{ fontSize: '1.1rem' }}>
+                    {fmtDate(m.nextLicenseExpiry)}
+                  </span>
+                  <span className="admin-total-label">Prochaine échéance</span>
+                </div>
+              </li>
+            </ul>
+          </div>
+
+          {/* Entonnoir de statuts des validations console. */}
+          <div className="admin-block">
+            <div className="admin-block-head">
+              <h2>Entonnoir de statuts{scopeSuffix}</h2>
+            </div>
+            {m.consoleTotal > 0 ? (
+              <div style={{ maxWidth: 560 }}>
+                {funnel.map((f) => (
+                  <FunnelBar key={f.label} label={f.label} count={f.count} tone={f.tone} max={funnelMax} />
+                ))}
+              </div>
+            ) : (
+              <p className="admin-modal-section-status">Aucune validation console dans le périmètre.</p>
+            )}
+          </div>
+
+          {/* Activité récente. */}
+          <div className="admin-block">
+            <div className="admin-block-head">
+              <h2>Activité récente{scopeSuffix}</h2>
+            </div>
+            <div className="admin-detail-grid">
+              <Fact label="Dernière validation" value={fmtDate(m.lastValidationAt)} />
+              <Fact label="Dernier install" value={fmtDate(m.lastInstallAt)} />
+              <Fact label="Dernière connexion d’un membre" value={fmtDate(m.lastMemberSignInAt)} />
+            </div>
+          </div>
 
           <div className="admin-detail-grid">
             <Fact label="Pays" value={org.country ?? '—'} />
@@ -151,14 +360,8 @@ export function AdminOrgDetail({ org, auditLog }: { org: Detail; auditLog: Audit
             <Fact label="Créée" value={fmtDate(org.createdAt)} />
           </div>
 
-          {/* Page en lecture seule : l'édition passe par le tiroir existant. */}
-          <p className="admin-modal-section-status">
-            Modification : via l&apos;onglet{' '}
-            <a className="admin-name-link" href="/admin?tab=orgs">
-              Organisations
-            </a>
-            .
-          </p>
+          {/* ── Édition inline (brief § 4.2 — l'édition vit sur la page) ── */}
+          <OrgIdentityEditor org={org} />
 
           <div className="admin-block">
             <div className="admin-block-head">
@@ -176,17 +379,17 @@ export function AdminOrgDetail({ org, auditLog }: { org: Detail; auditLog: Audit
                     </tr>
                   </thead>
                   <tbody>
-                    {org.members.map((m) => (
-                      <tr key={m.userId}>
+                    {org.members.map((m2) => (
+                      <tr key={m2.userId}>
                         <td>
                           {/* Lien croisé vers la fiche du membre (brief § 4.2.4). */}
-                          <a className="admin-name-link" href={`/admin/users/${m.userId}`}>
-                            {m.name || m.email || '—'}
+                          <a className="admin-name-link" href={`/admin/users/${m2.userId}`}>
+                            {m2.name || m2.email || '—'}
                           </a>
                         </td>
-                        <td className="admin-email">{m.email || '—'}</td>
-                        <td>{MEMBER_ROLE_LABELS[m.role] ?? m.role}</td>
-                        <td>{MEMBER_STATUS_LABELS[m.status] ?? m.status}</td>
+                        <td className="admin-email">{m2.email || '—'}</td>
+                        <td>{MEMBER_ROLE_LABELS[m2.role] ?? m2.role}</td>
+                        <td>{MEMBER_STATUS_LABELS[m2.status] ?? m2.status}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -195,6 +398,8 @@ export function AdminOrgDetail({ org, auditLog }: { org: Detail; auditLog: Audit
             ) : (
               <p className="admin-modal-section-status">Aucun membre.</p>
             )}
+            {/* Édition des membres : rôle, retrait, invitation, accès usines. */}
+            <OrgMembersEditor orgId={org.id} members={org.members} pending={org.pendingInvites} sites={sites} />
           </div>
 
           <div className="admin-block">
@@ -260,6 +465,7 @@ export function AdminOrgDetail({ org, auditLog }: { org: Detail; auditLog: Audit
               ) : (
                 <p className="admin-modal-section-status">Aucune usine déclarée.</p>
               )}
+              <OrgSitesEditor orgId={org.id} sites={sites} onChange={refreshSites} />
             </div>
           ) : null}
 
@@ -308,6 +514,7 @@ export function AdminOrgDetail({ org, auditLog }: { org: Detail; auditLog: Audit
               ) : (
                 <p className="admin-modal-section-status">Aucun système installé.</p>
               )}
+              <OrgSystemsEditor orgId={org.id} sites={sites} />
             </div>
           ) : null}
 
