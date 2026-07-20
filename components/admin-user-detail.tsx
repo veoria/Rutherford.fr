@@ -651,13 +651,19 @@ export function AdminUserDetail({
 
   return (
     <main className="page-shell" id="top">
-      <SiteNav />
+      <SiteNav current="admin" />
 
       <section className="admin-section section">
         <div className="container">
-          <a className="admin-back-link" href="/admin">
-            <span aria-hidden="true">←</span> Retour au tableau de bord
-          </a>
+          {/* Fil d'Ariane : retour direct au tableau de bord OU à l'onglet
+              Comptes d'où l'on vient (l'onglet est porté par l'URL ?tab=). */}
+          <nav className="admin-breadcrumb" aria-label="Fil d’Ariane">
+            <a href="/admin">Admin</a>
+            <span aria-hidden="true">›</span>
+            <a href="/admin?tab=accounts">Comptes</a>
+            <span aria-hidden="true">›</span>
+            <span className="admin-breadcrumb-cur">{user.name || user.email}</span>
+          </nav>
 
           <header className="admin-detail-head">
             <h1 className="admin-title">{user.name || user.email}</h1>

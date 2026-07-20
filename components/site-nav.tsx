@@ -8,7 +8,7 @@ import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 const NAV_PREFIX_LOCALES = ['fr', 'de', 'it', 'es', 'pt'];
 
 type SiteNavProps = {
-  current?: 'home' | 'roi' | 'blog' | 'console-validation' | 'support' | 'academy' | 'account';
+  current?: 'home' | 'roi' | 'blog' | 'console-validation' | 'support' | 'academy' | 'account' | 'admin';
   // 'colorloop' swaps the brandmark for the ColorLoop wordmark (NA landings).
   brand?: 'rutherford' | 'colorloop';
 };
@@ -33,6 +33,10 @@ export function SiteNav({ current = 'home', brand = 'rutherford' }: SiteNavProps
   const [open, setOpen] = useState(false);
   const [authedEmail, setAuthedEmail] = useState<string | null>(null);
   const [authedName, setAuthedName] = useState<string | null>(null);
+  // Affordance « Admin » permanente pour l'équipe Rutherford : le back-office
+  // doit être à un clic depuis n'importe quelle page (l'accès réel reste gardé
+  // côté serveur par /admin — ceci n'est qu'un raccourci d'affichage).
+  const [isTeam, setIsTeam] = useState(false);
   const academyEnabled = ACADEMY_ENABLED;
 
   useEffect(() => {
@@ -43,13 +47,23 @@ export function SiteNav({ current = 'home', brand = 'rutherford' }: SiteNavProps
       if (!active) return;
       setAuthedEmail(data.user?.email ?? null);
       if (data.user) {
-        const { data: prof } = await supabase.from('profiles').select('full_name').eq('id', data.user.id).maybeSingle();
-        if (active) setAuthedName((prof?.full_name as string | null) ?? null);
+        const { data: prof } = await supabase
+          .from('profiles')
+          .select('full_name, account_type, is_admin')
+          .eq('id', data.user.id)
+          .maybeSingle();
+        if (active) {
+          setAuthedName((prof?.full_name as string | null) ?? null);
+          setIsTeam(prof?.account_type === 'team' || prof?.is_admin === true);
+        }
       }
     });
     const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
       setAuthedEmail(session?.user?.email ?? null);
-      if (!session) setAuthedName(null);
+      if (!session) {
+        setAuthedName(null);
+        setIsTeam(false);
+      }
     });
     return () => {
       active = false;
@@ -177,6 +191,16 @@ export function SiteNav({ current = 'home', brand = 'rutherford' }: SiteNavProps
           <a className="mobile-nav-link mobile-nav-link-dark" href={lhref('/console-validation')} onClick={() => setOpen(false)}>
             {labels.console}
           </a>
+          {/* Admin — burger, équipe Rutherford uniquement */}
+          {isTeam ? (
+            <a
+              className={`mobile-nav-link mobile-nav-link-dark ${current === 'admin' ? 'is-current' : ''}`}
+              href="/admin"
+              onClick={() => setOpen(false)}
+            >
+              Admin
+            </a>
+          ) : null}
         </nav>
 
         <div className="header-actions">
@@ -188,6 +212,13 @@ export function SiteNav({ current = 'home', brand = 'rutherford' }: SiteNavProps
           </a>
 
           <span className="header-divider" aria-hidden="true" />
+
+          {/* Équipe Rutherford : back-office à un clic depuis toutes les pages. */}
+          {isTeam ? (
+            <a className={`header-admin-link ${current === 'admin' ? 'is-current' : ''}`} href="/admin">
+              Admin
+            </a>
+          ) : null}
 
           {authedEmail ? (
             <a className={`header-account-chip ${current === 'account' ? 'is-current' : ''}`} href="/account" aria-label={labels.account}>

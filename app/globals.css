@@ -452,6 +452,41 @@ svg {
   flex: 0 0 auto;
 }
 
+/* Lien « Admin » du header — équipe Rutherford uniquement. */
+.header-admin-link {
+  display: inline-flex;
+  align-items: center;
+  height: 50px;
+  padding: 0 16px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: #fff;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: #1d1d1f;
+  text-decoration: none;
+  transition: border-color 160ms ease, background 160ms ease;
+}
+.header-admin-link:hover,
+.header-admin-link.is-current {
+  border-color: #1d1d1f;
+}
+.header-admin-link.is-current {
+  background: #1d1d1f;
+  color: #fff;
+}
+@media (max-width: 920px) {
+  .header-admin-link {
+    display: none; /* sous le breakpoint burger : entrée « Admin » dans le menu */
+  }
+}
+@media (max-width: 1200px) {
+  .header-admin-link {
+    height: 44px;
+    padding: 0 12px;
+    font-size: 0.88rem;
+  }
+}
 .header-account-chip {
   display: inline-flex;
   align-items: center;
@@ -11999,6 +12034,32 @@ a.blog-card-image:hover img {
 .admin-back-link:hover {
   color: #1d1d1f;
 }
+/* Fil d'Ariane des fiches admin (Admin › Onglet › Élément courant). */
+.admin-breadcrumb {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-bottom: 14px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.4);
+}
+.admin-breadcrumb a {
+  color: rgba(0, 0, 0, 0.55);
+  text-decoration: none;
+}
+.admin-breadcrumb a:hover {
+  color: #1d1d1f;
+  text-decoration: underline;
+}
+.admin-breadcrumb-cur {
+  color: #1d1d1f;
+  max-width: 320px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 .admin-detail-head {
   margin-bottom: 18px;
 }
@@ -13469,6 +13530,9 @@ a.blog-card-image:hover img {
 .acct-subnav-link { font-size: 0.92rem; font-weight: 500; color: #676767; padding: 8px 14px; border-radius: 999px; white-space: nowrap; text-decoration: none; transition: background 0.15s ease, color 0.15s ease; }
 .acct-subnav-link:hover { color: #111; background: rgba(20, 19, 15, 0.04); }
 .acct-subnav-link.is-active { color: #111; background: #f4f6f8; font-weight: 600; }
+/* Entrée « Admin » (équipe Rutherford) — démarquée des onglets du compte. */
+.acct-subnav-admin { color: #111; border: 1px solid var(--line); }
+.acct-subnav-admin:hover { border-color: #111; background: #fff; }
 .acct-subnav-right { margin-left: auto; display: flex; align-items: center; gap: 12px; flex: 0 0 auto; }
 .acct-subnav-area { font-size: 0.8rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--accent); white-space: nowrap; }
 .acct-subnav-sep { width: 1px; height: 22px; background: var(--line); flex: 0 0 auto; }
