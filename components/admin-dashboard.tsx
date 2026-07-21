@@ -1233,7 +1233,7 @@ export function AdminDashboard({
 
   return (
     <main className="page-shell" id="top">
-      <SiteNav />
+      <SiteNav current="admin" />
 
       <section className="admin-section section">
         <div className="container">

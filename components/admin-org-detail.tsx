@@ -210,13 +210,17 @@ export function AdminOrgDetail({
 
   return (
     <main className="page-shell" id="top">
-      <SiteNav />
+      <SiteNav current="admin" />
 
       <section className="admin-section section">
         <div className="container">
-          <a className="admin-back-link" href="/admin?tab=orgs">
-            <span aria-hidden="true">←</span> Admin
-          </a>
+          <nav className="admin-breadcrumb" aria-label="Fil d’Ariane">
+            <a href="/admin">Admin</a>
+            <span aria-hidden="true">›</span>
+            <a href="/admin?tab=orgs">Organisations</a>
+            <span aria-hidden="true">›</span>
+            <span className="admin-breadcrumb-cur">{org.name}</span>
+          </nav>
 
           <header className="admin-detail-head">
             <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>

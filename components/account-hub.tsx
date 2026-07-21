@@ -122,6 +122,15 @@ const PREVIEW_BACK: Record<Locale, string> = {
   pt: '← Voltar ao admin',
 };
 
+const PREVIEW_DASHBOARD: Record<Locale, string> = {
+  en: 'Dashboard',
+  fr: 'Tableau de bord',
+  de: 'Dashboard',
+  it: 'Dashboard',
+  es: 'Panel',
+  pt: 'Painel',
+};
+
 // En aperçu, les tuiles ne peuvent pas ouvrir /account/* (ces routes rendent
 // l'espace de l'admin connecté, pas celui du client). Elles pointent donc vers
 // la vue admin des données de CE compte (fiche user / page org).
@@ -679,7 +688,12 @@ export function AccountHub(props: Props) {
             <span style={{ fontSize: '0.88rem', fontWeight: 600, color: '#7a5b00' }}>
               {PREVIEW_NOTE[locale]}{profile.fullName ? ` · ${profile.fullName}` : ''}
             </span>
-            <a className="button button-light" href={previewBackHref}>{PREVIEW_BACK[locale]}</a>
+            <span style={{ display: 'flex', gap: 8 }}>
+              <a className="button button-light" href={previewBackHref}>{PREVIEW_BACK[locale]}</a>
+              {/* Tableau de bord à un clic — le retour contextuel ne mène qu'à
+                  la fiche/org d'origine. */}
+              <a className="button button-light" href="/admin">{PREVIEW_DASHBOARD[locale]}</a>
+            </span>
           </div>
         </div>
       ) : (
