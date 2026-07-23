@@ -1,5 +1,246 @@
 [
   {
+    "slug": "multi-site-color-standardization-brands",
+    "title": "Multi-site color standardization: how brands hold the same color across five plants",
+    "excerpt": "Multi-site color standardization keeps a brand color identical from plant to plant. Here is how closed loop turns one reference into the same result in five factories.",
+    "lead": "A global brand rarely prints its packaging in one place. The same carton runs in France, in the United States and in Asia, on different presses, different inks and different operators, yet the color on shelf has to look identical. Multi-site color standardization is the discipline that makes that happen, and closed loop color control is what carries the standard from one pressroom to the next.",
+    "image": "/images/manroland-press.jpg",
+    "publishedAt": "2026-07-23",
+    "category": "Standards",
+    "paragraphs": [
+      "When a brand owner places the same job in several plants, the biggest risk is not print quality on any single press. It is that five good pressrooms each hit a slightly different target. The blue on a carton printed in Lyon does not quite match the same blue printed in Ohio or in Guangzhou, and the difference lands on the same retail shelf. Multi-site color standardization is the set of rules, references and controls that make one brand color mean the same thing in every factory that produces it.",
+      "The reason color drifts across sites is rarely carelessness. It is that each plant has its own presses, its own inks, its own paper and its own operators, and each of those variables moves the printed color a little. Without a shared numerical reference and an automatic way to hold it, every site converges on its own local idea of correct. The fix is to make the standard live in the data, not in the eye of the best operator on each shift.",
+      "A workable multi-site standard needs three things: one agreed reference per color expressed in measurable terms, the same measurement method in every plant, and a correction loop that pulls each press back to that reference automatically. Get those three aligned and the color stops depending on which factory ran the job.",
+      "This is the model Rutherford runs on more than 1,000 systems in over 30 countries. Closed loop color control corrects every press to the same reference, logs every measurement, and gives the brand owner proof that the carton matched in Europe, in North America and in Asia. The standard travels with the job instead of stopping at the plant gate."
+    ],
+    "body": [
+      {
+        "type": "p",
+        "text": "A brand color is a promise made to a shopper: the same red, the same blue, wherever the product appears. Keeping that promise is easy on one press in one building. It gets hard the moment the same packaging is produced in several plants, in several countries, at the same time. This is the multi-site problem, and it is one of the most common reasons a brand owner starts asking hard questions about color."
+      },
+      {
+        "type": "h2",
+        "text": "Why the same brand color drifts from plant to plant"
+      },
+      {
+        "type": "p",
+        "text": "No two pressrooms are identical. A job that looks perfect in one plant can miss in another because every local variable pushes the color a little:"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "Different press brands and generations, each with its own inking behavior.",
+          "Different ink sets and, often, different ink suppliers per region.",
+          "Different paper and board, which changes how the ink sits and dries.",
+          "Different operators, each with a slightly different idea of on target.",
+          "Different measurement habits, from the device used to the M condition set."
+        ]
+      },
+      {
+        "type": "p",
+        "text": "None of these is a mistake on its own. Added together, they mean five capable plants each settle on their own version of correct. If the only reference is a printed sample and a trained eye, the sites will never fully converge. Color drift between plants is a systems problem, not an operator problem, which is why the fix has to be systematic. Our [complete guide to closed loop color control](/closed-loop-color-control) covers how the measurement and correction loop works in detail."
+      },
+      {
+        "type": "h2",
+        "text": "What a multi-site color standard actually requires"
+      },
+      {
+        "type": "p",
+        "text": "Standardizing color across sites is less about buying identical presses and more about sharing one numerical truth. A multi-site standard rests on three pillars:"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "One reference per color, expressed as spectral or Lab values with an agreed DeltaE tolerance, not as a physical sample that fades.",
+          "One measurement method everywhere: the same geometry, the same M measurement condition, the same color bar logic in every plant.",
+          "One correction loop per press that reads each sheet and drives it back to the shared reference automatically, so the target is enforced rather than hoped for."
+        ]
+      },
+      {
+        "type": "p",
+        "text": "The first two make the sites speak the same language. The third makes them act on it in real time. A reference that lives in a spreadsheet but is not enforced on the press is just a wish. The value appears when every press in every plant is measured against the same target and corrected to it on its own."
+      },
+      {
+        "type": "h2",
+        "text": "How closed loop makes the standard portable"
+      },
+      {
+        "type": "p",
+        "text": "Closed loop color control is what turns a shared reference into a shared result. A spectral system measures the color bar on the running sheet, compares each zone to the agreed reference, computes the DeltaE and sends corrections back to the press so the color is held to the standard through the whole tirage. Because the loop corrects to a number, not to a memory, it produces the same outcome on a Heidelberg in France and a Komori in China. The ColorLoop engine drives that correction and keeps a time stamped record of every reading. For sheetfed offset, the [Offset360](/offset360) bundle packages the scanning, the process control and the closed loop into one workflow, which is a practical way to give several plants the same measurement and correction stack."
+      },
+      {
+        "type": "p",
+        "text": "The traceability side matters as much as the correction. When every plant logs each sheet against the same reference, the brand owner can see that the job stayed inside tolerance everywhere it ran, and calage is shorter because each press reaches target faster instead of chasing it by eye. Consistent measurement also cuts gache at every site, since less paper is spoiled getting to color. The key terms here, from constance couleur to DeltaE, are defined in the [glossary](/glossary)."
+      },
+      {
+        "type": "h2",
+        "text": "One reference, every region"
+      },
+      {
+        "type": "p",
+        "text": "The multi-site problem is really a global problem. Brand owners increasingly split the same work across plants in different regions to shorten supply chains and cut freight, then expect the printed color to match plant to plant regardless of where the run happened. Packaging groups that produce across several countries, like the multi-plant converters Rutherford works with, use one closed loop reference so a carton made in Europe, in North America or at an [Asian plant](/china) carries the same color. The standard lives in the shared data, which is exactly why Rutherford can deploy it on more than 1,000 systems in over 30 countries and still have every site correct to the same target. The [Obeikan multi-site rollout](/blog/obeikan-group) is one example of a group aligning color across plants this way."
+      },
+      {
+        "type": "h3",
+        "text": "How do you keep brand color consistent across multiple plants?"
+      },
+      {
+        "type": "p",
+        "text": "Give every plant the same numerical reference for each color, measure it the same way in each site, and use closed loop color control on every press to correct back to that reference automatically. Consistency then comes from the shared data and the automatic correction, not from asking each operator to match a printed sample by eye."
+      },
+      {
+        "type": "h3",
+        "text": "What is multi-site color standardization?"
+      },
+      {
+        "type": "p",
+        "text": "Multi-site color standardization is the practice of making one brand color produce the same measured result across every plant that prints it. It combines a shared reference, an identical measurement method and an automatic correction loop so that color consistency does not depend on which factory ran the job. The core terms are defined in the [glossary](/glossary)."
+      },
+      {
+        "type": "h3",
+        "text": "Can different press brands hold the same color standard?"
+      },
+      {
+        "type": "p",
+        "text": "Yes. Because closed loop corrects to a numerical reference rather than to a specific machine, presses from different brands and generations can hold the same standard. ColorLoop is press agnostic and works with Heidelberg, Komori, Koenig and Bauer, Manroland and others, so a mixed fleet across several plants can still converge on one brand color."
+      }
+    ],
+    "i18n": {
+      "fr": {
+        "title": "Standardisation couleur multi-sites : comment une marque tient la même couleur dans cinq usines",
+        "excerpt": "La standardisation couleur multi-sites garde une couleur de marque identique d’une usine à l’autre. Voici comment le closed loop transforme une référence unique en même résultat dans cinq usines.",
+        "lead": "Une marque mondiale imprime rarement son packaging au même endroit. Le même étui tourne en France, aux États-Unis et en Asie, sur des presses, des encres et des opérateurs différents, et pourtant la couleur en rayon doit paraître identique. La standardisation couleur multi-sites est la discipline qui rend cela possible, et le closed loop est ce qui transporte le standard d’un atelier à l’autre.",
+        "body": [
+          {
+            "type": "p",
+            "text": "Une couleur de marque est une promesse faite au consommateur : le même rouge, le même bleu, où que le produit apparaisse. Tenir cette promesse est simple sur une presse, dans un bâtiment. Cela devient difficile dès que le même packaging est produit dans plusieurs usines, dans plusieurs pays, en même temps. C’est le problème multi-sites, et l’une des raisons les plus fréquentes pour lesquelles une marque commence à poser des questions difficiles sur la couleur."
+          },
+          {
+            "type": "h2",
+            "text": "Pourquoi la même couleur de marque dérive d’une usine à l’autre"
+          },
+          {
+            "type": "p",
+            "text": "Deux ateliers ne sont jamais identiques. Un travail parfait dans une usine peut manquer sa cible dans une autre, car chaque variable locale déplace un peu la couleur :"
+          },
+          {
+            "type": "ul",
+            "items": [
+              "Des marques et générations de presses différentes, chacune avec son comportement d’encrage.",
+              "Des jeux d’encres différents et, souvent, des fournisseurs d’encre différents selon la région.",
+              "Des papiers et cartons différents, qui changent la façon dont l’encre se pose et sèche.",
+              "Des opérateurs différents, chacun avec sa propre idée du bon à rouler.",
+              "Des habitudes de mesure différentes, du dispositif utilisé à la condition M choisie."
+            ]
+          },
+          {
+            "type": "p",
+            "text": "Aucun de ces points n’est une erreur en soi. Additionnés, ils font que cinq usines compétentes s’installent chacune sur leur propre version du correct. Si la seule référence est un échantillon imprimé et un œil entraîné, les sites ne convergeront jamais totalement. La dérive couleur entre usines est un problème de système, pas d’opérateur, ce qui explique pourquoi la réponse doit être systématique. Notre [guide complet du closed loop](/closed-loop-color-control) détaille le fonctionnement de la boucle de mesure et de correction."
+          },
+          {
+            "type": "h2",
+            "text": "Ce qu’exige réellement un standard couleur multi-sites"
+          },
+          {
+            "type": "p",
+            "text": "Standardiser la couleur entre sites tient moins à l’achat de presses identiques qu’au partage d’une même vérité numérique. Un standard multi-sites repose sur trois piliers :"
+          },
+          {
+            "type": "ul",
+            "items": [
+              "Une référence par couleur, exprimée en valeurs spectrales ou Lab avec une tolérance DeltaE convenue, pas un échantillon physique qui passe.",
+              "Une même méthode de mesure partout : la même géométrie, la même condition de mesure M, la même logique de barre de contrôle dans chaque usine.",
+              "Une boucle de correction par presse qui lit chaque feuille et la ramène automatiquement à la référence partagée, pour que la cible soit imposée et non espérée."
+            ]
+          },
+          {
+            "type": "p",
+            "text": "Les deux premiers font parler les sites la même langue. Le troisième les fait agir en temps réel. Une référence qui vit dans un tableur mais n’est pas imposée sur la presse n’est qu’un vœu. La valeur apparaît quand chaque presse, dans chaque usine, est mesurée par rapport à la même cible et corrigée vers elle d’elle-même."
+          },
+          {
+            "type": "h2",
+            "text": "Comment le closed loop rend le standard portable"
+          },
+          {
+            "type": "p",
+            "text": "Le closed loop est ce qui transforme une référence partagée en résultat partagé. Un système spectral mesure la barre de contrôle sur la feuille en cours, compare chaque zone à la référence convenue, calcule le DeltaE et renvoie les corrections à la presse pour tenir la couleur au standard pendant tout le tirage. Comme la boucle corrige vers un nombre, pas vers un souvenir, elle produit le même résultat sur une Heidelberg en France et une Komori en Chine. Le moteur ColorLoop pilote cette correction et conserve un enregistrement horodaté de chaque relevé. En offset feuille à feuille, le pack [Offset360](/offset360) réunit le scan, le contrôle de process et le closed loop dans un seul workflow, façon pratique de donner à plusieurs usines la même chaîne de mesure et de correction."
+          },
+          {
+            "type": "p",
+            "text": "La traçabilité compte autant que la correction. Quand chaque usine enregistre chaque feuille par rapport à la même référence, la marque voit que le travail est resté dans la tolérance partout où il a tourné, et le calage est plus court car chaque presse atteint la cible plus vite au lieu de la chercher à l’œil. Une mesure cohérente réduit aussi la gâche sur chaque site, puisque moins de papier part au calage. Les termes clés, de la constance couleur au DeltaE, sont définis dans le [glossaire](/glossary)."
+          },
+          {
+            "type": "h2",
+            "text": "Une référence, toutes les régions"
+          },
+          {
+            "type": "p",
+            "text": "Le problème multi-sites est en réalité un problème mondial. Les marques répartissent de plus en plus le même travail entre des usines de différentes régions pour raccourcir les chaînes d’approvisionnement et réduire le fret, puis attendent que la couleur imprimée corresponde d’une usine à l’autre, où que le tirage ait eu lieu. Les groupes de packaging qui produisent dans plusieurs pays, comme les converters multi-usines avec lesquels travaille Rutherford, utilisent une seule référence closed loop pour qu’un étui fabriqué en Europe, en Amérique du Nord ou dans une [usine asiatique](/china) porte la même couleur. Le standard vit dans la donnée partagée, ce qui explique justement pourquoi Rutherford peut le déployer sur plus de 1 000 systèmes dans plus de 30 pays tout en gardant chaque site corrigé vers la même cible. Le [déploiement multi-sites Obeikan](/blog/obeikan-group) est un exemple de groupe alignant ainsi la couleur entre usines."
+          },
+          {
+            "type": "h3",
+            "text": "Comment garder une couleur de marque constante sur plusieurs usines ?"
+          },
+          {
+            "type": "p",
+            "text": "Donnez à chaque usine la même référence numérique pour chaque couleur, mesurez-la de la même façon sur chaque site, et utilisez le closed loop sur chaque presse pour corriger automatiquement vers cette référence. La constance vient alors de la donnée partagée et de la correction automatique, pas de la demande faite à chaque opérateur d’égaler un échantillon imprimé à l’œil."
+          },
+          {
+            "type": "h3",
+            "text": "Qu’est-ce que la standardisation couleur multi-sites ?"
+          },
+          {
+            "type": "p",
+            "text": "La standardisation couleur multi-sites est la pratique consistant à faire produire à une même couleur de marque le même résultat mesuré dans chaque usine qui l’imprime. Elle combine une référence partagée, une méthode de mesure identique et une boucle de correction automatique pour que la constance couleur ne dépende pas de l’usine qui a fait le travail. Les termes essentiels sont définis dans le [glossaire](/glossary)."
+          },
+          {
+            "type": "h3",
+            "text": "Des marques de presses différentes peuvent-elles tenir le même standard couleur ?"
+          },
+          {
+            "type": "p",
+            "text": "Oui. Parce que le closed loop corrige vers une référence numérique et non vers une machine précise, des presses de marques et de générations différentes peuvent tenir le même standard. ColorLoop est indépendant de la presse et fonctionne avec Heidelberg, Komori, Koenig & Bauer, Manroland et d’autres, si bien qu’un parc mixte réparti sur plusieurs usines peut converger vers une seule couleur de marque."
+          }
+        ]
+      },
+      "de": {
+        "title": "Standortübergreifende Farbstandardisierung: wie Marken in fünf Werken dieselbe Farbe halten",
+        "excerpt": "Standortübergreifende Farbstandardisierung hält eine Markenfarbe von Werk zu Werk identisch. So macht Closed-Loop aus einer Referenz dasselbe Ergebnis in fünf Werken.",
+        "lead": "Eine globale Marke druckt ihr Packaging selten an einem Ort. Derselbe Faltschachtel läuft in Frankreich, den USA und Asien, auf unterschiedlichen Maschinen und mit unterschiedlichen Bedienern, und trotzdem muss die Farbe im Regal identisch wirken. Standortübergreifende Farbstandardisierung macht das möglich, und Closed-Loop trägt den Standard von einer Druckerei zur nächsten."
+      },
+      "it": {
+        "title": "Standardizzazione colore multi-sito: come i brand tengono lo stesso colore in cinque stabilimenti",
+        "excerpt": "La standardizzazione colore multi-sito mantiene un colore di brand identico da uno stabilimento all’altro. Ecco come il closed-loop trasforma un’unica referenza nello stesso risultato in cinque stabilimenti.",
+        "lead": "Un brand globale stampa raramente il proprio packaging in un solo luogo. La stessa fustella gira in Francia, negli Stati Uniti e in Asia, su macchine e operatori diversi, eppure il colore a scaffale deve apparire identico. La standardizzazione colore multi-sito è la disciplina che lo rende possibile, e il closed-loop è ciò che porta lo standard da una pressroom all’altra."
+      },
+      "es": {
+        "title": "Estandarización del color multisitio: cómo las marcas mantienen el mismo color en cinco plantas",
+        "excerpt": "La estandarización del color multisitio mantiene un color de marca idéntico de una planta a otra. Así el closed-loop convierte una única referencia en el mismo resultado en cinco plantas.",
+        "lead": "Una marca global rara vez imprime su packaging en un solo lugar. El mismo estuche se produce en Francia, en Estados Unidos y en Asia, en prensas y con operarios distintos, y aun así el color en el lineal debe verse idéntico. La estandarización del color multisitio es la disciplina que lo consigue, y el closed-loop es lo que traslada el estándar de una sala de prensa a otra."
+      },
+      "pt": {
+        "title": "Padronização de cor multi-sítio: como as marcas mantêm a mesma cor em cinco fábricas",
+        "excerpt": "A padronização de cor multi-sítio mantém uma cor de marca idêntica de fábrica para fábrica. Eis como o closed-loop transforma uma referência única no mesmo resultado em cinco fábricas.",
+        "lead": "Uma marca global raramente imprime a sua embalagem num único local. A mesma cartonagem corre em França, nos Estados Unidos e na Ásia, em máquinas e com operadores diferentes, mas a cor no linear tem de parecer idêntica. A padronização de cor multi-sítio é a disciplina que o torna possível, e o closed-loop é o que leva o padrão de uma sala de impressão para a seguinte."
+      }
+    },
+    "originalUrl": "https://rutherford.fr/blog/multi-site-color-standardization-brands",
+    "sources": [
+      {
+        "label": "ISO 12647-2:2013, offset process control",
+        "href": "https://www.iso.org/standard/57833.html"
+      },
+      {
+        "label": "Idealliance G7 methodology",
+        "href": "https://www.idealliance.org/g7"
+      },
+      {
+        "label": "X-Rite, brand color and multi-site consistency",
+        "href": "https://www.xrite.com/categories/formulation-and-quality-assurance-software"
+      }
+    ]
+  },
+  {
     "slug": "pressroom-automation-closed-loop-color-2026",
     "title": "Pressroom automation in 2026: where closed loop fits the automated press",
     "excerpt": "2026 print surveys agree pressroom automation is now the baseline. On offset, the last manual loop is color, and closed loop is what closes it.",
