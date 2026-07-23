@@ -1,7 +1,7 @@
 [
   {
     "slug": "multi-site-color-standardization-brands",
-    "title": "Multi-site color standardization: how brands hold the same color across five plants",
+    "title": "Multi-site color standardization",
     "excerpt": "Multi-site color standardization keeps a brand color identical from plant to plant. Here is how closed loop turns one reference into the same result in five factories.",
     "lead": "A global brand rarely prints its packaging in one place. The same carton runs in France, in the United States and in Asia, on different presses, different inks and different operators, yet the color on shelf has to look identical. Multi-site color standardization is the discipline that makes that happen, and closed loop color control is what carries the standard from one pressroom to the next.",
     "image": "/images/manroland-press.jpg",
@@ -107,7 +107,7 @@
     ],
     "i18n": {
       "fr": {
-        "title": "Standardisation couleur multi-sites : comment une marque tient la même couleur dans cinq usines",
+        "title": "Standardisation couleur multi-sites",
         "excerpt": "La standardisation couleur multi-sites garde une couleur de marque identique d’une usine à l’autre. Voici comment le closed loop transforme une référence unique en même résultat dans cinq usines.",
         "lead": "Une marque mondiale imprime rarement son packaging au même endroit. Le même étui tourne en France, aux États-Unis et en Asie, sur des presses, des encres et des opérateurs différents, et pourtant la couleur en rayon doit paraître identique. La standardisation couleur multi-sites est la discipline qui rend cela possible, et le closed loop est ce qui transporte le standard d’un atelier à l’autre.",
         "body": [
@@ -204,22 +204,22 @@
         ]
       },
       "de": {
-        "title": "Standortübergreifende Farbstandardisierung: wie Marken in fünf Werken dieselbe Farbe halten",
+        "title": "Standortübergreifende Farbstandardisierung",
         "excerpt": "Standortübergreifende Farbstandardisierung hält eine Markenfarbe von Werk zu Werk identisch. So macht Closed-Loop aus einer Referenz dasselbe Ergebnis in fünf Werken.",
         "lead": "Eine globale Marke druckt ihr Packaging selten an einem Ort. Derselbe Faltschachtel läuft in Frankreich, den USA und Asien, auf unterschiedlichen Maschinen und mit unterschiedlichen Bedienern, und trotzdem muss die Farbe im Regal identisch wirken. Standortübergreifende Farbstandardisierung macht das möglich, und Closed-Loop trägt den Standard von einer Druckerei zur nächsten."
       },
       "it": {
-        "title": "Standardizzazione colore multi-sito: come i brand tengono lo stesso colore in cinque stabilimenti",
+        "title": "Standardizzazione colore multi-sito",
         "excerpt": "La standardizzazione colore multi-sito mantiene un colore di brand identico da uno stabilimento all’altro. Ecco come il closed-loop trasforma un’unica referenza nello stesso risultato in cinque stabilimenti.",
         "lead": "Un brand globale stampa raramente il proprio packaging in un solo luogo. La stessa fustella gira in Francia, negli Stati Uniti e in Asia, su macchine e operatori diversi, eppure il colore a scaffale deve apparire identico. La standardizzazione colore multi-sito è la disciplina che lo rende possibile, e il closed-loop è ciò che porta lo standard da una pressroom all’altra."
       },
       "es": {
-        "title": "Estandarización del color multisitio: cómo las marcas mantienen el mismo color en cinco plantas",
+        "title": "Estandarización del color multisitio",
         "excerpt": "La estandarización del color multisitio mantiene un color de marca idéntico de una planta a otra. Así el closed-loop convierte una única referencia en el mismo resultado en cinco plantas.",
         "lead": "Una marca global rara vez imprime su packaging en un solo lugar. El mismo estuche se produce en Francia, en Estados Unidos y en Asia, en prensas y con operarios distintos, y aun así el color en el lineal debe verse idéntico. La estandarización del color multisitio es la disciplina que lo consigue, y el closed-loop es lo que traslada el estándar de una sala de prensa a otra."
       },
       "pt": {
-        "title": "Padronização de cor multi-sítio: como as marcas mantêm a mesma cor em cinco fábricas",
+        "title": "Padronização de cor multi-sítio",
         "excerpt": "A padronização de cor multi-sítio mantém uma cor de marca idêntica de fábrica para fábrica. Eis como o closed-loop transforma uma referência única no mesmo resultado em cinco fábricas.",
         "lead": "Uma marca global raramente imprime a sua embalagem num único local. A mesma cartonagem corre em França, nos Estados Unidos e na Ásia, em máquinas e com operadores diferentes, mas a cor no linear tem de parecer idêntica. A padronização de cor multi-sítio é a disciplina que o torna possível, e o closed-loop é o que leva o padrão de uma sala de impressão para a seguinte."
       }
@@ -242,7 +242,7 @@
   },
   {
     "slug": "pressroom-automation-closed-loop-color-2026",
-    "title": "Pressroom automation in 2026: where closed loop fits the automated press",
+    "title": "Pressroom automation and closed loop",
     "excerpt": "2026 print surveys agree pressroom automation is now the baseline. On offset, the last manual loop is color, and closed loop is what closes it.",
     "lead": "The 2026 industry surveys agree on one point: pressroom automation is no longer a differentiator, it is the baseline. Most offset shops have automated plate changing, ink presetting and inline inspection, yet very few call their production highly optimized. On the press, the gap almost always sits in the same place: color. Here is why closed loop is the piece that turns an automated press into an autonomous one on color.",
     "image": "/images/stopplayingpiano-operator.jpg",
@@ -348,7 +348,7 @@
     ],
     "i18n": {
       "fr": {
-        "title": "Automatisation de l’atelier en 2026 : la place du closed loop sur la presse automatisée",
+        "title": "Automatisation de l’atelier et closed loop",
         "excerpt": "Les études 2026 sont unanimes : l’automatisation de l’atelier est désormais la norme. En offset, la dernière boucle manuelle, c’est la couleur, et le closed loop la referme.",
         "lead": "Les études sectorielles 2026 convergent sur un point : l’automatisation de l’atelier n’est plus un facteur de différenciation, c’est la base. La plupart des ateliers offset ont automatisé le changement de plaques, le préréglage d’encrage et l’inspection en ligne, mais très peu qualifient leur production de pleinement optimisée. Sur la presse, l’écart se situe presque toujours au même endroit : la couleur. Voici pourquoi le closed loop est la pièce qui transforme une presse automatisée en presse autonome sur la couleur.",
         "body": [
@@ -445,22 +445,22 @@
         ]
       },
       "de": {
-        "title": "Druckerei-Automatisierung 2026: der Platz des Closed-Loop an der automatisierten Maschine",
+        "title": "Druckerei-Automatisierung und Closed-Loop",
         "excerpt": "Die 2026er Studien sind sich einig: Automatisierung ist Standard. Im Offset ist die letzte manuelle Schleife die Farbe, und Closed-Loop schliesst sie.",
         "lead": "Die Branchenstudien 2026 sind sich in einem Punkt einig: Automatisierung ist kein Unterscheidungsmerkmal mehr, sondern die Basis. Die meisten Offsetbetriebe haben Plattenwechsel, Farbvoreinstellung und Inline-Inspektion automatisiert, doch nur wenige nennen ihre Produktion voll optimiert. An der Maschine liegt die Lucke fast immer an derselben Stelle: bei der Farbe."
       },
       "it": {
-        "title": "Automazione della sala stampa nel 2026: dove si colloca il closed-loop sulla macchina automatizzata",
+        "title": "Automazione della sala stampa e closed-loop",
         "excerpt": "Gli studi 2026 concordano: l’automazione della sala stampa è ormai lo standard. Nell’offset l’ultimo anello manuale è il colore, e il closed-loop lo chiude.",
         "lead": "Gli studi di settore 2026 convergono su un punto: l’automazione della sala stampa non è più un fattore di differenziazione, è la base. La maggior parte degli stampatori offset ha automatizzato cambio lastre, preregolazione inchiostro e ispezione in linea, ma pochi definiscono la produzione pienamente ottimizzata. In macchina il divario è quasi sempre nello stesso punto: il colore."
       },
       "es": {
-        "title": "Automatización de la sala de prensa en 2026: el lugar del closed-loop en la máquina automatizada",
+        "title": "Automatización de la sala de prensa y closed-loop",
         "excerpt": "Los estudios de 2026 coinciden: la automatización de la sala de prensa ya es el estándar. En offset el último lazo manual es el color, y el closed-loop lo cierra.",
         "lead": "Los estudios del sector de 2026 coinciden en un punto: la automatización de la sala de prensa ya no diferencia, es la base. La mayoría de los talleres offset han automatizado el cambio de placas, la preconfiguración de tinta y la inspección en línea, pero pocos consideran su producción plenamente optimizada. En la prensa, la brecha está casi siempre en el mismo lugar: el color."
       },
       "pt": {
-        "title": "Automação da sala de impressão em 2026: o lugar do closed-loop na máquina automatizada",
+        "title": "Automação da sala de impressão e closed-loop",
         "excerpt": "Os estudos de 2026 concordam: a automação da sala de impressão já é o padrão. No offset, o último ciclo manual é a cor, e o closed-loop fecha-o.",
         "lead": "Os estudos do setor em 2026 convergem num ponto: a automação da sala de impressão já não é um fator de diferenciação, é a base. A maioria das gráficas offset automatizou a mudança de chapas, a pré-regulação de tinta e a inspeção em linha, mas poucas consideram a produção plenamente otimizada. Na máquina, a diferença está quase sempre no mesmo sítio: a cor."
       }
