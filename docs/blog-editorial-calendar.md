@@ -9,7 +9,7 @@ La routine du jeudi coche la case du sujet publié (commit du fichier avec l'art
 
 ## Sujets evergreen (jeudis)
 
-- [ ] **S1 (23/07)** : Standardisation couleur multi-sites pour les marques : comment garantir la même couleur dans 5 usines. Mots-clés : multi-site color standardization, brand color consistency. Liens : pilier, /offset360, /glossary (constance couleur), cas Obeikan/Yuto si pertinent.
+- [x] **S1 (23/07)** : Standardisation couleur multi-sites pour les marques : comment garantir la même couleur dans 5 usines. Mots-clés : multi-site color standardization, brand color consistency. Liens : pilier, /offset360, /glossary (constance couleur), cas Obeikan/Yuto si pertinent.
 - [ ] **S2 (30/07)** : Tons directs et tolérances PANTONE en packaging : pourquoi le DeltaE des couleurs de marque est plus dur à tenir. Liens : pilier, /colorloop (Pack), glossaire ton direct + DeltaE.
 - [ ] **S3 (06/08)** : La gamme étendue (ECG) : quand le passage en 7 couleurs est rentable pour un converter. Liens : pilier, article LEFRANCQ extended gamut, glossaire ECG.
 - [ ] **S4 (13/08)** : Le G7 pour les imprimeurs européens qui exportent vers l'Amérique du Nord. Liens : pilier, /usa, /canada, article g7-vs-iso.

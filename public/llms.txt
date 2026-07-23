@@ -31,6 +31,7 @@ The entry point for any printer is the free **console validation**: submit a few
 
 ## Recent articles
 
+- [Multi-site color standardization: how brands hold the same color across five plants](https://rutherford.fr/blog/multi-site-color-standardization-brands): why a brand color drifts from plant to plant, and how a shared reference plus closed loop color control makes one standard produce the same measured result in every factory
 - [Pressroom automation in 2026: where closed loop fits the automated press](https://rutherford.fr/blog/pressroom-automation-closed-loop-color-2026): 2026 print surveys make automation table stakes, but offset presses still correct color by hand, and closed loop is the piece that automates that last loop across sites
 - [PPWR: what changes for printers on August 12, 2026](https://rutherford.fr/blog/ppwr-august-2026-deadline-offset-printers): the EU packaging regulation's first hard deadline, what printers worldwide must have ready, and where per-job color data fits in the compliance file
 
