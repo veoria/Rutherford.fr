@@ -80,6 +80,9 @@ const CV_STATUS_LABELS: Record<string, string> = {
   rejected: 'Non éligible',
 };
 
+// Valeur de filtre hors statut : les demandes supprimées dans Asana.
+const CV_DELETED_FILTER = '__deleted';
+
 const CV_STATUS_TONE: Record<string, string> = {
   submitted: 'review',
   in_review: 'review',
@@ -1164,7 +1167,14 @@ export function AdminDashboard({
   const filteredCv = useMemo(() => {
     const q = cvQuery.trim().toLowerCase();
     return consoleValidations.filter((c) => {
-      if (cvFilter && c.status !== cvFilter) return false;
+      // Les demandes supprimées dans Asana (tests, doublons) sont masquées côté
+      // client ; ici elles sortent de la liste sauf via le filtre dédié.
+      if (cvFilter === CV_DELETED_FILTER) {
+        if (!c.deletedAt) return false;
+      } else {
+        if (c.deletedAt) return false;
+        if (cvFilter && c.status !== cvFilter) return false;
+      }
       if (!q) return true;
       // Match a person across both the submission email and the account email
       // (so requests sent before the account existed — user_id still null — are
@@ -1209,7 +1219,13 @@ export function AdminDashboard({
   const ADMIN_TABS: { key: AdminTab; label: string; count: number | null }[] = [
     { key: 'overview', label: 'Vue d’ensemble', count: null },
     { key: 'accounts', label: 'Comptes', count: totals.users },
-    { key: 'validations', label: 'Validations', count: consoleValidations.length },
+    {
+      key: 'validations',
+      label: 'Validations',
+      // Les supprimées ne comptent pas dans l'onglet (elles restent atteignables
+      // via le filtre « Supprimées dans Asana »).
+      count: consoleValidations.filter((c) => !c.deletedAt).length,
+    },
     { key: 'support', label: 'Support', count: supportTickets.length },
     { key: 'orgs', label: 'Organisations', count: orgsFull.length },
     { key: 'courses', label: 'Cours', count: courses.length },
@@ -1555,6 +1571,7 @@ export function AdminDashboard({
                         {CV_STATUS_LABELS[s]}
                       </option>
                     ))}
+                    <option value={CV_DELETED_FILTER}>Supprimées dans Asana</option>
                   </select>
                 </div>
               </div>
@@ -1586,6 +1603,9 @@ export function AdminDashboard({
                           <span className={`admin-status admin-status-${CV_STATUS_TONE[c.status] ?? 'review'}`}>
                             {CV_STATUS_LABELS[c.status] ?? c.status}
                           </span>
+                          {c.deletedAt ? (
+                            <span className="admin-cv-sub">Supprimée dans Asana le {fmtDate(c.deletedAt)}</span>
+                          ) : null}
                         </td>
                         <td>{c.pipedriveDealId ? `ID ${c.pipedriveDealId}` : '—'}</td>
                         <td className="admin-email">{c.email}</td>

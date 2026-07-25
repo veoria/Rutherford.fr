@@ -53,11 +53,14 @@ export default async function ConsoleValidationsRoute() {
     : [];
 
   // RLS scopes this to the visitor's own requests (by account or by email).
+  // The deleted_at filter is belt-and-braces with the policy: a request trashed
+  // in Asana (test, duplicate) stays off the tracker even for an admin viewer.
   const { data } = await supabase
     .from('console_validations')
     .select(
       'id, company, country, machine, status, created_at, pipedrive_deal_id, reviewed_by, reviewed_at, customer_reply_at'
     )
+    .is('deleted_at', null)
     .order('created_at', { ascending: false });
 
   const rows: ConsoleValidationRow[] = (data ?? []).map((row) => ({

@@ -771,7 +771,7 @@ export function AdminUserDetail({
 
           <div className="admin-block" id="validations">
             <div className="admin-block-head">
-              <h2>Validations console ({user.validations.length})</h2>
+              <h2>Validations console ({user.validations.filter((c) => !c.deletedAt).length})</h2>
             </div>
             {user.validations.length ? (
               <div className="admin-table-wrap">
@@ -798,6 +798,11 @@ export function AdminUserDetail({
                           <span className={`admin-status admin-status-${CV_STATUS_TONE[c.status] ?? 'review'}`}>
                             {CV_STATUS_LABELS[c.status] ?? c.status}
                           </span>
+                          {/* Supprimée dans Asana : la fiche la conserve, le
+                              compte client ne la voit plus. */}
+                          {c.deletedAt ? (
+                            <span className="admin-cv-sub">Supprimée dans Asana le {fmtDate(c.deletedAt)}</span>
+                          ) : null}
                         </td>
                         <td>{c.pipedriveDealId ? `ID ${c.pipedriveDealId}` : '—'}</td>
                         <td>{c.assignee ?? '—'}</td>

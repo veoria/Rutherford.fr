@@ -74,6 +74,9 @@ export type AdminConsoleValidation = {
   followers: string[];
   userId: string | null;
   userEmail: string | null;
+  /** Renseigné quand la tâche Asana a été supprimée (test, doublon) : la demande
+   * est masquée côté client, mais reste consultable ici. */
+  deletedAt: string | null;
 };
 
 export type AdminSupportTicket = {
@@ -125,7 +128,7 @@ export async function getAdminOverview(): Promise<AdminOverview> {
     admin
       .from('console_validations')
       .select(
-        'id, created_at, company, country, machine, status, email, ref_code, pipedrive_deal_id, asana_task_gid, reviewed_by, reviewed_at, assignee, followers, user_id'
+        'id, created_at, company, country, machine, status, email, ref_code, pipedrive_deal_id, asana_task_gid, reviewed_by, reviewed_at, assignee, followers, user_id, deleted_at'
       )
       .order('created_at', { ascending: false }),
     admin
@@ -311,6 +314,7 @@ export async function getAdminOverview(): Promise<AdminOverview> {
     assignee: string | null;
     followers: string[] | null;
     user_id: string | null;
+    deleted_at: string | null;
   }[];
   const consoleValidations: AdminConsoleValidation[] = cvRows.map((r) => ({
     id: r.id,
@@ -330,9 +334,11 @@ export async function getAdminOverview(): Promise<AdminOverview> {
     followers: r.followers ?? [],
     userId: r.user_id,
     userEmail: r.user_id ? emailByUserId.get(r.user_id) ?? null : null,
+    deletedAt: r.deleted_at,
   }));
-  const consoleOpen = consoleValidations.filter((c) =>
-    ['submitted', 'in_review', 'changes_requested'].includes(c.status)
+  // Une demande supprimée dans Asana ne pèse plus dans le « à traiter ».
+  const consoleOpen = consoleValidations.filter(
+    (c) => !c.deletedAt && ['submitted', 'in_review', 'changes_requested'].includes(c.status)
   ).length;
 
   const supportRows = (supportRes.data ?? []) as {
@@ -542,7 +548,7 @@ export async function getAdminUserDetail(userId: string): Promise<AdminUserDetai
 
   // Console validations owned by the account OR matched by the login email.
   const CV_SEL =
-    'id, created_at, company, country, machine, status, email, ref_code, pipedrive_deal_id, asana_task_gid, reviewed_by, reviewed_at, assignee, followers, user_id';
+    'id, created_at, company, country, machine, status, email, ref_code, pipedrive_deal_id, asana_task_gid, reviewed_by, reviewed_at, assignee, followers, user_id, deleted_at';
   const [byId, byEmail] = await Promise.all([
     admin.from('console_validations').select(CV_SEL).eq('user_id', userId),
     email
@@ -573,6 +579,7 @@ export async function getAdminUserDetail(userId: string): Promise<AdminUserDetai
       followers: (r.followers as string[] | null) ?? [],
       userId: (r.user_id as string | null) ?? null,
       userEmail: email || null,
+      deletedAt: (r.deleted_at as string | null) ?? null,
     }));
 
   // Support tickets owned by the account OR matched by the login email.

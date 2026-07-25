@@ -28,6 +28,9 @@ export async function getResellerClientsView(
         .from('console_validations')
         .select('company, country, machine, status, email, created_at')
         .eq('reseller_id', userId)
+        // Une demande supprimée dans Asana (test, doublon) sort aussi de la
+        // vue revendeur — ce read passe par le service role, hors RLS.
+        .is('deleted_at', null)
         .order('created_at', { ascending: false });
       const byClient = new Map<string, ResellerClient>();
       for (const r of (data ?? []) as {

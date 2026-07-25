@@ -17,9 +17,11 @@ import {
   insertConsoleValidationMessage,
   setConsoleValidationAgentStory,
   setConsoleValidationAssignee,
+  setConsoleValidationDeletedByAsanaTask,
   updateConsoleValidationStatusByAsanaTask,
   type ConsoleValidationStatus,
 } from '@/lib/console-validations';
+import { recordAudit } from '@/lib/admin-audit';
 import {
   getSupportTicketByAsanaTask,
   insertSupportMessage,
@@ -90,6 +92,12 @@ export async function POST(request: NextRequest) {
   // Events are diffs; collect the task gids that changed, then re-fetch each to
   // learn its live approval state.
   const taskGids = new Set<string>();
+  // Trashing a card is how the team culls test submissions and duplicates —
+  // mirror it by hiding the request from the client's tracker (and un-hide when
+  // the task is restored from the Asana trash). Only "deleted" / "undeleted" on
+  // a task count: "removed" also fires when a card merely leaves a section.
+  const deletedTaskGids = new Set<string>();
+  const restoredTaskGids = new Set<string>();
   // Comments arrive as "story" events; keep each with its parent task so we can
   // relay the ones tagged for the customer.
   const storyEvents: { storyGid: string; taskGid: string }[] = [];
@@ -97,11 +105,47 @@ export async function POST(request: NextRequest) {
     if (event?.resource?.resource_type === 'task' && (event.action === 'changed' || event.action === 'added')) {
       const gid = event.resource.gid;
       if (gid) taskGids.add(String(gid));
+    } else if (event?.resource?.resource_type === 'task' && event.action === 'deleted') {
+      const gid = event.resource.gid;
+      if (gid) deletedTaskGids.add(String(gid));
+    } else if (event?.resource?.resource_type === 'task' && event.action === 'undeleted') {
+      const gid = event.resource.gid;
+      if (gid) restoredTaskGids.add(String(gid));
     } else if (event?.resource?.resource_type === 'story' && event.action === 'added') {
       const storyGid = event.resource?.gid;
       const taskGid = event.parent?.gid;
       if (storyGid && taskGid) storyEvents.push({ storyGid: String(storyGid), taskGid: String(taskGid) });
     }
+  }
+
+  // A deleted task can no longer be fetched, so drop it from the state refresh;
+  // a restored one is re-synced (its status/assignee may have moved meanwhile).
+  for (const gid of deletedTaskGids) taskGids.delete(gid);
+  for (const gid of restoredTaskGids) taskGids.add(gid);
+
+  const visibilityChanges = [
+    ...[...deletedTaskGids].map((gid) => ({ gid, deleted: true })),
+    ...[...restoredTaskGids].map((gid) => ({ gid, deleted: false })),
+  ];
+  for (const { gid, deleted } of visibilityChanges) {
+    const row = await setConsoleValidationDeletedByAsanaTask(gid, deleted);
+    if (!row) continue; // not one of ours, or already in that state (re-delivery)
+    const ref = row.pipedriveDealId ? `ID ${row.pipedriveDealId}` : row.id.slice(0, 8);
+    const who = row.company || row.email;
+    // Nothing else moves: the Pipedrive deal, the Dropbox folder and the row
+    // itself are kept — only the client-facing visibility changes. The trail
+    // lands in the admin journal so a request never vanishes without a trace.
+    await recordAudit({
+      actorId: null,
+      actorEmail: 'asana-webhook',
+      action: deleted ? 'console_validation.hide' : 'console_validation.restore',
+      targetType: 'console_validation',
+      targetId: row.id,
+      summary: deleted
+        ? `Validation console ${ref} (${who}) supprimée dans Asana — masquée du compte client`
+        : `Validation console ${ref} (${who}) restaurée dans Asana — de nouveau visible côté client`,
+      metadata: { asanaTaskGid: gid },
+    });
   }
 
   for (const gid of taskGids) {
