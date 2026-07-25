@@ -77,6 +77,12 @@ export type AdminConsoleValidation = {
   /** Renseigné quand la tâche Asana a été supprimée (test, doublon) : la demande
    * est masquée côté client, mais reste consultable ici. */
   deletedAt: string | null;
+  deletedSource: string | null;
+  // Détail affiché quand on déplie la ligne dans le tableau de bord.
+  notes: string | null;
+  dropboxLink: string | null;
+  customerReply: string | null;
+  customerReplyAt: string | null;
 };
 
 export type AdminSupportTicket = {
@@ -90,6 +96,13 @@ export type AdminSupportTicket = {
   userId: string | null;
   userEmail: string | null;
   customerReplyAt: string | null;
+  // Détail affiché quand on déplie la ligne.
+  company: string | null;
+  subject: string | null;
+  description: string | null;
+  anydesk: string | null;
+  agentMessage: string | null;
+  customerReply: string | null;
 };
 
 export type AdminOverview = {
@@ -128,12 +141,14 @@ export async function getAdminOverview(): Promise<AdminOverview> {
     admin
       .from('console_validations')
       .select(
-        'id, created_at, company, country, machine, status, email, ref_code, pipedrive_deal_id, asana_task_gid, reviewed_by, reviewed_at, assignee, followers, user_id, deleted_at'
+        'id, created_at, company, country, machine, status, email, ref_code, pipedrive_deal_id, asana_task_gid, reviewed_by, reviewed_at, assignee, followers, user_id, deleted_at, deleted_source, notes, dropbox_link, customer_reply, customer_reply_at'
       )
       .order('created_at', { ascending: false }),
     admin
       .from('support_tickets')
-      .select('id, created_at, name, email, status, assignee_name, asana_task_gid, user_id, customer_reply_at')
+      .select(
+        'id, created_at, name, email, status, assignee_name, asana_task_gid, user_id, customer_reply_at, company, subject, description, anydesk, agent_message, customer_reply'
+      )
       .order('created_at', { ascending: false }),
   ]);
 
@@ -315,6 +330,11 @@ export async function getAdminOverview(): Promise<AdminOverview> {
     followers: string[] | null;
     user_id: string | null;
     deleted_at: string | null;
+    deleted_source: string | null;
+    notes: string | null;
+    dropbox_link: string | null;
+    customer_reply: string | null;
+    customer_reply_at: string | null;
   }[];
   const consoleValidations: AdminConsoleValidation[] = cvRows.map((r) => ({
     id: r.id,
@@ -335,6 +355,11 @@ export async function getAdminOverview(): Promise<AdminOverview> {
     userId: r.user_id,
     userEmail: r.user_id ? emailByUserId.get(r.user_id) ?? null : null,
     deletedAt: r.deleted_at,
+    deletedSource: r.deleted_source,
+    notes: r.notes,
+    dropboxLink: r.dropbox_link,
+    customerReply: r.customer_reply,
+    customerReplyAt: r.customer_reply_at,
   }));
   // Une demande supprimée dans Asana ne pèse plus dans le « à traiter ».
   const consoleOpen = consoleValidations.filter(
@@ -351,6 +376,12 @@ export async function getAdminOverview(): Promise<AdminOverview> {
     asana_task_gid: string | null;
     user_id: string | null;
     customer_reply_at: string | null;
+    company: string | null;
+    subject: string | null;
+    description: string | null;
+    anydesk: string | null;
+    agent_message: string | null;
+    customer_reply: string | null;
   }[];
   const supportTickets: AdminSupportTicket[] = supportRows.map((r) => ({
     id: r.id,
@@ -363,6 +394,12 @@ export async function getAdminOverview(): Promise<AdminOverview> {
     userId: r.user_id,
     userEmail: r.user_id ? emailByUserId.get(r.user_id) ?? null : null,
     customerReplyAt: r.customer_reply_at,
+    company: r.company,
+    subject: r.subject,
+    description: r.description,
+    anydesk: r.anydesk,
+    agentMessage: r.agent_message,
+    customerReply: r.customer_reply,
   }));
   const supportOpen = supportTickets.filter((t) =>
     ['new', 'in_progress', 'waiting_customer'].includes(t.status)
@@ -548,7 +585,7 @@ export async function getAdminUserDetail(userId: string): Promise<AdminUserDetai
 
   // Console validations owned by the account OR matched by the login email.
   const CV_SEL =
-    'id, created_at, company, country, machine, status, email, ref_code, pipedrive_deal_id, asana_task_gid, reviewed_by, reviewed_at, assignee, followers, user_id, deleted_at';
+    'id, created_at, company, country, machine, status, email, ref_code, pipedrive_deal_id, asana_task_gid, reviewed_by, reviewed_at, assignee, followers, user_id, deleted_at, deleted_source, notes, dropbox_link, customer_reply, customer_reply_at';
   const [byId, byEmail] = await Promise.all([
     admin.from('console_validations').select(CV_SEL).eq('user_id', userId),
     email
@@ -580,10 +617,16 @@ export async function getAdminUserDetail(userId: string): Promise<AdminUserDetai
       userId: (r.user_id as string | null) ?? null,
       userEmail: email || null,
       deletedAt: (r.deleted_at as string | null) ?? null,
+      deletedSource: (r.deleted_source as string | null) ?? null,
+      notes: (r.notes as string | null) ?? null,
+      dropboxLink: (r.dropbox_link as string | null) ?? null,
+      customerReply: (r.customer_reply as string | null) ?? null,
+      customerReplyAt: (r.customer_reply_at as string | null) ?? null,
     }));
 
   // Support tickets owned by the account OR matched by the login email.
-  const SUPPORT_SEL = 'id, created_at, name, email, status, assignee_name, asana_task_gid, customer_reply_at, user_id';
+  const SUPPORT_SEL =
+    'id, created_at, name, email, status, assignee_name, asana_task_gid, customer_reply_at, user_id, company, subject, description, anydesk, agent_message, customer_reply';
   const [supById, supByEmail] = await Promise.all([
     admin.from('support_tickets').select(SUPPORT_SEL).eq('user_id', userId),
     email
@@ -607,6 +650,12 @@ export async function getAdminUserDetail(userId: string): Promise<AdminUserDetai
       userId: (r.user_id as string | null) ?? null,
       userEmail: email || null,
       customerReplyAt: (r.customer_reply_at as string | null) ?? null,
+      company: (r.company as string | null) ?? null,
+      subject: (r.subject as string | null) ?? null,
+      description: (r.description as string | null) ?? null,
+      anydesk: (r.anydesk as string | null) ?? null,
+      agentMessage: (r.agent_message as string | null) ?? null,
+      customerReply: (r.customer_reply as string | null) ?? null,
     }));
 
   return {

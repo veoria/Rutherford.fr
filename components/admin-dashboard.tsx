@@ -1,6 +1,13 @@
 'use client';
 
-import { Fragment, useEffect, useMemo, useState } from 'react';
+import {
+  Fragment,
+  useEffect,
+  useMemo,
+  useState,
+  type MouseEvent as ReactMouseEvent,
+  type ReactNode,
+} from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { SiteFooter } from '@/components/site-footer';
 import { SiteNav } from '@/components/site-nav';
@@ -993,6 +1000,145 @@ function OrgCreateModal({ onClose }: { onClose: () => void }) {
 
 const TAB_KEYS: AdminTab[] = ['overview', 'accounts', 'validations', 'support', 'orgs', 'courses', 'journal'];
 
+// Les lignes de tableau sont cliquables (ouverture de la fiche ou dépliage du
+// détail). Un lien ou un bouton à l'intérieur garde son action propre : sans ce
+// stopPropagation, cliquer « Gérer » ou « Asana » déclencherait aussi la ligne.
+const stopRow = (e: ReactMouseEvent) => e.stopPropagation();
+
+function DetailField({ label, children }: { label: string; children: ReactNode }) {
+  return (
+    <div className="admin-detail-item">
+      <span className="admin-detail-label">{label}</span>
+      <span className="admin-detail-value">{children}</span>
+    </div>
+  );
+}
+
+// Bloc de texte libre (notes d'intake, description d'un ticket, réponse client) :
+// affiché tel quel, retours à la ligne compris.
+function DetailText({ label, value }: { label: string; value: string | null }) {
+  if (!value?.trim()) return null;
+  return (
+    <div className="admin-detail-block">
+      <span className="admin-detail-label">{label}</span>
+      <p className="admin-detail-text">{value}</p>
+    </div>
+  );
+}
+
+// Détail d'une validation console, déplié sous sa ligne. Tout vient de la ligne
+// déjà chargée — aucun appel supplémentaire au clic.
+function CvDetail({ cv }: { cv: AdminConsoleValidation }) {
+  return (
+    <div className="admin-detail">
+      <div className="admin-detail-grid">
+        <DetailField label="Société">{cv.company ?? '—'}</DetailField>
+        <DetailField label="Pays">{cv.country ?? '—'}</DetailField>
+        <DetailField label="Presse">{cv.machine ?? '—'}</DetailField>
+        <DetailField label="Statut">{CV_STATUS_LABELS[cv.status] ?? cv.status}</DetailField>
+        <DetailField label="Réf Pipedrive">{cv.pipedriveDealId ? `ID ${cv.pipedriveDealId}` : '—'}</DetailField>
+        <DetailField label="Reçue le">{fmtDateTime(cv.createdAt)}</DetailField>
+        <DetailField label="E-mail du contact">{cv.email}</DetailField>
+        <DetailField label="Compte">
+          {cv.userId ? (
+            <a className="admin-name-link" href={`/admin/users/${cv.userId}`}>
+              {cv.userEmail ?? 'Voir la fiche'}
+            </a>
+          ) : (
+            'Aucun compte rattaché'
+          )}
+        </DetailField>
+        <DetailField label="Assigné">{cv.assignee ?? '—'}</DetailField>
+        <DetailField label="Suivi par">{cv.followers?.length ? cv.followers.join(', ') : '—'}</DetailField>
+        <DetailField label="Validé par">
+          {cv.reviewedBy ? `${cv.reviewedBy}${cv.reviewedAt ? ` · ${fmtDate(cv.reviewedAt)}` : ''}` : '—'}
+        </DetailField>
+        <DetailField label="Code revendeur">{cv.refCode ?? '—'}</DetailField>
+        {cv.customerReplyAt ? (
+          <DetailField label="Réponse du client">{fmtDateTime(cv.customerReplyAt)}</DetailField>
+        ) : null}
+        {cv.deletedAt ? (
+          <DetailField label="Supprimée">
+            {fmtDateTime(cv.deletedAt)}
+            {cv.deletedSource ? ` · ${cv.deletedSource}` : ''}
+          </DetailField>
+        ) : null}
+      </div>
+
+      <DetailText label="Notes du client" value={cv.notes} />
+      <DetailText label="Dernière réponse du client" value={cv.customerReply} />
+
+      <div className="admin-detail-links">
+        {cv.asanaUrl ? (
+          <a href={cv.asanaUrl} target="_blank" rel="noreferrer">
+            Ouvrir dans Asana
+          </a>
+        ) : null}
+        {cv.pipedriveUrl ? (
+          <a href={cv.pipedriveUrl} target="_blank" rel="noreferrer">
+            Ouvrir dans Pipedrive
+          </a>
+        ) : null}
+        {cv.dropboxLink ? (
+          <a href={cv.dropboxLink} target="_blank" rel="noreferrer">
+            Photos sur Dropbox
+          </a>
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
+// Détail d'un ticket de support, même principe.
+function SupportDetail({ ticket }: { ticket: AdminSupportTicket }) {
+  return (
+    <div className="admin-detail">
+      <div className="admin-detail-grid">
+        <DetailField label="Société">{ticket.company ?? '—'}</DetailField>
+        <DetailField label="Sujet">{ticket.subject ?? '—'}</DetailField>
+        <DetailField label="Demandeur">{ticket.name ?? '—'}</DetailField>
+        <DetailField label="E-mail">{ticket.email}</DetailField>
+        <DetailField label="Compte">
+          {ticket.userId ? (
+            <a className="admin-name-link" href={`/admin/users/${ticket.userId}`}>
+              {ticket.userEmail ?? 'Voir la fiche'}
+            </a>
+          ) : (
+            'Aucun compte rattaché'
+          )}
+        </DetailField>
+        <DetailField label="Statut">{SUPPORT_STATUS_LABELS[ticket.status] ?? ticket.status}</DetailField>
+        <DetailField label="Assigné">{ticket.assignee ?? '—'}</DetailField>
+        <DetailField label="Ouvert le">{fmtDateTime(ticket.createdAt)}</DetailField>
+        <DetailField label="AnyDesk">{ticket.anydesk ?? '—'}</DetailField>
+        {ticket.customerReplyAt ? (
+          <DetailField label="Réponse du client">{fmtDateTime(ticket.customerReplyAt)}</DetailField>
+        ) : null}
+      </div>
+
+      <DetailText label="Demande" value={ticket.description} />
+      <DetailText label="Dernier message de l’équipe" value={ticket.agentMessage} />
+      <DetailText label="Dernière réponse du client" value={ticket.customerReply} />
+
+      <div className="admin-detail-links">
+        {ticket.asanaUrl ? (
+          <a href={ticket.asanaUrl} target="_blank" rel="noreferrer">
+            Ouvrir dans Asana
+          </a>
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
+// Cible d'une entrée du journal, quand elle pointe vers une fiche existante.
+function auditTargetHref(entry: AuditEntry): string | null {
+  if (!entry.targetId) return null;
+  if (entry.targetType === 'user') return `/admin/users/${entry.targetId}`;
+  if (entry.targetType === 'organization') return `/admin/orgs/${entry.targetId}`;
+  return null;
+}
+
 export function AdminDashboard({
   overview,
   orgs,
@@ -1013,6 +1159,7 @@ export function AdminDashboard({
   const { users, courses, consoleValidations, supportTickets, totals } = overview;
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const router = useRouter();
 
   // Onglet et cours ouverts initialisés depuis l'URL (?tab=&course=) : deep-link
   // et refresh-safe (brief § 4.2.3 / § 4.4). Le set d'onglets est inchangé.
@@ -1021,6 +1168,9 @@ export function AdminDashboard({
     return t && (TAB_KEYS as string[]).includes(t) ? (t as AdminTab) : 'overview';
   });
   const [openCourse, setOpenCourse] = useState<string | null>(() => searchParams.get('course'));
+  // Lignes dépliées (Validations / Support) — une seule à la fois, comme les cours.
+  const [openCv, setOpenCv] = useState<string | null>(null);
+  const [openTicket, setOpenTicket] = useState<string | null>(null);
 
   // Synchronise l'URL avec (onglet, cours) SANS navigation ni refetch serveur.
   // history.replaceState est la voie réellement « shallow » de l'App Router : la
@@ -1034,6 +1184,20 @@ export function AdminDashboard({
     const qs = params.toString();
     window.history.replaceState(null, '', qs ? `${pathname}?${qs}` : pathname);
   }, [tab, openCourse, pathname]);
+
+  // Ligne cliquable qui ouvre une fiche. L'ancre du premier libellé reste en
+  // place : c'est elle le chemin clavier / lecteur d'écran, la ligne n'est
+  // qu'un raccourci souris.
+  const rowLink = (href: string) => ({
+    className: 'admin-row-link',
+    onClick: () => router.push(href),
+  });
+  // Ligne cliquable qui déplie son détail au lieu de naviguer (Validations,
+  // Support, Cours) — le chevron de la première cellule porte l'état ARIA.
+  const rowToggle = (open: boolean, toggle: () => void) => ({
+    className: `admin-row-link${open ? ' admin-row-open' : ''}`,
+    onClick: toggle,
+  });
 
   const [query, setQuery] = useState('');
   const [editing, setEditing] = useState<AdminUser | null>(null);
@@ -1484,9 +1648,9 @@ export function AdminDashboard({
                     {filteredAccounts.map((u) => {
                       const org = u.orgId ? orgById.get(u.orgId) : undefined;
                       return (
-                        <tr key={u.id}>
+                        <tr key={u.id} {...rowLink(`/admin/users/${u.id}`)}>
                           <td>
-                            <a className="admin-name-link" href={`/admin/users/${u.id}`}>
+                            <a className="admin-name-link" href={`/admin/users/${u.id}`} onClick={stopRow}>
                               {u.name || u.email}
                             </a>
                             {u.isAdmin ? <span className="admin-badge">admin</span> : null}
@@ -1503,7 +1667,7 @@ export function AdminDashboard({
                               // de tiroir ici — l'ancienne entrée n'était pas gatée
                               // canManage et ouvrait un formulaire mort en lecture
                               // seule (brief § 4.2.10).
-                              <a className="admin-company-link" href={`/admin/orgs/${org.id}`}>
+                              <a className="admin-company-link" href={`/admin/orgs/${org.id}`} onClick={stopRow}>
                                 {org.logoUrl ? (
                                   // eslint-disable-next-line @next/next/no-img-element
                                   <img src={org.logoUrl} alt="" className="admin-company-logo" />
@@ -1525,7 +1689,14 @@ export function AdminDashboard({
                           </td>
                           <td>
                             {canManage ? (
-                              <button type="button" className="admin-link-btn" onClick={() => setEditing(u)}>
+                              <button
+                                type="button"
+                                className="admin-link-btn"
+                                onClick={(e) => {
+                                  stopRow(e);
+                                  setEditing(u);
+                                }}
+                              >
                                 Gérer
                               </button>
                             ) : null}
@@ -1593,54 +1764,80 @@ export function AdminDashboard({
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredCv.map((c) => (
-                      <tr key={c.id}>
-                        <td>{fmtDate(c.createdAt)}</td>
-                        <td>{c.company ?? '—'}</td>
-                        <td>{c.country ?? '—'}</td>
-                        <td>{c.machine ?? '—'}</td>
-                        <td>
-                          <span className={`admin-status admin-status-${CV_STATUS_TONE[c.status] ?? 'review'}`}>
-                            {CV_STATUS_LABELS[c.status] ?? c.status}
-                          </span>
-                          {c.deletedAt ? (
-                            <span className="admin-cv-sub">Supprimée dans Asana le {fmtDate(c.deletedAt)}</span>
+                    {filteredCv.map((c) => {
+                      const isOpen = openCv === c.id;
+                      return (
+                        <Fragment key={c.id}>
+                          <tr {...rowToggle(isOpen, () => setOpenCv(isOpen ? null : c.id))}>
+                            <td>
+                              <button
+                                type="button"
+                                className="admin-row-toggle"
+                                aria-expanded={isOpen}
+                                aria-label={`Détail de la validation ${c.pipedriveDealId ? `ID ${c.pipedriveDealId}` : c.company ?? ''}`}
+                                onClick={(e) => {
+                                  stopRow(e);
+                                  setOpenCv(isOpen ? null : c.id);
+                                }}
+                              >
+                                <span aria-hidden="true">{isOpen ? '▾' : '▸'}</span>
+                              </button>
+                              {fmtDate(c.createdAt)}
+                            </td>
+                            <td>{c.company ?? '—'}</td>
+                            <td>{c.country ?? '—'}</td>
+                            <td>{c.machine ?? '—'}</td>
+                            <td>
+                              <span className={`admin-status admin-status-${CV_STATUS_TONE[c.status] ?? 'review'}`}>
+                                {CV_STATUS_LABELS[c.status] ?? c.status}
+                              </span>
+                              {c.deletedAt ? (
+                                <span className="admin-cv-sub">Supprimée dans Asana le {fmtDate(c.deletedAt)}</span>
+                              ) : null}
+                            </td>
+                            <td>{c.pipedriveDealId ? `ID ${c.pipedriveDealId}` : '—'}</td>
+                            <td className="admin-email">{c.email}</td>
+                            <td className="admin-email">
+                              {/* Lien croisé vers la fiche du compte (brief § 4.2.4). */}
+                              {c.userId ? (
+                                <a className="admin-name-link" href={`/admin/users/${c.userId}`} onClick={stopRow}>
+                                  {c.userEmail ?? '—'}
+                                </a>
+                              ) : (
+                                c.userEmail ?? '—'
+                              )}
+                            </td>
+                            <td>
+                              {c.assignee ?? '—'}
+                              {c.followers && c.followers.length ? (
+                                <span className="admin-cv-sub">Suivi : {c.followers.join(', ')}</span>
+                              ) : null}
+                            </td>
+                            <td>{c.reviewedBy ?? '—'}</td>
+                            <td className="admin-cv-links">
+                              {c.asanaUrl ? (
+                                <a href={c.asanaUrl} target="_blank" rel="noreferrer" onClick={stopRow}>
+                                  Asana
+                                </a>
+                              ) : null}
+                              {c.pipedriveUrl ? (
+                                <a href={c.pipedriveUrl} target="_blank" rel="noreferrer" onClick={stopRow}>
+                                  Pipedrive
+                                </a>
+                              ) : null}
+                              {!c.asanaUrl && !c.pipedriveUrl ? '—' : null}
+                            </td>
+                          </tr>
+                          {isOpen ? (
+                            <tr className="admin-detail-row">
+                              <td colSpan={11}>
+                                <CvDetail cv={c} />
+                              </td>
+                            </tr>
                           ) : null}
-                        </td>
-                        <td>{c.pipedriveDealId ? `ID ${c.pipedriveDealId}` : '—'}</td>
-                        <td className="admin-email">{c.email}</td>
-                        <td className="admin-email">
-                          {/* Lien croisé vers la fiche du compte (brief § 4.2.4). */}
-                          {c.userId ? (
-                            <a className="admin-name-link" href={`/admin/users/${c.userId}`}>
-                              {c.userEmail ?? '—'}
-                            </a>
-                          ) : (
-                            c.userEmail ?? '—'
-                          )}
-                        </td>
-                        <td>
-                          {c.assignee ?? '—'}
-                          {c.followers && c.followers.length ? (
-                            <span className="admin-cv-sub">Suivi : {c.followers.join(', ')}</span>
-                          ) : null}
-                        </td>
-                        <td>{c.reviewedBy ?? '—'}</td>
-                        <td className="admin-cv-links">
-                          {c.asanaUrl ? (
-                            <a href={c.asanaUrl} target="_blank" rel="noreferrer">
-                              Asana
-                            </a>
-                          ) : null}
-                          {c.pipedriveUrl ? (
-                            <a href={c.pipedriveUrl} target="_blank" rel="noreferrer">
-                              Pipedrive
-                            </a>
-                          ) : null}
-                          {!c.asanaUrl && !c.pipedriveUrl ? '—' : null}
-                        </td>
-                      </tr>
-                    ))}
+                        </Fragment>
+                      );
+                    })}
                     {filteredCv.length === 0 ? (
                       <tr>
                         <td colSpan={11} className="admin-empty">
@@ -1695,46 +1892,72 @@ export function AdminDashboard({
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredSupport.map((t) => (
-                      <tr key={t.id}>
-                        <td>{fmtDate(t.createdAt)}</td>
-                        <td>
-                          {/* Lien croisé vers la fiche du compte (brief § 4.2.4). */}
-                          {t.userId ? (
-                            <a className="admin-name-link" href={`/admin/users/${t.userId}`}>
-                              {t.name ?? t.email}
-                            </a>
-                          ) : (
-                            t.name ?? '—'
-                          )}
-                          <span className="admin-cv-sub">{t.email}</span>
-                        </td>
-                        <td className="admin-email">
-                          {t.userId ? (
-                            <a className="admin-name-link" href={`/admin/users/${t.userId}`}>
-                              {t.userEmail ?? '—'}
-                            </a>
-                          ) : (
-                            t.userEmail ?? '—'
-                          )}
-                        </td>
-                        <td>
-                          <span className={`admin-status admin-status-${SUPPORT_STATUS_TONE[t.status] ?? 'review'}`}>
-                            {SUPPORT_STATUS_LABELS[t.status] ?? t.status}
-                          </span>
-                        </td>
-                        <td>{t.assignee ?? '—'}</td>
-                        <td className="admin-cv-links">
-                          {t.asanaUrl ? (
-                            <a href={t.asanaUrl} target="_blank" rel="noreferrer">
-                              Asana
-                            </a>
-                          ) : (
-                            '—'
-                          )}
-                        </td>
-                      </tr>
-                    ))}
+                    {filteredSupport.map((t) => {
+                      const isOpen = openTicket === t.id;
+                      return (
+                        <Fragment key={t.id}>
+                          <tr {...rowToggle(isOpen, () => setOpenTicket(isOpen ? null : t.id))}>
+                            <td>
+                              <button
+                                type="button"
+                                className="admin-row-toggle"
+                                aria-expanded={isOpen}
+                                aria-label={`Détail du ticket de ${t.name ?? t.email}`}
+                                onClick={(e) => {
+                                  stopRow(e);
+                                  setOpenTicket(isOpen ? null : t.id);
+                                }}
+                              >
+                                <span aria-hidden="true">{isOpen ? '▾' : '▸'}</span>
+                              </button>
+                              {fmtDate(t.createdAt)}
+                            </td>
+                            <td>
+                              {/* Lien croisé vers la fiche du compte (brief § 4.2.4). */}
+                              {t.userId ? (
+                                <a className="admin-name-link" href={`/admin/users/${t.userId}`} onClick={stopRow}>
+                                  {t.name ?? t.email}
+                                </a>
+                              ) : (
+                                t.name ?? '—'
+                              )}
+                              <span className="admin-cv-sub">{t.email}</span>
+                            </td>
+                            <td className="admin-email">
+                              {t.userId ? (
+                                <a className="admin-name-link" href={`/admin/users/${t.userId}`} onClick={stopRow}>
+                                  {t.userEmail ?? '—'}
+                                </a>
+                              ) : (
+                                t.userEmail ?? '—'
+                              )}
+                            </td>
+                            <td>
+                              <span className={`admin-status admin-status-${SUPPORT_STATUS_TONE[t.status] ?? 'review'}`}>
+                                {SUPPORT_STATUS_LABELS[t.status] ?? t.status}
+                              </span>
+                            </td>
+                            <td>{t.assignee ?? '—'}</td>
+                            <td className="admin-cv-links">
+                              {t.asanaUrl ? (
+                                <a href={t.asanaUrl} target="_blank" rel="noreferrer" onClick={stopRow}>
+                                  Asana
+                                </a>
+                              ) : (
+                                '—'
+                              )}
+                            </td>
+                          </tr>
+                          {isOpen ? (
+                            <tr className="admin-detail-row">
+                              <td colSpan={6}>
+                                <SupportDetail ticket={t} />
+                              </td>
+                            </tr>
+                          ) : null}
+                        </Fragment>
+                      );
+                    })}
                     {filteredSupport.length === 0 ? (
                       <tr>
                         <td colSpan={6} className="admin-empty">
@@ -1775,7 +1998,7 @@ export function AdminDashboard({
                     </thead>
                     <tbody>
                       {orgsFull.map((o) => (
-                        <tr key={o.id}>
+                        <tr key={o.id} {...rowLink(`/admin/orgs/${o.id}`)}>
                           <td>
                             {o.logoUrl ? (
                               // eslint-disable-next-line @next/next/no-img-element
@@ -1788,7 +2011,7 @@ export function AdminDashboard({
                             {/* Nom cliquable vers la fiche organisation (brief § 4.2.3) :
                                 consultation ET édition. Le tiroir « Gérer » est retiré —
                                 tout se passe sur la page (décision du 19/07/2026). */}
-                            <a className="admin-name-link" href={`/admin/orgs/${o.id}`}>
+                            <a className="admin-name-link" href={`/admin/orgs/${o.id}`} onClick={stopRow}>
                               {o.name}
                             </a>
                           </td>
@@ -1802,7 +2025,7 @@ export function AdminDashboard({
                           <td>
                             {/* L'édition vit sur la page : simple lien « Ouvrir »
                                 (accessible même en lecture seule, la fiche gère les droits). */}
-                            <a className="admin-link-btn" href={`/admin/orgs/${o.id}`}>
+                            <a className="admin-link-btn" href={`/admin/orgs/${o.id}`} onClick={stopRow}>
                               Ouvrir
                             </a>
                           </td>
@@ -1873,15 +2096,19 @@ export function AdminDashboard({
                       const total = MODULE_TOTAL_BY_SLUG.get(c.slug) ?? null;
                       return (
                         <Fragment key={c.slug}>
-                          <tr>
+                          <tr {...rowToggle(isOpen, () => setOpenCourse(isOpen ? null : c.slug))}>
                             <td>
                               {/* Ligne cliquable → apprenants du cours, deep-linkée
-                                  via ?course=slug (brief § 4.2.2). */}
+                                  via ?course=slug (brief § 4.2.2). Le bouton reste le
+                                  point d'entrée clavier ; la ligne entière suit au clic. */}
                               <button
                                 type="button"
                                 className="admin-company-link"
                                 aria-expanded={isOpen}
-                                onClick={() => setOpenCourse(isOpen ? null : c.slug)}
+                                onClick={(e) => {
+                                  stopRow(e);
+                                  setOpenCourse(isOpen ? null : c.slug);
+                                }}
                               >
                                 <span aria-hidden="true">{isOpen ? '▾ ' : '▸ '}</span>
                                 <span>{c.title}</span>
@@ -1987,15 +2214,38 @@ export function AdminDashboard({
                     </tr>
                   </thead>
                   <tbody>
-                    {auditLog.map((e) => (
-                      <tr key={e.id}>
-                        <td>{fmtDateTime(e.createdAt)}</td>
-                        <td className="admin-email">{e.actorEmail ?? e.actorId ?? '—'}</td>
-                        <td>{auditActionLabel(e.action)}</td>
-                        <td>{auditTarget(e)}</td>
-                        <td>{e.summary ?? '—'}</td>
-                      </tr>
-                    ))}
+                    {auditLog.map((e) => {
+                      // La ligne mène à sa cible quand celle-ci a une fiche
+                      // (compte, organisation) ; pour une validation console on
+                      // bascule sur l'onglet Validations, ligne dépliée.
+                      const href = auditTargetHref(e);
+                      const cvTarget =
+                        e.targetType === 'console_validation' && e.targetId ? e.targetId : null;
+                      const rowProps = href
+                        ? rowLink(href)
+                        : cvTarget
+                          ? {
+                              className: 'admin-row-link',
+                              onClick: () => {
+                                // Une validation masquée n'apparaît que sous son
+                                // filtre : sans ça, le lien tomberait dans le vide.
+                                setCvFilter(e.action === 'console_validation.hide' ? CV_DELETED_FILTER : '');
+                                setCvQuery('');
+                                setOpenCv(cvTarget);
+                                setTab('validations');
+                              },
+                            }
+                          : {};
+                      return (
+                        <tr key={e.id} {...rowProps}>
+                          <td>{fmtDateTime(e.createdAt)}</td>
+                          <td className="admin-email">{e.actorEmail ?? e.actorId ?? '—'}</td>
+                          <td>{auditActionLabel(e.action)}</td>
+                          <td>{auditTarget(e)}</td>
+                          <td>{e.summary ?? '—'}</td>
+                        </tr>
+                      );
+                    })}
                     {auditLog.length === 0 ? (
                       <tr>
                         <td colSpan={5} className="admin-empty">
