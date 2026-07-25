@@ -12245,6 +12245,94 @@ a.blog-card-image:hover img {
   background: rgba(0, 113, 227, 0.04);
 }
 
+/* Lignes cliquables (fiche ou détail déplié). Le clic sur la ligne est un
+   raccourci souris : le lien ou le chevron de la première cellule reste le
+   chemin clavier / lecteur d'écran. */
+.admin-row-link {
+  cursor: pointer;
+}
+
+.admin-row-open {
+  background: rgba(0, 113, 227, 0.06);
+}
+
+.admin-row-toggle {
+  border: 0;
+  background: none;
+  padding: 0 6px 0 0;
+  cursor: pointer;
+  color: rgba(0, 0, 0, 0.45);
+  font-size: 0.8rem;
+  line-height: 1;
+}
+
+.admin-row-toggle:hover {
+  color: #0071e3;
+}
+
+/* Détail déplié sous une ligne (validation console, ticket de support). */
+.admin-detail-row:hover {
+  background: transparent;
+}
+
+.admin-detail-row > td {
+  white-space: normal;
+  background: #fafafa;
+  padding: 16px 18px;
+}
+
+.admin-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px 24px;
+}
+
+.admin-detail-item,
+.admin-detail-block {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.admin-detail-block {
+  margin-top: 14px;
+}
+
+.admin-detail-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(0, 0, 0, 0.45);
+}
+
+.admin-detail-value {
+  font-size: 0.88rem;
+  overflow-wrap: anywhere;
+}
+
+.admin-detail-text {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.admin-detail-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.admin-detail-links a {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #0071e3;
+}
+
 .admin-table td.admin-num,
 .admin-table th.admin-num {
   text-align: right;
