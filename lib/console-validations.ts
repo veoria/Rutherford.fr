@@ -93,6 +93,51 @@ export async function setConsoleValidationAssignee(
   }
 }
 
+/** Hide (or restore) a request when its Asana task is trashed / untrashed.
+ *
+ * The board is where the team culls test submissions and duplicates, so a
+ * deleted card must take the request off the client's tracker. The row is kept
+ * (logical delete) — restoring the task in Asana brings it back. Filtering on
+ * the current state makes it idempotent: a webhook re-delivery updates nothing
+ * and returns null. No-op when the gid isn't one of ours (e.g. a support task).
+ */
+export async function setConsoleValidationDeletedByAsanaTask(
+  asanaTaskGid: string,
+  deleted: boolean
+): Promise<{ id: string; email: string; company: string | null; pipedriveDealId: number | null } | null> {
+  const supabase = adminClient();
+  if (!supabase) return null;
+  try {
+    const now = new Date().toISOString();
+    let query = supabase
+      .from('console_validations')
+      .update(
+        deleted
+          ? { deleted_at: now, deleted_source: 'asana', updated_at: now }
+          : { deleted_at: null, deleted_source: null, updated_at: now }
+      )
+      .eq('asana_task_gid', asanaTaskGid);
+    query = deleted ? query.is('deleted_at', null) : query.not('deleted_at', 'is', null);
+    const { data, error } = await query.select('id, email, company, pipedrive_deal_id');
+    if (error) {
+      console.error('console_validations delete flag update failed:', error.message);
+      return null;
+    }
+    const row = (data ?? [])[0];
+    return row
+      ? {
+          id: row.id as string,
+          email: row.email as string,
+          company: (row.company as string | null) ?? null,
+          pipedriveDealId: (row.pipedrive_deal_id as number | null) ?? null,
+        }
+      : null;
+  } catch (error) {
+    console.error('console_validations delete flag update threw:', error);
+    return null;
+  }
+}
+
 /** Current status for a task, so the webhook can skip no-op re-deliveries. */
 export async function getConsoleValidationStatusByAsanaTask(
   asanaTaskGid: string
