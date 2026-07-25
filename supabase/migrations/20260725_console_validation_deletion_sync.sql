@@ -23,17 +23,24 @@ create index if not exists console_validations_deleted_at_idx
 -- Lecture client : une ligne masquée n'est plus visible ni par son propriétaire,
 -- ni par le revendeur, ni par la correspondance e-mail. La branche admin reste
 -- inconditionnelle pour garder la trace consultable en back-office.
+--
+-- `(select auth.uid())` / `(select auth.jwt())` : forme déjà en place en base,
+-- évaluée une fois par requête au lieu d'une fois par ligne (advisor
+-- « auth_rls_initplan »). Ne pas la déplier en écrivant la policy.
 alter policy "Console validations: self read" on public.console_validations
 using (
   (
     deleted_at is null
     and (
-      (auth.uid() = user_id)
-      or (auth.uid() = reseller_id)
-      or (user_id is null and lower(email) = lower(coalesce((auth.jwt() ->> 'email'), '')))
+      ((select auth.uid()) = user_id)
+      or ((select auth.uid()) = reseller_id)
+      or (
+        user_id is null
+        and lower(email) = lower(coalesce(((select auth.jwt()) ->> 'email'), ''))
+      )
     )
   )
-  or (exists (select 1 from public.profiles p where p.id = auth.uid() and p.is_admin))
+  or (exists (select 1 from public.profiles p where p.id = (select auth.uid()) and p.is_admin))
 );
 
 -- Le fil de conversation suit le sort de sa validation.
@@ -48,12 +55,15 @@ create policy "CV messages: self read" on public.console_validation_messages
           (
             v.deleted_at is null
             and (
-              v.user_id = auth.uid()
-              or v.reseller_id = auth.uid()
-              or (v.user_id is null and lower(v.email) = lower(coalesce((auth.jwt() ->> 'email'), '')))
+              v.user_id = (select auth.uid())
+              or v.reseller_id = (select auth.uid())
+              or (
+                v.user_id is null
+                and lower(v.email) = lower(coalesce(((select auth.jwt()) ->> 'email'), ''))
+              )
             )
           )
-          or exists (select 1 from public.profiles p where p.id = auth.uid() and p.is_admin)
+          or exists (select 1 from public.profiles p where p.id = (select auth.uid()) and p.is_admin)
         )
     )
   );
