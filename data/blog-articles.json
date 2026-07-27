@@ -1,5 +1,268 @@
 [
   {
+    "slug": "paper-price-increases-2026-makeready-waste-cost",
+    "title": "Paper prices up: what waste really costs now",
+    "excerpt": "Paper price increases in 2026 make every makeready sheet more expensive. Here is what that does to job cost, and the one lever printers still control.",
+    "lead": "Graphic paper prices moved up again through spring and summer 2026, in Europe and in Asia, on top of higher ink and plate costs. For an offset printer, the paper price itself is not negotiable. The number of sheets spoiled before the color is approved is. That is where the margin of a job is now decided.",
+    "image": "/images/blog/photo-reduce-makeready-waste-offset-press.jpg",
+    "publishedAt": "2026-07-27",
+    "category": "Production",
+    "paragraphs": [
+      "Paper producers raised graphic grades again in 2026. Nippon Paper announced an increase of more than 15 percent on all graphic and communication papers from July 2026 shipments, citing raw material and fuel costs. In Europe, Sappi added roughly 40 to 50 euros per ton on graphic grades in April, and Navigator lifted its uncoated woodfree range by 4 to 7 percent. Ink, varnish and plate suppliers moved in the same direction.",
+      "For an offset printer, this changes where the money is lost. Paper is already the largest single cost line on most jobs. When the substrate goes up double digits and print buyers resist passing it on, the sheets that never reach the customer become the most expensive part of production. Makeready waste is paper bought at the new price and sold at zero.",
+      "The lever is not the paper contract, it is the number of sheets it takes to reach color. A pressroom that needs 700 to 800 sheets to sign off an eight color job pays the increase 700 to 800 times per start-up. A pressroom that reaches the same target in 450 sheets pays it 450 times. Same paper price, different margin.",
+      "Closed loop color control is the industrial answer to that gap. Presetting from the prepress data puts the ink zones close to target before the press runs, spectral measurement reads the color bar on the moving sheet, and the loop corrects the press until it holds the reference. Rutherford runs that loop on more than 1,000 systems in over 30 countries, which is why a paper increase announced in Tokyo or in Helsinki lands the same way in every pressroom that has not shortened its calage."
+    ],
+    "body": [
+      {
+        "type": "p",
+        "text": "The 2026 paper market has been a steady sequence of increases rather than one shock. Producers in Europe and Asia moved within weeks of each other, and they were not alone: ink, varnish and offset plate suppliers announced their own increases in the same window. For a printer, the combined effect is simple. Every consumable that goes into a job costs more this quarter than it did last year, and print buyers are pushing back on price rather than absorbing it."
+      },
+      {
+        "type": "h2",
+        "text": "What changed on paper prices in 2026"
+      },
+      {
+        "type": "p",
+        "text": "The announcements that matter for an offset pressroom, in the order they hit the market:"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "Sappi Europe added around 40 to 50 euros per ton on graphic grades for deliveries from April 2026, after an earlier increase on woodfree coated sheets in March.",
+          "Navigator raised its uncoated woodfree portfolio by 4 to 7 percent from early April 2026.",
+          "Nippon Paper announced more than 15 percent on all graphic and communication papers, effective on shipments from July 2026, pointing at raw material procurement and fuel costs.",
+          "Ink, varnish and plate suppliers announced increases in the same period, so the whole consumable stack moved together."
+        ]
+      },
+      {
+        "type": "p",
+        "text": "None of this is a negotiation a printer wins. Structural mill closures, energy costs and freight have tightened supply on graphic grades for years, and producers have been explicit that the graphic paper business was running below sustainable margins. The realistic planning assumption for the rest of 2026 is that paper stays expensive."
+      },
+      {
+        "type": "h2",
+        "text": "Why a paper increase lands hardest on makeready waste"
+      },
+      {
+        "type": "p",
+        "text": "Paper is typically the biggest single cost of an offset job, ahead of labour and well ahead of ink. That cost splits into two very different halves. The sheets delivered to the customer are paid for. The sheets spoiled getting to color are not. A price increase applies to both, but only one of them generates revenue."
+      },
+      {
+        "type": "p",
+        "text": "This is why the same waste percentage hurts more this year than last. A pressroom running 6 percent gâche was already losing money on those sheets; with paper up double digits, the same 6 percent removes a larger slice of the job margin, and short runs make it worse because the fixed waste of a calage is spread over fewer saleable sheets. Job lengths have been falling for a decade, so the ratio between makeready waste and sold sheets keeps moving the wrong way."
+      },
+      {
+        "type": "h2",
+        "text": "The math on a single makeready"
+      },
+      {
+        "type": "p",
+        "text": "The arithmetic is worth doing on your own figures rather than on an average. Take one press, one typical job, and three numbers:"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "Sheets spoiled between the first pull and the approved OK sheet, per start-up.",
+          "Number of start-ups per shift, which is the multiplier that decides everything.",
+          "Cost per sheet at the new paper price, not at the price in your last quote."
+        ]
+      },
+      {
+        "type": "p",
+        "text": "One published customer figure gives the order of magnitude: on an eight color press, average makeready waste dropped from 700 to 800 sheets per job to around 450, roughly 40 percent fewer spoiled sheets. Across presetting and closed loop, a reduction near 55 percent is typical. Multiply the sheets saved by your current paper cost and by the number of start-ups per week, and the paper increase stops being an abstract industry headline. The [ROI calculator](/roi) does that calculation from your own production data."
+      },
+      {
+        "type": "h2",
+        "text": "The lever printers still control"
+      },
+      {
+        "type": "p",
+        "text": "You cannot set the price of the reel. You can set how many sheets it takes to reach the target. That is a technical problem with a known answer: preset the vis d’encrier from the prepress data so the press starts close to target, measure the color bar on the running sheet instead of pulling and eyeballing, and let the loop correct the press until it holds the reference through the whole tirage. Our [complete guide to closed loop color control](/closed-loop-color-control) walks through how the measurement and correction loop works step by step."
+      },
+      {
+        "type": "p",
+        "text": "ColorLoop drives that correction and keeps a time stamped record of every reading, working with the measurement hardware already in the pressroom, from IntelliTrax2 scanning bars to MeasureColor process control. For sheetfed offset, the [Offset360](/offset360) bundle packages the scanning, the process control and the closed loop into one workflow. The practical result is a shorter calage: fewer sheets to color, less ink chased by hand, and a stable tirage that does not drift back and force a second correction later in the run. For the detailed method, see our guide on [how to reduce makeready waste on an offset press](/blog/reduce-makeready-waste-offset-press)."
+      },
+      {
+        "type": "h2",
+        "text": "A global squeeze, not a regional one"
+      },
+      {
+        "type": "p",
+        "text": "The increases did not stop at any border. European producers moved in March and April, a Japanese producer in July, and North American printers have been absorbing their own paper and freight inflation through the same period. A packaging group producing in several countries now sees the same pressure on every site at once, which is exactly why waste reduction is being rolled out as a group programme rather than plant by plant. Closed loop travels well for that reason: it corrects to a number, so a press in France, a press at a [Japanese plant](/japan) and a press in [North America](/usa) reach the same target with the same short calage. That is what more than 1,000 systems in over 30 countries look like in practice."
+      },
+      {
+        "type": "h3",
+        "text": "How much does a paper price increase cost an offset printer?"
+      },
+      {
+        "type": "p",
+        "text": "It depends far less on the percentage than on how much paper you spoil. A 15 percent increase applies to every sheet, but only the sold sheets carry it into the invoice. If a start-up burns 700 sheets, the increase is paid 700 times with no revenue attached. Cutting sheets to color is the fastest way to reduce the exposure, because it shrinks the quantity of paper that is bought at the new price and never sold."
+      },
+      {
+        "type": "h3",
+        "text": "How do you reduce makeready waste when paper costs rise?"
+      },
+      {
+        "type": "p",
+        "text": "Start the press already close to target using ink presetting from CIP3 or CIP4 data, then measure the color bar on the running sheet and correct automatically instead of by eye. Closed loop color control combines the two, and published pressroom figures show makeready waste falling by roughly 40 to 55 percent when both are in place. The gain is per start-up, so it scales with the number of jobs per shift."
+      },
+      {
+        "type": "h3",
+        "text": "Does closed loop color control pay for itself when paper is expensive?"
+      },
+      {
+        "type": "p",
+        "text": "Faster, because the payback is expressed in sheets and each sheet now costs more. The same system that saved 250 spoiled sheets per job last year saves 250 sheets at the 2026 paper price this year, so the same technical performance returns more money. Run your own figures through the [ROI calculator](/roi) to see the payback period at your current paper cost."
+      }
+    ],
+    "i18n": {
+      "fr": {
+        "title": "Le papier augmente : ce que la gâche coûte vraiment",
+        "excerpt": "Les hausses du papier en 2026 rendent chaque feuille de calage plus chère. Voici l’effet sur le coût d’un travail, et le seul levier qui reste aux imprimeurs.",
+        "lead": "Les prix du papier graphique ont encore augmenté au printemps et à l’été 2026, en Europe comme en Asie, en plus des encres et des plaques. Pour un imprimeur offset, le prix du papier ne se négocie pas. Le nombre de feuilles gâchées avant le bon à rouler, si. C’est là que se joue désormais la marge d’un travail.",
+        "body": [
+          {
+            "type": "p",
+            "text": "Le marché du papier 2026 n’a pas connu un choc unique, mais une série régulière de hausses. Les producteurs européens et asiatiques ont bougé à quelques semaines d’intervalle, et ils ne sont pas seuls : les fournisseurs d’encres, de vernis et de plaques offset ont annoncé leurs propres augmentations sur la même période. Pour un imprimeur, l’effet combiné est simple. Chaque consommable qui entre dans un travail coûte plus cher ce trimestre que l’an dernier, et les donneurs d’ordres résistent à la répercussion sur les prix."
+          },
+          {
+            "type": "h2",
+            "text": "Ce qui a changé sur les prix du papier en 2026"
+          },
+          {
+            "type": "p",
+            "text": "Les annonces qui comptent pour un atelier offset, dans l’ordre où elles sont arrivées sur le marché :"
+          },
+          {
+            "type": "ul",
+            "items": [
+              "Sappi Europe a ajouté environ 40 à 50 euros par tonne sur les qualités graphiques pour les livraisons à partir d’avril 2026, après une première hausse sur les feuilles couchées sans bois en mars.",
+              "Navigator a relevé sa gamme non couchée sans bois de 4 à 7 pour cent début avril 2026.",
+              "Nippon Paper a annoncé plus de 15 pour cent sur l’ensemble des papiers graphiques et de communication, effectif sur les expéditions à partir de juillet 2026, en invoquant l’approvisionnement en matières premières et le coût des carburants.",
+              "Les fournisseurs d’encres, de vernis et de plaques ont annoncé des hausses sur la même période : toute la chaîne des consommables a bougé ensemble."
+            ]
+          },
+          {
+            "type": "p",
+            "text": "Rien de tout cela ne se gagne en négociation. Les fermetures de machines à papier, le coût de l’énergie et le fret tendent l’offre sur les qualités graphiques depuis des années, et les producteurs disent ouvertement que cette activité tournait sous son seuil de rentabilité. L’hypothèse de travail réaliste pour la fin 2026 est que le papier restera cher."
+          },
+          {
+            "type": "h2",
+            "text": "Pourquoi une hausse du papier frappe d’abord la gâche au calage"
+          },
+          {
+            "type": "p",
+            "text": "Le papier est en général le premier poste de coût d’un travail offset, devant la main-d’œuvre et loin devant l’encre. Ce coût se partage en deux moitiés très différentes. Les feuilles livrées au client sont payées. Les feuilles gâchées pour atteindre la couleur ne le sont pas. La hausse s’applique aux deux, mais une seule génère du chiffre d’affaires."
+          },
+          {
+            "type": "p",
+            "text": "C’est pour cela que le même pourcentage de gâche fait plus mal cette année que l’an dernier. Un atelier à 6 pour cent de gâche perdait déjà de l’argent sur ces feuilles ; avec un papier en hausse à deux chiffres, ces mêmes 6 pour cent retirent une part plus large de la marge, et les petits tirages aggravent le problème puisque la gâche fixe d’un calage se répartit sur moins de feuilles vendables. Les longueurs de tirage baissent depuis dix ans : le rapport entre gâche au calage et feuilles vendues se dégrade mécaniquement."
+          },
+          {
+            "type": "h2",
+            "text": "Le calcul sur un seul calage"
+          },
+          {
+            "type": "p",
+            "text": "Le calcul mérite d’être fait sur vos chiffres plutôt que sur une moyenne. Prenez une presse, un travail typique, et trois nombres :"
+          },
+          {
+            "type": "ul",
+            "items": [
+              "Les feuilles gâchées entre la première épreuve et le bon à rouler, par démarrage.",
+              "Le nombre de démarrages par équipe, le multiplicateur qui décide de tout.",
+              "Le coût de la feuille au nouveau prix du papier, pas au prix de votre dernier devis."
+            ]
+          },
+          {
+            "type": "p",
+            "text": "Un chiffre client publié donne l’ordre de grandeur : sur une presse huit couleurs, la gâche moyenne au calage est passée de 700 à 800 feuilles par travail à environ 450, soit près de 40 pour cent de feuilles gâchées en moins. Avec le presetting et le closed loop combinés, une réduction proche de 55 pour cent est courante. Multipliez les feuilles économisées par votre coût papier actuel et par le nombre de démarrages hebdomadaires, et la hausse du papier cesse d’être un titre de presse abstrait. Le [calculateur de ROI](/roi) fait ce calcul à partir de vos données de production."
+          },
+          {
+            "type": "h2",
+            "text": "Le levier qui reste aux imprimeurs"
+          },
+          {
+            "type": "p",
+            "text": "Vous ne fixez pas le prix de la bobine. Vous fixez le nombre de feuilles nécessaires pour atteindre la cible. C’est un problème technique dont la réponse est connue : présélectionner les vis d’encrier à partir des données prépresse pour que la presse démarre proche de la cible, mesurer la barre de contrôle sur la feuille en marche au lieu de tirer une épreuve et de juger à l’œil, puis laisser la boucle corriger la presse jusqu’à ce qu’elle tienne la référence sur tout le tirage. Notre [guide complet du closed loop](/closed-loop-color-control) détaille pas à pas le fonctionnement de la boucle de mesure et de correction."
+          },
+          {
+            "type": "p",
+            "text": "ColorLoop pilote cette correction et conserve un enregistrement horodaté de chaque mesure, en s’appuyant sur le matériel de mesure déjà présent dans l’atelier, des barres de scan IntelliTrax2 au contrôle de process MeasureColor. Pour l’offset feuille à feuille, le bundle [Offset360](/offset360) réunit le scan, le contrôle de process et le closed loop dans un seul workflow. Le résultat concret est un calage plus court : moins de feuilles pour atteindre la couleur, moins d’encre corrigée à la main, et un tirage stable qui ne dérive pas pour imposer une seconde correction plus tard. Pour la méthode détaillée, voyez notre guide sur [comment réduire la gâche au calage sur une presse offset](/blog/reduce-makeready-waste-offset-press)."
+          },
+          {
+            "type": "h2",
+            "text": "Une pression mondiale, pas régionale"
+          },
+          {
+            "type": "p",
+            "text": "Les hausses ne se sont arrêtées à aucune frontière. Les producteurs européens ont bougé en mars et avril, un producteur japonais en juillet, et les imprimeurs nord-américains absorbent leur propre inflation papier et fret sur la même période. Un groupe packaging qui produit dans plusieurs pays subit désormais la même pression sur tous ses sites en même temps, et c’est exactement pour cela que la réduction de la gâche est déployée comme un programme groupe plutôt que site par site. Le closed loop voyage bien pour cette raison : il corrige vers un nombre, donc une presse en France, une presse dans une [usine japonaise](/japan) et une presse en [Amérique du Nord](/usa) atteignent la même cible avec le même calage court. C’est ce que représentent concrètement plus de 1 000 systèmes dans plus de 30 pays."
+          },
+          {
+            "type": "h3",
+            "text": "Combien coûte une hausse du prix du papier à un imprimeur offset ?"
+          },
+          {
+            "type": "p",
+            "text": "Cela dépend beaucoup moins du pourcentage que de la quantité de papier gâchée. Une hausse de 15 pour cent s’applique à chaque feuille, mais seules les feuilles vendues la répercutent sur la facture. Si un démarrage brûle 700 feuilles, la hausse est payée 700 fois sans aucun chiffre d’affaires en face. Réduire le nombre de feuilles pour atteindre la couleur est le moyen le plus rapide de réduire cette exposition, car cela diminue la quantité de papier acheté au nouveau prix et jamais vendu."
+          },
+          {
+            "type": "h3",
+            "text": "Comment réduire la gâche au calage quand le papier augmente ?"
+          },
+          {
+            "type": "p",
+            "text": "Démarrez la presse déjà proche de la cible grâce au presetting d’encrage issu des données CIP3 ou CIP4, puis mesurez la barre de contrôle sur la feuille en marche et corrigez automatiquement plutôt qu’à l’œil. Le closed loop combine les deux, et les chiffres publiés par les ateliers montrent une gâche au calage en baisse d’environ 40 à 55 pour cent quand les deux sont en place. Le gain est par démarrage : il croît avec le nombre de travaux par équipe."
+          },
+          {
+            "type": "h3",
+            "text": "Le closed loop est-il rentable quand le papier est cher ?"
+          },
+          {
+            "type": "p",
+            "text": "Plus vite, car le retour sur investissement s’exprime en feuilles et que chaque feuille coûte désormais plus cher. Le système qui économisait 250 feuilles gâchées par travail l’an dernier économise 250 feuilles au prix du papier 2026 cette année : la même performance technique rapporte plus d’argent. Passez vos chiffres dans le [calculateur de ROI](/roi) pour voir la durée de retour à votre coût papier actuel."
+          }
+        ]
+      },
+      "de": {
+        "title": "Papierpreise steigen: was Makulatur wirklich kostet",
+        "excerpt": "Die Papierpreiserhöhungen 2026 machen jeden Einrichtungsbogen teurer. Was das für die Auftragskosten bedeutet, und welcher Hebel Druckereien bleibt.",
+        "lead": "Die Preise für grafische Papiere sind im Frühjahr und Sommer 2026 erneut gestiegen, in Europa wie in Asien, zusätzlich zu höheren Farb- und Plattenkosten. Der Papierpreis selbst ist für eine Offsetdruckerei nicht verhandelbar. Die Zahl der Bogen bis zum Gutbogen schon. Dort entscheidet sich heute die Marge eines Auftrags."
+      },
+      "it": {
+        "title": "La carta aumenta: quanto costa davvero lo scarto",
+        "excerpt": "Gli aumenti della carta nel 2026 rendono ogni foglio di avviamento più caro. Ecco l’effetto sul costo del lavoro e l’unica leva che resta agli stampatori.",
+        "lead": "I prezzi delle carte grafiche sono saliti di nuovo nella primavera e nell’estate 2026, in Europa come in Asia, oltre ai rincari di inchiostri e lastre. Per uno stampatore offset il prezzo della carta non si negozia. Il numero di fogli persi prima del via libera sì. È lì che oggi si decide il margine di un lavoro."
+      },
+      "es": {
+        "title": "Sube el papel: lo que cuesta de verdad el desperdicio",
+        "excerpt": "Las subidas del papel en 2026 encarecen cada pliego de puesta a punto. Esto es lo que supone para el coste del trabajo y la única palanca que queda al impresor.",
+        "lead": "Los precios del papel gráfico volvieron a subir en la primavera y el verano de 2026, en Europa y en Asia, además de las tintas y las planchas. Para un impresor offset, el precio del papel no se negocia. El número de pliegos desperdiciados antes de la aprobación, sí. Ahí se decide hoy el margen de un trabajo."
+      },
+      "pt": {
+        "title": "Papel a subir: quanto custa mesmo o desperdício",
+        "excerpt": "Os aumentos do papel em 2026 tornam cada folha de acerto mais cara. Eis o efeito no custo do trabalho e a única alavanca que resta aos impressores.",
+        "lead": "Os preços do papel gráfico voltaram a subir na primavera e no verão de 2026, na Europa e na Ásia, a somar aos custos de tintas e chapas. Para um impressor offset, o preço do papel não se negoceia. O número de folhas desperdiçadas antes da aprovação, sim. É aí que hoje se decide a margem de um trabalho."
+      }
+    },
+    "originalUrl": "https://rutherford.fr/blog/paper-price-increases-2026-makeready-waste-cost",
+    "sources": [
+      {
+        "label": "Nippon Paper Group, price revision of graphic and communication papers (May 2026)",
+        "href": "https://www.nipponpapergroup.com/english/news/2026/news260521160000.html"
+      },
+      {
+        "label": "Sappi Europe, additional price increase for graphic paper products",
+        "href": "https://www.sappi.com/en-us/about-us/news-and-events/sappi-europe-announces-additional-price-increase-graphic-paper-products"
+      },
+      {
+        "label": "Print Industry News, paper, board, inks and plates all increase at once for printers",
+        "href": "https://www.printindustry.news/story/51547/paper-board-inks-plates-everything-increases-at-once-for-printers"
+      }
+    ]
+  },
+  {
     "slug": "multi-site-color-standardization-brands",
     "title": "Multi-site color standardization: how brands hold the same color across five plants",
     "excerpt": "Multi-site color standardization keeps a brand color identical from plant to plant. Here is how closed loop turns one reference into the same result in five factories.",
