@@ -5,7 +5,7 @@ UTM de `docs/utm-links.md`. Prêt à coller dans Pipedrive Campaigns.
 
 ---
 
-# PARTIE 1 — Séquence de relance (leads console validation)
+# PARTIE 1 : Séquence de relance (leads console validation)
 
 **Déclencheur :** une demande de console validation a été traitée (le prospect a
 reçu son verdict d'éligibilité) et il n'a pas répondu.
@@ -14,7 +14,7 @@ reçu son verdict d'éligibilité) et il n'a pas répondu.
 
 ---
 
-## Email 1 — J+2
+## Email 1 : J+2
 
 **Objet :** Your press eligibility, any questions?
 
@@ -38,7 +38,7 @@ Rutherford
 
 ---
 
-## Email 2 — J+7
+## Email 2 : J+7
 
 **Objet :** What changed for a printer with a press like yours
 
@@ -68,7 +68,7 @@ Rutherford
 
 ---
 
-## Email 3 — J+21
+## Email 3 : J+21
 
 **Objet :** The math on your makeready waste
 
@@ -96,9 +96,9 @@ Rutherford
 
 ---
 
-# PARTIE 2 — Les 3 campagnes newsletter
+# PARTIE 2 : Les 3 campagnes newsletter
 
-## Campagne 1 — PPWR, deadline 12 August 2026
+## Campagne 1 : PPWR, deadline 12 August 2026
 
 **À envoyer en priorité.** L'obligation générale de recyclabilité de l'article
 6(1) s'applique au 12 août 2026. C'est le sujet qui obsède les imprimeurs
@@ -142,7 +142,7 @@ is the official text of Regulation (EU) 2025/40.*
 
 ---
 
-## Campagne 2 — Le rétrofit
+## Campagne 2 : Le rétrofit
 
 **Objet :** Your press does not need replacing
 
@@ -179,7 +179,7 @@ Rutherford
 
 ---
 
-## Campagne 3 — Le respect du métier
+## Campagne 3 : Le respect du métier
 
 **Le ton qui a le mieux marché sur LinkedIn.** Pédagogique, pas commercial. À
 envoyer en dernier, il réchauffe une liste froide.

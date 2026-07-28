@@ -1,4 +1,4 @@
-# Liens UTM — console validation
+# Liens UTM : console validation
 
 Depuis le commit « Lead attribution », chaque demande de console validation arrive
 dans Pipedrive avec une ligne `Source :` qui dit d'où vient le lead. Encore
