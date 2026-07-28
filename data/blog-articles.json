@@ -1,5 +1,483 @@
 [
   {
+    "slug": "spot-color-tolerances-packaging-pantone",
+    "title": "Why brand colors are harder to hold than process colors",
+    "excerpt": "A brand color on a large flat area is the least forgiving thing on a packaging job. Why spot color tolerances are tighter, and what actually keeps them in range across a run.",
+    "lead": "On a packaging job, the element most likely to trigger a rejection is rarely the image. It is the large flat area of the brand color, the one the client recognises from across a room. Spot colors are judged by a different standard than process colors, and the reasons are worth understanding before negotiating a tolerance.",
+    "image": "/images/blog/photo-delta-e-tolerance-print-guide.jpg",
+    "publishedAt": "2026-07-31",
+    "category": "Color management",
+    "paragraphs": [],
+    "body": [
+      {
+        "type": "p",
+        "text": "Every packaging printer knows the feeling: the images are excellent, the register is clean, the job is technically good, and the client is looking at the corporate blue on the front panel with a doubtful expression. That asymmetry is not irrational. It reflects how human vision works."
+      },
+      {
+        "type": "h2",
+        "text": "The eye compares flat areas, and forgives pictures"
+      },
+      {
+        "type": "p",
+        "text": "In a photographic image, the eye has no reference. It cannot know what that particular shade of sky was supposed to be, so a shift of one or two DeltaE passes unnoticed. In a large flat area of a known brand color, the eye has a stored reference and a clean edge to compare against. The same shift becomes visible, and next to a previous production run it becomes obvious."
+      },
+      {
+        "type": "p",
+        "text": "This is why a single tolerance across a whole pack rarely survives contact with reality. A tolerance loose enough for the images is too loose for the flat brand area; a tolerance tight enough for the brand area is unnecessarily punishing everywhere else."
+      },
+      {
+        "type": "h2",
+        "text": "Why spot colors drift more, not less"
+      },
+      {
+        "type": "p",
+        "text": "There is a common assumption that a spot color, being a dedicated ink, should be more stable than a process build. In practice several factors work against it:"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "Large solid areas draw ink heavily and unevenly across the ink zones, which makes the ink and water balance harder to hold",
+          "A spot color is often printed at high density, where small changes in ink film thickness produce visible color change",
+          "Substrate absorption affects a solid far more visibly than it affects a screened area",
+          "Drying and set-off behaviour on heavy solids can change the measured value between the press and the pile"
+        ]
+      },
+      {
+        "type": "p",
+        "text": "The result is that the element with the tightest tolerance is also the one with the most reasons to move during a run."
+      },
+      {
+        "type": "h2",
+        "text": "Tolerances that hold up in a contract"
+      },
+      {
+        "type": "p",
+        "text": "A workable specification separates what is being measured. In broad terms:"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "Brand colors on flat areas: the tightest tolerance in the job, agreed explicitly with the brand owner and measured on a defined patch, not on the artwork itself",
+          "Process solids: a moderate tolerance, since they anchor the overall appearance",
+          "Pictorial content: the widest tolerance, judged on overall appearance rather than patch measurement"
+        ]
+      },
+      {
+        "type": "p",
+        "text": "Two practical points matter more than the exact numbers. First, agree the measurement condition and the instrument, because a tolerance measured differently at each end of the supply chain is not a tolerance. Second, agree whether the tolerance applies to a single sheet or to the run as a whole, because those are very different commitments."
+      },
+      {
+        "type": "p",
+        "text": "Background on the underlying metric: [DeltaE tolerances explained](/blog/delta-e-tolerance-print-guide)."
+      },
+      {
+        "type": "h2",
+        "text": "Extended gamut changes the question"
+      },
+      {
+        "type": "p",
+        "text": "For converters running many brand colors, extended gamut printing reproduces most spot colors from a fixed set of inks rather than mixing a dedicated ink per job. It removes washup time and ink inventory, and makes short runs of many SKUs far more economic."
+      },
+      {
+        "type": "p",
+        "text": "It also shifts where the color risk lives. The brand color is now a build from several inks, so its stability depends on the stability of every one of them. Extended gamut without tight process control moves the problem rather than solving it, which is why the converters who succeed with it are usually the ones who put the measurement discipline in place first."
+      },
+      {
+        "type": "h2",
+        "text": "Holding the color once the press is running"
+      },
+      {
+        "type": "p",
+        "text": "Reaching the brand color at makeready is a solved problem for a competent operator with a good reference. Holding it for forty thousand sheets while the ink and water balance moves is the harder half, and it is where rejections come from."
+      },
+      {
+        "type": "p",
+        "text": "This is the specific job of [closed-loop color control](/closed-loop-color-control): the sheet is measured continuously, the deviation on each ink zone is calculated, and the correction is applied to the ink keys while the press runs. On a heavy solid, where a small drift becomes visible quickly, the difference between correcting every few minutes and correcting continuously is the difference between a consistent pallet and a graded one."
+      },
+      {
+        "type": "p",
+        "text": "The secondary benefit is the record. When a brand owner questions a delivery, a continuous measurement log of the actual run answers the question in minutes rather than defending it from memory."
+      },
+      {
+        "type": "h2",
+        "text": "Practical checklist before the next brand job"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "Agree the reference, the measurement condition and the instrument in writing, before the job",
+          "Set different tolerances for brand flats, process solids and pictorial content",
+          "State whether the tolerance applies per sheet or across the run",
+          "Confirm the press can hold the target automatically, rather than relying on interventions between sheets",
+          "Keep the measurement record with the job, not in an operator's notebook"
+        ]
+      },
+      {
+        "type": "p",
+        "text": "If you are not sure whether your press can hold a spot color automatically today, the [free console check](/console-validation) answers that from a few photographs, within one business day."
+      }
+    ]
+  },
+  {
+    "slug": "multi-site-color-standardization-brand-owners",
+    "title": "How brands get the same color from five different plants",
+    "excerpt": "A brand color printed in three countries on three press types has to match. What multi-site standardization actually requires, beyond sending everyone the same PANTONE reference.",
+    "lead": "A brand owner splits a packaging run across three plants in three countries, on presses from different manufacturers, with different substrates and different crews. The pack has to look identical on the shelf. Sending everyone the same color reference is where this starts, and it is nowhere near where it ends.",
+    "image": "/images/blog/photo-closed-loop-color-control-offset-guide.jpg",
+    "publishedAt": "2026-07-30",
+    "category": "Color management",
+    "paragraphs": [],
+    "body": [
+      {
+        "type": "p",
+        "text": "Multi-site color consistency is one of those problems that looks like a specification problem and turns out to be a process problem. Every plant has the same target. Every plant hits it, in its own way, on its own good days. And the packs still do not match on the shelf."
+      },
+      {
+        "type": "h2",
+        "text": "Why the same reference does not produce the same color"
+      },
+      {
+        "type": "p",
+        "text": "A color reference defines the destination. It says nothing about the road. Between the reference and the printed sheet sit variables that differ from plant to plant:"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "Substrate: the same design on a coated board and an uncoated board will not reach the same values, whatever the press does",
+          "Ink sets: different suppliers, different pigment loads, different behaviour at the same density",
+          "Press type and condition: sheetfed against web, different unit counts, different roller and blanket conditions",
+          "Measurement: different instruments, different measurement conditions, sometimes different aperture sizes",
+          "Judgement: what an experienced operator considers acceptable varies between sites, and each is defensible on its own terms"
+        ]
+      },
+      {
+        "type": "p",
+        "text": "The result is a set of plants that are individually in tolerance and collectively inconsistent. Everyone is right, and the brand is unhappy."
+      },
+      {
+        "type": "h2",
+        "text": "Step one: make the measurements comparable"
+      },
+      {
+        "type": "p",
+        "text": "Before any conversation about targets, the sites have to be measuring the same way. That means agreeing the measurement condition explicitly, M0, M1, M2 or M3, and applying it everywhere. Comparing an M0 reading from one plant to an M1 reading from another produces a disagreement that has nothing to do with the presses."
+      },
+      {
+        "type": "p",
+        "text": "It also means agreeing the geometry, the illuminant, the aperture and the backing. These sound like details until two plants argue for a month about a difference that lives entirely in their instruments."
+      },
+      {
+        "type": "h2",
+        "text": "Step two: define the tolerance where it actually matters"
+      },
+      {
+        "type": "p",
+        "text": "A single global DeltaE tolerance across a whole pack is easy to write and hard to defend. In practice, the tolerance a brand cares about is not uniform:"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "Brand colors and large flat areas: tight tolerance, because the eye compares them directly on the shelf",
+          "Process builds in images: wider tolerance, because the eye is far more forgiving in pictorial content",
+          "Small text and rules: driven by register and sharpness far more than by color"
+        ]
+      },
+      {
+        "type": "p",
+        "text": "Writing one tolerance for everything makes the tight areas too loose or the loose areas impossibly tight, and the second case is what gets specifications quietly ignored on the floor."
+      },
+      {
+        "type": "h2",
+        "text": "Step three: make each press hold its own target"
+      },
+      {
+        "type": "p",
+        "text": "This is where most multi-site programmes stall. Aligning the sites on paper achieves nothing if each individual press drifts during a run. A plant that starts on target and ends the run half a DeltaE away has not delivered a consistent pack; it has delivered a gradient."
+      },
+      {
+        "type": "p",
+        "text": "[Closed-loop color control](/closed-loop-color-control) addresses exactly this layer: the sheet is measured continuously and the ink keys are corrected while the press runs. The press does not just reach the target, it stays there. Across sites, the effect compounds: five presses that each hold their target are consistent with each other almost by construction."
+      },
+      {
+        "type": "p",
+        "text": "It also removes an awkward variable, which is operator judgement under time pressure. Not because operators judge badly, but because at the end of a long shift with the next job waiting, a loop applies the same standard at 3am that it applied at 9am."
+      },
+      {
+        "type": "h2",
+        "text": "Step four: keep the record"
+      },
+      {
+        "type": "p",
+        "text": "Multi-site programmes are usually audited by the brand, and the audit asks a simple question: prove that this run met specification. Reconstructing that after the fact from paper logs is painful and rarely convincing."
+      },
+      {
+        "type": "p",
+        "text": "A press running under closed-loop control produces the record as a by-product: continuous measurements, timestamped, tied to a specific job and a specific press. When the brand asks for evidence, the answer is an export rather than an investigation. The same file also feeds compliance documentation, which is increasingly requested for the same runs."
+      },
+      {
+        "type": "h2",
+        "text": "What good looks like"
+      },
+      {
+        "type": "p",
+        "text": "A working multi-site standard has four parts, in this order: comparable measurement, tolerances that reflect what the eye actually sees, presses that hold their targets in real time, and a record that survives an audit. Sites that skip straight to the fourth part end up documenting their inconsistency very rigorously."
+      },
+      {
+        "type": "p",
+        "text": "If you are running this exercise across plants with mixed press brands, the practical first question is which of those presses can hold a target automatically today. That is what the [console eligibility check](/console-validation) answers, press by press, within one business day."
+      }
+    ]
+  },
+  {
+    "slug": "press-console-closed-loop-compatibility",
+    "title": "What makes a press console closed-loop ready",
+    "excerpt": "Closed-loop color control retrofits onto presses that are already running. What the console actually needs to provide, brand by brand, and how to find out without a site visit.",
+    "lead": "The question comes up in almost every pressroom: our press is fifteen years old, is it too late for closed-loop color control? Almost always, no. What matters is not the age of the press but what its console exposes. Here is what makes a console eligible, and what does not.",
+    "image": "/images/blog/photo-cip3-cip4-ink-presetting-makeready.jpg",
+    "publishedAt": "2026-07-29",
+    "category": "Production",
+    "paragraphs": [],
+    "body": [
+      {
+        "type": "p",
+        "text": "There is a persistent assumption in the industry that modern color control requires a modern press. It is an expensive assumption, because it turns a retrofit decision into a capital investment decision, and most presses that could be upgraded today get written off instead."
+      },
+      {
+        "type": "p",
+        "text": "The reality is narrower and more encouraging: closed-loop color control needs a way to read the sheet and a way to write back to the ink keys. Everything else is integration work."
+      },
+      {
+        "type": "h2",
+        "text": "The three things a console has to provide"
+      },
+      {
+        "type": "h3",
+        "text": "1. An ink-key interface that accepts corrections"
+      },
+      {
+        "type": "p",
+        "text": "This is the decisive one. The loop measures the printed sheet, calculates the correction, and has to push that correction to the ink keys. A console that can only display values, without accepting them from outside, cannot close the loop."
+      },
+      {
+        "type": "p",
+        "text": "Most press consoles built for ink-key presetting already have this interface, because it is the same channel that CIP3 and CIP4 presetting data travels through. If your press accepts presetting data from prepress, the write path very probably exists."
+      },
+      {
+        "type": "h3",
+        "text": "2. A measurement source"
+      },
+      {
+        "type": "p",
+        "text": "The loop needs colorimetric or densitometric readings of the sheet. That can come from an inline system, from a scanning spectrophotometer on the console, or from a handheld device used at defined intervals. The tighter the measurement loop, the tighter the color control, but a scanning device on the console is enough to run a real closed loop."
+      },
+      {
+        "type": "h3",
+        "text": "3. A stable mechanical baseline"
+      },
+      {
+        "type": "p",
+        "text": "This is the one nobody mentions in a brochure. A loop corrects the ink keys; it cannot compensate for worn rollers, damaged blankets or a failing dampening system. On a press with unresolved mechanical problems, closed-loop control will faithfully chase a moving target and everyone will conclude the technology does not work."
+      },
+      {
+        "type": "h2",
+        "text": "What the major consoles look like in practice"
+      },
+      {
+        "type": "p",
+        "text": "Console generations vary, and the specific model always has to be confirmed, but here is the general picture by manufacturer:"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "Heidelberg: CP Tronic, CP2000 and Prinect Press Center generations, on Speedmaster SM and XL presses",
+          "Komori: PQC-S and KHS-AI, on Lithrone G and GL class presses",
+          "Koenig & Bauer: ErgoTronic and ColorTronic, on Rapida presses",
+          "Manroland: Pecom and ColorPilot, on Roland 700, Roland 900 and Evolution presses",
+          "Mitsubishi: IPC press consoles, on Diamond series presses",
+          "Ryobi: PCS print control consoles, on 750, 920 and 1050 series presses",
+          "Goss: Omnicon press controls, on web offset presses",
+          "Presstek: DI press controls, on Presstek DI presses"
+        ]
+      },
+      {
+        "type": "p",
+        "text": "Each of these has a dedicated compatibility page with the specific questions that come up for that manufacturer: [Heidelberg](/console-validation/heidelberg), [Komori](/console-validation/komori), [Koenig & Bauer](/console-validation/koenig-bauer), [Manroland](/console-validation/manroland), [Mitsubishi](/console-validation/mitsubishi), [Ryobi](/console-validation/ryobi), [Goss](/console-validation/goss) and [Presstek](/console-validation/presstek)."
+      },
+      {
+        "type": "h2",
+        "text": "What does not disqualify a press"
+      },
+      {
+        "type": "p",
+        "text": "Several things printers assume are blockers usually are not:"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "Age. A press from the 2000s with a maintained console is often a better candidate than a newer press with a closed proprietary system",
+          "Number of units. Four, five, six, eight units all work; the loop scales with the ink zones it has to drive",
+          "Existing measurement hardware. If you already own a scanning device, it can often be reused rather than replaced",
+          "Mixed brands in the same pressroom. Each press is assessed on its own console"
+        ]
+      },
+      {
+        "type": "h2",
+        "text": "What does disqualify one"
+      },
+      {
+        "type": "p",
+        "text": "Being straight about this saves everyone time. A press is a poor candidate when the console is fully closed with no documented interface, when the ink-key actuators are worn to the point of not holding a setting, or when the mechanical baseline is so unstable that the loop would be correcting for maintenance problems rather than color. In those cases the honest answer is to fix the press first, or to accept that this particular machine is not the right one to start with."
+      },
+      {
+        "type": "h2",
+        "text": "How to find out in a day, without a site visit"
+      },
+      {
+        "type": "p",
+        "text": "The eligibility check exists precisely because none of the above can be settled from a brochure. It runs from a phone: photographs of the console in full view, the inside of the cabinet, the ink-key row and the machine plate. Those four images are enough to identify the console generation and the interface it exposes."
+      },
+      {
+        "type": "p",
+        "text": "The answer comes back within one business day and says whether the press qualifies for closed-loop color control on its existing measurement setup, or for a complete bundle including measurement hardware. It is free, and it commits you to nothing, including when the answer is no."
+      },
+      {
+        "type": "p",
+        "text": "Background reading on what the loop actually does once it is installed: [closed-loop color control explained](/closed-loop-color-control)."
+      },
+      {
+        "type": "p",
+        "text": "[Check your console](/console-validation)"
+      }
+    ]
+  },
+  {
+    "slug": "ppwr-recyclability-grades-what-printers-get-wrong",
+    "title": "Three things printers get wrong about PPWR recyclability",
+    "excerpt": "Recyclability is not a 2030 topic, the grades are A, B and C only, and EN 18120 gives you no presumption of conformity. What the regulation actually says, two weeks before it applies.",
+    "lead": "Ask around a pressroom what the PPWR requires and you will hear the same three answers, and all three are wrong. With the general application date now days away, here is what Regulation (EU) 2025/40 actually says about recyclability, and what it deliberately leaves open.",
+    "image": "/images/blog/photo-ppwr-dpp-readiness-checklist-packaging-printers.jpg",
+    "publishedAt": "2026-07-28",
+    "category": "Regulations",
+    "paragraphs": [],
+    "body": [
+      {
+        "type": "p",
+        "text": "The PPWR entered into force in February 2025 and applies from 12 August 2026. In the weeks before that date, three misreadings keep coming back in conversations with packaging printers and converters. Each one leads to a different planning mistake, and each one is worth correcting before it costs a redesign cycle."
+      },
+      {
+        "type": "h2",
+        "text": "Mistake one: treating recyclability as a 2030 problem"
+      },
+      {
+        "type": "p",
+        "text": "This is the most common and the most expensive. The widespread belief is that recyclability becomes an obligation at the start of 2030, which leaves comfortable room to plan."
+      },
+      {
+        "type": "p",
+        "text": "It does not. Article 6(1) imposes the general obligation from 12 August 2026: from that date, all packaging placed on the Union market must be recyclable. What arrives later is the graded performance layer built on top of that duty:"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "At least grade C from 1 January 2030, or 24 months after the relevant delegated acts enter into force, whichever is later",
+          "At least grade B from 1 January 2038"
+        ]
+      },
+      {
+        "type": "p",
+        "text": "The distinction matters because the two dates answer different questions. 2026 answers \"is this packaging recyclable at all\". 2030 and 2038 answer \"how well\". A portfolio planned only against 2030 has already missed the first requirement."
+      },
+      {
+        "type": "h2",
+        "text": "Mistake two: talking about grades D and E"
+      },
+      {
+        "type": "p",
+        "text": "Grading systems with five letters circulate widely in industry presentations, usually with a red E for the worst performers. The regulation knows nothing of them."
+      },
+      {
+        "type": "p",
+        "text": "The PPWR grading system has three letters: A, B and C. Packaging that does not reach at least grade C is described as technically non-recyclable and carries no letter at all. That category is what disappears from the market in 2030, and grade C follows it in 2038."
+      },
+      {
+        "type": "p",
+        "text": "The practical consequence: if your supplier or your consultant hands you an assessment mentioning a grade D, the assessment is not built on the regulation. Ask what it is built on before you plan around it."
+      },
+      {
+        "type": "h2",
+        "text": "Mistake three: treating EN 18120 as a safe harbour"
+      },
+      {
+        "type": "p",
+        "text": "EN 18120 has been published and is emerging as the technical reference for recyclability assessment under the PPWR. Several suppliers already present conformity with it as compliance with the regulation."
+      },
+      {
+        "type": "p",
+        "text": "It is not, at least not yet. EN 18120 has not been cited in the Official Journal of the European Union as a harmonised standard, and without that citation it carries no presumption of conformity. A company that conforms to EN 18120 is not thereby compliant with Article 6. Treat it as the best available technical reference, use it, document against it, and watch the Official Journal for a future citation. Just do not present it internally as legal cover it does not currently provide."
+      },
+      {
+        "type": "h2",
+        "text": "What is genuinely unsettled, and why the 2030 date is conditional"
+      },
+      {
+        "type": "p",
+        "text": "There is an honest gap in the framework that is worth understanding rather than glossing over. The Article 6 delegated acts that will set out the detailed design for recycling criteria and the grade methodology have not been adopted, and work on them has not begun."
+      },
+      {
+        "type": "p",
+        "text": "That is precisely why the 2030 threshold carries its conditionality: 1 January 2030, or 24 months after those acts enter into force, whichever is later. The detailed criteria do not yet exist in binding form, so the regulation ties the graded deadline to their adoption. If you are being sold a definitive grade assessment today, ask which binding criteria it applies."
+      },
+      {
+        "type": "p",
+        "text": "One threshold you can already work with is the recycled at scale criterion. Packaging counts as recycled at scale when the annual quantity recycled per material and packaging format category reaches 55 percent at EU level, and 30 percent for wood packaging. It is distinct from the grade: it decides whether a recycling route counts at all. A theoretically elegant recycling route that nobody actually operates at volume does not get your packaging over the line."
+      },
+      {
+        "type": "h2",
+        "text": "Where color control fits into this"
+      },
+      {
+        "type": "p",
+        "text": "Recyclability is decided by structure and materials, not by ink. But the compliance file that sits behind a Declaration of Conformity is built from production data, and production data is only as good as the process that generates it."
+      },
+      {
+        "type": "p",
+        "text": "A press that drifts across a run produces measurements nobody can defend at an audit. A press under closed-loop control produces a continuous, timestamped record of what actually came off the machine. That is the difference between reconstructing a claim after the fact and simply exporting it."
+      },
+      {
+        "type": "p",
+        "text": "That is the practical link between compliance and the pressroom: [closed-loop color control](/closed-loop-color-control) does not make packaging recyclable, but it makes the evidence trail behind every run credible."
+      },
+      {
+        "type": "h2",
+        "text": "What to do in the next two weeks"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "Check that your portfolio is assessed against Article 6(1) as of 12 August 2026, not only against 2030",
+          "Reject any assessment that uses grades outside A, B and C",
+          "Keep using EN 18120 as a technical reference, but do not treat it as a presumption of conformity until it is cited in the Official Journal",
+          "For each recycling route you rely on, verify it meets the recycled at scale threshold for that material and format category",
+          "Make sure your production measurement data is exportable, timestamped and traceable to a specific run"
+        ]
+      },
+      {
+        "type": "p",
+        "text": "The eight free courses in the [Rutherford PPWR Academy](/academy) go through all of this in detail, in eight languages, written against the official text."
+      },
+      {
+        "type": "p",
+        "text": "This article is a simplified summary for training purposes, not legal advice. The binding reference is the official text of Regulation (EU) 2025/40 and its implementing and delegated acts."
+      }
+    ],
+    "sources": [
+      {
+        "label": "Regulation (EU) 2025/40 on packaging and packaging waste (EUR-Lex)",
+        "href": "https://eur-lex.europa.eu/eli/reg/2025/40/oj"
+      }
+    ]
+  },
+  {
     "slug": "ppwr-august-2026-deadline-offset-printers",
     "title": "PPWR: what changes for printers on August 12, 2026",
     "excerpt": "The EU PPWR applies from August 12, 2026. What packaging printers worldwide must have ready, and why clean production data makes it easier.",
