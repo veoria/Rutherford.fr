@@ -97,10 +97,19 @@ Relier le sujet au déploiement international : au moins une phrase reliant l'ac
 
 Choisir la plus pertinente dans le pool existant : `ls public/images/blog/` + `public/images/` (presses : `manroland-press.jpg`, opérateurs : `stopplayingpiano-operator.jpg`, `support-hugues-console.jpg`, console : `Console offset.jpg`, produit : `colorloop-machine.png`). Ne jamais hotlinker une image externe. Ne pas générer d'image.
 
+**Règle absolue : une image de couverture ne sert qu'une seule fois.** Deux articles qui partagent la même vignette, ça se voit immédiatement dans la grille du blog et ça fait négligé. Pour lister ce qui est déjà pris :
+
+```bash
+node -e "console.log(require('./data/blog-articles.json').map(a=>a.image).sort().join('\n'))"
+```
+
+Le pool est large (plus de 150 fichiers dans `public/images/`), il y a toujours une image libre. Privilégier les vraies photos ; les illustrations sur fond blanc dénotent dans une grille de photos, sauf quand le sujet le justifie (une couverture typographique pour un article de réglementation, par exemple).
+
 ## 6. Vérifications avant commit
 
 ```bash
 node -e "JSON.parse(require('fs').readFileSync('data/blog-articles.json'))" && echo JSON_OK
+node scripts/check-blog-images.mjs   # couvertures uniques et présentes, sort en erreur sinon
 npx tsc --noEmit
 grep -c '—' data/blog-articles.json   # ne doit pas avoir augmenté
 ```
