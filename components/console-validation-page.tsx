@@ -6,6 +6,8 @@ import { SiteFooter } from '@/components/site-footer';
 import { SiteNav } from '@/components/site-nav';
 import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 import { COUNTRY_NAMES, isKnownCountry } from '@/lib/countries';
+import { readAttribution } from '@/lib/attribution';
+import { track } from '@vercel/analytics';
 
 type UploadFieldId = 'consolePhoto' | 'pressPhoto' | 'insideConsolePhoto' | 'keysPhoto' | 'platePhoto';
 
@@ -441,10 +443,11 @@ export function ConsoleValidationPage({
         photos.push({ field, path });
       }
 
+      const attribution = readAttribution();
       const res = await fetch('/api/console-validation', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, companyName, country, machineName, notes, ref: refCode, invite: invite?.token, uploadId, photos }),
+        body: JSON.stringify({ email, companyName, country, machineName, notes, ref: refCode, invite: invite?.token, uploadId, photos, attribution }),
       });
       if (!res.ok) {
         const body = await res.json().catch(() => null);
@@ -452,7 +455,22 @@ export function ConsoleValidationPage({
       }
       const body = await res.json().catch(() => null);
       setReference(body?.reference ?? null);
+      // Conversion event, sent to every analytics surface we run. Vercel Web
+      // Analytics is cookieless, so it counts the leads the consent-gated
+      // trackers miss.
       (window as any).gtag?.('event', 'console_validation_submit', { event_category: 'lead', machine: machineName });
+      track('console_validation_submit', {
+        country,
+        machine: machineName,
+        source: attribution?.source ?? attribution?.referrer ?? 'direct',
+        campaign: attribution?.campaign ?? '',
+      });
+      (window as any).posthog?.capture?.('console_validation_submit', {
+        country,
+        machine: machineName,
+        source: attribution?.source ?? attribution?.referrer ?? 'direct',
+        campaign: attribution?.campaign ?? '',
+      });
       setSubmitted(true);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (error) {

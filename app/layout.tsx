@@ -4,6 +4,7 @@ import { LanguageProvider, type Locale } from '@/components/language-provider';
 import { GoogleAnalytics } from '@/components/google-analytics';
 import { PostHogAnalytics } from '@/components/posthog-analytics';
 import { CookieConsent } from '@/components/cookie-consent';
+import { AttributionCapture } from '@/components/attribution-capture';
 import { Analytics } from '@vercel/analytics/next';
 import './globals.css';
 // import './brutalism.css'; // disabled, v1 design
@@ -122,6 +123,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           {children}
           <CookieConsent />
         </LanguageProvider>
+        <AttributionCapture />
         <GoogleAnalytics />
         <PostHogAnalytics />
         <Analytics />

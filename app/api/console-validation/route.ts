@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { createSupabaseAdminClient, createSupabaseServerClient } from '@/lib/supabase/server';
 import { addDealNote, createConsoleValidationDeal, pipedriveDealUrl } from '@/lib/pipedrive';
+import { formatAttribution } from '@/lib/attribution';
 import { addConsoleValidationPreviews, asanaTaskUrl, createConsoleValidationTask } from '@/lib/asana';
 import { notifyDiscordConsoleValidation } from '@/lib/discord';
 import { dropboxEnabled, uploadConsoleValidation } from '@/lib/dropbox';
@@ -38,6 +39,12 @@ const validPhoto = (p: any): p is PhotoRef =>
   typeof p.path === 'string' &&
   /^tmp\/[a-z0-9-]+\/[a-z]+\.[a-z0-9]+$/i.test(p.path);
 
+/** Clamps an untrusted attribution field to a short, safe string. */
+const str = (v: unknown): string | undefined => {
+  const s = typeof v === 'string' ? v.trim().slice(0, 120) : '';
+  return s || undefined;
+};
+
 export async function POST(request: NextRequest) {
   let body: any;
   try {
@@ -53,6 +60,20 @@ export async function POST(request: NextRequest) {
   const notes = String(body.notes ?? '').trim();
   const refCode = String(body.ref ?? '').trim().slice(0, 100) || null;
   const inviteToken = String(body.invite ?? '').trim().slice(0, 200);
+  // Where the lead came from (UTM / referrer), captured client-side on the first
+  // page of the session. Untrusted input, so every field is clamped.
+  const attribution = formatAttribution(
+    body.attribution && typeof body.attribution === 'object'
+      ? {
+          source: str(body.attribution.source),
+          medium: str(body.attribution.medium),
+          campaign: str(body.attribution.campaign),
+          content: str(body.attribution.content),
+          referrer: str(body.attribution.referrer),
+          landing: str(body.attribution.landing),
+        }
+      : null,
+  );
 
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 200) {
     return NextResponse.json({ error: 'A valid email address is required' }, { status: 400 });
@@ -152,6 +173,7 @@ export async function POST(request: NextRequest) {
     `Machine  : ${machineName}`,
     `Email    : ${email}`,
     `Pipedrive: ${dealId ? `ID${dealId}` : 'n/a'}`,
+    `Source   : ${attribution}`,
     refCode ? `Referral : ${refCode}` : null,
     notes ? `Notes    : ${notes}` : null,
     '',
