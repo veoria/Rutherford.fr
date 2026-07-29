@@ -39,6 +39,47 @@ export function isTeamRoleKey(value: string): value is TeamRoleKey {
   return (TEAM_ROLE_KEYS as readonly string[]).includes(value);
 }
 
+// Partner role keys (brief § 2.2.a, acté 18/07/2026). MULTI-select — stored in
+// profiles.job_roles text[] — because a small reseller often wears several
+// hats. Distinct sets per partner type; validated per account_type by the API.
+export const RESELLER_ROLE_KEYS = [
+  'owner_manager',
+  'sales',
+  'technical',
+  'trainer',
+  'other',
+] as const;
+
+export type ResellerRoleKey = (typeof RESELLER_ROLE_KEYS)[number];
+
+export const DISTRIBUTOR_ROLE_KEYS = [
+  'sales',
+  'application_specialist',
+  'product_manager',
+  'trainer',
+  'management',
+  'other',
+] as const;
+
+export type DistributorRoleKey = (typeof DISTRIBUTOR_ROLE_KEYS)[number];
+
+/** The valid multi-select role keys for a partner account type, or null when
+ * the type uses the single-choice job_title referential instead. */
+export function partnerRoleKeysFor(accountType: string): readonly string[] | null {
+  if (accountType === 'reseller') return RESELLER_ROLE_KEYS;
+  if (accountType === 'distributor') return DISTRIBUTOR_ROLE_KEYS;
+  return null;
+}
+
+/** Validate a job_roles array for the given partner account type: non-empty,
+ * no duplicates, every key in the type's referential. */
+export function isValidPartnerRoles(accountType: string, values: unknown): values is string[] {
+  const keys = partnerRoleKeysFor(accountType);
+  if (!keys || !Array.isArray(values) || values.length === 0) return false;
+  if (new Set(values).size !== values.length) return false;
+  return values.every((v) => typeof v === 'string' && keys.includes(v));
+}
+
 // Stored as the plain English country name (human-readable in the CRM).
 export const COUNTRIES: string[] = [
   'Afghanistan', 'Albania', 'Algeria', 'Andorra', 'Angola', 'Argentina', 'Armenia', 'Australia',

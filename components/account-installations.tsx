@@ -115,7 +115,7 @@ const COPY: Record<Locale, Copy> = {
     updateTo: (v) => `Aggiornamento disponibile → ${v}`,
     updateCta: 'Richiedi l’aggiornamento',
     copy: 'Copia', copied: 'Copiato', remote: 'Assistenza remota',
-    gSupport: 'Support', gTraining: 'Formazione',
+    gSupport: 'Supporto', gTraining: 'Formazione',
     supportCta: 'Assistenza per questo sistema',
     allSites: 'Tutti gli stabilimenti', unplaced: 'Non assegnato', siteRemote: 'Assistenza remota',
     systemsCount: (n) => `${n} sistem${n === 1 ? 'a' : 'i'}`,
@@ -143,8 +143,8 @@ const COPY: Record<Locale, Copy> = {
     updateTo: (v) => `Atualização disponível → ${v}`,
     updateCta: 'Pedir a atualização',
     copy: 'Copiar', copied: 'Copiado', remote: 'Assistência remota',
-    gSupport: 'Support', gTraining: 'Formação',
-    supportCta: 'Support para este sistema',
+    gSupport: 'Suporte', gTraining: 'Formação',
+    supportCta: 'Suporte para este sistema',
     allSites: 'Todas as fábricas', unplaced: 'Não atribuído', siteRemote: 'Assistência remota',
     systemsCount: (n) => `${n} sistema${n === 1 ? '' : 's'}`,
   },
@@ -186,7 +186,7 @@ function CopyButton({ value, copy, copied }: { value: string; copy: string; copi
   );
 }
 
-function SystemCard({ s, t, locale }: { s: AccountInstallation; t: Copy; locale: Locale }) {
+function SystemCard({ s, t, locale, preview = false }: { s: AccountInstallation; t: Copy; locale: Locale; preview?: boolean }) {
   const courses = coursesFor(s.product).map((slug) => ({
     slug,
     title: getCourseBySlug(slug)?.title ?? slug,
@@ -240,25 +240,27 @@ function SystemCard({ s, t, locale }: { s: AccountInstallation; t: Copy; locale:
         ) : null}
       </div>
 
-      <div className="ah-sys-group">
-        <div className="ah-sys-glabel">{t.gSupport}</div>
-        <div className="ah-sys-links">
-          <a className="ah-sys-link primary" href={`/support?${q}`}>{t.supportCta}</a>
-          {s.updateAvailable && s.latestVersion ? (
-            <a
-              className="ah-sys-link"
-              href={`/support?${new URLSearchParams({ subject: `${supportSubject} — ${t.updateTo(s.latestVersion)}` }).toString()}`}
-            >
-              {t.updateCta}
-            </a>
-          ) : null}
-          {s.anydeskId ? (
-            <a className="ah-sys-link" href={`anydesk:${s.anydeskId.replace(/\s+/g, '')}`}>
-              {t.remote}
-            </a>
-          ) : null}
+      {preview ? null : (
+        <div className="ah-sys-group">
+          <div className="ah-sys-glabel">{t.gSupport}</div>
+          <div className="ah-sys-links">
+            <a className="ah-sys-link primary" href={`/support?${q}`}>{t.supportCta}</a>
+            {s.updateAvailable && s.latestVersion ? (
+              <a
+                className="ah-sys-link"
+                href={`/support?${new URLSearchParams({ subject: `${supportSubject} — ${t.updateTo(s.latestVersion)}` }).toString()}`}
+              >
+                {t.updateCta}
+              </a>
+            ) : null}
+            {s.anydeskId ? (
+              <a className="ah-sys-link" href={`anydesk:${s.anydeskId.replace(/\s+/g, '')}`}>
+                {t.remote}
+              </a>
+            ) : null}
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="ah-sys-group">
         <div className="ah-sys-glabel">{t.gTraining}</div>
@@ -282,10 +284,14 @@ export function AccountInstallations({
   installations,
   sites = [],
   accent,
+  preview = false,
 }: {
   installations: AccountInstallation[];
   sites?: AccountSite[];
   accent: string;
+  // Aperçu admin « vue client » : les CTA support ouvriraient le formulaire
+  // avec la session de l'admin connecté — on les masque (données affichées).
+  preview?: boolean;
 }) {
   const { locale } = useLanguage();
   const t = COPY[locale];
@@ -377,7 +383,7 @@ export function AccountInstallations({
 
       <div className="ah-sys-grid">
         {visible.map((s) => (
-          <SystemCard key={s.id} s={s} t={t} locale={locale} />
+          <SystemCard key={s.id} s={s} t={t} locale={locale} preview={preview} />
         ))}
       </div>
     </div>

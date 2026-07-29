@@ -1,13 +1,14 @@
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { AccountHub, type ResellerClient } from '@/components/account-hub';
-import { createSupabaseServerClient, createSupabaseAdminClient } from '@/lib/supabase/server';
+import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { isOnboarded } from '@/lib/profile';
 import { ALL_COURSES } from '@/data/academy-courses';
 import { courseHasQuiz } from '@/data/academy-quizzes';
 import { getLessonsForCourse } from '@/data/academy-lessons';
 import { overallStats, type CourseStat } from '@/lib/gamification';
-import { getDistributorResellers, getResellerClients, getTeamForUser } from '@/lib/organizations';
+import { getDistributorResellers, getTeamForUser } from '@/lib/organizations';
+import { getResellerClientsView, OPEN_CV } from '@/lib/reseller-clients';
 import { getSystemsForUser, toAccountInstallation } from '@/lib/client-systems';
 import { getVisibleSitesForUser, toAccountSite } from '@/lib/sites';
 import type { AccountType } from '@/data/account-types';
@@ -35,8 +36,6 @@ export const metadata: Metadata = {
 
 export const dynamic = 'force-dynamic';
 
-const OPEN_CV = ['submitted', 'in_review', 'changes_requested'];
-const HAS_ADMIN = Boolean(process.env.SUPABASE_SERVICE_ROLE_KEY && process.env.NEXT_PUBLIC_SUPABASE_URL);
 
 export default async function AccountHubRoute() {
   const supabase = createSupabaseServerClient();
@@ -51,7 +50,7 @@ export default async function AccountHubRoute() {
     await Promise.all([
       supabase
         .from('profiles')
-        .select('full_name, avatar_url, country, company, job_title, onboarded_at, account_type, is_admin')
+        .select('full_name, avatar_url, country, company, job_title, job_roles, onboarded_at, account_type, is_admin')
         .eq('id', user.id)
         .maybeSingle(),
       supabase.from('course_progress').select('course_slug, lesson_index').eq('user_id', user.id),
@@ -60,6 +59,7 @@ export default async function AccountHubRoute() {
         .from('console_validations')
         .select('machine, country, company, status, created_at, pipedrive_deal_id')
         .eq('user_id', user.id)
+        .is('deleted_at', null)
         .order('created_at', { ascending: false }),
     ]);
 
@@ -182,74 +182,32 @@ export default async function AccountHubRoute() {
     }
   })();
 
-  // Reseller → clients: privileged read scoped to this reseller (the user RLS
-  // policy doesn't cover it), merged with the org-linked clients
-  // (organizations.reseller_org_id) so attribution shows whichever exists.
-  const resellerClientsP = (async (): Promise<ResellerClient[]> => {
-    let clients: ResellerClient[] = [];
-    if ((accountType === 'reseller' || accountType === 'distributor') && HAS_ADMIN) {
-      try {
-        const { data } = await createSupabaseAdminClient()
-          .from('console_validations')
-          .select('company, country, machine, status, email, created_at')
-          .eq('reseller_id', user.id)
-          .order('created_at', { ascending: false });
-        const byClient = new Map<string, ResellerClient>();
-        for (const r of (data ?? []) as {
-          company: string | null;
-          country: string | null;
-          machine: string | null;
-          status: string;
-          email: string;
-          created_at: string;
-        }[]) {
-          const key = (r.company || r.email || 'client').toLowerCase();
-          const cur =
-            byClient.get(key) ??
-            ({ name: r.company || r.email, country: r.country, presses: 0, eligible: 0, open: 0 } as ResellerClient);
-          cur.presses += 1;
-          if (r.status === 'can_be_connected') cur.eligible += 1;
-          if (OPEN_CV.includes(r.status)) cur.open += 1;
-          byClient.set(key, cur);
-        }
-        clients = [...byClient.values()];
-      } catch {
-        clients = [];
-      }
-    }
-
-    if (accountType === 'reseller' || accountType === 'distributor') {
-      const linked = await getResellerClients(user.id);
-      const byName = new Map(clients.map((c) => [c.name.toLowerCase(), c] as const));
-      for (const l of linked) {
-        const key = l.name.toLowerCase();
-        const cur = byName.get(key) ?? { name: l.name, country: l.country, presses: 0, eligible: 0, open: 0 };
-        cur.systems = l.systems;
-        cur.updates = l.updates;
-        byName.set(key, cur);
-      }
-      clients = [...byName.values()];
-    }
-    return clients;
-  })();
+  // Reseller → clients: shared aggregation (validations + org-linked clients).
+  const resellerClientsP = getResellerClientsView(user.id, accountType);
 
   const teamP = getTeamForUser(user.id);
   const networkResellersP =
     accountType === 'distributor' ? getDistributorResellers(user.id) : Promise.resolve([]);
   // "Mon système" — the installed base (license, AnyDesk, updates) the
-  // Rutherford team maintains on the user's organization.
-  const installationsP = getSystemsForUser(user.id).then((rows) => rows.map(toAccountInstallation));
+  // Rutherford team maintains on the user's organization. The section is
+  // client-only (per-role visibility matrix), so skip the read otherwise.
+  const installationsP =
+    accountType === 'client'
+      ? getSystemsForUser(user.id).then((rows) => rows.map(toAccountInstallation))
+      : Promise.resolve([]);
 
   const [{ status: supportStatus, newMessage: supportNewMessage }, resellerClients, team, networkResellers, installations] =
     await Promise.all([supportSummaryP, resellerClientsP, teamP, networkResellersP, installationsP]);
 
   // Plants (usines) the user may see — owners/admins see all their org's sites,
-  // other members are narrowed by any site_members restriction.
+  // other members are narrowed by any site_members restriction. Sites feed the
+  // client-only "Mon système" section, so skip the read for other types.
   const orgId = team.org?.id ?? null;
   const canManageOrg = team.myRole === 'owner' || team.myRole === 'admin';
-  const sites = orgId
-    ? (await getVisibleSitesForUser(user.id, orgId, canManageOrg)).map(toAccountSite)
-    : [];
+  const sites =
+    accountType === 'client' && orgId
+      ? (await getVisibleSitesForUser(user.id, orgId, canManageOrg)).map(toAccountSite)
+      : [];
 
   return (
     <AccountHub

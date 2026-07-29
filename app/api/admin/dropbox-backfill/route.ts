@@ -3,6 +3,7 @@ import { getAdminAccess } from '@/lib/admin-access';
 import { createSupabaseAdminClient } from '@/lib/supabase/server';
 import { dropboxEnabled, uploadConsoleValidation } from '@/lib/dropbox';
 import { getConsoleValidationTaskState } from '@/lib/asana';
+import { recordAudit } from '@/lib/admin-audit';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 300;
@@ -20,7 +21,16 @@ const BUCKET = 'console-validations';
  * The folder is named after the Asana task (so it matches Asana), falling back
  * to the reconstructed deal title.
  */
-export async function GET(request: NextRequest) {
+// Writes to Dropbox and stamps rows — POST only (state-changing requests must
+// not ride a top-level GET navigation). GET documents the switch.
+export async function GET() {
+  return NextResponse.json(
+    { error: 'backfill requires POST', hint: 'Re-run the same URL as a POST request (idempotent, ?limit= supported).' },
+    { status: 405 }
+  );
+}
+
+export async function POST(request: NextRequest) {
   const access = await getAdminAccess();
   if (!access.ok || !access.canManage) {
     return NextResponse.json({ error: 'forbidden' }, { status: 403 });
@@ -105,5 +115,16 @@ export async function GET(request: NextRequest) {
     .select('id', { count: 'exact', head: true })
     .is('dropbox_link', null);
 
+  const ok = results.filter((x) => x.status.startsWith('ok')).length;
+  if (ok > 0) {
+    await recordAudit({
+      actorId: access.userId,
+      action: 'dropbox.backfill',
+      targetType: 'dropbox',
+      targetId: BUCKET,
+      summary: `Backfill Dropbox : ${ok} dossier(s) créé(s), ${remaining ?? '?'} restant(s)`,
+      metadata: { processed: results.length, remaining: remaining ?? null },
+    });
+  }
   return NextResponse.json({ processed: results.length, remaining: remaining ?? null, results });
 }

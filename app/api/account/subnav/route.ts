@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createSupabaseServerClient, createSupabaseAdminClient } from '@/lib/supabase/server';
+import { createSupabaseServerClient } from '@/lib/supabase/server';
 import type { AccountType } from '@/data/account-types';
 
 export const dynamic = 'force-dynamic';
@@ -8,6 +8,8 @@ export const dynamic = 'force-dynamic';
 // client used to do this as three sequential round-trips (getUser → profiles →
 // organizations); resolving it server-side collapses that to a single fetch and
 // runs the queries co-located with the database. Scoped to the caller's own id.
+// User-scoped client on purpose: RLS covers reading one's own profile/org, and
+// the admin client would throw (500) on deployments without the service key.
 export async function GET() {
   const supabase = createSupabaseServerClient();
   const {
@@ -15,8 +17,7 @@ export async function GET() {
   } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
 
-  const admin = createSupabaseAdminClient();
-  const { data: prof } = await admin
+  const { data: prof } = await supabase
     .from('profiles')
     .select('organization_id, company, account_type')
     .eq('id', user.id)
@@ -30,7 +31,7 @@ export async function GET() {
     return NextResponse.json({ accountType, orgName: company, logoUrl: null });
   }
 
-  const { data: org } = await admin
+  const { data: org } = await supabase
     .from('organizations')
     .select('logo_url, name')
     .eq('id', orgId)

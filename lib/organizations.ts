@@ -138,16 +138,27 @@ export async function getManageableOrg(
   const supabase = admin();
   if (!supabase) return null;
   try {
-    const { data } = await supabase
+    const { data: rows } = await supabase
       .from('organization_members')
       .select('org_id, role, organizations(name, type)')
       .eq('user_id', userId)
       .eq('status', 'active')
-      .in('role', ['owner', 'admin'])
-      .maybeSingle();
-    if (!data) return null;
-    const org = (data as { organizations?: { name?: string; type?: string } | null }).organizations ?? null;
-    return { orgId: data.org_id as string, role: data.role as MemberRole, orgName: org?.name ?? null, orgType: org?.type ?? null };
+      .in('role', ['owner', 'admin']);
+    if (!rows?.length) return null;
+    // A user can hold owner/admin in several orgs (own org + accepted admin
+    // invite); prefer the profile's home org so UI and mutations agree.
+    let row = rows[0];
+    if (rows.length > 1) {
+      const { data: prof } = await supabase
+        .from('profiles')
+        .select('organization_id')
+        .eq('id', userId)
+        .maybeSingle();
+      const homeOrg = (prof?.organization_id as string | null) ?? null;
+      row = rows.find((r) => (r.org_id as string) === homeOrg) ?? rows[0];
+    }
+    const org = (row as { organizations?: { name?: string; type?: string } | null }).organizations ?? null;
+    return { orgId: row.org_id as string, role: row.role as MemberRole, orgName: org?.name ?? null, orgType: org?.type ?? null };
   } catch {
     return null;
   }
@@ -159,19 +170,31 @@ export async function acceptPendingInvitations(userId: string, email: string): P
   const supabase = admin();
   if (!supabase || !email) return;
   try {
+    // Exact match only — invitations store emails lowercased, and an ilike
+    // pattern would let '%'/'_' in an address match someone else's invitation.
+    // Expired invitations (null = legacy rows without expiry) are never accepted.
     const { data: invites } = await supabase
       .from('invitations')
       .select('id, org_id, role, kind')
       .eq('status', 'pending')
-      .ilike('email', email);
+      .eq('email', email.trim().toLowerCase())
+      .or(`expires_at.is.null,expires_at.gt.${new Date().toISOString()}`);
     for (const inv of (invites ?? []) as { id: string; org_id: string; role: MemberRole; kind: string }[]) {
       if (inv.kind === 'member') {
         await supabase
           .from('organization_members')
           .upsert({ org_id: inv.org_id, user_id: userId, role: inv.role, status: 'active' }, { onConflict: 'org_id,user_id' });
+        // Joining an org makes it the profile's home org — every surface
+        // (admin, team page, subnav) derives "my org" from
+        // profiles.organization_id, so membership and profile must agree
+        // (the historical dual-source divergence, brief § 3.1).
+        await supabase.from('profiles').update({ organization_id: inv.org_id }).eq('id', userId);
       } else if (inv.kind === 'client' || inv.kind === 'reseller') {
         // Link the accepting user's own org up the chain: a client links to the
-        // inviting reseller, a reseller to the inviting distributor.
+        // inviting reseller, a reseller to the inviting distributor. NEVER
+        // overwrite an existing attribution (§ 2.6.3) — last-write-wins on a
+        // channel assignment is a dispute waiting to happen; conflicts are for
+        // the admin to arbitrate.
         const { data: prof } = await supabase
           .from('profiles')
           .select('organization_id')
@@ -180,7 +203,11 @@ export async function acceptPendingInvitations(userId: string, email: string): P
         const myOrg = (prof?.organization_id as string | null) ?? null;
         if (myOrg) {
           const column = inv.kind === 'client' ? 'reseller_org_id' : 'distributor_org_id';
-          await supabase.from('organizations').update({ [column]: inv.org_id }).eq('id', myOrg);
+          await supabase
+            .from('organizations')
+            .update({ [column]: inv.org_id })
+            .eq('id', myOrg)
+            .is(column, null);
         }
       } else {
         continue;
@@ -189,6 +216,37 @@ export async function acceptPendingInvitations(userId: string, email: string): P
     }
   } catch {
     /* best-effort */
+  }
+}
+
+/** Rename the organization the user OWNS (role 'owner'). Used by the profile
+ * form: the org is the source of truth for the company name (brief § 3.2) —
+ * an owner editing "company" renames their org; non-owners can't. Returns
+ * false when the user owns no org (or Supabase is unconfigured). */
+export async function renameOwnedOrganization(userId: string, name: string): Promise<boolean> {
+  const supabase = admin();
+  const trimmed = name.trim().slice(0, 200);
+  if (!supabase || !trimmed) return false;
+  try {
+    const { data: prof } = await supabase
+      .from('profiles')
+      .select('organization_id')
+      .eq('id', userId)
+      .maybeSingle();
+    const orgId = (prof?.organization_id as string | null) ?? null;
+    if (!orgId) return false;
+    const { data: membership } = await supabase
+      .from('organization_members')
+      .select('role')
+      .eq('org_id', orgId)
+      .eq('user_id', userId)
+      .eq('status', 'active')
+      .maybeSingle();
+    if (membership?.role !== 'owner') return false;
+    const { error } = await supabase.from('organizations').update({ name: trimmed }).eq('id', orgId);
+    return !error;
+  } catch {
+    return false;
   }
 }
 

@@ -11,10 +11,11 @@ export async function GET() {
   } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
 
-  // RLS scopes each table to the caller's own rows.
+  // Explicit user_id filters everywhere: RLS also grants reseller/admin-wide
+  // visibility on console_validations, and "my data" must only export own rows.
   const [profile, cv, progress, quiz, access, membership] = await Promise.all([
     supabase.from('profiles').select('*').eq('id', user.id).maybeSingle(),
-    supabase.from('console_validations').select('*'),
+    supabase.from('console_validations').select('*').eq('user_id', user.id),
     supabase.from('course_progress').select('*').eq('user_id', user.id),
     supabase.from('quiz_attempts').select('*').eq('user_id', user.id),
     supabase.from('user_course_access').select('*').eq('user_id', user.id),
@@ -54,7 +55,15 @@ export async function DELETE() {
     return NextResponse.json({ error: 'unavailable' }, { status: 503 });
   }
 
-  const { error } = await createSupabaseAdminClient().auth.admin.deleteUser(user.id);
+  const adminClient = createSupabaseAdminClient();
+
+  // Erasure includes the public avatar files — they would otherwise stay
+  // publicly addressable after the account is gone.
+  await adminClient.storage
+    .from('account-media')
+    .remove(['png', 'jpg', 'webp', 'gif'].map((ext) => `avatars/${user.id}.${ext}`));
+
+  const { error } = await adminClient.auth.admin.deleteUser(user.id);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
   await supabase.auth.signOut().catch(() => {});

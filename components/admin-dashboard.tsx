@@ -1,13 +1,32 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import {
+  Fragment,
+  useEffect,
+  useMemo,
+  useState,
+  type MouseEvent as ReactMouseEvent,
+  type ReactNode,
+} from 'react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { SiteFooter } from '@/components/site-footer';
 import { SiteNav } from '@/components/site-nav';
-import { COUNTRIES, JOB_TITLE_KEYS, isJobTitleKey, type JobTitleKey } from '@/data/onboarding-options';
+import { ALL_COURSES } from '@/data/academy-courses';
+import {
+  COUNTRIES,
+  JOB_TITLE_KEYS,
+  TEAM_ROLE_KEYS,
+  isJobTitleKey,
+  isTeamRoleKey,
+  partnerRoleKeysFor,
+  type JobTitleKey,
+} from '@/data/onboarding-options';
+import { TEAM_ROLE_LABELS } from '@/data/team-role-labels';
+import { DISTRIBUTOR_ROLE_LABELS, RESELLER_ROLE_LABELS } from '@/data/partner-role-labels';
 import { ACCOUNT_TYPES, type AccountType } from '@/data/account-types';
 import type { AdminConsoleValidation, AdminOverview, AdminSupportTicket, AdminUser } from '@/lib/admin';
-import type { AdminOrg, AdminOrgFull, MemberRole, OrgMember, PendingInvite } from '@/lib/organizations';
+import type { AuditEntry } from '@/lib/admin-audit';
+import type { AdminOrg, AdminOrgFull } from '@/lib/organizations';
 
 const ROLE_LABELS: Record<JobTitleKey, string> = {
   operator: 'Conducteur de presse',
@@ -28,11 +47,37 @@ const ACCOUNT_TYPE_LABELS: Record<AccountType, string> = {
   team: 'Équipe',
 };
 
-const MEMBER_ROLE_LABELS: Record<MemberRole, string> = {
-  owner: 'Propriétaire',
-  admin: 'Admin',
-  member: 'Membre',
+// L'admin est en français uniquement : on résout chaque référentiel vers ses
+// libellés FR (les clés restent la valeur stockée).
+const TEAM_ROLE_LABELS_FR = TEAM_ROLE_LABELS.fr as Record<string, string>;
+const PARTNER_ROLE_LABELS_FR: Record<'reseller' | 'distributor', Record<string, string>> = {
+  reseller: RESELLER_ROLE_LABELS.fr as Record<string, string>,
+  distributor: DISTRIBUTOR_ROLE_LABELS.fr as Record<string, string>,
 };
+
+/** Libellé « Poste » selon le type de compte : client → poste imprimerie,
+ * team → rôle interne, reseller/distributor → job_roles joints par « · ».
+ * Une valeur héritée inconnue est affichée telle quelle, jamais masquée. */
+function roleLabel(accountType: AccountType, jobTitle: string | null, jobRoles: string[] | null): string {
+  if (accountType === 'reseller' || accountType === 'distributor') {
+    const labels = PARTNER_ROLE_LABELS_FR[accountType];
+    if (jobRoles && jobRoles.length) return jobRoles.map((r) => labels[r] ?? r).join(' · ');
+    // Partenaire pré-migration sans job_roles : on retombe sur le job_title stocké.
+    return jobTitle ? (isJobTitleKey(jobTitle) ? ROLE_LABELS[jobTitle] : jobTitle) : '—';
+  }
+  if (accountType === 'team') {
+    return jobTitle ? (isTeamRoleKey(jobTitle) ? TEAM_ROLE_LABELS_FR[jobTitle] : jobTitle) : '—';
+  }
+  return jobTitle ? (isJobTitleKey(jobTitle) ? ROLE_LABELS[jobTitle] : jobTitle) : '—';
+}
+
+// Un compte typé client qui a déclaré des rôles partenaires à l'onboarding
+// « se déclare partenaire » : signal fort pour la file « À qualifier ».
+const declaresPartner = (u: { accountType: AccountType; jobRoles: string[] | null }): boolean =>
+  u.accountType === 'client' && (u.jobRoles?.length ?? 0) > 0;
+
+const declaredRoleLabel = (key: string): string =>
+  PARTNER_ROLE_LABELS_FR.reseller[key] ?? PARTNER_ROLE_LABELS_FR.distributor[key] ?? key;
 
 const CV_STATUS_LABELS: Record<string, string> = {
   submitted: 'Reçue',
@@ -41,6 +86,9 @@ const CV_STATUS_LABELS: Record<string, string> = {
   can_be_connected: 'Connectable',
   rejected: 'Non éligible',
 };
+
+// Valeur de filtre hors statut : les demandes supprimées dans Asana.
+const CV_DELETED_FILTER = '__deleted';
 
 const CV_STATUS_TONE: Record<string, string> = {
   submitted: 'review',
@@ -73,9 +121,22 @@ const ERROR_LABELS: Record<string, string> = {
   forbidden: 'Action réservée aux admins.',
   unauthorized: 'Session expirée — reconnectez-vous.',
   mfa_required: 'Activez la double authentification pour gérer les comptes.',
+  bad_job_title: 'Poste invalide pour ce type de compte.',
+  bad_job_roles: 'Rôles invalides pour ce type de compte.',
+  bad_organization: 'Organisation invalide ou introuvable.',
+  forbidden_admin_grant: 'Seul le super-administrateur peut nommer un administrateur.',
+  admin_requires_team: 'Seuls les membres de l’équipe Rutherford peuvent être administrateurs.',
 };
 const errorLabel = (code: unknown) =>
   (typeof code === 'string' && ERROR_LABELS[code]) || 'Une erreur est survenue.';
+
+// Monogramme de repli quand l'org n'a pas de logo (mêmes initiales que la fiche
+// organisation) — la liste des organisations affiche logo OU monogramme.
+function orgInitials(name: string): string {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length >= 2) return ((parts[0][0] ?? '') + (parts[1][0] ?? '')).toUpperCase();
+  return name.trim().slice(0, 2).toUpperCase() || '?';
+}
 
 function fmtDate(value: string | null): string {
   if (!value) return '—';
@@ -86,7 +147,90 @@ function fmtDate(value: string | null): string {
   }
 }
 
-type AdminTab = 'overview' | 'accounts' | 'validations' | 'support' | 'orgs' | 'courses';
+// Date + heure locale FR pour le journal d'audit (brief § 4.2.6).
+function fmtDateTime(value: string | null): string {
+  if (!value) return '—';
+  try {
+    return new Date(value).toLocaleString('fr-FR', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  } catch {
+    return '—';
+  }
+}
+
+// Nombre de modules par cours (slug → total) pour le drill-down « Cours »
+// (brief § 4.2.2) : AdminCourseStat ne porte pas le total, on le lit ici.
+const MODULE_TOTAL_BY_SLUG = new Map(ALL_COURSES.map((c) => [c.id, c.modules] as const));
+
+// ── Journal d'audit — libellés FR des codes d'action (brief § 4.2.6) ──
+// Codes explicites d'abord ; sinon composition « verbe + domaine » ; sinon le
+// code brut. Couvre les codes câblés par les mutations /api/admin/*.
+const AUDIT_ACTION_LABELS: Record<string, string> = {
+  'user.update': 'Modification compte',
+  'user.qualify': 'Qualification compte',
+  'user.set_admin': 'Droits admin modifiés',
+  'user.suspend': 'Suspension compte',
+  'user.delete': 'Suppression compte',
+  'org.create': 'Création organisation',
+  'org.update': 'Modification organisation',
+  'org.member_role': 'Rôle de membre modifié',
+  'org.member_remove': 'Retrait de membre',
+  'org.invite': 'Invitation envoyée',
+  'org.logo': 'Logo mis à jour',
+  'storage.cleanup': 'Nettoyage stockage',
+  'dropbox.move': 'Déplacement Dropbox',
+  'dropbox.backfill': 'Reprise Dropbox',
+};
+// Domaines (noms au singulier, minuscule) pour la composition de repli.
+const AUDIT_DOMAIN_LABELS: Record<string, string> = {
+  user: 'compte',
+  org: 'organisation',
+  site: 'usine',
+  system: 'système',
+  storage: 'stockage',
+  dropbox: 'Dropbox',
+};
+const AUDIT_VERB_LABELS: Record<string, string> = {
+  create: 'Création',
+  update: 'Modification',
+  delete: 'Suppression',
+  qualify: 'Qualification',
+  suspend: 'Suspension',
+  cleanup: 'Nettoyage',
+  move: 'Déplacement',
+  backfill: 'Reprise',
+  invite: 'Invitation',
+  logo: 'Logo',
+};
+function auditActionLabel(action: string): string {
+  const known = AUDIT_ACTION_LABELS[action];
+  if (known) return known;
+  const dot = action.indexOf('.');
+  if (dot > 0) {
+    const domain = AUDIT_DOMAIN_LABELS[action.slice(0, dot)];
+    const verb = AUDIT_VERB_LABELS[action.slice(dot + 1)];
+    if (domain && verb) return `${verb} ${domain}`;
+    if (domain) return `${domain} — ${action.slice(dot + 1)}`;
+  }
+  return action;
+}
+// « Cible » = type + identifiant court (les UUID sont tronqués).
+function auditTarget(entry: AuditEntry): string {
+  const shortId = entry.targetId
+    ? entry.targetId.length > 12
+      ? `${entry.targetId.slice(0, 8)}…`
+      : entry.targetId
+    : null;
+  if (entry.targetType && shortId) return `${entry.targetType} · ${shortId}`;
+  return entry.targetType ?? shortId ?? '—';
+}
+
+type AdminTab = 'overview' | 'accounts' | 'validations' | 'support' | 'orgs' | 'courses' | 'journal';
 type AccountSortKey = 'name' | 'company' | 'country' | 'signup' | 'activity' | 'level';
 
 // A saved view = a named snapshot of the accounts filter/sort, kept in
@@ -120,11 +264,16 @@ const ACCOUNT_SEGMENTS: { key: string; label: string; match: (u: AdminUser) => b
   { key: 'reseller', label: 'Revendeurs', match: (u) => u.accountType === 'reseller' },
   { key: 'distributor', label: 'Distributeurs', match: (u) => u.accountType === 'distributor' },
   { key: 'team', label: 'Équipe', match: (u) => u.accountType === 'team' },
+  // File de qualification (brief § 2.3.a) : comptes dont le type n'a pas pu
+  // être déterminé automatiquement. NULL (lignes pré-migration) = confirmé.
+  { key: 'unqualified', label: 'À qualifier', match: (u) => u.accountTypeSource === 'unqualified' },
   { key: 'admin', label: 'Admins', match: (u) => u.isAdmin },
   { key: 'suspended', label: 'Suspendus', match: (u) => u.suspended },
 ];
 
-function toCsv(users: AdminUser[]): string {
+// « Société » exportée = nom d'organisation prioritaire, texte libre hérité en
+// repli (brief § 3.2) — companyOf est fourni par le tableau de bord.
+function toCsv(users: AdminUser[], companyOf: (u: AdminUser) => string | null): string {
   const headers = [
     'Nom', 'Email', 'Société', 'Pays', 'Poste', 'Type de compte', 'Admin', 'Onboardé', 'Inscrit',
     'Dernière activité', 'Modules terminés', 'Cours terminés', 'Certificats', 'Niveau', 'XP', 'Série',
@@ -134,9 +283,14 @@ function toCsv(users: AdminUser[]): string {
     const s = v === null || v === undefined ? '' : String(v);
     return /[",\n;]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
   };
+  // Poste exporté en libellé lisible selon le type ('' quand rien n'est renseigné).
+  const posteOf = (u: AdminUser) => {
+    const label = roleLabel(u.accountType, u.jobTitle, u.jobRoles);
+    return label === '—' ? '' : label;
+  };
   const rows = users.map((u) =>
     [
-      u.name, u.email, u.company, u.country, u.jobTitle, ACCOUNT_TYPE_LABELS[u.accountType],
+      u.name, u.email, companyOf(u), u.country, posteOf(u), ACCOUNT_TYPE_LABELS[u.accountType],
       u.isAdmin ? 'oui' : '', u.onboarded ? 'oui' : '',
       u.signupAt ? new Date(u.signupAt).toISOString().slice(0, 10) : '',
       u.lastActiveAt ? new Date(u.lastActiveAt).toISOString().slice(0, 10) : '',
@@ -153,12 +307,288 @@ function AccountTypeBadge({ type }: { type: AccountType }) {
   return <span className={`account-type-badge account-type-${type}`}>{ACCOUNT_TYPE_LABELS[type]}</span>;
 }
 
-function UserDrawer({ user, isSelf, onClose }: { user: AdminUser; isSelf: boolean; onClose: () => void }) {
+/** Champ « Poste » qui s'adapte au type de compte sélectionné dans le
+ * formulaire : choix unique pour client (référentiel imprimerie) et team
+ * (rôles internes), cases à cocher multi-sélection pour les partenaires
+ * (job_roles). Une valeur héritée inconnue reste visible comme option dédiée —
+ * on ne la détruit jamais tant que l'admin ne la remplace pas. */
+function RoleField({
+  accountType,
+  jobTitle,
+  onJobTitle,
+  jobRoles,
+  onJobRoles,
+  disabled,
+}: {
+  accountType: AccountType;
+  jobTitle: string;
+  onJobTitle: (v: string) => void;
+  jobRoles: string[];
+  onJobRoles: (v: string[]) => void;
+  disabled: boolean;
+}) {
+  const partnerKeys = partnerRoleKeysFor(accountType);
+  if (partnerKeys) {
+    const labels = PARTNER_ROLE_LABELS_FR[accountType as 'reseller' | 'distributor'];
+    return (
+      <div className="admin-field">
+        <label>Rôles (multi-sélection)</label>
+        <div className="admin-site-access-list">
+          {partnerKeys.map((k) => {
+            const checked = jobRoles.includes(k);
+            return (
+              <label key={k} className="admin-site-access-item">
+                <input
+                  type="checkbox"
+                  checked={checked}
+                  disabled={disabled}
+                  onChange={() => onJobRoles(checked ? jobRoles.filter((r) => r !== k) : [...jobRoles, k])}
+                />
+                {labels[k] ?? k}
+              </label>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+  const keys: readonly string[] = accountType === 'team' ? TEAM_ROLE_KEYS : JOB_TITLE_KEYS;
+  const labelOf = (k: string) =>
+    accountType === 'team' ? TEAM_ROLE_LABELS_FR[k] ?? k : ROLE_LABELS[k as JobTitleKey] ?? k;
+  const legacy = jobTitle && !keys.includes(jobTitle) ? jobTitle : null;
+  return (
+    <div className="admin-field">
+      <label>Poste</label>
+      <select className="admin-input" value={jobTitle} onChange={(e) => onJobTitle(e.target.value)} disabled={disabled}>
+        <option value="">—</option>
+        {legacy ? <option value={legacy}>{legacy} (valeur héritée)</option> : null}
+        {keys.map((k) => (
+          <option key={k} value={k}>
+            {labelOf(k)}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
+}
+
+type OrgOption = { id: string; name: string; type: string };
+
+const orgOptionLabel = (o: OrgOption): string =>
+  `${o.name} (${ACCOUNT_TYPE_LABELS[o.type as AccountType] ?? o.type})`;
+
+/** Sélecteur d'organisation (recherche + création) : remplace l'ancien champ
+ * « Société » libre — l'organisation est la source de vérité (brief § 3.2.1).
+ * « Créer une organisation » passe par POST /api/admin/orgs (name = texte
+ * cherché, type = type de compte de l'utilisateur) puis sélectionne l'org
+ * créée. L'ancien texte libre `company` reste visible en note quand il diverge
+ * du nom de l'org sélectionnée — il n'est plus éditable ici. */
+function OrgSelectField({
+  orgs,
+  value,
+  onChange,
+  accountType,
+  legacyCompany,
+  disabled,
+}: {
+  orgs: OrgOption[];
+  value: string | null;
+  onChange: (id: string | null) => void;
+  accountType: AccountType;
+  legacyCompany: string | null;
+  disabled: boolean;
+}) {
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState('');
+  // Orgs créées depuis ce champ : la liste reçue en props ne se rafraîchit
+  // qu'au prochain rendu serveur, on les garde localement pour l'affichage.
+  const [created, setCreated] = useState<OrgOption[]>([]);
+  const [creating, setCreating] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const known = new Set(orgs.map((o) => o.id));
+  const all = [...orgs, ...created.filter((o) => !known.has(o.id))];
+  const current = value ? all.find((o) => o.id === value) ?? null : null;
+  const q = search.trim().toLowerCase();
+  const filtered = q ? all.filter((o) => o.name.toLowerCase().includes(q)) : all;
+  const VISIBLE = 30;
+
+  const select = (id: string | null) => {
+    onChange(id);
+    setOpen(false);
+    setSearch('');
+    setError(null);
+  };
+
+  const createOrganization = async () => {
+    const name = search.trim();
+    if (!name) return;
+    setCreating(true);
+    setError(null);
+    try {
+      const res = await fetch('/api/admin/orgs', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        // Type de la nouvelle org = type de compte de l'utilisateur ('client'
+        // couvre le défaut : AccountType ne peut pas être vide).
+        body: JSON.stringify({ name, type: accountType }),
+      });
+      const data = (await res.json().catch(() => ({}))) as { id?: string; error?: string };
+      if (!res.ok || !data.id) {
+        setError(errorLabel(data.error));
+        setCreating(false);
+        return;
+      }
+      setCreated((list) => [...list, { id: data.id as string, name, type: accountType }]);
+      setCreating(false);
+      select(data.id);
+    } catch {
+      setError('Erreur réseau.');
+      setCreating(false);
+    }
+  };
+
+  // Boutons-options : styles de liste du tiroir réutilisés, reset minimal du
+  // rendu bouton natif (pas de classe dédiée en CSS).
+  const optionStyle = { background: 'none', border: 0, padding: 0, textAlign: 'left' as const };
+
+  return (
+    <div className="admin-field">
+      <label>Organisation</label>
+      {!open ? (
+        <button
+          type="button"
+          className="admin-input"
+          style={{ textAlign: 'left', cursor: 'pointer' }}
+          onClick={() => setOpen(true)}
+          disabled={disabled}
+        >
+          {current ? orgOptionLabel(current) : '— Aucune organisation —'}
+        </button>
+      ) : (
+        <>
+          <input
+            className="admin-input"
+            autoFocus
+            placeholder="Rechercher une organisation…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            disabled={disabled || creating}
+          />
+          <div className="admin-site-access-list">
+            <button
+              type="button"
+              className="admin-site-access-item"
+              style={optionStyle}
+              onClick={() => select(null)}
+              disabled={creating}
+            >
+              — Aucune organisation —{value === null ? ' ✓' : ''}
+            </button>
+            {filtered.slice(0, VISIBLE).map((o) => (
+              <button
+                key={o.id}
+                type="button"
+                className="admin-site-access-item"
+                style={optionStyle}
+                onClick={() => select(o.id)}
+                disabled={creating}
+              >
+                {orgOptionLabel(o)}
+                {o.id === value ? ' ✓' : ''}
+              </button>
+            ))}
+            {filtered.length > VISIBLE ? (
+              <p className="admin-site-access-hint">
+                {filtered.length - VISIBLE} autre(s) organisation(s) — affinez la recherche.
+              </p>
+            ) : null}
+            {q && filtered.length === 0 ? (
+              <p className="admin-site-access-hint">Aucune organisation trouvée.</p>
+            ) : null}
+            {search.trim() ? (
+              <button
+                type="button"
+                className="admin-link-btn"
+                onClick={() => void createOrganization()}
+                disabled={creating}
+              >
+                {creating ? 'Création…' : `+ Créer l'organisation « ${search.trim()} »`}
+              </button>
+            ) : null}
+          </div>
+        </>
+      )}
+      {legacyCompany && legacyCompany !== (current?.name ?? '') ? (
+        <p className="admin-site-access-hint">Société (texte libre hérité) : {legacyCompany}</p>
+      ) : null}
+      {error ? <p className="admin-modal-error">{error}</p> : null}
+    </div>
+  );
+}
+
+/** Bloc « Qualifier » d'un compte à qualifier : trois boutons qui fixent le
+ * type ET account_type_source = 'admin' (action `qualify` de l'API). */
+function QualifyBlock({
+  user,
+  busy,
+  onQualify,
+}: {
+  user: { accountType: AccountType; jobRoles: string[] | null };
+  busy: boolean;
+  onQualify: (t: 'client' | 'reseller' | 'distributor') => void;
+}) {
+  return (
+    <div className="admin-modal-members">
+      <h4 className="admin-modal-subhead">Qualifier</h4>
+      <p className="admin-modal-section-status">
+        Type de compte non déterminé automatiquement — choisissez le bon profil.
+        {declaresPartner(user) ? (
+          <>
+            {' '}
+            <span className="admin-badge">Se déclare partenaire</span>{' '}
+            {(user.jobRoles ?? []).map(declaredRoleLabel).join(' · ')}
+          </>
+        ) : null}
+      </p>
+      <div className="admin-modal-danger-row">
+        <button type="button" className="button button-light" onClick={() => onQualify('client')} disabled={busy}>
+          Client
+        </button>
+        <button type="button" className="button button-light" onClick={() => onQualify('reseller')} disabled={busy}>
+          Revendeur
+        </button>
+        <button type="button" className="button button-light" onClick={() => onQualify('distributor')} disabled={busy}>
+          Distributeur
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function UserDrawer({
+  user,
+  orgOptions,
+  isSelf,
+  canGrantAdmin,
+  onClose,
+}: {
+  user: AdminUser;
+  orgOptions: OrgOption[];
+  isSelf: boolean;
+  canGrantAdmin: boolean;
+  onClose: () => void;
+}) {
   const router = useRouter();
   const [fullName, setFullName] = useState(user.name ?? '');
-  const [company, setCompany] = useState(user.company ?? '');
+  // L'org remplace le champ « Société » libre (brief § 3.2.1) ; company n'est
+  // plus éditable ici, seulement affiché en repli hérité.
+  const [orgId, setOrgId] = useState<string | null>(user.orgId ?? null);
   const [country, setCountry] = useState(user.country ?? '');
-  const [jobTitle, setJobTitle] = useState(isJobTitleKey(user.jobTitle ?? '') ? (user.jobTitle as string) : '');
+  // Valeur brute (pas filtrée) : une valeur héritée inconnue reste affichée et
+  // n'est jamais renvoyée à l'API tant qu'elle n'est pas explicitement changée.
+  const [jobTitle, setJobTitle] = useState(user.jobTitle ?? '');
+  const [jobRoles, setJobRoles] = useState<string[]>(user.jobRoles ?? []);
   const [accountType, setAccountType] = useState<AccountType>(user.accountType);
   const [isAdmin, setIsAdmin] = useState(user.isAdmin);
   const [busy, setBusy] = useState(false);
@@ -169,19 +599,55 @@ function UserDrawer({ user, isSelf, onClose }: { user: AdminUser; isSelf: boolea
   const save = async () => {
     setBusy(true);
     setError(null);
+    const body: Record<string, unknown> = {
+      id: user.id,
+      full_name: fullName.trim(),
+      country,
+      account_type: accountType,
+    };
+    // is_admin dirty-tracké : envoyé uniquement s'il change (modification
+    // réservée au super-admin côté serveur).
+    if (isAdmin !== user.isAdmin) body.is_admin = isAdmin;
+    // Dirty-tracking : organization_id n'est envoyé que s'il a changé — même
+    // logique que les champs de rôle ci-dessous.
+    if ((orgId ?? null) !== (user.orgId ?? null)) body.organization_id = orgId;
+    // N'envoyer que le champ de rôle réellement touché : renvoyer une valeur
+    // héritée intacte la détruirait côté serveur (clé inconnue → 400).
+    const initialRoles = user.jobRoles ?? [];
+    const rolesChanged =
+      jobRoles.length !== initialRoles.length || jobRoles.some((r) => !initialRoles.includes(r));
+    if (partnerRoleKeysFor(accountType)) {
+      if (rolesChanged) body.job_roles = jobRoles;
+    } else if (jobTitle !== (user.jobTitle ?? '')) {
+      body.job_title = jobTitle;
+    }
     try {
       const res = await fetch('/api/admin/users', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          id: user.id,
-          full_name: fullName.trim(),
-          company: company.trim(),
-          country,
-          job_title: jobTitle,
-          account_type: accountType,
-          is_admin: isAdmin,
-        }),
+        body: JSON.stringify(body),
+      });
+      if (!res.ok) {
+        setError(errorLabel((await res.json().catch(() => ({}))).error));
+        setBusy(false);
+        return;
+      }
+      router.refresh();
+      onClose();
+    } catch {
+      setError('Erreur réseau.');
+      setBusy(false);
+    }
+  };
+
+  const qualify = async (t: 'client' | 'reseller' | 'distributor') => {
+    setBusy(true);
+    setError(null);
+    try {
+      const res = await fetch('/api/admin/users', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: user.id, action: 'qualify', account_type: t }),
       });
       if (!res.ok) {
         setError(errorLabel((await res.json().catch(() => ({}))).error));
@@ -215,6 +681,10 @@ function UserDrawer({ user, isSelf, onClose }: { user: AdminUser; isSelf: boolea
   };
 
   const toggleSuspend = async () => {
+    // Confirmation avant suspension (brief § 4.2.9) ; la réactivation n'est pas
+    // destructive et ne demande pas de confirmation.
+    if (!suspended && !window.confirm('Suspendre ce compte ? La connexion sera bloquée jusqu’à réactivation.'))
+      return;
     setBusy(true);
     setError(null);
     try {
@@ -248,14 +718,22 @@ function UserDrawer({ user, isSelf, onClose }: { user: AdminUser; isSelf: boolea
         </div>
         <p className="admin-modal-email">{user.email}</p>
 
+        {user.accountTypeSource === 'unqualified' ? (
+          <QualifyBlock user={user} busy={busy} onQualify={(t) => void qualify(t)} />
+        ) : null}
+
         <div className="admin-field">
           <label>Nom</label>
           <input className="admin-input" value={fullName} onChange={(e) => setFullName(e.target.value)} disabled={busy} />
         </div>
-        <div className="admin-field">
-          <label>Société</label>
-          <input className="admin-input" value={company} onChange={(e) => setCompany(e.target.value)} disabled={busy} />
-        </div>
+        <OrgSelectField
+          orgs={orgOptions}
+          value={orgId}
+          onChange={setOrgId}
+          accountType={accountType}
+          legacyCompany={user.company}
+          disabled={busy}
+        />
         <div className="admin-field">
           <label>Pays</label>
           <select className="admin-input" value={country} onChange={(e) => setCountry(e.target.value)} disabled={busy}>
@@ -267,17 +745,14 @@ function UserDrawer({ user, isSelf, onClose }: { user: AdminUser; isSelf: boolea
             ))}
           </select>
         </div>
-        <div className="admin-field">
-          <label>Poste</label>
-          <select className="admin-input" value={jobTitle} onChange={(e) => setJobTitle(e.target.value)} disabled={busy}>
-            <option value="">—</option>
-            {JOB_TITLE_KEYS.map((k) => (
-              <option key={k} value={k}>
-                {ROLE_LABELS[k]}
-              </option>
-            ))}
-          </select>
-        </div>
+        <RoleField
+          accountType={accountType}
+          jobTitle={jobTitle}
+          onJobTitle={setJobTitle}
+          jobRoles={jobRoles}
+          onJobRoles={setJobRoles}
+          disabled={busy}
+        />
         <div className="admin-field">
           <label>Type de compte</label>
           <select
@@ -293,15 +768,19 @@ function UserDrawer({ user, isSelf, onClose }: { user: AdminUser; isSelf: boolea
             ))}
           </select>
         </div>
-        <label className="admin-check">
-          <input
-            type="checkbox"
-            checked={isAdmin}
-            onChange={(e) => setIsAdmin(e.target.checked)}
-            disabled={busy || isSelf}
-          />
-          <span>Administrateur{isSelf ? ' (vous — non modifiable)' : ''}</span>
-        </label>
+        {/* Administrateur : comptes équipe uniquement, bascule réservée au
+            super-admin (même règle appliquée côté serveur). */}
+        {canGrantAdmin && accountType === 'team' ? (
+          <label className="admin-check">
+            <input
+              type="checkbox"
+              checked={isAdmin}
+              onChange={(e) => setIsAdmin(e.target.checked)}
+              disabled={busy || isSelf}
+            />
+            <span>Administrateur{isSelf ? ' (vous — non modifiable)' : ''}</span>
+          </label>
+        ) : null}
 
         {error ? <p className="admin-modal-error">{error}</p> : null}
 
@@ -367,6 +846,11 @@ function OrgRow({
 }) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  // Le select est contrôlé par la prop `resellerOrgId` ; comme window.confirm
+  // est synchrone, un refus doit forcer une reconciliation pour rétablir la
+  // valeur affichée — on remonte le select via une clé qui change à chaque essai.
+  const [nonce, setNonce] = useState(0);
   if (!canManage) {
     const current = resellers.find((r) => r.id === client.resellerOrgId);
     return (
@@ -381,20 +865,32 @@ function OrgRow({
       <td>{client.name}</td>
       <td>
         <select
+          key={nonce}
           className="admin-org-select"
           value={client.resellerOrgId ?? ''}
           disabled={busy}
           onChange={async (e) => {
+            const next = e.target.value;
+            // Toujours forcer le remount (voir note sur le confirm synchrone).
+            setNonce((n) => n + 1);
+            // Confirmation avant de changer l'attribution revendeur (brief § 4.2.9).
+            if (!window.confirm(`Changer le revendeur attribué à « ${client.name} » ?`)) return;
             setBusy(true);
+            setError(null);
             try {
               const res = await fetch('/api/admin/orgs', {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id: client.id, reseller_org_id: e.target.value || null }),
+                body: JSON.stringify({ id: client.id, reseller_org_id: next || null }),
               });
-              if (res.ok) router.refresh();
+              if (!res.ok) {
+                setError(errorLabel((await res.json().catch(() => ({}))).error));
+                setBusy(false);
+                return;
+              }
+              router.refresh();
             } catch {
-              /* ignore */
+              setError('Erreur réseau.');
             }
             setBusy(false);
           }}
@@ -406,738 +902,45 @@ function OrgRow({
             </option>
           ))}
         </select>
+        {error ? <p className="admin-modal-error">{error}</p> : null}
       </td>
     </tr>
   );
 }
 
-// ── Systèmes & licences (client_systems) — édités dans la fiche organisation ──
-
-type OrgSystem = {
-  id: string;
-  siteId: string | null;
-  product: string;
-  machine: string | null;
-  licenseKey: string | null;
-  licenseStatus: 'active' | 'trial' | 'expired' | 'suspended';
-  licenseExpiresAt: string | null;
-  anydeskId: string | null;
-  installedVersion: string | null;
-  latestVersion: string | null;
-  notes: string | null;
-};
-
-type OrgSite = {
-  id: string;
-  name: string;
-  country: string | null;
-  city: string | null;
-  address: string | null;
-  postalCode: string | null;
-  anydeskId: string | null;
-  notes: string | null;
-};
-
-const LICENSE_STATUS_LABELS: Record<OrgSystem['licenseStatus'], string> = {
-  active: 'Active',
-  trial: 'Essai',
-  expired: 'Expirée',
-  suspended: 'Suspendue',
-};
-
-// Suggestions produit — champ libre, mais on pousse les noms canoniques.
-const SYSTEM_PRODUCTS = ['ColorLoop', 'ColorLoop Connect', 'EasySet', 'EasyLoop', 'MeasureColor', 'IntelliTrax2'];
-
-type SystemDraft = Omit<OrgSystem, 'id'>;
-
-const EMPTY_SYSTEM: SystemDraft = {
-  siteId: null,
-  product: '',
-  machine: null,
-  licenseKey: null,
-  licenseStatus: 'active',
-  licenseExpiresAt: null,
-  anydeskId: null,
-  installedVersion: null,
-  latestVersion: null,
-  notes: null,
-};
-
-function SystemForm({
-  initial,
-  submitLabel,
-  sites,
-  onSubmit,
-  onDelete,
-}: {
-  initial: SystemDraft;
-  submitLabel: string;
-  sites: OrgSite[];
-  onSubmit: (draft: SystemDraft) => Promise<boolean>;
-  onDelete?: () => Promise<void>;
-}) {
-  const [draft, setDraft] = useState<SystemDraft>(initial);
-  const [busy, setBusy] = useState(false);
-  const [saved, setSaved] = useState(false);
-  const set = (patch: Partial<SystemDraft>) => {
-    setDraft((d) => ({ ...d, ...patch }));
-    setSaved(false);
-  };
-  const text = (v: string) => v || null;
-  const updateReady =
-    Boolean((draft.installedVersion ?? '').trim()) &&
-    Boolean((draft.latestVersion ?? '').trim()) &&
-    (draft.installedVersion ?? '').trim() !== (draft.latestVersion ?? '').trim();
-
-  return (
-    <div className="admin-sys-card">
-      <div className="admin-field-row">
-        <div className="admin-field">
-          <label>Produit</label>
-          <input
-            className="admin-input"
-            list="admin-sys-products"
-            value={draft.product}
-            onChange={(e) => set({ product: e.target.value })}
-            disabled={busy}
-            placeholder="ColorLoop"
-          />
-        </div>
-        <div className="admin-field">
-          <label>Presse / machine</label>
-          <input
-            className="admin-input"
-            value={draft.machine ?? ''}
-            onChange={(e) => set({ machine: text(e.target.value) })}
-            disabled={busy}
-            placeholder="Heidelberg XL 106"
-          />
-        </div>
-        <div className="admin-field">
-          <label>Usine</label>
-          <select
-            className="admin-input"
-            value={draft.siteId ?? ''}
-            onChange={(e) => set({ siteId: e.target.value || null })}
-            disabled={busy || !sites.length}
-          >
-            <option value="">{sites.length ? '— Non affectée —' : 'Aucune usine — créez-en une'}</option>
-            {sites.map((s) => (
-              <option key={s.id} value={s.id}>
-                {s.name}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
-      <div className="admin-field-row">
-        <div className="admin-field">
-          <label>Licence (clé)</label>
-          <input
-            className="admin-input"
-            value={draft.licenseKey ?? ''}
-            onChange={(e) => set({ licenseKey: text(e.target.value) })}
-            disabled={busy}
-          />
-        </div>
-        <div className="admin-field">
-          <label>Statut</label>
-          <select
-            className="admin-input"
-            value={draft.licenseStatus}
-            onChange={(e) => set({ licenseStatus: e.target.value as OrgSystem['licenseStatus'] })}
-            disabled={busy}
-          >
-            {(Object.keys(LICENSE_STATUS_LABELS) as OrgSystem['licenseStatus'][]).map((s) => (
-              <option key={s} value={s}>
-                {LICENSE_STATUS_LABELS[s]}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="admin-field">
-          <label>Expiration</label>
-          <input
-            className="admin-input"
-            type="date"
-            value={draft.licenseExpiresAt ?? ''}
-            onChange={(e) => set({ licenseExpiresAt: text(e.target.value) })}
-            disabled={busy}
-          />
-        </div>
-      </div>
-      <div className="admin-field-row">
-        <div className="admin-field">
-          <label>N° AnyDesk</label>
-          <input
-            className="admin-input"
-            value={draft.anydeskId ?? ''}
-            onChange={(e) => set({ anydeskId: text(e.target.value) })}
-            disabled={busy}
-            placeholder="123 456 789"
-          />
-        </div>
-        <div className="admin-field">
-          <label>Version installée</label>
-          <input
-            className="admin-input"
-            value={draft.installedVersion ?? ''}
-            onChange={(e) => set({ installedVersion: text(e.target.value) })}
-            disabled={busy}
-            placeholder="3.2.1"
-          />
-        </div>
-        <div className="admin-field">
-          <label>Dernière version</label>
-          <input
-            className="admin-input"
-            value={draft.latestVersion ?? ''}
-            onChange={(e) => set({ latestVersion: text(e.target.value) })}
-            disabled={busy}
-            placeholder="3.4.0"
-          />
-        </div>
-      </div>
-      <div className="admin-field">
-        <label>Notes internes</label>
-        <input
-          className="admin-input"
-          value={draft.notes ?? ''}
-          onChange={(e) => set({ notes: text(e.target.value) })}
-          disabled={busy}
-        />
-      </div>
-      <div className="admin-sys-actions">
-        {updateReady ? <span className="ah-sys-pill amber">Mise à jour à proposer</span> : null}
-        {onDelete ? (
-          <button
-            type="button"
-            className="ah-revoke"
-            disabled={busy}
-            onClick={async () => {
-              if (!window.confirm('Supprimer ce système ?')) return;
-              setBusy(true);
-              await onDelete();
-              setBusy(false);
-            }}
-          >
-            Supprimer
-          </button>
-        ) : null}
-        <button
-          type="button"
-          className="button button-light"
-          disabled={busy || !draft.product.trim()}
-          onClick={async () => {
-            setBusy(true);
-            const ok = await onSubmit(draft);
-            setSaved(ok);
-            setBusy(false);
-          }}
-        >
-          {busy ? '…' : saved ? 'Enregistré ✓' : submitLabel}
-        </button>
-      </div>
-    </div>
-  );
-}
-
-function OrgSystemsSection({ orgId, sites }: { orgId: string; sites: OrgSite[] }) {
+/** Création d'organisation — modale minimale (nom + type). L'édition complète
+ * (adresse, logo, membres, usines, systèmes, attribution) vit désormais sur la
+ * fiche /admin/orgs/[id] (décision du 19/07/2026), donc on POST /api/admin/orgs
+ * puis on redirige vers la fiche fraîchement créée. */
+function OrgCreateModal({ onClose }: { onClose: () => void }) {
   const router = useRouter();
-  const [systems, setSystems] = useState<OrgSystem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [adding, setAdding] = useState(false);
-
-  const refresh = async () => {
-    try {
-      const res = await fetch(`/api/admin/orgs/systems?orgId=${encodeURIComponent(orgId)}`);
-      if (res.ok) {
-        const d = (await res.json()) as { systems?: OrgSystem[] };
-        setSystems(d.systems ?? []);
-      }
-    } catch {
-      /* ignore */
-    }
-    setLoading(false);
-  };
-
-  useEffect(() => {
-    void refresh();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [orgId]);
-
-  const save = async (id: string | null, draft: SystemDraft): Promise<boolean> => {
-    try {
-      const res = await fetch('/api/admin/orgs/systems', {
-        method: id ? 'PATCH' : 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(id ? { id, ...draft } : { orgId, ...draft }),
-      });
-      if (!res.ok) return false;
-      if (!id) setAdding(false);
-      await refresh();
-      router.refresh();
-      return true;
-    } catch {
-      return false;
-    }
-  };
-
-  return (
-    <div className="admin-modal-members">
-      <h4 className="admin-modal-subhead">
-        Systèmes & licences{loading ? ' …' : ` (${systems.length})`}
-      </h4>
-      <p className="admin-modal-section-status">
-        Licence, n° AnyDesk et versions affichés dans l&apos;espace client (« Mon système »). Une « Dernière
-        version » différente de la version installée signale une mise à jour disponible au client et à son
-        revendeur.
-      </p>
-      <datalist id="admin-sys-products">
-        {SYSTEM_PRODUCTS.map((p) => (
-          <option key={p} value={p} />
-        ))}
-      </datalist>
-      {systems.map((s) => (
-        <SystemForm
-          key={s.id}
-          initial={s}
-          submitLabel="Enregistrer"
-          sites={sites}
-          onSubmit={(draft) => save(s.id, draft)}
-          onDelete={async () => {
-            try {
-              await fetch(`/api/admin/orgs/systems?id=${encodeURIComponent(s.id)}`, { method: 'DELETE' });
-            } catch {
-              /* ignore */
-            }
-            await refresh();
-            router.refresh();
-          }}
-        />
-      ))}
-      {adding ? (
-        <SystemForm initial={EMPTY_SYSTEM} submitLabel="Ajouter" sites={sites} onSubmit={(draft) => save(null, draft)} />
-      ) : (
-        <button type="button" className="admin-link-btn" onClick={() => setAdding(true)}>
-          + Ajouter un système
-        </button>
-      )}
-    </div>
-  );
-}
-
-// ── Usines (sites) — plant list of a client org, edited in the org drawer ──
-
-type SiteDraft = Omit<OrgSite, 'id'>;
-
-const EMPTY_SITE: SiteDraft = {
-  name: '',
-  country: null,
-  city: null,
-  address: null,
-  postalCode: null,
-  anydeskId: null,
-  notes: null,
-};
-
-function SiteForm({
-  initial,
-  submitLabel,
-  onSubmit,
-  onDelete,
-}: {
-  initial: SiteDraft;
-  submitLabel: string;
-  onSubmit: (draft: SiteDraft) => Promise<boolean>;
-  onDelete?: () => Promise<void>;
-}) {
-  const [draft, setDraft] = useState<SiteDraft>(initial);
-  const [busy, setBusy] = useState(false);
-  const [saved, setSaved] = useState(false);
-  const set = (patch: Partial<SiteDraft>) => {
-    setDraft((d) => ({ ...d, ...patch }));
-    setSaved(false);
-  };
-  const text = (v: string) => v || null;
-  return (
-    <div className="admin-sys-card">
-      <div className="admin-field-row">
-        <div className="admin-field">
-          <label>Nom de l&apos;usine</label>
-          <input
-            className="admin-input"
-            value={draft.name}
-            onChange={(e) => set({ name: e.target.value })}
-            disabled={busy}
-            placeholder="Site de Lyon"
-          />
-        </div>
-        <div className="admin-field">
-          <label>Ville</label>
-          <input
-            className="admin-input"
-            value={draft.city ?? ''}
-            onChange={(e) => set({ city: text(e.target.value) })}
-            disabled={busy}
-          />
-        </div>
-        <div className="admin-field">
-          <label>Pays</label>
-          <select className="admin-input" value={draft.country ?? ''} onChange={(e) => set({ country: e.target.value || null })} disabled={busy}>
-            <option value="">—</option>
-            {COUNTRIES.map((c) => (
-              <option key={c} value={c}>
-                {c}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
-      <div className="admin-field-row">
-        <div className="admin-field">
-          <label>Adresse</label>
-          <input className="admin-input" value={draft.address ?? ''} onChange={(e) => set({ address: text(e.target.value) })} disabled={busy} />
-        </div>
-        <div className="admin-field">
-          <label>Code postal</label>
-          <input className="admin-input" value={draft.postalCode ?? ''} onChange={(e) => set({ postalCode: text(e.target.value) })} disabled={busy} />
-        </div>
-        <div className="admin-field">
-          <label>N° AnyDesk du site</label>
-          <input className="admin-input" value={draft.anydeskId ?? ''} onChange={(e) => set({ anydeskId: text(e.target.value) })} disabled={busy} placeholder="123 456 789" />
-        </div>
-      </div>
-      <div className="admin-sys-actions">
-        {onDelete ? (
-          <button
-            type="button"
-            className="ah-revoke"
-            disabled={busy}
-            onClick={async () => {
-              if (!window.confirm('Supprimer cette usine ? Les systèmes rattachés deviendront « non affectés ».')) return;
-              setBusy(true);
-              await onDelete();
-              setBusy(false);
-            }}
-          >
-            Supprimer
-          </button>
-        ) : null}
-        <button
-          type="button"
-          className="button button-light"
-          disabled={busy || !draft.name.trim()}
-          onClick={async () => {
-            setBusy(true);
-            const ok = await onSubmit(draft);
-            setSaved(ok);
-            setBusy(false);
-          }}
-        >
-          {busy ? '…' : saved ? 'Enregistré ✓' : submitLabel}
-        </button>
-      </div>
-    </div>
-  );
-}
-
-function OrgSitesSection({ orgId, sites, onChange }: { orgId: string; sites: OrgSite[]; onChange: () => void }) {
-  const router = useRouter();
-  const [adding, setAdding] = useState(false);
-
-  const save = async (id: string | null, draft: SiteDraft): Promise<boolean> => {
-    try {
-      const res = await fetch('/api/admin/orgs/sites', {
-        method: id ? 'PATCH' : 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(id ? { id, ...draft } : { orgId, ...draft }),
-      });
-      if (!res.ok) return false;
-      if (!id) setAdding(false);
-      onChange();
-      router.refresh();
-      return true;
-    } catch {
-      return false;
-    }
-  };
-
-  return (
-    <div className="admin-modal-members">
-      <h4 className="admin-modal-subhead">Usines{` (${sites.length})`}</h4>
-      <p className="admin-modal-section-status">
-        Les sites de ce client. Chaque système peut être rattaché à une usine, et un membre peut être limité à
-        certaines usines (voir la liste des membres ci-dessous).
-      </p>
-      {sites.map((s) => (
-        <SiteForm
-          key={s.id}
-          initial={s}
-          submitLabel="Enregistrer"
-          onSubmit={(draft) => save(s.id, draft)}
-          onDelete={async () => {
-            try {
-              await fetch(`/api/admin/orgs/sites?id=${encodeURIComponent(s.id)}`, { method: 'DELETE' });
-            } catch {
-              /* ignore */
-            }
-            onChange();
-            router.refresh();
-          }}
-        />
-      ))}
-      {adding ? (
-        <SiteForm initial={EMPTY_SITE} submitLabel="Ajouter" onSubmit={(draft) => save(null, draft)} />
-      ) : (
-        <button type="button" className="admin-link-btn" onClick={() => setAdding(true)}>
-          + Ajouter une usine
-        </button>
-      )}
-    </div>
-  );
-}
-
-// Per-member site restriction: no checked boxes = access to all sites.
-function MemberSiteAccess({ userId, orgId, sites }: { userId: string; orgId: string; sites: OrgSite[] }) {
-  const [restricted, setRestricted] = useState<string[] | null>(null);
-  const [open, setOpen] = useState(false);
-  const [busy, setBusy] = useState(false);
-
-  const load = async () => {
-    try {
-      const res = await fetch(`/api/admin/orgs/site-members?userId=${encodeURIComponent(userId)}`);
-      if (res.ok) {
-        const d = (await res.json()) as { siteIds?: string[] };
-        // Keep only ids that belong to this org's sites.
-        const valid = new Set(sites.map((s) => s.id));
-        setRestricted((d.siteIds ?? []).filter((id) => valid.has(id)));
-      }
-    } catch {
-      /* ignore */
-    }
-  };
-
-  const toggleOpen = () => {
-    const next = !open;
-    setOpen(next);
-    if (next && restricted === null) void load();
-  };
-
-  const save = async (ids: string[]) => {
-    setBusy(true);
-    setRestricted(ids);
-    try {
-      await fetch('/api/admin/orgs/site-members', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId, orgId, siteIds: ids }),
-      });
-    } catch {
-      /* ignore */
-    }
-    setBusy(false);
-  };
-
-  if (!sites.length) return null;
-
-  const current = restricted ?? [];
-  const label = restricted === null ? 'Usines' : current.length ? `${current.length} usine(s)` : 'Toutes les usines';
-
-  return (
-    <div className="admin-site-access">
-      <button type="button" className="admin-link-btn" onClick={toggleOpen} disabled={busy}>
-        {open ? '▾ ' : '▸ '}
-        {label}
-      </button>
-      {open ? (
-        <div className="admin-site-access-list">
-          {sites.map((s) => {
-            const checked = current.includes(s.id);
-            return (
-              <label key={s.id} className="admin-site-access-item">
-                <input
-                  type="checkbox"
-                  checked={checked}
-                  disabled={busy}
-                  onChange={() => {
-                    const next = checked ? current.filter((id) => id !== s.id) : [...current, s.id];
-                    void save(next);
-                  }}
-                />
-                {s.name}
-              </label>
-            );
-          })}
-          <p className="admin-site-access-hint">Aucune case cochée = accès à toutes les usines.</p>
-        </div>
-      ) : null}
-    </div>
-  );
-}
-
-function OrgDrawer({ org, allOrgs, onClose }: { org: AdminOrgFull | null; allOrgs: AdminOrgFull[]; onClose: () => void }) {
-  const router = useRouter();
-  const isNew = !org;
-  const [name, setName] = useState(org?.name ?? '');
-  const [type, setType] = useState<AccountType>((org?.type as AccountType) ?? 'client');
-  const [country, setCountry] = useState(org?.country ?? '');
-  const [address, setAddress] = useState(org?.address ?? '');
-  const [postalCode, setPostalCode] = useState(org?.postalCode ?? '');
-  const [city, setCity] = useState(org?.city ?? '');
-  const [resellerOrgId, setResellerOrgId] = useState(org?.resellerOrgId ?? '');
-  const [distributorOrgId, setDistributorOrgId] = useState(org?.distributorOrgId ?? '');
-  const [logoUrl, setLogoUrl] = useState<string | null>(org?.logoUrl ?? null);
+  const [name, setName] = useState('');
+  const [type, setType] = useState<AccountType>('client');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [members, setMembers] = useState<OrgMember[]>([]);
-  const [pending, setPending] = useState<PendingInvite[]>([]);
-  const [loadingMembers, setLoadingMembers] = useState(false);
-  const [inviteEmail, setInviteEmail] = useState('');
-  const [inviteRole, setInviteRole] = useState<'admin' | 'member'>('member');
-  const [sites, setSites] = useState<OrgSite[]>([]);
 
-  const refreshSites = async () => {
-    if (!org) return;
-    try {
-      const res = await fetch(`/api/admin/orgs/sites?orgId=${encodeURIComponent(org.id)}`);
-      if (res.ok) {
-        const d = (await res.json()) as { sites?: OrgSite[] };
-        setSites(d.sites ?? []);
-      }
-    } catch {
-      /* ignore */
-    }
-  };
-
-  const resellerOptions = allOrgs.filter((o) => o.type === 'reseller' && o.id !== org?.id);
-  const distributorOptions = allOrgs.filter((o) => o.type === 'distributor' && o.id !== org?.id);
-
-  const save = async () => {
+  const create = async () => {
     if (!name.trim()) {
       setError('Le nom est requis.');
       return;
     }
     setBusy(true);
     setError(null);
-    const fields = {
-      name: name.trim(),
-      type,
-      country,
-      address,
-      postal_code: postalCode,
-      city,
-      reseller_org_id: type === 'client' ? resellerOrgId || null : null,
-      distributor_org_id: type === 'reseller' ? distributorOrgId || null : null,
-    };
     try {
       const res = await fetch('/api/admin/orgs', {
-        method: isNew ? 'POST' : 'PATCH',
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(isNew ? fields : { id: org!.id, ...fields }),
+        body: JSON.stringify({ name: name.trim(), type }),
       });
-      if (!res.ok) {
-        setError(errorLabel((await res.json().catch(() => ({}))).error));
-        setBusy(false);
-        return;
-      }
-      router.refresh();
-      onClose();
-    } catch {
-      setError('Erreur réseau.');
-      setBusy(false);
-    }
-  };
-
-  const uploadLogo = async (file: File) => {
-    if (!org) return;
-    setBusy(true);
-    setError(null);
-    try {
-      const fd = new FormData();
-      fd.append('file', file);
-      fd.append('orgId', org.id);
-      const res = await fetch('/api/admin/orgs/logo', { method: 'POST', body: fd });
-      const data = (await res.json().catch(() => ({}))) as { url?: string; error?: string };
-      if (!res.ok) {
+      const data = (await res.json().catch(() => ({}))) as { id?: string; error?: string };
+      if (!res.ok || !data.id) {
         setError(errorLabel(data.error));
         setBusy(false);
         return;
       }
-      setLogoUrl(data.url ?? null);
-      router.refresh();
-      setBusy(false);
-    } catch {
-      setError('Erreur réseau.');
-      setBusy(false);
-    }
-  };
-
-  const refreshMembers = async () => {
-    if (!org) return;
-    setLoadingMembers(true);
-    try {
-      const res = await fetch(`/api/admin/orgs/members?orgId=${encodeURIComponent(org.id)}`);
-      if (res.ok) {
-        const d = (await res.json()) as { members?: OrgMember[]; pending?: PendingInvite[] };
-        setMembers(d.members ?? []);
-        setPending(d.pending ?? []);
-      }
-    } catch {
-      /* ignore */
-    }
-    setLoadingMembers(false);
-  };
-
-  useEffect(() => {
-    void refreshMembers();
-    void refreshSites();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [org]);
-
-  const changeRole = async (userId: string, role: MemberRole) => {
-    if (!org) return;
-    await fetch('/api/admin/orgs/members', {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ orgId: org.id, userId, role }),
-    });
-    void refreshMembers();
-    router.refresh();
-  };
-
-  const removeMem = async (userId: string) => {
-    if (!org) return;
-    await fetch(`/api/admin/orgs/members?orgId=${encodeURIComponent(org.id)}&userId=${encodeURIComponent(userId)}`, {
-      method: 'DELETE',
-    });
-    void refreshMembers();
-    router.refresh();
-  };
-
-  const revokeInvite = async (invitationId: string) => {
-    await fetch(`/api/admin/orgs/members?invitationId=${encodeURIComponent(invitationId)}`, { method: 'DELETE' });
-    void refreshMembers();
-  };
-
-  const sendInvite = async () => {
-    if (!org || !inviteEmail.trim()) return;
-    setBusy(true);
-    setError(null);
-    try {
-      const res = await fetch('/api/admin/orgs/members', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ orgId: org.id, email: inviteEmail.trim(), role: inviteRole }),
-      });
-      if (!res.ok) {
-        setError(errorLabel((await res.json().catch(() => ({}))).error));
-        setBusy(false);
-        return;
-      }
-      setInviteEmail('');
-      void refreshMembers();
-      setBusy(false);
+      // On atterrit sur la fiche pour compléter le reste (busy reste vrai le temps
+      // de la navigation : évite un double envoi).
+      router.push(`/admin/orgs/${data.id}`);
     } catch {
       setError('Erreur réseau.');
       setBusy(false);
@@ -1146,22 +949,22 @@ function OrgDrawer({ org, allOrgs, onClose }: { org: AdminOrgFull | null; allOrg
 
   return (
     <div className="admin-modal-overlay" onClick={onClose} role="presentation">
-      <div
-        className="admin-modal admin-modal-wide"
-        onClick={(e) => e.stopPropagation()}
-        role="dialog"
-        aria-modal="true"
-      >
+      <div className="admin-modal" onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true">
         <div className="admin-modal-head">
-          <h3>{isNew ? 'Nouvelle organisation' : org!.name}</h3>
+          <h3>Nouvelle organisation</h3>
           <button type="button" className="admin-modal-close" onClick={onClose} aria-label="Fermer">
             ×
           </button>
         </div>
-
         <div className="admin-field">
           <label>Nom</label>
-          <input className="admin-input" value={name} onChange={(e) => setName(e.target.value)} disabled={busy} />
+          <input
+            className="admin-input"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            disabled={busy}
+            autoFocus
+          />
         </div>
         <div className="admin-field">
           <label>Type</label>
@@ -1178,225 +981,16 @@ function OrgDrawer({ org, allOrgs, onClose }: { org: AdminOrgFull | null; allOrg
             ))}
           </select>
         </div>
-
-        {type === 'client' ? (
-          <div className="admin-field">
-            <label>Revendeur rattaché</label>
-            <select
-              className="admin-input"
-              value={resellerOrgId}
-              onChange={(e) => setResellerOrgId(e.target.value)}
-              disabled={busy}
-            >
-              <option value="">— Aucun —</option>
-              {resellerOptions.map((o) => (
-                <option key={o.id} value={o.id}>
-                  {o.name}
-                </option>
-              ))}
-            </select>
-          </div>
-        ) : null}
-        {type === 'reseller' ? (
-          <div className="admin-field">
-            <label>Distributeur rattaché</label>
-            <select
-              className="admin-input"
-              value={distributorOrgId}
-              onChange={(e) => setDistributorOrgId(e.target.value)}
-              disabled={busy}
-            >
-              <option value="">— Aucun —</option>
-              {distributorOptions.map((o) => (
-                <option key={o.id} value={o.id}>
-                  {o.name}
-                </option>
-              ))}
-            </select>
-          </div>
-        ) : null}
-
-        <div className="admin-field">
-          <label>Adresse</label>
-          <input className="admin-input" value={address} onChange={(e) => setAddress(e.target.value)} disabled={busy} />
-        </div>
-        <div className="admin-field-row">
-          <div className="admin-field">
-            <label>Code postal</label>
-            <input
-              className="admin-input"
-              value={postalCode}
-              onChange={(e) => setPostalCode(e.target.value)}
-              disabled={busy}
-            />
-          </div>
-          <div className="admin-field">
-            <label>Ville</label>
-            <input className="admin-input" value={city} onChange={(e) => setCity(e.target.value)} disabled={busy} />
-          </div>
-        </div>
-        <div className="admin-field">
-          <label>Pays</label>
-          <select className="admin-input" value={country} onChange={(e) => setCountry(e.target.value)} disabled={busy}>
-            <option value="">—</option>
-            {COUNTRIES.map((c) => (
-              <option key={c} value={c}>
-                {c}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="admin-field">
-          <label>Logo</label>
-          {isNew ? (
-            <p className="admin-modal-section-status">Enregistrez l&apos;organisation pour pouvoir téléverser un logo.</p>
-          ) : (
-            <div className="admin-logo-edit">
-              {logoUrl ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={logoUrl} alt="" className="admin-logo-preview" />
-              ) : (
-                <span className="admin-logo-empty">Aucun logo</span>
-              )}
-              <label className="admin-link-btn">
-                {busy ? '…' : logoUrl ? 'Remplacer' : 'Téléverser'}
-                <input
-                  type="file"
-                  accept="image/png,image/jpeg,image/webp,image/svg+xml,image/gif"
-                  style={{ display: 'none' }}
-                  disabled={busy}
-                  onChange={(e) => {
-                    const f = e.target.files?.[0];
-                    if (f) void uploadLogo(f);
-                    e.target.value = '';
-                  }}
-                />
-              </label>
-            </div>
-          )}
-        </div>
-
-        <div className="admin-field">
-          <label>Aperçu — en-tête de l&apos;espace revendeur</label>
-          {type === 'reseller' ? (
-            logoUrl ? (
-              <div className="admin-cobrand-preview">
-                <div className="ah-cobrand">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img className="ah-cobrand-logo" src={logoUrl} alt={name} />
-                  <span className="ah-cobrand-badge">Partenaire officiel Rutherford</span>
-                </div>
-              </div>
-            ) : (
-              <p className="admin-modal-section-status">
-                Téléversez un logo : il s&apos;affichera en haut de l&apos;espace de ce revendeur, comme le bandeau X-Rite.
-              </p>
-            )
-          ) : type === 'distributor' ? (
-            <div className="admin-cobrand-preview">
-              <div className="ah-cobrand">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img className="ah-cobrand-logo" src="/images/xrite-logo-black.png" alt="X-Rite PANTONE" />
-                <span className="ah-cobrand-badge">Partenaire officiel X-Rite PANTONE</span>
-              </div>
-            </div>
-          ) : (
-            <p className="admin-modal-section-status">Pas de bandeau co-marqué pour ce type de compte.</p>
-          )}
-        </div>
-
-        {!isNew ? (
-          <div className="admin-modal-members">
-            <h4 className="admin-modal-subhead">Membres{loadingMembers ? ' …' : ` (${members.length})`}</h4>
-            {!loadingMembers && members.length === 0 ? (
-              <p className="admin-modal-section-status">Aucun membre.</p>
-            ) : null}
-            {members.map((m) => (
-              <div className="admin-mem-row" key={m.userId}>
-                <span className="admin-mem-main">
-                  <span className="admin-mem-name">{m.name || m.email || '—'}</span>
-                  {m.email ? <span className="admin-mem-email">{m.email}</span> : null}
-                  {m.role === 'member' ? <MemberSiteAccess userId={m.userId} orgId={org!.id} sites={sites} /> : null}
-                </span>
-                <span className="ah-member-ctl">
-                  <select
-                    className="ah-role-select"
-                    value={m.role}
-                    disabled={busy}
-                    onChange={(e) => void changeRole(m.userId, e.target.value as MemberRole)}
-                  >
-                    <option value="owner">Propriétaire</option>
-                    <option value="admin">Admin</option>
-                    <option value="member">Membre</option>
-                  </select>
-                  <button
-                    type="button"
-                    className="ah-member-remove"
-                    disabled={busy}
-                    onClick={() => void removeMem(m.userId)}
-                    aria-label="Retirer"
-                  >
-                    ×
-                  </button>
-                </span>
-              </div>
-            ))}
-            {pending.map((p) => (
-              <div className="admin-mem-row" key={p.id}>
-                <span className="admin-mem-main">
-                  <span className="admin-mem-name">{p.email}</span>
-                  <span className="admin-mem-email">
-                    Invitation en attente · {MEMBER_ROLE_LABELS[p.role] ?? p.role}
-                  </span>
-                </span>
-                <button type="button" className="ah-revoke" disabled={busy} onClick={() => void revokeInvite(p.id)}>
-                  Révoquer
-                </button>
-              </div>
-            ))}
-            <div className="ah-invite-form">
-              <input
-                className="ah-invite-input"
-                type="email"
-                placeholder="email@société.com"
-                value={inviteEmail}
-                onChange={(e) => setInviteEmail(e.target.value)}
-                disabled={busy}
-              />
-              <select
-                className="ah-role-select"
-                value={inviteRole}
-                onChange={(e) => setInviteRole(e.target.value as 'admin' | 'member')}
-                disabled={busy}
-              >
-                <option value="member">Membre</option>
-                <option value="admin">Admin</option>
-              </select>
-              <button
-                type="button"
-                className="ah-invite-send"
-                onClick={() => void sendInvite()}
-                disabled={busy || !inviteEmail.trim()}
-              >
-                Inviter
-              </button>
-            </div>
-          </div>
-        ) : null}
-
-        {!isNew ? <OrgSitesSection orgId={org!.id} sites={sites} onChange={refreshSites} /> : null}
-
-        {!isNew ? <OrgSystemsSection orgId={org!.id} sites={sites} /> : null}
-
+        <p className="admin-modal-section-status">
+          Renseignez adresse, logo, membres, usines et systèmes sur la fiche de l&apos;organisation, une fois créée.
+        </p>
         {error ? <p className="admin-modal-error">{error}</p> : null}
-
         <div className="admin-modal-actions">
           <button type="button" className="button button-light" onClick={onClose} disabled={busy}>
             Annuler
           </button>
-          <button type="button" className="button button-accent" onClick={save} disabled={busy}>
-            {busy ? 'Enregistrement…' : isNew ? 'Créer' : 'Enregistrer'}
+          <button type="button" className="button button-accent" onClick={() => void create()} disabled={busy}>
+            {busy ? 'Création…' : 'Créer'}
           </button>
         </div>
       </div>
@@ -1404,21 +998,207 @@ function OrgDrawer({ org, allOrgs, onClose }: { org: AdminOrgFull | null; allOrg
   );
 }
 
+const TAB_KEYS: AdminTab[] = ['overview', 'accounts', 'validations', 'support', 'orgs', 'courses', 'journal'];
+
+// Les lignes de tableau sont cliquables (ouverture de la fiche ou dépliage du
+// détail). Un lien ou un bouton à l'intérieur garde son action propre : sans ce
+// stopPropagation, cliquer « Gérer » ou « Asana » déclencherait aussi la ligne.
+const stopRow = (e: ReactMouseEvent) => e.stopPropagation();
+
+function DetailField({ label, children }: { label: string; children: ReactNode }) {
+  return (
+    <div className="admin-detail-item">
+      <span className="admin-detail-label">{label}</span>
+      <span className="admin-detail-value">{children}</span>
+    </div>
+  );
+}
+
+// Bloc de texte libre (notes d'intake, description d'un ticket, réponse client) :
+// affiché tel quel, retours à la ligne compris.
+function DetailText({ label, value }: { label: string; value: string | null }) {
+  if (!value?.trim()) return null;
+  return (
+    <div className="admin-detail-block">
+      <span className="admin-detail-label">{label}</span>
+      <p className="admin-detail-text">{value}</p>
+    </div>
+  );
+}
+
+// Détail d'une validation console, déplié sous sa ligne. Tout vient de la ligne
+// déjà chargée — aucun appel supplémentaire au clic.
+function CvDetail({ cv }: { cv: AdminConsoleValidation }) {
+  return (
+    <div className="admin-detail">
+      <div className="admin-detail-grid">
+        <DetailField label="Société">{cv.company ?? '—'}</DetailField>
+        <DetailField label="Pays">{cv.country ?? '—'}</DetailField>
+        <DetailField label="Presse">{cv.machine ?? '—'}</DetailField>
+        <DetailField label="Statut">{CV_STATUS_LABELS[cv.status] ?? cv.status}</DetailField>
+        <DetailField label="Réf Pipedrive">{cv.pipedriveDealId ? `ID ${cv.pipedriveDealId}` : '—'}</DetailField>
+        <DetailField label="Reçue le">{fmtDateTime(cv.createdAt)}</DetailField>
+        <DetailField label="E-mail du contact">{cv.email}</DetailField>
+        <DetailField label="Compte">
+          {cv.userId ? (
+            <a className="admin-name-link" href={`/admin/users/${cv.userId}`}>
+              {cv.userEmail ?? 'Voir la fiche'}
+            </a>
+          ) : (
+            'Aucun compte rattaché'
+          )}
+        </DetailField>
+        <DetailField label="Assigné">{cv.assignee ?? '—'}</DetailField>
+        <DetailField label="Suivi par">{cv.followers?.length ? cv.followers.join(', ') : '—'}</DetailField>
+        <DetailField label="Validé par">
+          {cv.reviewedBy ? `${cv.reviewedBy}${cv.reviewedAt ? ` · ${fmtDate(cv.reviewedAt)}` : ''}` : '—'}
+        </DetailField>
+        <DetailField label="Code revendeur">{cv.refCode ?? '—'}</DetailField>
+        {cv.customerReplyAt ? (
+          <DetailField label="Réponse du client">{fmtDateTime(cv.customerReplyAt)}</DetailField>
+        ) : null}
+        {cv.deletedAt ? (
+          <DetailField label="Supprimée">
+            {fmtDateTime(cv.deletedAt)}
+            {cv.deletedSource ? ` · ${cv.deletedSource}` : ''}
+          </DetailField>
+        ) : null}
+      </div>
+
+      <DetailText label="Notes du client" value={cv.notes} />
+      <DetailText label="Dernière réponse du client" value={cv.customerReply} />
+
+      <div className="admin-detail-links">
+        {cv.asanaUrl ? (
+          <a href={cv.asanaUrl} target="_blank" rel="noreferrer">
+            Ouvrir dans Asana
+          </a>
+        ) : null}
+        {cv.pipedriveUrl ? (
+          <a href={cv.pipedriveUrl} target="_blank" rel="noreferrer">
+            Ouvrir dans Pipedrive
+          </a>
+        ) : null}
+        {cv.dropboxLink ? (
+          <a href={cv.dropboxLink} target="_blank" rel="noreferrer">
+            Photos sur Dropbox
+          </a>
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
+// Détail d'un ticket de support, même principe.
+function SupportDetail({ ticket }: { ticket: AdminSupportTicket }) {
+  return (
+    <div className="admin-detail">
+      <div className="admin-detail-grid">
+        <DetailField label="Société">{ticket.company ?? '—'}</DetailField>
+        <DetailField label="Sujet">{ticket.subject ?? '—'}</DetailField>
+        <DetailField label="Demandeur">{ticket.name ?? '—'}</DetailField>
+        <DetailField label="E-mail">{ticket.email}</DetailField>
+        <DetailField label="Compte">
+          {ticket.userId ? (
+            <a className="admin-name-link" href={`/admin/users/${ticket.userId}`}>
+              {ticket.userEmail ?? 'Voir la fiche'}
+            </a>
+          ) : (
+            'Aucun compte rattaché'
+          )}
+        </DetailField>
+        <DetailField label="Statut">{SUPPORT_STATUS_LABELS[ticket.status] ?? ticket.status}</DetailField>
+        <DetailField label="Assigné">{ticket.assignee ?? '—'}</DetailField>
+        <DetailField label="Ouvert le">{fmtDateTime(ticket.createdAt)}</DetailField>
+        <DetailField label="AnyDesk">{ticket.anydesk ?? '—'}</DetailField>
+        {ticket.customerReplyAt ? (
+          <DetailField label="Réponse du client">{fmtDateTime(ticket.customerReplyAt)}</DetailField>
+        ) : null}
+      </div>
+
+      <DetailText label="Demande" value={ticket.description} />
+      <DetailText label="Dernier message de l’équipe" value={ticket.agentMessage} />
+      <DetailText label="Dernière réponse du client" value={ticket.customerReply} />
+
+      <div className="admin-detail-links">
+        {ticket.asanaUrl ? (
+          <a href={ticket.asanaUrl} target="_blank" rel="noreferrer">
+            Ouvrir dans Asana
+          </a>
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
+// Cible d'une entrée du journal, quand elle pointe vers une fiche existante.
+function auditTargetHref(entry: AuditEntry): string | null {
+  if (!entry.targetId) return null;
+  if (entry.targetType === 'user') return `/admin/users/${entry.targetId}`;
+  if (entry.targetType === 'organization') return `/admin/orgs/${entry.targetId}`;
+  return null;
+}
+
 export function AdminDashboard({
   overview,
   orgs,
   orgsFull,
+  auditLog,
   selfId,
   canManage,
+  canGrantAdmin = false,
 }: {
   overview: AdminOverview;
   orgs: { clients: AdminOrg[]; resellers: { id: string; name: string }[] };
   orgsFull: AdminOrgFull[];
+  auditLog: AuditEntry[];
   selfId: string;
   canManage: boolean;
+  canGrantAdmin?: boolean;
 }) {
   const { users, courses, consoleValidations, supportTickets, totals } = overview;
-  const [tab, setTab] = useState<AdminTab>('overview');
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  // Onglet et cours ouverts initialisés depuis l'URL (?tab=&course=) : deep-link
+  // et refresh-safe (brief § 4.2.3 / § 4.4). Le set d'onglets est inchangé.
+  const [tab, setTab] = useState<AdminTab>(() => {
+    const t = searchParams.get('tab');
+    return t && (TAB_KEYS as string[]).includes(t) ? (t as AdminTab) : 'overview';
+  });
+  const [openCourse, setOpenCourse] = useState<string | null>(() => searchParams.get('course'));
+  // Lignes dépliées (Validations / Support) — une seule à la fois, comme les cours.
+  const [openCv, setOpenCv] = useState<string | null>(null);
+  const [openTicket, setOpenTicket] = useState<string | null>(null);
+
+  // Synchronise l'URL avec (onglet, cours) SANS navigation ni refetch serveur.
+  // history.replaceState est la voie réellement « shallow » de l'App Router : la
+  // page est en force-dynamic, un router.replace relancerait getAdminOverview à
+  // chaque clic d'onglet. On garde le deep-link / refresh-safe puisque l'état
+  // initial est lu depuis les searchParams au montage.
+  useEffect(() => {
+    const params = new URLSearchParams();
+    params.set('tab', tab);
+    if (tab === 'courses' && openCourse) params.set('course', openCourse);
+    const qs = params.toString();
+    window.history.replaceState(null, '', qs ? `${pathname}?${qs}` : pathname);
+  }, [tab, openCourse, pathname]);
+
+  // Ligne cliquable qui ouvre une fiche. L'ancre du premier libellé reste en
+  // place : c'est elle le chemin clavier / lecteur d'écran, la ligne n'est
+  // qu'un raccourci souris.
+  const rowLink = (href: string) => ({
+    className: 'admin-row-link',
+    onClick: () => router.push(href),
+  });
+  // Ligne cliquable qui déplie son détail au lieu de naviguer (Validations,
+  // Support, Cours) — le chevron de la première cellule porte l'état ARIA.
+  const rowToggle = (open: boolean, toggle: () => void) => ({
+    className: `admin-row-link${open ? ' admin-row-open' : ''}`,
+    onClick: toggle,
+  });
+
   const [query, setQuery] = useState('');
   const [editing, setEditing] = useState<AdminUser | null>(null);
   const [segment, setSegment] = useState('all');
@@ -1430,12 +1210,25 @@ export function AdminDashboard({
   const [cvQuery, setCvQuery] = useState('');
   const [supportFilter, setSupportFilter] = useState('');
   const [supportQuery, setSupportQuery] = useState('');
-  const [editingOrg, setEditingOrg] = useState<AdminOrgFull | null>(null);
   const [creatingOrg, setCreatingOrg] = useState(false);
 
   const countryOptions = useMemo(
     () => (Array.from(new Set(users.map((u) => u.country).filter(Boolean))) as string[]).sort(),
     [users]
+  );
+
+  const orgById = useMemo(() => new Map(orgsFull.map((o) => [o.id, o] as const)), [orgsFull]);
+  // Identité par userId pour le drill-down « Cours » (brief § 4.2.2) : on joint
+  // course.learnerDetails.userId à la liste des comptes déjà en mémoire.
+  const userById = useMemo(() => new Map(users.map((u) => [u.id, u] as const)), [users]);
+  // « Société » affichée / triée / cherchée / exportée : le nom de
+  // l'organisation prime, l'ancien texte libre profiles.company n'est qu'un
+  // repli hérité (brief § 3.2.2).
+  const companyOf = useMemo(
+    () =>
+      (u: AdminUser): string | null =>
+        (u.orgId ? orgById.get(u.orgId)?.name ?? null : null) ?? u.company,
+    [orgById]
   );
 
   // Counts for the segment chips (computed over the full set, not the filtered one).
@@ -1455,7 +1248,7 @@ export function AdminDashboard({
       if (activityFilter === 'inactive' && (isAccountActive(u) || !u.onboarded)) return false;
       if (
         q &&
-        ![u.name, u.email, u.company, u.country, u.jobTitle].some((f) => (f ?? '').toLowerCase().includes(q))
+        ![u.name, u.email, companyOf(u), u.country, u.jobTitle].some((f) => (f ?? '').toLowerCase().includes(q))
       )
         return false;
       return true;
@@ -1466,7 +1259,7 @@ export function AdminDashboard({
         case 'name':
           return (u.name ?? u.email ?? '').toLowerCase();
         case 'company':
-          return (u.company ?? '').toLowerCase();
+          return (companyOf(u) ?? '').toLowerCase();
         case 'country':
           return (u.country ?? '').toLowerCase();
         case 'activity':
@@ -1484,7 +1277,7 @@ export function AdminDashboard({
       if (va > vb) return dir;
       return 0;
     });
-  }, [users, segment, countryFilter, activityFilter, query, sortKey, sortDir]);
+  }, [users, segment, countryFilter, activityFilter, query, sortKey, sortDir, companyOf]);
 
   const newThisWeek = useMemo(() => users.filter((u) => withinDays(u.signupAt, 7)).slice(0, 8), [users]);
   const toReengage = useMemo(
@@ -1538,7 +1331,14 @@ export function AdminDashboard({
   const filteredCv = useMemo(() => {
     const q = cvQuery.trim().toLowerCase();
     return consoleValidations.filter((c) => {
-      if (cvFilter && c.status !== cvFilter) return false;
+      // Les demandes supprimées dans Asana (tests, doublons) sont masquées côté
+      // client ; ici elles sortent de la liste sauf via le filtre dédié.
+      if (cvFilter === CV_DELETED_FILTER) {
+        if (!c.deletedAt) return false;
+      } else {
+        if (c.deletedAt) return false;
+        if (cvFilter && c.status !== cvFilter) return false;
+      }
       if (!q) return true;
       // Match a person across both the submission email and the account email
       // (so requests sent before the account existed — user_id still null — are
@@ -1559,8 +1359,6 @@ export function AdminDashboard({
     });
   }, [consoleValidations, cvFilter, cvQuery]);
 
-  const orgById = useMemo(() => new Map(orgsFull.map((o) => [o.id, o] as const)), [orgsFull]);
-
   const filteredSupport = useMemo(() => {
     const q = supportQuery.trim().toLowerCase();
     return supportTickets.filter((t) => {
@@ -1571,7 +1369,7 @@ export function AdminDashboard({
   }, [supportTickets, supportFilter, supportQuery]);
 
   const downloadCsv = () => {
-    const blob = new Blob(['﻿' + toCsv(filteredAccounts)], { type: 'text/csv;charset=utf-8;' });
+    const blob = new Blob(['﻿' + toCsv(filteredAccounts, companyOf)], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -1585,10 +1383,17 @@ export function AdminDashboard({
   const ADMIN_TABS: { key: AdminTab; label: string; count: number | null }[] = [
     { key: 'overview', label: 'Vue d’ensemble', count: null },
     { key: 'accounts', label: 'Comptes', count: totals.users },
-    { key: 'validations', label: 'Validations', count: consoleValidations.length },
+    {
+      key: 'validations',
+      label: 'Validations',
+      // Les supprimées ne comptent pas dans l'onglet (elles restent atteignables
+      // via le filtre « Supprimées dans Asana »).
+      count: consoleValidations.filter((c) => !c.deletedAt).length,
+    },
     { key: 'support', label: 'Support', count: supportTickets.length },
     { key: 'orgs', label: 'Organisations', count: orgsFull.length },
     { key: 'courses', label: 'Cours', count: courses.length },
+    { key: 'journal', label: 'Journal', count: auditLog.length },
   ];
 
   const sortTh = (key: AccountSortKey, label: string) => (
@@ -1608,7 +1413,7 @@ export function AdminDashboard({
 
   return (
     <main className="page-shell" id="top">
-      <SiteNav />
+      <SiteNav current="admin" />
 
       <section className="admin-section section">
         <div className="container">
@@ -1688,6 +1493,24 @@ export function AdminDashboard({
                     <span className="admin-total-label">Academy Pass actifs</span>
                   </button>
                 </li>
+                <li>
+                  <button
+                    type="button"
+                    className="admin-total admin-total-btn"
+                    onClick={() => {
+                      // Cette tuile applique réellement son filtre : onglet
+                      // Comptes ouvert directement sur le segment « À qualifier ».
+                      setSegment('unqualified');
+                      setCountryFilter('');
+                      setActivityFilter('');
+                      setQuery('');
+                      setTab('accounts');
+                    }}
+                  >
+                    <span className="admin-total-value">{segmentCounts.unqualified ?? 0}</span>
+                    <span className="admin-total-label">Comptes à qualifier</span>
+                  </button>
+                </li>
               </ul>
 
               <div className="admin-overview-grid">
@@ -1701,7 +1524,7 @@ export function AdminDashboard({
                         <li key={u.id}>
                           <a className="admin-mini-row" href={`/admin/users/${u.id}`}>
                             <span className="admin-mini-name">{u.name || u.email}</span>
-                            <span className="admin-mini-meta">{(u.company ?? '—') + ' · ' + fmtDate(u.signupAt)}</span>
+                            <span className="admin-mini-meta">{(companyOf(u) ?? '—') + ' · ' + fmtDate(u.signupAt)}</span>
                           </a>
                         </li>
                       ))}
@@ -1721,7 +1544,7 @@ export function AdminDashboard({
                         <li key={u.id}>
                           <a className="admin-mini-row" href={`/admin/users/${u.id}`}>
                             <span className="admin-mini-name">{u.name || u.email}</span>
-                            <span className="admin-mini-meta">{(u.company ?? '—') + ' · vu ' + fmtDate(u.lastActiveAt)}</span>
+                            <span className="admin-mini-meta">{(companyOf(u) ?? '—') + ' · vu ' + fmtDate(u.lastActiveAt)}</span>
                           </a>
                         </li>
                       ))}
@@ -1825,24 +1648,32 @@ export function AdminDashboard({
                     {filteredAccounts.map((u) => {
                       const org = u.orgId ? orgById.get(u.orgId) : undefined;
                       return (
-                        <tr key={u.id}>
+                        <tr key={u.id} {...rowLink(`/admin/users/${u.id}`)}>
                           <td>
-                            <a className="admin-name-link" href={`/admin/users/${u.id}`}>
+                            <a className="admin-name-link" href={`/admin/users/${u.id}`} onClick={stopRow}>
                               {u.name || u.email}
                             </a>
                             {u.isAdmin ? <span className="admin-badge">admin</span> : null}
                             {u.suspended ? <span className="admin-badge admin-badge-warn">suspendu</span> : null}
+                            {u.accountTypeSource === 'unqualified' && declaresPartner(u) ? (
+                              <span className="admin-badge">Se déclare partenaire</span>
+                            ) : null}
                             {u.name ? <span className="admin-cv-sub">{u.email}</span> : null}
                           </td>
                           <td>
                             {org ? (
-                              <button type="button" className="admin-company-link" onClick={() => setEditingOrg(org)}>
+                              // Le nom de l'org prime sur l'ancien texte libre (brief
+                              // § 3.2.2). Simple lien vers la page organisation : plus
+                              // de tiroir ici — l'ancienne entrée n'était pas gatée
+                              // canManage et ouvrait un formulaire mort en lecture
+                              // seule (brief § 4.2.10).
+                              <a className="admin-company-link" href={`/admin/orgs/${org.id}`} onClick={stopRow}>
                                 {org.logoUrl ? (
                                   // eslint-disable-next-line @next/next/no-img-element
                                   <img src={org.logoUrl} alt="" className="admin-company-logo" />
                                 ) : null}
-                                <span>{u.company ?? org.name}</span>
-                              </button>
+                                <span>{org.name}</span>
+                              </a>
                             ) : (
                               u.company ?? '—'
                             )}
@@ -1858,7 +1689,14 @@ export function AdminDashboard({
                           </td>
                           <td>
                             {canManage ? (
-                              <button type="button" className="admin-link-btn" onClick={() => setEditing(u)}>
+                              <button
+                                type="button"
+                                className="admin-link-btn"
+                                onClick={(e) => {
+                                  stopRow(e);
+                                  setEditing(u);
+                                }}
+                              >
                                 Gérer
                               </button>
                             ) : null}
@@ -1904,6 +1742,7 @@ export function AdminDashboard({
                         {CV_STATUS_LABELS[s]}
                       </option>
                     ))}
+                    <option value={CV_DELETED_FILTER}>Supprimées dans Asana</option>
                   </select>
                 </div>
               </div>
@@ -1925,42 +1764,80 @@ export function AdminDashboard({
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredCv.map((c) => (
-                      <tr key={c.id}>
-                        <td>{fmtDate(c.createdAt)}</td>
-                        <td>{c.company ?? '—'}</td>
-                        <td>{c.country ?? '—'}</td>
-                        <td>{c.machine ?? '—'}</td>
-                        <td>
-                          <span className={`admin-status admin-status-${CV_STATUS_TONE[c.status] ?? 'review'}`}>
-                            {CV_STATUS_LABELS[c.status] ?? c.status}
-                          </span>
-                        </td>
-                        <td>{c.pipedriveDealId ? `ID ${c.pipedriveDealId}` : '—'}</td>
-                        <td className="admin-email">{c.email}</td>
-                        <td className="admin-email">{c.userEmail ?? '—'}</td>
-                        <td>
-                          {c.assignee ?? '—'}
-                          {c.followers && c.followers.length ? (
-                            <span className="admin-cv-sub">Suivi : {c.followers.join(', ')}</span>
+                    {filteredCv.map((c) => {
+                      const isOpen = openCv === c.id;
+                      return (
+                        <Fragment key={c.id}>
+                          <tr {...rowToggle(isOpen, () => setOpenCv(isOpen ? null : c.id))}>
+                            <td>
+                              <button
+                                type="button"
+                                className="admin-row-toggle"
+                                aria-expanded={isOpen}
+                                aria-label={`Détail de la validation ${c.pipedriveDealId ? `ID ${c.pipedriveDealId}` : c.company ?? ''}`}
+                                onClick={(e) => {
+                                  stopRow(e);
+                                  setOpenCv(isOpen ? null : c.id);
+                                }}
+                              >
+                                <span aria-hidden="true">{isOpen ? '▾' : '▸'}</span>
+                              </button>
+                              {fmtDate(c.createdAt)}
+                            </td>
+                            <td>{c.company ?? '—'}</td>
+                            <td>{c.country ?? '—'}</td>
+                            <td>{c.machine ?? '—'}</td>
+                            <td>
+                              <span className={`admin-status admin-status-${CV_STATUS_TONE[c.status] ?? 'review'}`}>
+                                {CV_STATUS_LABELS[c.status] ?? c.status}
+                              </span>
+                              {c.deletedAt ? (
+                                <span className="admin-cv-sub">Supprimée dans Asana le {fmtDate(c.deletedAt)}</span>
+                              ) : null}
+                            </td>
+                            <td>{c.pipedriveDealId ? `ID ${c.pipedriveDealId}` : '—'}</td>
+                            <td className="admin-email">{c.email}</td>
+                            <td className="admin-email">
+                              {/* Lien croisé vers la fiche du compte (brief § 4.2.4). */}
+                              {c.userId ? (
+                                <a className="admin-name-link" href={`/admin/users/${c.userId}`} onClick={stopRow}>
+                                  {c.userEmail ?? '—'}
+                                </a>
+                              ) : (
+                                c.userEmail ?? '—'
+                              )}
+                            </td>
+                            <td>
+                              {c.assignee ?? '—'}
+                              {c.followers && c.followers.length ? (
+                                <span className="admin-cv-sub">Suivi : {c.followers.join(', ')}</span>
+                              ) : null}
+                            </td>
+                            <td>{c.reviewedBy ?? '—'}</td>
+                            <td className="admin-cv-links">
+                              {c.asanaUrl ? (
+                                <a href={c.asanaUrl} target="_blank" rel="noreferrer" onClick={stopRow}>
+                                  Asana
+                                </a>
+                              ) : null}
+                              {c.pipedriveUrl ? (
+                                <a href={c.pipedriveUrl} target="_blank" rel="noreferrer" onClick={stopRow}>
+                                  Pipedrive
+                                </a>
+                              ) : null}
+                              {!c.asanaUrl && !c.pipedriveUrl ? '—' : null}
+                            </td>
+                          </tr>
+                          {isOpen ? (
+                            <tr className="admin-detail-row">
+                              <td colSpan={11}>
+                                <CvDetail cv={c} />
+                              </td>
+                            </tr>
                           ) : null}
-                        </td>
-                        <td>{c.reviewedBy ?? '—'}</td>
-                        <td className="admin-cv-links">
-                          {c.asanaUrl ? (
-                            <a href={c.asanaUrl} target="_blank" rel="noreferrer">
-                              Asana
-                            </a>
-                          ) : null}
-                          {c.pipedriveUrl ? (
-                            <a href={c.pipedriveUrl} target="_blank" rel="noreferrer">
-                              Pipedrive
-                            </a>
-                          ) : null}
-                          {!c.asanaUrl && !c.pipedriveUrl ? '—' : null}
-                        </td>
-                      </tr>
-                    ))}
+                        </Fragment>
+                      );
+                    })}
                     {filteredCv.length === 0 ? (
                       <tr>
                         <td colSpan={11} className="admin-empty">
@@ -2015,31 +1892,72 @@ export function AdminDashboard({
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredSupport.map((t) => (
-                      <tr key={t.id}>
-                        <td>{fmtDate(t.createdAt)}</td>
-                        <td>
-                          {t.name ?? '—'}
-                          <span className="admin-cv-sub">{t.email}</span>
-                        </td>
-                        <td className="admin-email">{t.userEmail ?? '—'}</td>
-                        <td>
-                          <span className={`admin-status admin-status-${SUPPORT_STATUS_TONE[t.status] ?? 'review'}`}>
-                            {SUPPORT_STATUS_LABELS[t.status] ?? t.status}
-                          </span>
-                        </td>
-                        <td>{t.assignee ?? '—'}</td>
-                        <td className="admin-cv-links">
-                          {t.asanaUrl ? (
-                            <a href={t.asanaUrl} target="_blank" rel="noreferrer">
-                              Asana
-                            </a>
-                          ) : (
-                            '—'
-                          )}
-                        </td>
-                      </tr>
-                    ))}
+                    {filteredSupport.map((t) => {
+                      const isOpen = openTicket === t.id;
+                      return (
+                        <Fragment key={t.id}>
+                          <tr {...rowToggle(isOpen, () => setOpenTicket(isOpen ? null : t.id))}>
+                            <td>
+                              <button
+                                type="button"
+                                className="admin-row-toggle"
+                                aria-expanded={isOpen}
+                                aria-label={`Détail du ticket de ${t.name ?? t.email}`}
+                                onClick={(e) => {
+                                  stopRow(e);
+                                  setOpenTicket(isOpen ? null : t.id);
+                                }}
+                              >
+                                <span aria-hidden="true">{isOpen ? '▾' : '▸'}</span>
+                              </button>
+                              {fmtDate(t.createdAt)}
+                            </td>
+                            <td>
+                              {/* Lien croisé vers la fiche du compte (brief § 4.2.4). */}
+                              {t.userId ? (
+                                <a className="admin-name-link" href={`/admin/users/${t.userId}`} onClick={stopRow}>
+                                  {t.name ?? t.email}
+                                </a>
+                              ) : (
+                                t.name ?? '—'
+                              )}
+                              <span className="admin-cv-sub">{t.email}</span>
+                            </td>
+                            <td className="admin-email">
+                              {t.userId ? (
+                                <a className="admin-name-link" href={`/admin/users/${t.userId}`} onClick={stopRow}>
+                                  {t.userEmail ?? '—'}
+                                </a>
+                              ) : (
+                                t.userEmail ?? '—'
+                              )}
+                            </td>
+                            <td>
+                              <span className={`admin-status admin-status-${SUPPORT_STATUS_TONE[t.status] ?? 'review'}`}>
+                                {SUPPORT_STATUS_LABELS[t.status] ?? t.status}
+                              </span>
+                            </td>
+                            <td>{t.assignee ?? '—'}</td>
+                            <td className="admin-cv-links">
+                              {t.asanaUrl ? (
+                                <a href={t.asanaUrl} target="_blank" rel="noreferrer" onClick={stopRow}>
+                                  Asana
+                                </a>
+                              ) : (
+                                '—'
+                              )}
+                            </td>
+                          </tr>
+                          {isOpen ? (
+                            <tr className="admin-detail-row">
+                              <td colSpan={6}>
+                                <SupportDetail ticket={t} />
+                              </td>
+                            </tr>
+                          ) : null}
+                        </Fragment>
+                      );
+                    })}
                     {filteredSupport.length === 0 ? (
                       <tr>
                         <td colSpan={6} className="admin-empty">
@@ -2080,16 +1998,23 @@ export function AdminDashboard({
                     </thead>
                     <tbody>
                       {orgsFull.map((o) => (
-                        <tr key={o.id}>
+                        <tr key={o.id} {...rowLink(`/admin/orgs/${o.id}`)}>
                           <td>
                             {o.logoUrl ? (
                               // eslint-disable-next-line @next/next/no-img-element
                               <img src={o.logoUrl} alt="" className="admin-logo-thumb" />
                             ) : (
-                              <span className="admin-logo-empty">—</span>
+                              <span className="admin-logo-empty">{orgInitials(o.name)}</span>
                             )}
                           </td>
-                          <td>{o.name}</td>
+                          <td>
+                            {/* Nom cliquable vers la fiche organisation (brief § 4.2.3) :
+                                consultation ET édition. Le tiroir « Gérer » est retiré —
+                                tout se passe sur la page (décision du 19/07/2026). */}
+                            <a className="admin-name-link" href={`/admin/orgs/${o.id}`} onClick={stopRow}>
+                              {o.name}
+                            </a>
+                          </td>
                           <td>
                             <AccountTypeBadge type={o.type as AccountType} />
                           </td>
@@ -2098,11 +2023,11 @@ export function AdminDashboard({
                           <td className="admin-num">{o.memberCount}</td>
                           <td>{o.resellerName ?? o.distributorName ?? '—'}</td>
                           <td>
-                            {canManage ? (
-                              <button type="button" className="admin-link-btn" onClick={() => setEditingOrg(o)}>
-                                Gérer
-                              </button>
-                            ) : null}
+                            {/* L'édition vit sur la page : simple lien « Ouvrir »
+                                (accessible même en lecture seule, la fiche gère les droits). */}
+                            <a className="admin-link-btn" href={`/admin/orgs/${o.id}`} onClick={stopRow}>
+                              Ouvrir
+                            </a>
                           </td>
                         </tr>
                       ))}
@@ -2153,6 +2078,7 @@ export function AdminDashboard({
               <div className="admin-block-head">
                 <h2>Par cours</h2>
               </div>
+              <p className="admin-modal-section-status">Cliquez sur un cours pour voir qui le suit.</p>
               <div className="admin-table-wrap">
                 <table className="admin-table">
                   <thead>
@@ -2165,15 +2091,168 @@ export function AdminDashboard({
                     </tr>
                   </thead>
                   <tbody>
-                    {courses.map((c) => (
-                      <tr key={c.slug}>
-                        <td>{c.title}</td>
-                        <td>{c.tone === 'premium' ? 'Premium' : 'Gratuit'}</td>
-                        <td className="admin-num">{c.learners}</td>
-                        <td className="admin-num">{c.certified}</td>
-                        <td className="admin-num">{c.avgQuizPct != null ? `${c.avgQuizPct}%` : '—'}</td>
+                    {courses.map((c) => {
+                      const isOpen = openCourse === c.slug;
+                      const total = MODULE_TOTAL_BY_SLUG.get(c.slug) ?? null;
+                      return (
+                        <Fragment key={c.slug}>
+                          <tr {...rowToggle(isOpen, () => setOpenCourse(isOpen ? null : c.slug))}>
+                            <td>
+                              {/* Ligne cliquable → apprenants du cours, deep-linkée
+                                  via ?course=slug (brief § 4.2.2). Le bouton reste le
+                                  point d'entrée clavier ; la ligne entière suit au clic. */}
+                              <button
+                                type="button"
+                                className="admin-company-link"
+                                aria-expanded={isOpen}
+                                onClick={(e) => {
+                                  stopRow(e);
+                                  setOpenCourse(isOpen ? null : c.slug);
+                                }}
+                              >
+                                <span aria-hidden="true">{isOpen ? '▾ ' : '▸ '}</span>
+                                <span>{c.title}</span>
+                              </button>
+                            </td>
+                            <td>{c.tone === 'premium' ? 'Premium' : 'Gratuit'}</td>
+                            <td className="admin-num">{c.learners}</td>
+                            <td className="admin-num">{c.certified}</td>
+                            <td className="admin-num">{c.avgQuizPct != null ? `${c.avgQuizPct}%` : '—'}</td>
+                          </tr>
+                          {isOpen ? (
+                            <tr>
+                              <td colSpan={5}>
+                                <div className="admin-modal-members">
+                                  <h4 className="admin-modal-subhead">{c.learnerDetails.length} apprenants</h4>
+                                  {c.learnerDetails.length === 0 ? (
+                                    <p className="admin-modal-section-status">Aucun apprenant pour ce cours.</p>
+                                  ) : (
+                                    <table className="admin-table">
+                                      <thead>
+                                        <tr>
+                                          <th>Nom</th>
+                                          <th>E-mail</th>
+                                          <th className="admin-num">Modules faits</th>
+                                          <th className="admin-num">Meilleur score QCM</th>
+                                          <th>Certifié</th>
+                                        </tr>
+                                      </thead>
+                                      <tbody>
+                                        {c.learnerDetails.map((l) => {
+                                          const u = userById.get(l.userId);
+                                          return (
+                                            <tr key={l.userId}>
+                                              <td>
+                                                <a
+                                                  className="admin-name-link"
+                                                  href={`/admin/users/${l.userId}`}
+                                                >
+                                                  {u?.name || u?.email || '—'}
+                                                </a>
+                                              </td>
+                                              <td className="admin-email">
+                                                {u?.email ? (
+                                                  <a
+                                                    className="admin-name-link"
+                                                    href={`/admin/users/${l.userId}`}
+                                                  >
+                                                    {u.email}
+                                                  </a>
+                                                ) : (
+                                                  '—'
+                                                )}
+                                              </td>
+                                              <td className="admin-num">
+                                                {total != null ? `${l.modulesDone}/${total}` : l.modulesDone}
+                                              </td>
+                                              <td className="admin-num">
+                                                {l.bestQuizPct != null ? `${l.bestQuizPct}%` : '—'}
+                                              </td>
+                                              <td>
+                                                {l.certified ? (
+                                                  <span className="admin-badge">Certifié</span>
+                                                ) : (
+                                                  '—'
+                                                )}
+                                              </td>
+                                            </tr>
+                                          );
+                                        })}
+                                      </tbody>
+                                    </table>
+                                  )}
+                                </div>
+                              </td>
+                            </tr>
+                          ) : null}
+                        </Fragment>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          ) : null}
+
+          {tab === 'journal' ? (
+            <div className="admin-block">
+              <div className="admin-block-head">
+                <h2>Journal d’audit ({auditLog.length})</h2>
+              </div>
+              <p className="admin-modal-section-status">
+                Trace des actions du back-office (les plus récentes en premier).
+              </p>
+              <div className="admin-table-wrap">
+                <table className="admin-table">
+                  <thead>
+                    <tr>
+                      <th>Date / heure</th>
+                      <th>Acteur</th>
+                      <th>Action</th>
+                      <th>Cible</th>
+                      <th>Résumé</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {auditLog.map((e) => {
+                      // La ligne mène à sa cible quand celle-ci a une fiche
+                      // (compte, organisation) ; pour une validation console on
+                      // bascule sur l'onglet Validations, ligne dépliée.
+                      const href = auditTargetHref(e);
+                      const cvTarget =
+                        e.targetType === 'console_validation' && e.targetId ? e.targetId : null;
+                      const rowProps = href
+                        ? rowLink(href)
+                        : cvTarget
+                          ? {
+                              className: 'admin-row-link',
+                              onClick: () => {
+                                // Une validation masquée n'apparaît que sous son
+                                // filtre : sans ça, le lien tomberait dans le vide.
+                                setCvFilter(e.action === 'console_validation.hide' ? CV_DELETED_FILTER : '');
+                                setCvQuery('');
+                                setOpenCv(cvTarget);
+                                setTab('validations');
+                              },
+                            }
+                          : {};
+                      return (
+                        <tr key={e.id} {...rowProps}>
+                          <td>{fmtDateTime(e.createdAt)}</td>
+                          <td className="admin-email">{e.actorEmail ?? e.actorId ?? '—'}</td>
+                          <td>{auditActionLabel(e.action)}</td>
+                          <td>{auditTarget(e)}</td>
+                          <td>{e.summary ?? '—'}</td>
+                        </tr>
+                      );
+                    })}
+                    {auditLog.length === 0 ? (
+                      <tr>
+                        <td colSpan={5} className="admin-empty">
+                          Aucune action enregistrée.
+                        </td>
                       </tr>
-                    ))}
+                    ) : null}
                   </tbody>
                 </table>
               </div>
@@ -2182,17 +2261,10 @@ export function AdminDashboard({
         </div>
       </section>
 
-      {editing ? <UserDrawer user={editing} isSelf={editing.id === selfId} onClose={() => setEditing(null)} /> : null}
-      {creatingOrg || editingOrg ? (
-        <OrgDrawer
-          org={editingOrg}
-          allOrgs={orgsFull}
-          onClose={() => {
-            setEditingOrg(null);
-            setCreatingOrg(false);
-          }}
-        />
+      {editing ? (
+        <UserDrawer user={editing} orgOptions={orgsFull} isSelf={editing.id === selfId} canGrantAdmin={canGrantAdmin} onClose={() => setEditing(null)} />
       ) : null}
+      {creatingOrg ? <OrgCreateModal onClose={() => setCreatingOrg(false)} /> : null}
 
       <SiteFooter />
     </main>

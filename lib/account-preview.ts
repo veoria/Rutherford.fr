@@ -32,6 +32,9 @@ export async function getAccountHubPreview(userId: string): Promise<Omit<Account
       .from('console_validations')
       .select('machine, country, company, status, created_at, pipedrive_deal_id')
       .eq('user_id', userId)
+      // Service-role read: exclude what Asana trashed, so the preview shows the
+      // account exactly as the client sees it.
+      .is('deleted_at', null)
       .order('created_at', { ascending: false }),
     admin.from('support_tickets').select('id, status, updated_at').eq('user_id', userId).order('updated_at', { ascending: false }),
   ]);

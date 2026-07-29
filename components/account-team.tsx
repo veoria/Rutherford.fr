@@ -11,7 +11,6 @@ import type { AccountType } from '@/data/account-types';
 import type { MemberRole, OrgMember, PendingInvite, ResellerClientOrg, Team } from '@/lib/organizations';
 
 type TeamCopy = {
-  eyebrow: string;
   title: string;
   members: (n: number) => string;
   pending: (n: number) => string;
@@ -41,7 +40,6 @@ type TeamCopy = {
 
 const COPY: Record<Locale, TeamCopy> = {
   en: {
-    eyebrow: 'Partner area',
     title: 'My team',
     members: (n) => `${n} member${n > 1 ? 's' : ''}`,
     pending: (n) => `${n} pending invitation${n > 1 ? 's' : ''}`,
@@ -69,7 +67,6 @@ const COPY: Record<Locale, TeamCopy> = {
     actions: 'Member actions',
   },
   fr: {
-    eyebrow: 'Espace partenaire',
     title: 'Mon équipe',
     members: (n) => `${n} membre${n > 1 ? 's' : ''}`,
     pending: (n) => `${n} invitation${n > 1 ? 's' : ''} en attente`,
@@ -97,7 +94,6 @@ const COPY: Record<Locale, TeamCopy> = {
     actions: 'Actions du membre',
   },
   de: {
-    eyebrow: 'Partnerbereich',
     title: 'Mein Team',
     members: (n) => `${n} Mitglied${n > 1 ? 'er' : ''}`,
     pending: (n) => `${n} ausstehende Einladung${n > 1 ? 'en' : ''}`,
@@ -125,7 +121,6 @@ const COPY: Record<Locale, TeamCopy> = {
     actions: 'Mitglieder-Aktionen',
   },
   it: {
-    eyebrow: 'Area partner',
     title: 'Il mio team',
     members: (n) => `${n} membr${n > 1 ? 'i' : 'o'}`,
     pending: (n) => `${n} invit${n > 1 ? 'i' : 'o'} in attesa`,
@@ -153,10 +148,9 @@ const COPY: Record<Locale, TeamCopy> = {
     actions: 'Azioni del membro',
   },
   es: {
-    eyebrow: 'Área de partner',
     title: 'Mi equipo',
     members: (n) => `${n} miembro${n > 1 ? 's' : ''}`,
-    pending: (n) => `${n} invitación${n > 1 ? 'es' : ''} pendiente${n > 1 ? 's' : ''}`,
+    pending: (n) => `${n} ${n > 1 ? 'invitaciones pendientes' : 'invitación pendiente'}`,
     invite: 'Invitar a un miembro',
     colMember: 'Miembro',
     colRole: 'Rol',
@@ -181,7 +175,6 @@ const COPY: Record<Locale, TeamCopy> = {
     actions: 'Acciones del miembro',
   },
   pt: {
-    eyebrow: 'Área de parceiro',
     title: 'A minha equipa',
     members: (n) => `${n} membro${n > 1 ? 's' : ''}`,
     pending: (n) => `${n} convite${n > 1 ? 's' : ''} pendente${n > 1 ? 's' : ''}`,

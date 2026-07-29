@@ -45,7 +45,7 @@ export async function getCourseAccess(course: AcademyCourse): Promise<CourseAcce
   if (user) {
     const { data: profile } = await supabase
       .from('profiles')
-      .select('country, company, job_title, onboarded_at')
+      .select('country, company, job_title, job_roles, onboarded_at')
       .eq('id', user.id)
       .maybeSingle();
     onboarded = isOnboarded(profile);
@@ -62,13 +62,21 @@ export async function getCourseAccess(course: AcademyCourse): Promise<CourseAcce
     return { hasAccess: false, source: null, expiresAt: null, signedIn: false, onboarded: false };
   }
 
-  // user_course_access view union's enrollments + active pass subscriptions
-  const { data } = await supabase
+  // user_course_access view union's enrollments + active pass subscriptions —
+  // the same course can yield SEVERAL rows (bought AND covered by a pass), so
+  // never maybeSingle() here: keep the strongest grant (no expiry, else latest).
+  const { data: rows } = await supabase
     .from('user_course_access')
     .select('source, expires_at')
     .eq('user_id', user.id)
-    .eq('course_slug', course.id)
-    .maybeSingle();
+    .eq('course_slug', course.id);
+
+  const data = (rows ?? []).reduce<{ source: string | null; expires_at: string | null } | null>((best, r) => {
+    if (!best) return r;
+    if (!best.expires_at) return best;
+    if (!r.expires_at) return r;
+    return r.expires_at > best.expires_at ? r : best;
+  }, null);
 
   if (!data) {
     return { hasAccess: false, source: null, expiresAt: null, signedIn: true, onboarded };

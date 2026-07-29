@@ -56,6 +56,9 @@ type Props = {
   // Read-only admin preview ("view as client"): hides every action that would
   // act on the admin's own session (edit profile, sign out, uploads, team mgmt).
   preview?: boolean;
+  // Where the preview's « Retour admin » link goes (fiche utilisateur par
+  // défaut, ou page organisation quand l'aperçu est ouvert depuis celle-ci).
+  previewBack?: string;
 };
 
 export type AccountHubProps = Props;
@@ -96,6 +99,48 @@ const LANG_NAME: Record<Locale, string> = {
   it: 'Italiano',
   es: 'Español',
   pt: 'Português',
+};
+
+// Read-only admin preview ("view as client") — banner note + back link.
+const PREVIEW_NOTE: Record<Locale, string> = {
+  en: 'Client area preview — read only',
+  fr: 'Aperçu de l’espace client — lecture seule',
+  de: 'Vorschau des Kundenbereichs — nur Lesezugriff',
+  it: 'Anteprima dell’area cliente — sola lettura',
+  es: 'Vista previa del área de cliente — solo lectura',
+  pt: 'Pré-visualização da área do cliente — apenas leitura',
+};
+
+// Neutre : le retour peut viser la fiche utilisateur OU la page organisation
+// selon d'où l'aperçu a été ouvert (prop previewBack).
+const PREVIEW_BACK: Record<Locale, string> = {
+  en: '← Back to admin',
+  fr: '← Retour admin',
+  de: '← Zurück zum Admin',
+  it: '← Torna all’admin',
+  es: '← Volver al admin',
+  pt: '← Voltar ao admin',
+};
+
+const PREVIEW_DASHBOARD: Record<Locale, string> = {
+  en: 'Dashboard',
+  fr: 'Tableau de bord',
+  de: 'Dashboard',
+  it: 'Dashboard',
+  es: 'Panel',
+  pt: 'Painel',
+};
+
+// En aperçu, les tuiles ne peuvent pas ouvrir /account/* (ces routes rendent
+// l'espace de l'admin connecté, pas celui du client). Elles pointent donc vers
+// la vue admin des données de CE compte (fiche user / page org).
+const PREVIEW_TILES_ADMIN: Record<Locale, string> = {
+  en: 'Tiles open the matching admin view of this account',
+  fr: 'Les tuiles ouvrent la vue admin correspondante de ce compte',
+  de: 'Kacheln öffnen die entsprechende Admin-Ansicht dieses Kontos',
+  it: 'I riquadri aprono la vista admin corrispondente di questo account',
+  es: 'Las tarjetas abren la vista de administración correspondiente de esta cuenta',
+  pt: 'Os cartões abrem a vista de administração correspondente desta conta',
 };
 
 const RANK_NAMES: Record<Locale, string[]> = {
@@ -212,7 +257,7 @@ const COPY: Record<Locale, Copy> = {
     statModules: 'Modules', statCertificates: 'Certificates',
     supportH: 'Support',
     supportChat: 'Chat with support', supportChatS: 'Reply within one business day',
-    supportHelp: 'Help centre', supportHelpS: 'Product guides & docs',
+    supportHelp: 'Help center', supportHelpS: 'Product guides & docs',
     supportMail: 'Email us', supportMailS: 'contact@rutherford.fr',
   },
   fr: {
@@ -235,7 +280,7 @@ const COPY: Record<Locale, Copy> = {
     },
     resumeKicker: 'Reprenez où vous en étiez', resumeCta: 'Continuer', moduleWord: 'Module',
     settingsT: 'Informations du compte', settingsS: 'Gérez votre profil et vos préférences',
-    rowName: 'Nom complet', rowEmail: 'Adresse email', rowCompany: 'Société', rowCountry: 'Pays', rowLang: 'Langue', rowPwd: 'Mot de passe', security: 'Mot de passe et 2FA',
+    rowName: 'Nom complet', rowEmail: 'Adresse e-mail', rowCompany: 'Société', rowCountry: 'Pays', rowLang: 'Langue', rowPwd: 'Mot de passe', security: 'Mot de passe et 2FA',
     manage: {
       teamTitle: 'Mon équipe', teamSub: 'Qui peut accéder à ce compte',
       clientsTitle: 'Clients & équipe', clientsSub: 'Vos clients et votre équipe',
@@ -307,8 +352,8 @@ const COPY: Record<Locale, Copy> = {
       academyT: 'Academy', academyS: 'Le sue masterclass sul colore',
       consoleT: 'Console Validation', consoleS: 'Le sue validazioni di macchina',
       supportT: 'Support', supportS: 'Aiuto & documentazione',
-      teamT: 'Il mio team', teamS: 'Gestisci i tuoi operatori',
-      clientsT: 'I miei clienti', clientsS: 'Stampatori che segui',
+      teamT: 'Il mio team', teamS: 'Gestisca i suoi operatori',
+      clientsT: 'I miei clienti', clientsS: 'Stampatori che segue',
       networkT: 'La mia rete', networkS: 'Rivenditori partner',
       adminT: 'Admin', adminS: 'Back-office',
     },
@@ -318,8 +363,8 @@ const COPY: Record<Locale, Copy> = {
       clientsCount: (n) => `${n} client${n === 1 ? 'e' : 'i'}`, networkSoon: 'Presto', backoffice: 'Back-office',
     },
     resumeKicker: 'Riprenda da dove era rimasto', resumeCta: 'Continua', moduleWord: 'Modulo',
-    settingsT: 'Informazioni dell’account', settingsS: 'Gestisci profilo e preferenze',
-    rowName: 'Nome completo', rowEmail: 'Indirizzo email', rowCompany: 'Azienda', rowCountry: 'Paese', rowLang: 'Lingua', rowPwd: 'Password', security: 'Password e 2FA',
+    settingsT: 'Informazioni dell’account', settingsS: 'Gestisca profilo e preferenze',
+    rowName: 'Nome completo', rowEmail: 'Indirizzo e-mail', rowCompany: 'Azienda', rowCountry: 'Paese', rowLang: 'Lingua', rowPwd: 'Password', security: 'Password e 2FA',
     manage: {
       teamTitle: 'Il mio team', teamSub: 'Chi può accedere a questo account',
       clientsTitle: 'Clienti & team', clientsSub: 'I suoi clienti e il suo team',
@@ -337,13 +382,13 @@ const COPY: Record<Locale, Copy> = {
     xpToNext: (n, rank) => `${n} XP a ${rank}`, maxLevel: 'Rango massimo raggiunto',
     statModules: 'Moduli', statCertificates: 'Certificati',
     supportH: 'Support',
-    supportChat: 'Chatta con il support', supportChatS: 'Risposta entro 1 g lavorativo',
+    supportChat: 'Chatta con il supporto', supportChatS: 'Risposta entro 1 g lavorativo',
     supportHelp: 'Centro assistenza', supportHelpS: 'Guide & documentazione',
     supportMail: 'Scrivici', supportMailS: 'contact@rutherford.fr',
   },
   es: {
     eyebrow: 'Su cuenta',
-    roles: { client: 'Cliente', reseller: 'Distribuidor', distributor: 'Distribuidor X-Rite', team: 'Equipo Rutherford' },
+    roles: { client: 'Cliente', reseller: 'Revendedor', distributor: 'Distribuidor X-Rite', team: 'Equipo Rutherford' },
     editProfile: 'Editar perfil', signOut: 'Cerrar sesión', quickAccess: 'Acceso rápido',
     tiles: {
       academyT: 'Academy', academyS: 'Sus masterclasses de color',
@@ -452,7 +497,7 @@ const HERO: Record<
   fr: {
     eyebrow: 'À faire maintenant',
     eligibleTitle: (n) => `${n} presse${n === 1 ? '' : 's'} éligible${n === 1 ? '' : 's'} à la connexion`,
-    eligibleSub: 'Connectez-les pour activer le suivi couleur en boucle fermée et réduire la gâche au calage dès la prochaine série.',
+    eligibleSub: 'Connectez-les pour activer le contrôle couleur closed-loop et réduire la gâche au calage dès la prochaine série.',
     eligibleCta: 'Connecter mes presses',
     supportTitle: 'Notre équipe a répondu à votre ticket', supportSub: 'Reprenez la conversation pour faire avancer votre demande.', supportCta: 'Ouvrir le support',
     resumeSub: 'Reprenez votre formation là où vous en étiez.', resumeCta: 'Reprendre',
@@ -472,12 +517,12 @@ const HERO: Record<
   it: {
     eyebrow: 'Da fare ora',
     eligibleTitle: (n) => `${n} macchin${n === 1 ? 'a idonea' : 'e idonee'} alla connessione`,
-    eligibleSub: 'Collegale per attivare il controllo colore closed-loop e ridurre lo scarto di avviamento dalla prossima tiratura.',
+    eligibleSub: 'Le colleghi per attivare il controllo colore closed-loop e ridurre lo scarto di avviamento dalla prossima tiratura.',
     eligibleCta: 'Collega le mie macchine',
-    supportTitle: 'Il nostro team ha risposto al tuo ticket', supportSub: 'Riprendi la conversazione e fai avanzare la tua richiesta.', supportCta: 'Apri il support',
-    resumeSub: 'Riprendi la formazione da dove eri rimasto.', resumeCta: 'Riprendi',
-    okTitle: 'Tutto in regola', okSub: 'Esplora l’Academy o richiedi una validazione console.', okCta: 'Scopri l’Academy',
-    remSupportT: 'Ticket di supporto', remSupportS: 'Una risposta ti aspetta', remResumeT: 'Riprendi il corso', remUpdateT: 'Aggiornamento disponibile',
+    supportTitle: 'Il nostro team ha risposto al suo ticket', supportSub: 'Riprenda la conversazione e faccia avanzare la sua richiesta.', supportCta: 'Apri il supporto',
+    resumeSub: 'Riprenda la formazione da dove era rimasto.', resumeCta: 'Riprendi',
+    okTitle: 'Tutto in regola', okSub: 'Esplori l’Academy o richieda una validazione console.', okCta: 'Scopri l’Academy',
+    remSupportT: 'Ticket di supporto', remSupportS: 'Una risposta la aspetta', remResumeT: 'Riprendi il corso', remUpdateT: 'Aggiornamento disponibile',
   },
   es: {
     eyebrow: 'Por hacer ahora',
@@ -534,10 +579,14 @@ function fmtMonth(iso: string | null, locale: Locale): string {
   }
 }
 
-type Tile = { ic: string; cls: string; t: string; s: string; href: string; statDot?: string; statV: string; statM?: string };
+// adminHref : destination de la tuile en aperçu admin — la vue admin des mêmes
+// données pour CE compte (fiche user / page org), jamais /account/* qui rendrait
+// l'espace de l'admin connecté.
+type Tile = { ic: string; cls: string; t: string; s: string; href: string; adminHref?: string; statDot?: string; statV: string; statM?: string };
 
 export function AccountHub(props: Props) {
-  const { accountType, team, selfId, networkResellers, email, memberSince, profile, academy, consoleStat, supportStat, resume, resellerClients, systems, installations = [], sites = [], preview = false } = props;
+  const { accountType, team, selfId, networkResellers, email, memberSince, profile, academy, consoleStat, supportStat, resume, resellerClients, systems, installations = [], sites = [], preview = false, previewBack } = props;
+  const previewBackHref = previewBack || `/admin/users/${selfId}`;
   const { locale } = useLanguage();
   const t = COPY[locale];
   const accent = TONE[accountType];
@@ -553,8 +602,12 @@ export function AccountHub(props: Props) {
   const consoleStatV = consoleStat.eligible > 0 ? t.stat.eligible(consoleStat.eligible) : t.stat.open(consoleStat.open);
   const consoleStatM = consoleStat.eligible > 0 && consoleStat.open > 0 ? t.stat.open(consoleStat.open) : '';
 
-  const academyTile: Tile = { ic: 'acad', cls: 'blue', t: t.tiles.academyT, s: t.tiles.academyS, href: '/account/academy', statDot: 'blue', statV: academyStat, statM: `${academy.xp} ${t.xpUnit}` };
-  const consoleTile: Tile = { ic: 'console', cls: 'ink', t: t.tiles.consoleT, s: t.tiles.consoleS, href: '/account/console-validations', statDot: consoleStat.eligible > 0 ? 'green' : 'amber', statV: consoleStatV, statM: consoleStatM };
+  // En aperçu : équipe/clients → page org quand le compte en a une, sinon fiche user.
+  const previewFiche = `/admin/users/${selfId}`;
+  const previewOrgHref = team.org?.id ? `/admin/orgs/${team.org.id}` : previewFiche;
+
+  const academyTile: Tile = { ic: 'acad', cls: 'blue', t: t.tiles.academyT, s: t.tiles.academyS, href: '/account/academy', adminHref: `${previewFiche}#academy`, statDot: 'blue', statV: academyStat, statM: `${academy.xp} ${t.xpUnit}` };
+  const consoleTile: Tile = { ic: 'console', cls: 'ink', t: t.tiles.consoleT, s: t.tiles.consoleS, href: '/account/console-validations', adminHref: `${previewFiche}#validations`, statDot: consoleStat.eligible > 0 ? 'green' : 'amber', statV: consoleStatV, statM: consoleStatM };
   const supportStatV = supportStat.newMessage
     ? t.stat.supportNewMsg
     : supportStat.status === 'waiting_customer'
@@ -568,32 +621,38 @@ export function AccountHub(props: Props) {
       : supportStat.status
         ? 'blue'
         : undefined;
-  const supportTile: Tile = { ic: 'support', cls: 'ink', t: t.tiles.supportT, s: t.tiles.supportS, href: '/account/support', statDot: supportDot, statV: supportStatV };
+  const supportTile: Tile = { ic: 'support', cls: 'ink', t: t.tiles.supportT, s: t.tiles.supportS, href: '/account/support', adminHref: `${previewFiche}#support`, statDot: supportDot, statV: supportStatV };
 
   let roleTile: Tile;
   if (accountType === 'reseller') {
-    roleTile = { ic: 'clients', cls: 'green', t: t.tiles.clientsT, s: t.tiles.clientsS, href: '/account/team', statDot: 'green', statV: t.stat.clientsCount(resellerClients.length) };
+    roleTile = { ic: 'clients', cls: 'green', t: t.tiles.clientsT, s: t.tiles.clientsS, href: '/account/team', adminHref: previewOrgHref, statDot: 'green', statV: t.stat.clientsCount(resellerClients.length) };
   } else if (accountType === 'distributor') {
-    roleTile = { ic: 'network', cls: 'violet', t: t.tiles.networkT, s: t.tiles.networkS, href: '/account/team', statV: t.stat.networkSoon };
+    roleTile = { ic: 'network', cls: 'violet', t: t.tiles.networkT, s: t.tiles.networkS, href: '/account/team', adminHref: previewOrgHref, statV: t.stat.networkSoon };
   } else if (accountType === 'team') {
     // Back-office entry for all staff. /admin enforces the real gate (team
     // domain + 2FA); non-admins land in a read-only view there.
-    roleTile = { ic: 'admin', cls: 'ink', t: t.tiles.adminT, s: t.tiles.adminS, href: '/admin', statV: t.stat.backoffice };
+    roleTile = { ic: 'admin', cls: 'ink', t: t.tiles.adminT, s: t.tiles.adminS, href: '/admin', adminHref: previewFiche, statV: t.stat.backoffice };
   } else {
-    roleTile = { ic: 'team', cls: 'green', t: t.tiles.teamT, s: t.tiles.teamS, href: '/account/team', statV: t.stat.youOnly };
+    roleTile = { ic: 'team', cls: 'green', t: t.tiles.teamT, s: t.tiles.teamS, href: '/account/team', adminHref: previewOrgHref, statV: t.stat.youOnly };
   }
 
+  // Console tile is hidden for the Rutherford team (per-role visibility
+  // matrix): press validations are meaningless on a staff account.
   const tiles: Tile[] =
     accountType === 'reseller'
       ? [academyTile, roleTile, consoleTile, supportTile]
       : accountType === 'distributor'
         ? [roleTile, consoleTile, academyTile, supportTile]
-        : [academyTile, consoleTile, roleTile, supportTile];
+        : accountType === 'team'
+          ? [academyTile, roleTile, supportTile]
+          : [academyTile, consoleTile, roleTile, supportTile];
 
   // "À faire maintenant" — surface the single most important action.
   const h = HERO[locale];
   let hero: { title: string; sub: string; cta: string; href: string };
-  if (!preview && consoleStat.eligible > 0) {
+  // The "connect my presses" variant is client-only: a partner's eligible
+  // validations belong to their clients and must not read first-person.
+  if (!preview && accountType === 'client' && consoleStat.eligible > 0) {
     hero = { title: h.eligibleTitle(consoleStat.eligible), sub: h.eligibleSub, cta: h.eligibleCta, href: '/account/console-validations' };
   } else if (!preview && (supportStat.newMessage || supportStat.status === 'waiting_customer')) {
     hero = { title: h.supportTitle, sub: h.supportSub, cta: h.supportCta, href: '/account/support' };
@@ -603,7 +662,9 @@ export function AccountHub(props: Props) {
     hero = { title: h.okTitle, sub: h.okSub, cta: h.okCta, href: '/account/academy' };
   }
   const reminders: { ic: ReactNode; title: string; sub: string; href: string }[] = [];
-  const pendingUpdates = installations.filter((s) => s.updateAvailable);
+  // Update reminders anchor into the client-only "My system" section below,
+  // so they are gated the same way.
+  const pendingUpdates = accountType === 'client' ? installations.filter((s) => s.updateAvailable) : [];
   if (pendingUpdates.length) {
     reminders.push({
       ic: ICON.console,
@@ -625,9 +686,14 @@ export function AccountHub(props: Props) {
             style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, padding: '10px 0' }}
           >
             <span style={{ fontSize: '0.88rem', fontWeight: 600, color: '#7a5b00' }}>
-              👁 Aperçu de l’espace client — lecture seule{profile.fullName ? ` · ${profile.fullName}` : ''}
+              {PREVIEW_NOTE[locale]}{profile.fullName ? ` · ${profile.fullName}` : ''}
             </span>
-            <a className="button button-light" href={`/admin/users/${selfId}`}>← Fiche admin</a>
+            <span style={{ display: 'flex', gap: 8 }}>
+              <a className="button button-light" href={previewBackHref}>{PREVIEW_BACK[locale]}</a>
+              {/* Tableau de bord à un clic — le retour contextuel ne mène qu'à
+                  la fiche/org d'origine. */}
+              <a className="button button-light" href="/admin">{PREVIEW_DASHBOARD[locale]}</a>
+            </span>
           </div>
         </div>
       ) : (
@@ -690,18 +756,16 @@ export function AccountHub(props: Props) {
                 </span>
               </div>
             </div>
-            <div className="ah-actions">
-              {preview ? (
-                <a className="button button-light" href={`/admin/users/${selfId}`}>← Fiche admin</a>
-              ) : (
-                <>
-                  <a className="button button-light" href="/account/profile">{t.editProfile}</a>
-                  <form action="/api/auth/sign-out" method="post">
-                    <button type="submit" className="button button-light">{t.signOut}</button>
-                  </form>
-                </>
-              )}
-            </div>
+            {/* En aperçu, le retour vit dans le bandeau supérieur — pas de
+                doublon ici. */}
+            {preview ? null : (
+              <div className="ah-actions">
+                <a className="button button-light" href="/account/profile">{t.editProfile}</a>
+                <form action="/api/auth/sign-out" method="post">
+                  <button type="submit" className="button button-light">{t.signOut}</button>
+                </form>
+              </div>
+            )}
           </div>
 
           {/* À faire maintenant — top action + reminders (not in admin preview) */}
@@ -734,29 +798,48 @@ export function AccountHub(props: Props) {
             </>
           ) : null}
 
-          {/* Quick access */}
-          <div className="ah-section-h"><span className="ah-section-t">{t.quickAccess}</span></div>
+          {/* Quick access — en aperçu, /account/* rendrait l'espace de l'admin
+              connecté : chaque tuile pointe donc vers la vue admin des mêmes
+              données pour ce compte (fiche user #ancre / page org). */}
+          <div className="ah-section-h">
+            <span className="ah-section-t">{t.quickAccess}</span>
+            {preview ? <span className="ah-section-note">{PREVIEW_TILES_ADMIN[locale]}</span> : null}
+          </div>
           <div className="ah-tiles">
-            {tiles.map((tile, i) => (
-              <a className="ah-tile" href={tile.href} key={i}>
-                <div className={`ah-tile-ic ${tile.cls}`}>{ICON[tile.ic]}</div>
-                <div className="ah-tile-t">{tile.t}{ICON.arrow}</div>
-                <div className="ah-tile-s">{tile.s}</div>
-                <div className="ah-tile-stat">
-                  {tile.statDot ? <span className={`ah-pulse ${tile.statDot}`} /> : null}
-                  {tile.statV}
-                  {tile.statM ? <span className="ah-mono"> · {tile.statM}</span> : null}
-                </div>
-              </a>
-            ))}
+            {tiles.map((tile, i) => {
+              const href = preview ? tile.adminHref : tile.href;
+              const body = (
+                <>
+                  <div className={`ah-tile-ic ${tile.cls}`}>{ICON[tile.ic]}</div>
+                  <div className="ah-tile-t">{tile.t}{href ? ICON.arrow : null}</div>
+                  <div className="ah-tile-s">{tile.s}</div>
+                  <div className="ah-tile-stat">
+                    {tile.statDot ? <span className={`ah-pulse ${tile.statDot}`} /> : null}
+                    {tile.statV}
+                    {tile.statM ? <span className="ah-mono"> · {tile.statM}</span> : null}
+                  </div>
+                </>
+              );
+              return href ? (
+                <a className="ah-tile" href={href} key={i}>{body}</a>
+              ) : (
+                <div className="ah-tile ah-tile-static" aria-disabled="true" key={i}>{body}</div>
+              );
+            })}
           </div>
 
-          {/* My system — licenses, AnyDesk, updates (set in the org back-office;
-              renders nothing until the Rutherford team adds a system) */}
-          <AccountInstallations installations={installations} sites={sites} accent={accent} />
+          {/* Client-only sections (per-role visibility matrix): plants/licenses
+              and first-person presses make no sense for partners or team. */}
+          {accountType === 'client' ? (
+            <>
+              {/* My system — licenses, AnyDesk, updates (set in the org back-office;
+                  renders nothing until the Rutherford team adds a system) */}
+              <AccountInstallations installations={installations} sites={sites} accent={accent} preview={preview} />
 
-          {/* My presses — clients (renders nothing when there are none) */}
-          <AccountSystems systems={systems} accent={accent} />
+              {/* My presses — renders nothing when there are none */}
+              <AccountSystems systems={systems} accent={accent} preview={preview} />
+            </>
+          ) : null}
 
           {/* Body */}
           <div className="ah-grid">
@@ -768,11 +851,12 @@ export function AccountHub(props: Props) {
                 selfId={selfId}
                 networkResellers={networkResellers}
                 clients={resellerClients}
+                preview={preview}
               />
             </div>
             <aside className="ah-aside">
               <AcademyMini t={t} academy={academy} rank={rank} nextRank={nextRank} />
-              <SupportMini t={t} />
+              <SupportMini t={t} preview={preview} />
             </aside>
           </div>
         </div>
@@ -1061,12 +1145,16 @@ export function ManagePanel({
   selfId,
   networkResellers,
   clients,
+  preview = false,
 }: {
   accountType: AccountType;
   team: Team;
   selfId: string;
   networkResellers: ResellerClientOrg[];
   clients: ResellerClient[];
+  // Aperçu admin : masque les actions (inviter/retirer/back-office) qui, sinon,
+  // s'exécuteraient sur la session de l'admin connecté, pas sur le client montré.
+  preview?: boolean;
 }) {
   const { locale } = useLanguage();
   const t = COPY[locale];
@@ -1076,7 +1164,7 @@ export function ManagePanel({
   const accent = TONE[accountType];
   const title = accountType === 'distributor' ? t.manage.networkTitle : accountType === 'reseller' ? t.manage.clientsTitle : t.manage.teamTitle;
   const sub = accountType === 'distributor' ? t.manage.networkSub : accountType === 'reseller' ? t.manage.clientsSub : t.manage.teamSub;
-  const canManage = team.myRole === 'owner' || team.myRole === 'admin';
+  const canManage = !preview && (team.myRole === 'owner' || team.myRole === 'admin');
 
   // Rutherford staff reach the back-office from here. /admin enforces the real
   // gate (team domain + 2FA) and shows non-admins a read-only view.
@@ -1090,7 +1178,11 @@ export function ManagePanel({
           </div>
         </div>
         <div className="ah-card-bd">
-          <a className="button button-dark" href="/admin">{t.manage.adminCta} →</a>
+          {preview ? (
+            <span className="button button-dark" aria-disabled="true" style={{ opacity: 0.55, pointerEvents: 'none' }}>{t.manage.adminCta} →</span>
+          ) : (
+            <a className="button button-dark" href="/admin">{t.manage.adminCta} →</a>
+          )}
         </div>
       </div>
     );
@@ -1222,7 +1314,7 @@ function AcademyMini({ t, academy, rank, nextRank }: { t: Copy; academy: Props['
   );
 }
 
-function SupportMini({ t }: { t: Copy }) {
+function SupportMini({ t, preview = false }: { t: Copy; preview?: boolean }) {
   const rows: [ReactNode, string, string, string][] = [
     [ICON.chat, t.supportChat, t.supportChatS, '/support'],
     [ICON.doc, t.supportHelp, t.supportHelpS, '/blog'],
@@ -1231,13 +1323,22 @@ function SupportMini({ t }: { t: Copy }) {
   return (
     <div className="ah-mini">
       <div className="ah-mini-h">{t.supportH}</div>
-      {rows.map(([ic, title, s, href], i) => (
-        <a className="ah-support-row" href={href as string} key={i}>
-          <span className="ah-support-ic">{ic}</span>
-          <span className="ah-support-main"><span className="ah-support-t">{title}</span><span className="ah-support-s">{s}</span></span>
-          {ICON.chevR}
-        </a>
-      ))}
+      {rows.map(([ic, title, s, href], i) => {
+        const body = (
+          <>
+            <span className="ah-support-ic">{ic}</span>
+            <span className="ah-support-main"><span className="ah-support-t">{title}</span><span className="ah-support-s">{s}</span></span>
+            {ICON.chevR}
+          </>
+        );
+        // Aperçu admin : /support s'ouvrirait avec la session de l'admin
+        // connecté (formulaire pré-rempli à son nom) — rangées inertes.
+        return preview ? (
+          <span className="ah-support-row ah-static" aria-disabled="true" key={i}>{body}</span>
+        ) : (
+          <a className="ah-support-row" href={href as string} key={i}>{body}</a>
+        );
+      })}
     </div>
   );
 }

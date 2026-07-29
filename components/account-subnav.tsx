@@ -9,21 +9,22 @@ import type { AccountType } from '@/data/account-types';
 // logo (top-right). Rendered right under <SiteNav> on every account page.
 export type AccountTab = 'dashboard' | 'console' | 'academy' | 'team' | 'support' | 'profile';
 
-const TABS: { key: Exclude<AccountTab, 'profile'>; href: string }[] = [
+const TABS: { key: AccountTab; href: string }[] = [
   { key: 'dashboard', href: '/account' },
   { key: 'console', href: '/account/console-validations' },
   { key: 'academy', href: '/account/academy' },
   { key: 'team', href: '/account/team' },
   { key: 'support', href: '/account/support' },
+  { key: 'profile', href: '/account/profile' },
 ];
 
-const LABELS: Record<Locale, Record<Exclude<AccountTab, 'profile'>, string>> = {
-  en: { dashboard: 'Dashboard', console: 'Console Validation', academy: 'Academy', team: 'My team', support: 'Support' },
-  fr: { dashboard: 'Tableau de bord', console: 'Validation console', academy: 'Academy', team: 'Mon équipe', support: 'Support' },
-  de: { dashboard: 'Dashboard', console: 'Konsolenvalidierung', academy: 'Academy', team: 'Mein Team', support: 'Support' },
-  it: { dashboard: 'Dashboard', console: 'Validazione console', academy: 'Academy', team: 'Il mio team', support: 'Support' },
-  es: { dashboard: 'Panel', console: 'Validación de consola', academy: 'Academy', team: 'Mi equipo', support: 'Soporte' },
-  pt: { dashboard: 'Painel', console: 'Validação de consola', academy: 'Academy', team: 'A minha equipa', support: 'Support' },
+const LABELS: Record<Locale, Record<AccountTab, string>> = {
+  en: { dashboard: 'Dashboard', console: 'Console validation', academy: 'Academy', team: 'My team', support: 'Support', profile: 'Profile' },
+  fr: { dashboard: 'Tableau de bord', console: 'Validation console', academy: 'Academy', team: 'Mon équipe', support: 'Support', profile: 'Profil' },
+  de: { dashboard: 'Dashboard', console: 'Konsolenvalidierung', academy: 'Academy', team: 'Mein Team', support: 'Support', profile: 'Profil' },
+  it: { dashboard: 'Dashboard', console: 'Validazione console', academy: 'Academy', team: 'Il mio team', support: 'Supporto', profile: 'Profilo' },
+  es: { dashboard: 'Panel', console: 'Validación de consola', academy: 'Academy', team: 'Mi equipo', support: 'Soporte', profile: 'Perfil' },
+  pt: { dashboard: 'Painel', console: 'Validação de consola', academy: 'Academy', team: 'A minha equipa', support: 'Suporte', profile: 'Perfil' },
 };
 
 export function AccountSubnav({ current }: { current: AccountTab }) {
@@ -71,6 +72,13 @@ export function AccountSubnav({ current }: { current: AccountTab }) {
               {L[s.key]}
             </a>
           ))}
+          {/* Équipe Rutherford : back-office à un clic depuis tout l'espace
+              compte (la vraie garde reste côté serveur sur /admin). */}
+          {accountType === 'team' ? (
+            <a href="/admin" className="acct-subnav-link acct-subnav-admin">
+              Admin
+            </a>
+          ) : null}
         </div>
         <div className="acct-subnav-right">
           {accountType ? <span className="acct-subnav-area">{accountAreaLabel(locale, accountType)}</span> : null}

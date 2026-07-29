@@ -45,6 +45,12 @@ type SignInCopy = {
   codePlaceholder: string;
   verify: string;
   errGeneric: string;
+  // Localized mappings of the most common Supabase auth errors — raw messages
+  // are English-only and must never reach fr/de/it/es/pt users.
+  errInvalidCredentials: string;
+  errEmailNotConfirmed: string;
+  errUserExists: string;
+  errRateLimit: string;
   fine: string;
   // Mode-aware heading + create-account helpers + "check your email" panels.
   titleSignup: string;
@@ -88,6 +94,10 @@ const COPY: Record<Locale, SignInCopy> = {
     codePlaceholder: '123456',
     verify: 'Verify',
     errGeneric: 'Something went wrong. Please try again.',
+    errInvalidCredentials: 'Incorrect email or password.',
+    errEmailNotConfirmed: 'Please confirm your email first — check your inbox.',
+    errUserExists: 'An account already exists for this email. Sign in instead.',
+    errRateLimit: 'Too many attempts. Please wait a minute and try again.',
     fine: 'By continuing you agree to our terms. We use your email only to sign you in and to send course-related notifications.',
     titleSignup: 'Create your account',
     subtitleSignup: 'A free account to follow your console validations, courses and support — all in one place.',
@@ -128,6 +138,10 @@ const COPY: Record<Locale, SignInCopy> = {
     codePlaceholder: '123456',
     verify: 'Vérifier',
     errGeneric: 'Une erreur est survenue. Veuillez réessayer.',
+    errInvalidCredentials: 'E-mail ou mot de passe incorrect.',
+    errEmailNotConfirmed: 'Confirmez d’abord votre e-mail — vérifiez votre boîte de réception.',
+    errUserExists: 'Un compte existe déjà pour cette adresse. Connectez-vous.',
+    errRateLimit: 'Trop de tentatives. Patientez une minute puis réessayez.',
     fine: 'En continuant, vous acceptez nos conditions. Nous utilisons votre e-mail uniquement pour vous connecter et vous envoyer des notifications liées aux cours.',
     titleSignup: 'Créez votre compte',
     subtitleSignup: 'Un compte gratuit pour suivre vos validations console, vos formations et votre support au même endroit.',
@@ -168,6 +182,10 @@ const COPY: Record<Locale, SignInCopy> = {
     codePlaceholder: '123456',
     verify: 'Prüfen',
     errGeneric: 'Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut.',
+    errInvalidCredentials: 'E-Mail-Adresse oder Passwort ist falsch.',
+    errEmailNotConfirmed: 'Bitte bestätigen Sie zuerst Ihre E-Mail-Adresse — prüfen Sie Ihren Posteingang.',
+    errUserExists: 'Für diese E-Mail-Adresse existiert bereits ein Konto. Bitte melden Sie sich an.',
+    errRateLimit: 'Zu viele Versuche. Bitte warten Sie eine Minute und versuchen Sie es erneut.',
     fine: 'Mit der Fortsetzung akzeptieren Sie unsere Bedingungen. Wir verwenden Ihre E-Mail-Adresse ausschließlich, um Sie anzumelden und Ihnen kursbezogene Benachrichtigungen zu senden.',
     titleSignup: 'Konto erstellen',
     subtitleSignup: 'Ein kostenloses Konto, um Konsolenvalidierungen, Kurse und Support an einem Ort zu verfolgen.',
@@ -208,6 +226,10 @@ const COPY: Record<Locale, SignInCopy> = {
     codePlaceholder: '123456',
     verify: 'Verifica',
     errGeneric: 'Si è verificato un errore. Riprovi.',
+    errInvalidCredentials: 'E-mail o password errati.',
+    errEmailNotConfirmed: 'Confermi prima la sua e-mail — controlli la sua casella di posta.',
+    errUserExists: 'Esiste già un account per questa e-mail. Acceda invece.',
+    errRateLimit: 'Troppi tentativi. Attenda un minuto e riprovi.',
     fine: 'Continuando, accetta le nostre condizioni. Utilizziamo la sua e-mail esclusivamente per l’accesso e per inviarle notifiche relative ai corsi.',
     titleSignup: 'Crei il suo account',
     subtitleSignup: 'Un account gratuito per seguire le validazioni console, i corsi e il supporto in un unico posto.',
@@ -248,6 +270,10 @@ const COPY: Record<Locale, SignInCopy> = {
     codePlaceholder: '123456',
     verify: 'Verificar',
     errGeneric: 'Algo salió mal. Inténtelo de nuevo.',
+    errInvalidCredentials: 'Correo electrónico o contraseña incorrectos.',
+    errEmailNotConfirmed: 'Confirme primero su correo electrónico — revise su bandeja de entrada.',
+    errUserExists: 'Ya existe una cuenta para este correo. Inicie sesión.',
+    errRateLimit: 'Demasiados intentos. Espere un minuto e inténtelo de nuevo.',
     fine: 'Al continuar, acepta nuestras condiciones. Utilizamos su correo únicamente para iniciar su sesión y enviarle notificaciones relacionadas con los cursos.',
     titleSignup: 'Cree su cuenta',
     subtitleSignup: 'Una cuenta gratuita para seguir sus validaciones de consola, sus cursos y el soporte en un solo lugar.',
@@ -288,6 +314,10 @@ const COPY: Record<Locale, SignInCopy> = {
     codePlaceholder: '123456',
     verify: 'Verificar',
     errGeneric: 'Ocorreu um erro. Tente novamente.',
+    errInvalidCredentials: 'Email ou palavra-passe incorretos.',
+    errEmailNotConfirmed: 'Confirme primeiro o seu email — verifique a sua caixa de entrada.',
+    errUserExists: 'Já existe uma conta para este email. Inicie sessão.',
+    errRateLimit: 'Demasiadas tentativas. Aguarde um minuto e tente novamente.',
     fine: 'Ao continuar, aceita as nossas condições. Utilizamos o seu email apenas para iniciar a sua sessão e para lhe enviar notificações relacionadas com os cursos.',
     titleSignup: 'Crie a sua conta',
     subtitleSignup: 'Uma conta gratuita para acompanhar as suas validações de consola, os seus cursos e o suporte, tudo num só lugar.',
@@ -308,6 +338,28 @@ type Status = 'idle' | 'working' | 'linkSent' | 'resetSent' | 'confirmSent' | 'e
 function safeNext(value: string | null): string {
   if (value && /^\/(?![/\\])/.test(value)) return value;
   return '/account';
+}
+
+// Supabase auth errors are English-only strings — map the common ones to the
+// locale's copy and fall back to the generic message for the rest.
+function localizeAuthError(message: string | null | undefined, t: SignInCopy): string {
+  const m = (message ?? '').toLowerCase();
+  if (m.includes('invalid login credentials')) return t.errInvalidCredentials;
+  if (m.includes('email not confirmed')) return t.errEmailNotConfirmed;
+  if (m.includes('already registered')) return t.errUserExists;
+  if (m.includes('rate limit') || m.includes('only request this once')) return t.errRateLimit;
+  return t.errGeneric;
+}
+
+// Password sign-ins never pass through /api/auth/callback, so pending
+// invitations / org placement / domain classification would stay unprocessed —
+// run them via this best-effort server hook before redirecting.
+async function runPostSignIn(): Promise<void> {
+  try {
+    await fetch('/api/auth/post-sign-in', { method: 'POST' });
+  } catch {
+    /* best-effort — never block the redirect */
+  }
 }
 
 export function SignInPage() {
@@ -336,7 +388,7 @@ export function SignInPage() {
     const callbackError = search.get('error');
     if (callbackError) {
       setStatus('error');
-      setErrorMsg(callbackError);
+      setErrorMsg(localizeAuthError(callbackError, t));
     }
   }, [search]);
 
@@ -357,7 +409,7 @@ export function SignInPage() {
     });
     if (error) {
       setStatus('error');
-      setErrorMsg(error.message);
+      setErrorMsg(localizeAuthError(error.message, t));
     }
   };
 
@@ -375,7 +427,7 @@ export function SignInPage() {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) {
         setStatus('error');
-        setErrorMsg(error.message);
+        setErrorMsg(localizeAuthError(error.message, t));
         return;
       }
       // TOTP 2FA: password sign-in lands at AAL1; if the account has a verified
@@ -388,7 +440,7 @@ export function SignInPage() {
           const { data: ch, error: chErr } = await supabase.auth.mfa.challenge({ factorId: totp.id });
           if (chErr || !ch) {
             setStatus('error');
-            setErrorMsg(chErr?.message ?? t.errGeneric);
+            setErrorMsg(localizeAuthError(chErr?.message, t));
             return;
           }
           setMfa({ factorId: totp.id, challengeId: ch.id });
@@ -397,6 +449,7 @@ export function SignInPage() {
           return;
         }
       }
+      await runPostSignIn();
       window.location.href = next;
     } else {
       const { data, error } = await supabase.auth.signUp({
@@ -406,11 +459,12 @@ export function SignInPage() {
       });
       if (error) {
         setStatus('error');
-        setErrorMsg(error.message);
+        setErrorMsg(localizeAuthError(error.message, t));
         return;
       }
       // Email confirmation on → no session yet; off → straight in.
       if (data.session) {
+        await runPostSignIn();
         window.location.href = next;
         return;
       }
@@ -431,9 +485,10 @@ export function SignInPage() {
     });
     if (error) {
       setStatus('error');
-      setErrorMsg(error.message);
+      setErrorMsg(localizeAuthError(error.message, t));
       return;
     }
+    await runPostSignIn();
     window.location.href = next;
   };
 
@@ -451,7 +506,7 @@ export function SignInPage() {
     });
     if (error) {
       setStatus('error');
-      setErrorMsg(error.message);
+      setErrorMsg(localizeAuthError(error.message, t));
       return;
     }
     setStatus('resetSent');
@@ -476,7 +531,7 @@ export function SignInPage() {
     });
     if (error) {
       setStatus('error');
-      setErrorMsg(error.message);
+      setErrorMsg(localizeAuthError(error.message, t));
     } else {
       setStatus('linkSent');
     }

@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { requireAdminWrite } from '@/lib/admin-access';
 import { createOrg, updateOrg } from '@/lib/organizations';
+import { recordAudit } from '@/lib/admin-audit';
 import { isAccountType } from '@/data/account-types';
 import { isKnownCountry } from '@/data/onboarding-options';
 
@@ -37,9 +38,16 @@ export async function POST(request: NextRequest) {
     resellerOrgId: orgRef(body.reseller_org_id),
     distributorOrgId: orgRef(body.distributor_org_id),
   });
-  return created
-    ? NextResponse.json({ ok: true, id: created.id })
-    : NextResponse.json({ error: 'failed' }, { status: 500 });
+  if (!created) return NextResponse.json({ error: 'failed' }, { status: 500 });
+  await recordAudit({
+    actorId: gate.userId,
+    action: 'org.create',
+    targetType: 'organization',
+    targetId: created.id,
+    summary: `Organisation créée : ${name}`,
+    metadata: { type },
+  });
+  return NextResponse.json({ ok: true, id: created.id });
 }
 
 /** Update an organization's fields (incl. reseller/distributor attribution). */
@@ -90,5 +98,15 @@ export async function PATCH(request: NextRequest) {
     return NextResponse.json({ error: 'nothing_to_update' }, { status: 400 });
   }
   const ok = await updateOrg(id, patch);
-  return ok ? NextResponse.json({ ok: true }) : NextResponse.json({ error: 'failed' }, { status: 500 });
+  if (!ok) return NextResponse.json({ error: 'failed' }, { status: 500 });
+  const attributionChanged = 'reseller_org_id' in patch || 'distributor_org_id' in patch;
+  await recordAudit({
+    actorId: gate.userId,
+    action: 'org.update',
+    targetType: 'organization',
+    targetId: id,
+    summary: attributionChanged ? 'Organisation modifiée (attribution)' : 'Organisation modifiée',
+    metadata: { fields: Object.keys(patch) },
+  });
+  return NextResponse.json({ ok: true });
 }

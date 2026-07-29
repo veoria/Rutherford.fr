@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { getAdminAccess } from '@/lib/admin-access';
 import { createSupabaseAdminClient } from '@/lib/supabase/server';
+import { recordAudit } from '@/lib/admin-audit';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 120;
@@ -25,12 +26,21 @@ const INTAKE_RE = /^\d{4}-\d{2}-\d{2}-(\d{3,})-/;
  *     DRY-RUN: lists the intake folders that WOULD be removed — those whose
  *     request is confirmed in Dropbox and older than `days` (default 90).
  *
- *   GET /api/admin/storage?cleanup=1&confirm=1[&days=90][&limit=50]
+ *   POST /api/admin/storage?cleanup=1&confirm=1[&days=90][&limit=50]
  *     Actually delete those folders' objects. The full-resolution originals
  *     remain in Dropbox; nothing rendered in the UI depends on these. Bounded
- *     by `limit` (default 50) and re-runnable.
+ *     by `limit` (default 50) and re-runnable. POST only: deletion must never
+ *     ride a top-level GET navigation (a crafted link + ambient cookies).
  */
 export async function GET(request: NextRequest) {
+  return handle(request, false);
+}
+
+export async function POST(request: NextRequest) {
+  return handle(request, true);
+}
+
+async function handle(request: NextRequest, allowConfirm: boolean) {
   const access = await getAdminAccess();
   if (!access.ok || !access.canManage) return NextResponse.json({ error: 'forbidden' }, { status: 403 });
   if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
@@ -40,7 +50,14 @@ export async function GET(request: NextRequest) {
   const admin = createSupabaseAdminClient();
   const params = request.nextUrl.searchParams;
   const cleanup = ['1', 'true', 'yes'].includes((params.get('cleanup') || '').toLowerCase());
-  const confirm = ['1', 'true', 'yes'].includes((params.get('confirm') || '').toLowerCase());
+  const confirmRequested = ['1', 'true', 'yes'].includes((params.get('confirm') || '').toLowerCase());
+  if (confirmRequested && !allowConfirm) {
+    return NextResponse.json(
+      { error: 'confirm requires POST', hint: 'Re-run the same URL as a POST request to actually delete.' },
+      { status: 405 }
+    );
+  }
+  const confirm = confirmRequested && allowConfirm;
   const days = Math.min(Math.max(Number(params.get('days')) || 90, 0), 3650);
   const limit = Math.min(Math.max(Number(params.get('limit')) || 50, 1), 500);
 
@@ -98,6 +115,16 @@ export async function GET(request: NextRequest) {
   }
 
   const removableBytes = results.reduce((s, r) => s + r.bytes, 0);
+  if (confirm) {
+    await recordAudit({
+      actorId: access.userId,
+      action: 'storage.cleanup',
+      targetType: 'storage',
+      targetId: BUCKET,
+      summary: `Nettoyage stockage : ${results.filter((r) => r.deleted).length} dossier(s), ${Number((freedBytes / 1024 / 1024).toFixed(1))} Mo libérés`,
+      metadata: { days, candidates: results.length, freedMb: Number((freedBytes / 1024 / 1024).toFixed(1)) },
+    });
+  }
   return NextResponse.json({
     mode: confirm ? 'deleted' : 'dry-run',
     days,

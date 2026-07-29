@@ -6,8 +6,18 @@ import { SiteFooter } from '@/components/site-footer';
 import { SiteNav } from '@/components/site-nav';
 import { AccountSubnav } from '@/components/account-subnav';
 import { type Locale, useLanguage } from '@/components/language-provider';
-import { COUNTRIES, JOB_TITLE_KEYS, TEAM_ROLE_KEYS, type JobTitleKey } from '@/data/onboarding-options';
+import {
+  COUNTRIES,
+  DISTRIBUTOR_ROLE_KEYS,
+  JOB_TITLE_KEYS,
+  RESELLER_ROLE_KEYS,
+  TEAM_ROLE_KEYS,
+  isJobTitleKey,
+  type JobTitleKey,
+} from '@/data/onboarding-options';
+import { localizedCountryName } from '@/lib/countries';
 import { TEAM_ROLE_LABELS } from '@/data/team-role-labels';
+import { DISTRIBUTOR_ROLE_LABELS, RESELLER_ROLE_LABELS } from '@/data/partner-role-labels';
 import type { AccountType } from '@/data/account-types';
 
 // Profile-completion banner copy (the % is computed from the filled fields).
@@ -15,9 +25,45 @@ const BANNER: Record<Locale, { title: (pct: number) => string; sub: string }> = 
   en: { title: (p) => `Profile ${p}% complete`, sub: 'Complete your profile to unlock all partner features.' },
   fr: { title: (p) => `Profil complété à ${p} %`, sub: 'Complétez votre profil pour débloquer toutes les fonctionnalités partenaire.' },
   de: { title: (p) => `Profil zu ${p}% ausgefüllt`, sub: 'Vervollständigen Sie Ihr Profil, um alle Partnerfunktionen freizuschalten.' },
-  it: { title: (p) => `Profilo completato al ${p}%`, sub: 'Completa il tuo profilo per sbloccare tutte le funzionalità partner.' },
+  it: { title: (p) => `Profilo completato al ${p}%`, sub: 'Completi il suo profilo per sbloccare tutte le funzionalità partner.' },
   es: { title: (p) => `Perfil completado al ${p}%`, sub: 'Complete su perfil para desbloquear todas las funciones de partner.' },
   pt: { title: (p) => `Perfil ${p}% completo`, sub: 'Complete o seu perfil para desbloquear todas as funcionalidades de parceiro.' },
+};
+
+// Requalification banner (brief § 2.2.a): shown to a reseller/distributor whose
+// profile still carries a legacy printer job_title and no job_roles yet — the
+// partner referential became a multi-select, so they must pick their roles.
+const REQUAL: Record<Locale, { title: string; sub: string; cta: string }> = {
+  en: {
+    title: 'Profile update needed',
+    sub: 'Your role has a new format — select your roles to bring your profile up to date.',
+    cta: 'Your roles',
+  },
+  fr: {
+    title: 'Profil à mettre à jour',
+    sub: 'Votre poste a changé de format — sélectionnez vos rôles pour mettre votre profil à jour.',
+    cta: 'Vos rôles',
+  },
+  de: {
+    title: 'Profil zu aktualisieren',
+    sub: 'Ihre Funktion hat ein neues Format — wählen Sie Ihre Rollen aus, um Ihr Profil zu aktualisieren.',
+    cta: 'Ihre Rollen',
+  },
+  it: {
+    title: 'Profilo da aggiornare',
+    sub: 'Il suo ruolo ha cambiato formato — selezioni i suoi ruoli per aggiornare il profilo.',
+    cta: 'I suoi ruoli',
+  },
+  es: {
+    title: 'Perfil por actualizar',
+    sub: 'Su puesto ha cambiado de formato — seleccione sus funciones para actualizar su perfil.',
+    cta: 'Sus funciones',
+  },
+  pt: {
+    title: 'Perfil a atualizar',
+    sub: 'A sua função mudou de formato — selecione as suas funções para atualizar o seu perfil.',
+    cta: 'As suas funções',
+  },
 };
 
 // Read-mode copy for the redesigned profile (identity card + info/company/security
@@ -176,8 +222,8 @@ const VIEW: Record<Locale, View> = {
     edit: 'Editar',
     notProvided: 'No indicado',
     funcLabel: 'Función',
-    emailField: 'Correo',
-    notifField: 'Email de notificación',
+    emailField: 'Correo electrónico',
+    notifField: 'Correo de notificación',
     raisonLabel: 'Razón social',
     logoField: 'Logo de la empresa',
     logoEmpty: 'Sin logo',
@@ -255,6 +301,8 @@ type Copy = {
   companyPlaceholder: string;
   roleLabel: string;
   selectRole: string;
+  /** Partner (reseller / distributor) multi-select label. */
+  rolesLabel: string;
   loginEmailLabel: string;
   notifLabel: string;
   notifPlaceholder: string;
@@ -290,6 +338,7 @@ const COPY: Record<Locale, Copy> = {
     companyPlaceholder: 'Acme Printing',
     roleLabel: 'Your role',
     selectRole: 'Select your role',
+    rolesLabel: 'Your roles (select all that apply)',
     loginEmailLabel: 'Login email',
     notifLabel: 'Notification email (optional)',
     notifPlaceholder: 'notifications@company.com',
@@ -338,10 +387,11 @@ const COPY: Record<Locale, Copy> = {
     companyPlaceholder: 'Imprimerie Dupont',
     roleLabel: 'Votre poste',
     selectRole: 'Sélectionnez votre poste',
-    loginEmailLabel: 'Email de connexion',
-    notifLabel: 'Email de notification (facultatif)',
+    rolesLabel: 'Vos rôles (plusieurs choix possibles)',
+    loginEmailLabel: 'E-mail de connexion',
+    notifLabel: 'E-mail de notification (facultatif)',
     notifPlaceholder: 'notifications@entreprise.com',
-    notifHint: 'L’adresse où nous envoyons le suivi de vos demandes. Laissez vide pour utiliser votre email de connexion.',
+    notifHint: 'L’adresse où nous envoyons le suivi de vos demandes. Laissez vide pour utiliser votre e-mail de connexion.',
     typeLabel: 'Type de compte',
     typeHint: 'Défini par Rutherford — selon votre organisation.',
     submit: 'Enregistrer',
@@ -386,6 +436,7 @@ const COPY: Record<Locale, Copy> = {
     companyPlaceholder: 'Musterdruck GmbH',
     roleLabel: 'Ihre Rolle',
     selectRole: 'Rolle auswählen',
+    rolesLabel: 'Ihre Rollen (Mehrfachauswahl möglich)',
     loginEmailLabel: 'Login-E-Mail',
     notifLabel: 'Benachrichtigungs-E-Mail (optional)',
     notifPlaceholder: 'benachrichtigung@firma.com',
@@ -434,10 +485,11 @@ const COPY: Record<Locale, Copy> = {
     companyPlaceholder: 'Tipografia Rossi',
     roleLabel: 'Il suo ruolo',
     selectRole: 'Selezioni il suo ruolo',
-    loginEmailLabel: 'Email di accesso',
-    notifLabel: 'Email di notifica (facoltativa)',
+    rolesLabel: 'I suoi ruoli (più scelte possibili)',
+    loginEmailLabel: 'E-mail di accesso',
+    notifLabel: 'E-mail di notifica (facoltativa)',
     notifPlaceholder: 'notifiche@azienda.com',
-    notifHint: 'Dove inviamo gli aggiornamenti sulle sue richieste. Lasci vuoto per usare l’email di accesso.',
+    notifHint: 'Dove inviamo gli aggiornamenti sulle sue richieste. Lasci vuoto per usare l’e-mail di accesso.',
     typeLabel: 'Tipo di account',
     typeHint: 'Definito da Rutherford — in base alla sua organizzazione.',
     submit: 'Salva',
@@ -482,10 +534,11 @@ const COPY: Record<Locale, Copy> = {
     companyPlaceholder: 'Imprenta Pérez',
     roleLabel: 'Su puesto',
     selectRole: 'Seleccione su puesto',
-    loginEmailLabel: 'Email de acceso',
-    notifLabel: 'Email de notificación (opcional)',
+    rolesLabel: 'Sus funciones (selección múltiple)',
+    loginEmailLabel: 'Correo de acceso',
+    notifLabel: 'Correo de notificación (opcional)',
     notifPlaceholder: 'notificaciones@empresa.com',
-    notifHint: 'Dónde enviamos las novedades de sus solicitudes. Déjelo vacío para usar su email de acceso.',
+    notifHint: 'Dónde enviamos las novedades de sus solicitudes. Déjelo vacío para usar su correo de acceso.',
     typeLabel: 'Tipo de cuenta',
     typeHint: 'Definido por Rutherford — según su organización.',
     submit: 'Guardar',
@@ -530,6 +583,7 @@ const COPY: Record<Locale, Copy> = {
     companyPlaceholder: 'Tipografia Silva',
     roleLabel: 'A sua função',
     selectRole: 'Selecione a sua função',
+    rolesLabel: 'As suas funções (seleção múltipla)',
     loginEmailLabel: 'Email de início de sessão',
     notifLabel: 'Email de notificação (opcional)',
     notifPlaceholder: 'notificacoes@empresa.com',
@@ -575,6 +629,11 @@ type Props = {
   avatarUrl: string | null;
   logoUrl: string | null;
   canManageLogo: boolean;
+  /** The organization's name when the profile is linked to one — the source of
+   * truth for the company field (brief § 3.2). Null when there is no org. */
+  orgName: string | null;
+  /** Whether the signed-in user owns that org (only owners rename it here). */
+  canRenameOrg: boolean;
   defaults: {
     fullName: string;
     country: string;
@@ -582,6 +641,36 @@ type Props = {
     jobTitle: string;
     notificationEmail: string;
   };
+};
+
+// Company-name governance notes (brief § 3.2): when the profile is linked to an
+// organization, the org name is what the company field shows — its owner edits
+// it here (which renames the org), everyone else gets a read-only field.
+const ORG_COMPANY: Record<Locale, { ownerNote: string; managedNote: string }> = {
+  en: {
+    ownerNote: 'Your organization’s name — editable by its owner.',
+    managedNote: 'Managed by your organization.',
+  },
+  fr: {
+    ownerNote: 'Le nom de votre organisation — modifiable par son propriétaire.',
+    managedNote: 'Géré par votre organisation.',
+  },
+  de: {
+    ownerNote: 'Der Name Ihrer Organisation — änderbar durch den Inhaber.',
+    managedNote: 'Von Ihrer Organisation verwaltet.',
+  },
+  it: {
+    ownerNote: 'Il nome della sua organizzazione — modificabile dal proprietario.',
+    managedNote: 'Gestito dalla sua organizzazione.',
+  },
+  es: {
+    ownerNote: 'El nombre de su organización — editable por su propietario.',
+    managedNote: 'Gestionado por su organización.',
+  },
+  pt: {
+    ownerNote: 'O nome da sua organização, editável pelo proprietário.',
+    managedNote: 'Gerido pela sua organização.',
+  },
 };
 
 // Media-upload copy (profile photo + company logo, edited inline on this page).
@@ -668,20 +757,42 @@ export function AccountProfile({
   avatarUrl: avatarUrl0,
   logoUrl: logoUrl0,
   canManageLogo,
+  orgName,
+  canRenameOrg,
   defaults,
 }: Props) {
   const { locale } = useLanguage();
   const t = COPY[locale];
   const v = VIEW[locale];
   const media = MEDIA[locale];
+  const orgCopy = ORG_COMPANY[locale];
+  // Company field governance (brief § 3.2): an org-linked profile shows the org
+  // name; only the org's owner may edit it (the API renames the org). Profiles
+  // without an org keep the free-text company field.
+  const hasOrg = Boolean(orgName);
+  const canEditCompany = !hasOrg || canRenameOrg;
   // Internal team: company + country are fixed by the domain, so we hide those
   // fields and offer the internal role taxonomy instead of the printing roles.
   const isTeam = accountType === 'team';
+  // Partners (reseller / distributor) carry multi-valued job_roles instead of
+  // the single printing job_title (brief § 2.2.a).
+  const isPartner = accountType === 'reseller' || accountType === 'distributor';
   const teamRoles = TEAM_ROLE_LABELS[locale];
+  const partnerLabels: Record<string, string> =
+    accountType === 'distributor' ? DISTRIBUTOR_ROLE_LABELS[locale] : RESELLER_ROLE_LABELS[locale];
+  const partnerKeys: readonly string[] =
+    accountType === 'distributor' ? DISTRIBUTOR_ROLE_KEYS : RESELLER_ROLE_KEYS;
   const [fullName, setFullName] = useState(defaults.fullName);
   const [country, setCountry] = useState(defaults.country);
-  const [company, setCompany] = useState(defaults.company);
+  // The org name is the source of truth for the company field when present.
+  const [company, setCompany] = useState(orgName ?? defaults.company);
   const [jobTitle, setJobTitle] = useState(defaults.jobTitle);
+  // job_roles isn't part of the server-passed defaults yet, so partners load it
+  // from their own profile row (self-read RLS). savedRoles = last persisted
+  // value, used to restore on cancel; rolesLoaded gates the requal banner.
+  const [jobRoles, setJobRoles] = useState<string[]>([]);
+  const [savedRoles, setSavedRoles] = useState<string[]>([]);
+  const [rolesLoaded, setRolesLoaded] = useState(!isPartner);
   const [notif, setNotif] = useState(defaults.notificationEmail);
   const [status, setStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -714,6 +825,42 @@ export function AccountProfile({
       active = false;
     };
   }, []);
+
+  // Partner roles (job_roles) — read from the user's own profile row.
+  useEffect(() => {
+    if (!isPartner) return;
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+      setRolesLoaded(true);
+      return;
+    }
+    const supabase = createSupabaseBrowserClient();
+    let active = true;
+    (async () => {
+      try {
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+        if (!active) return;
+        if (user) {
+          const { data } = await supabase.from('profiles').select('job_roles').eq('id', user.id).maybeSingle();
+          if (!active) return;
+          const roles = Array.isArray(data?.job_roles) ? (data.job_roles as string[]) : [];
+          setJobRoles(roles);
+          setSavedRoles(roles);
+        }
+      } catch {
+        /* best-effort — the edit form simply starts with no roles selected */
+      }
+      if (active) setRolesLoaded(true);
+    })();
+    return () => {
+      active = false;
+    };
+  }, [isPartner]);
+
+  const toggleRole = (key: string) => {
+    setJobRoles((prev) => (prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]));
+  };
 
   const handleDelete = async () => {
     setDeleting(true);
@@ -762,8 +909,9 @@ export function AccountProfile({
   const handleCancel = () => {
     setFullName(defaults.fullName);
     setCountry(defaults.country);
-    setCompany(defaults.company);
+    setCompany(orgName ?? defaults.company);
     setJobTitle(defaults.jobTitle);
+    setJobRoles(savedRoles);
     setNotif(defaults.notificationEmail);
     setStatus('idle');
     setErrorMsg(null);
@@ -772,7 +920,8 @@ export function AccountProfile({
   };
 
   const handleSave = async () => {
-    if (!fullName.trim() || !jobTitle || (!isTeam && (!country || !company.trim()))) {
+    const roleMissing = isPartner ? jobRoles.length === 0 : !jobTitle;
+    if (!fullName.trim() || roleMissing || (!isTeam && (!country || !company.trim()))) {
       setStatus('error');
       setErrorMsg(t.errorRequired);
       return;
@@ -787,11 +936,13 @@ export function AccountProfile({
           full_name: fullName.trim(),
           country,
           company: company.trim(),
-          job_title: jobTitle,
+          // Partners submit the multi-valued job_roles; the API nulls job_title.
+          ...(isPartner ? { job_roles: jobRoles } : { job_title: jobTitle }),
           notification_email: notif.trim(),
         }),
       });
       if (res.ok) {
+        setSavedRoles(jobRoles);
         setStatus('saved');
         setEditing(false);
         return;
@@ -809,13 +960,19 @@ export function AccountProfile({
   };
 
   const banner = BANNER[locale];
+  const requal = REQUAL[locale];
   const twoFaKnown = twoFa !== 'loading';
   const twoFaOn = twoFa === 'on';
-  const roleLabel = jobTitle
-    ? isTeam
-      ? teamRoles[jobTitle as keyof typeof teamRoles] ?? ''
-      : t.roles[jobTitle as JobTitleKey] ?? ''
-    : '';
+  const roleLabel = isPartner
+    ? jobRoles.map((k) => partnerLabels[k] ?? k).join(' · ')
+    : jobTitle
+      ? isTeam
+        ? teamRoles[jobTitle as keyof typeof teamRoles] ?? ''
+        : t.roles[jobTitle as JobTitleKey] ?? ''
+      : '';
+  // Legacy partner profile: still a printer job_title, no job_roles yet — the
+  // requalification banner asks them to pick roles in the new referential.
+  const needsRequal = isPartner && rolesLoaded && jobRoles.length === 0 && isJobTitleKey(defaults.jobTitle);
   const displayName = fullName.trim() || email;
   const identitySub = [roleLabel, !isTeam ? company.trim() : ''].filter(Boolean).join(' · ');
 
@@ -829,7 +986,12 @@ export function AccountProfile({
           { key: 'country', done: Boolean(country.trim()), label: t.countryLabel, kind: 'edit' as const },
         ]
       : []),
-    { key: 'role', done: Boolean(jobTitle.trim()), label: t.roleLabel, kind: 'edit' },
+    {
+      key: 'role',
+      done: isPartner ? jobRoles.length > 0 : Boolean(jobTitle.trim()),
+      label: isPartner ? requal.cta : t.roleLabel,
+      kind: 'edit',
+    },
     ...(twoFaKnown ? [{ key: '2fa', done: twoFaOn, label: v.chip2fa, kind: 'security' as const }] : []),
   ];
   const doneCount = 1 + items.filter((i) => i.done).length; // +1: email is always set
@@ -858,7 +1020,24 @@ export function AccountProfile({
             <p className="signin-message signin-message-ok profile-msg">{t.saved}</p>
           ) : null}
 
-          {!editing && completionPct < 100 ? (
+          {!editing && needsRequal ? (
+            <section className="profile-banner">
+              <div className="profile-banner-row">
+                <div className="profile-banner-main">
+                  <h2 className="profile-banner-title">{requal.title}</h2>
+                  <p className="profile-banner-sub">{requal.sub}</p>
+                </div>
+                <div className="profile-banner-chips">
+                  <button type="button" className="profile-chip" onClick={openEdit}>
+                    <span className="profile-chip-plus">+</span>
+                    {requal.cta}
+                  </button>
+                </div>
+              </div>
+            </section>
+          ) : null}
+
+          {!editing && !needsRequal && completionPct < 100 ? (
             <section className="profile-banner">
               <div className="profile-banner-row">
                 <div className="profile-banner-main">
@@ -961,30 +1140,53 @@ export function AccountProfile({
                         disabled={status === 'saving'}
                       />
                     </label>
-                    <label className="profile-field profile-field-edit">
-                      <span className="profile-field-k">{v.funcLabel}</span>
-                      <select
-                        className="profile-input"
-                        value={jobTitle}
-                        onChange={(e) => setJobTitle(e.target.value)}
-                        disabled={status === 'saving'}
-                      >
-                        <option value="" disabled>
-                          {t.selectRole}
-                        </option>
-                        {isTeam
-                          ? TEAM_ROLE_KEYS.map((key) => (
-                              <option key={key} value={key}>
-                                {teamRoles[key]}
-                              </option>
-                            ))
-                          : JOB_TITLE_KEYS.map((key) => (
-                              <option key={key} value={key}>
-                                {t.roles[key]}
-                              </option>
-                            ))}
-                      </select>
-                    </label>
+                    {isPartner ? (
+                      <div className="profile-field profile-field-edit">
+                        <span className="profile-field-k">{t.rolesLabel}</span>
+                        <div className="contact-intent-chips">
+                          {partnerKeys.map((key) => (
+                            <label
+                              key={key}
+                              className={`contact-intent-chip${jobRoles.includes(key) ? ' is-active' : ''}`}
+                            >
+                              <input
+                                type="checkbox"
+                                hidden
+                                checked={jobRoles.includes(key)}
+                                onChange={() => toggleRole(key)}
+                                disabled={status === 'saving'}
+                              />
+                              {partnerLabels[key] ?? key}
+                            </label>
+                          ))}
+                        </div>
+                      </div>
+                    ) : (
+                      <label className="profile-field profile-field-edit">
+                        <span className="profile-field-k">{v.funcLabel}</span>
+                        <select
+                          className="profile-input"
+                          value={jobTitle}
+                          onChange={(e) => setJobTitle(e.target.value)}
+                          disabled={status === 'saving'}
+                        >
+                          <option value="" disabled>
+                            {t.selectRole}
+                          </option>
+                          {isTeam
+                            ? TEAM_ROLE_KEYS.map((key) => (
+                                <option key={key} value={key}>
+                                  {teamRoles[key]}
+                                </option>
+                              ))
+                            : JOB_TITLE_KEYS.map((key) => (
+                                <option key={key} value={key}>
+                                  {t.roles[key]}
+                                </option>
+                              ))}
+                        </select>
+                      </label>
+                    )}
                     <div className="profile-field">
                       <span className="profile-field-k">{v.emailField}</span>
                       <span className="profile-field-v">{email}</span>
@@ -1024,17 +1226,27 @@ export function AccountProfile({
               </div>
               <div className="profile-fields">
                 {editing && !isTeam ? (
-                  <label className="profile-field profile-field-edit">
-                    <span className="profile-field-k">{v.raisonLabel}</span>
-                    <input
-                      className="profile-input"
-                      type="text"
-                      value={company}
-                      placeholder={t.companyPlaceholder}
-                      onChange={(e) => setCompany(e.target.value)}
-                      disabled={status === 'saving'}
-                    />
-                  </label>
+                  canEditCompany ? (
+                    <label className="profile-field profile-field-edit">
+                      <span className="profile-field-k">{v.raisonLabel}</span>
+                      <input
+                        className="profile-input"
+                        type="text"
+                        value={company}
+                        placeholder={t.companyPlaceholder}
+                        onChange={(e) => setCompany(e.target.value)}
+                        disabled={status === 'saving'}
+                      />
+                      {hasOrg ? <span className="profile-field-note">{orgCopy.ownerNote}</span> : null}
+                    </label>
+                  ) : (
+                    // Org-linked, not the owner: the org name governs — read-only.
+                    <div className="profile-field">
+                      <span className="profile-field-k">{v.raisonLabel}</span>
+                      <span className="profile-field-v">{company}</span>
+                      <span className="profile-field-note">{orgCopy.managedNote}</span>
+                    </div>
+                  )
                 ) : (
                   <ProfileField label={v.raisonLabel} value={company} empty={v.notProvided} />
                 )}
@@ -1053,13 +1265,13 @@ export function AccountProfile({
                       </option>
                       {COUNTRIES.map((co) => (
                         <option key={co} value={co}>
-                          {co}
+                          {localizedCountryName(co, locale)}
                         </option>
                       ))}
                     </select>
                   </label>
                 ) : (
-                  <ProfileField label={t.countryLabel} value={country} empty={v.notProvided} />
+                  <ProfileField label={t.countryLabel} value={country ? localizedCountryName(country, locale) : ''} empty={v.notProvided} />
                 )}
                 <div className="profile-field">
                   <span className="profile-field-k">{v.logoField}</span>

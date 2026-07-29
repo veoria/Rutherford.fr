@@ -1,0 +1,53 @@
+# CODEOWNERS — Rutherford.fr
+#
+# Chaque ligne associe un motif de fichiers à un ou plusieurs propriétaires.
+# GitHub demande automatiquement leur relecture sur toute pull request qui
+# touche ces fichiers. La dernière règle qui correspond gagne.
+#
+# IMPORTANT — pour que ce fichier BLOQUE réellement une fusion (et pas
+# seulement qu'il demande une relecture), il faut activer côté GitHub :
+#   Settings › Branches › règle sur « main »
+#     ☑ Require a pull request before merging
+#     ☑ Require review from Code Owners
+# Sans ces deux cases, CODEOWNERS reste indicatif.
+
+# ---------------------------------------------------------------------------
+# Espace compte (« My account ») — logique client / revendeur / distributeur
+# ---------------------------------------------------------------------------
+/app/account/                 @fxdavis75
+/app/api/account/             @fxdavis75
+/components/account-*.tsx     @fxdavis75
+/lib/account-*.ts             @fxdavis75
+/lib/profile.ts               @fxdavis75
+/lib/organizations.ts         @fxdavis75
+/lib/entitlements.ts          @fxdavis75
+/data/account-*.ts            @fxdavis75
+
+# ---------------------------------------------------------------------------
+# Back-office admin — accès, audit, aperçu client
+# ---------------------------------------------------------------------------
+/app/admin/                   @fxdavis75
+/app/api/admin/               @fxdavis75
+/components/admin-*.tsx       @fxdavis75
+/lib/admin.ts                 @fxdavis75
+/lib/admin-access.ts          @fxdavis75
+/lib/admin-audit.ts           @fxdavis75
+
+# ---------------------------------------------------------------------------
+# Authentification, session et schéma de base — tout écart casse l'espace
+# compte et l'admin d'un coup.
+# ---------------------------------------------------------------------------
+/app/api/auth/                @fxdavis75
+/middleware.ts                @fxdavis75
+/lib/supabase/                @fxdavis75
+/supabase/migrations/         @fxdavis75
+
+# ---------------------------------------------------------------------------
+# Gouvernance du dépôt
+# ---------------------------------------------------------------------------
+/.github/CODEOWNERS           @fxdavis75
+/CLAUDE.md                    @fxdavis75
+
+# Note : le reste du site (pages marketing, blog, newsletters, images, SEO,
+# /usa, /colorloop, offset360, glossaire) n'a volontairement pas de
+# propriétaire imposé — ces zones restent en autonomie.

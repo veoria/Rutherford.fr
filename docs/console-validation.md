@@ -29,6 +29,29 @@ updates the row, emails the client and adds a Pipedrive note:
 | Rejected | `rejected` | "we cannot connect…" | "…cannot be connected" |
 | In progress | `changes_requested` | — | "Please contact FX. We need more info…" |
 
+### Suppression — tests & doublons
+
+Supprimer la tâche dans Asana (corbeille) retire la demande du suivi client.
+Asana envoie un événement `deleted` sur la tâche → le webhook passe la ligne en
+**suppression logique** (`deleted_at`, `deleted_source = 'asana'`) :
+
+- elle disparaît de `/account/console-validations`, de la vue d'accueil du compte
+  et de la vue revendeur (la policy RLS exclut `deleted_at not null`, les lectures
+  service-role filtrent explicitement) ;
+- la réponse client (`POST /api/console-validation/[id]/reply`) renvoie 404, la
+  ligne n'étant plus lisible par son propriétaire ;
+- rien n'est effacé : la ligne, le fil de messages, le Deal Pipedrive et le
+  dossier Dropbox restent en place ;
+- le back-office la conserve, hors liste par défaut — filtre **« Supprimées dans
+  Asana »** de l'onglet Validations, badge sur la fiche compte, et une entrée
+  `console_validation.hide` dans le journal admin ;
+- **restaurer** la tâche depuis la corbeille Asana (`undeleted`) réaffiche la
+  demande côté client (`console_validation.restore` au journal).
+
+Seuls `deleted` / `undeleted` sur une tâche sont interprétés : `removed` se
+déclenche aussi quand une carte change simplement de colonne. Les tickets de
+support ne sont pas concernés (le webhook les laisse intacts).
+
 ### Customer portal — `/account/console-validations`
 Signed-in clients/resellers track their requests and live status. Reuses the
 Academy's Supabase auth. RLS scopes each user to their own rows (by `user_id`
@@ -39,12 +62,18 @@ The `reseller_id` / `ref_code` columns are in place for future reseller views.
 
 `console_validations` (migration applied to the Rutherford Academy project):
 `id, user_id, reseller_id, ref_code, email, company, country, machine, notes,
-status, pipedrive_deal_id, dropbox_folder, dropbox_link, asana_task_gid, photos`.
+status, pipedrive_deal_id, dropbox_folder, dropbox_link, asana_task_gid, photos,
+deleted_at, deleted_source`.
 Written by the service role only; read via RLS.
+
+> `deleted_at` / `deleted_source` viennent de
+> `supabase/migrations/20260725_console_validation_deletion_sync.sql` — à passer
+> dans le SQL editor **avant** de déployer, sinon les lectures filtrées sur
+> `deleted_at` échouent (colonne inconnue).
 
 ## Environment variables
 
-Set in **Vercel → `website5` (serves rutherford.fr) → Production**, and `.env.local`.
+Set in **Vercel → `rutherford-fr` (serves rutherford.fr) → Production**, and `.env.local`.
 Template: `.env.local.example`.
 
 ```

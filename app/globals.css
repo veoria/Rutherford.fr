@@ -452,6 +452,41 @@ svg {
   flex: 0 0 auto;
 }
 
+/* Lien « Admin » du header — équipe Rutherford uniquement. */
+.header-admin-link {
+  display: inline-flex;
+  align-items: center;
+  height: 50px;
+  padding: 0 16px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: #fff;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: #1d1d1f;
+  text-decoration: none;
+  transition: border-color 160ms ease, background 160ms ease;
+}
+.header-admin-link:hover,
+.header-admin-link.is-current {
+  border-color: #1d1d1f;
+}
+.header-admin-link.is-current {
+  background: #1d1d1f;
+  color: #fff;
+}
+@media (max-width: 920px) {
+  .header-admin-link {
+    display: none; /* sous le breakpoint burger : entrée « Admin » dans le menu */
+  }
+}
+@media (max-width: 1200px) {
+  .header-admin-link {
+    height: 44px;
+    padding: 0 12px;
+    font-size: 0.88rem;
+  }
+}
 .header-account-chip {
   display: inline-flex;
   align-items: center;
@@ -11999,6 +12034,32 @@ a.blog-card-image:hover img {
 .admin-back-link:hover {
   color: #1d1d1f;
 }
+/* Fil d'Ariane des fiches admin (Admin › Onglet › Élément courant). */
+.admin-breadcrumb {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-bottom: 14px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.4);
+}
+.admin-breadcrumb a {
+  color: rgba(0, 0, 0, 0.55);
+  text-decoration: none;
+}
+.admin-breadcrumb a:hover {
+  color: #1d1d1f;
+  text-decoration: underline;
+}
+.admin-breadcrumb-cur {
+  color: #1d1d1f;
+  max-width: 320px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 .admin-detail-head {
   margin-bottom: 18px;
 }
@@ -12182,6 +12243,94 @@ a.blog-card-image:hover img {
 
 .admin-table tbody tr:hover {
   background: rgba(0, 113, 227, 0.04);
+}
+
+/* Lignes cliquables (fiche ou détail déplié). Le clic sur la ligne est un
+   raccourci souris : le lien ou le chevron de la première cellule reste le
+   chemin clavier / lecteur d'écran. */
+.admin-row-link {
+  cursor: pointer;
+}
+
+.admin-row-open {
+  background: rgba(0, 113, 227, 0.06);
+}
+
+.admin-row-toggle {
+  border: 0;
+  background: none;
+  padding: 0 6px 0 0;
+  cursor: pointer;
+  color: rgba(0, 0, 0, 0.45);
+  font-size: 0.8rem;
+  line-height: 1;
+}
+
+.admin-row-toggle:hover {
+  color: #0071e3;
+}
+
+/* Détail déplié sous une ligne (validation console, ticket de support). */
+.admin-detail-row:hover {
+  background: transparent;
+}
+
+.admin-detail-row > td {
+  white-space: normal;
+  background: #fafafa;
+  padding: 16px 18px;
+}
+
+.admin-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px 24px;
+}
+
+.admin-detail-item,
+.admin-detail-block {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.admin-detail-block {
+  margin-top: 14px;
+}
+
+.admin-detail-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(0, 0, 0, 0.45);
+}
+
+.admin-detail-value {
+  font-size: 0.88rem;
+  overflow-wrap: anywhere;
+}
+
+.admin-detail-text {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.admin-detail-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.admin-detail-links a {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #0071e3;
 }
 
 .admin-table td.admin-num,
@@ -13469,6 +13618,9 @@ a.blog-card-image:hover img {
 .acct-subnav-link { font-size: 0.92rem; font-weight: 500; color: #676767; padding: 8px 14px; border-radius: 999px; white-space: nowrap; text-decoration: none; transition: background 0.15s ease, color 0.15s ease; }
 .acct-subnav-link:hover { color: #111; background: rgba(20, 19, 15, 0.04); }
 .acct-subnav-link.is-active { color: #111; background: #f4f6f8; font-weight: 600; }
+/* Entrée « Admin » (équipe Rutherford) — démarquée des onglets du compte. */
+.acct-subnav-admin { color: #111; border: 1px solid var(--line); }
+.acct-subnav-admin:hover { border-color: #111; background: #fff; }
 .acct-subnav-right { margin-left: auto; display: flex; align-items: center; gap: 12px; flex: 0 0 auto; }
 .acct-subnav-area { font-size: 0.8rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--accent); white-space: nowrap; }
 .acct-subnav-sep { width: 1px; height: 22px; background: var(--line); flex: 0 0 auto; }
@@ -15385,6 +15537,10 @@ textarea.cv-input { resize: vertical; min-height: 74px; }
 }
 
 .ah-section-h {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
   margin: 30px 0 14px;
 }
 .ah-section-t {
@@ -15393,6 +15549,11 @@ textarea.cv-input { resize: vertical; min-height: 74px; }
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--ah-muted);
+}
+.ah-section-note {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #b98900;
 }
 
 /* tiles */
@@ -15415,6 +15576,15 @@ textarea.cv-input { resize: vertical; min-height: 74px; }
   border-color: #d9d9d5;
   box-shadow: 0 7px 18px rgba(20, 16, 12, 0.07);
   transform: translateY(-1px);
+}
+/* Aperçu admin : tuiles inertes (pas de lien vers /account/* de l'admin). */
+.ah-tile-static {
+  cursor: default;
+}
+.ah-tile-static:hover {
+  border-color: var(--ah-border);
+  box-shadow: none;
+  transform: none;
 }
 .ah-tile-ic {
   width: 42px;
@@ -16037,6 +16207,11 @@ textarea.cv-input { resize: vertical; min-height: 74px; }
 }
 .ah-support-row:first-of-type {
   border-top: 0;
+}
+/* Aperçu admin : rangées d'aide inertes (pas de /support avec la session admin). */
+.ah-support-row.ah-static {
+  cursor: default;
+  opacity: 0.6;
 }
 .ah-support-ic {
   flex: 0 0 auto;

@@ -4,30 +4,41 @@
 
 const SITE = 'https://rutherford.fr';
 
+// orgName / inviter are user-controlled (org name comes from free-text company)
+// and get interpolated into email HTML — escape them or an owner could send
+// arbitrary markup from Rutherford's real mailbox.
+function escapeHtml(value: string): string {
+  return value.replace(/[&<>"']/g, (c) =>
+    c === '&' ? '&amp;' : c === '<' ? '&lt;' : c === '>' ? '&gt;' : c === '"' ? '&quot;' : '&#39;'
+  );
+}
+
 export function teamInviteEmail(
   kind: 'member' | 'client' | 'reseller',
   orgName: string | null,
   inviter: string
 ): { subject: string; html: string } {
-  const team = orgName || 'Rutherford';
+  const teamRaw = orgName || 'Rutherford';
+  const team = escapeHtml(teamRaw);
+  const safeInviter = escapeHtml(inviter);
   const signInUrl = `${SITE}/account/sign-in?next=/account`;
   const isClient = kind === 'client';
   const isReseller = kind === 'reseller';
   const subject = isReseller
-    ? `${team} vous invite dans son réseau Rutherford`
+    ? `${teamRaw} vous invite dans son réseau Rutherford`
     : isClient
-      ? `${team} vous invite sur Rutherford`
-      : `Invitation à rejoindre ${team} sur Rutherford`;
+      ? `${teamRaw} vous invite sur Rutherford`
+      : `Invitation à rejoindre ${teamRaw} sur Rutherford`;
   const headline = isReseller
     ? `Rejoignez le réseau ${team}`
     : isClient
       ? `${team} vous invite sur Rutherford`
       : `Vous êtes invité·e à rejoindre ${team}`;
   const intro = isReseller
-    ? `${inviter} (${team}) vous invite à rejoindre son réseau de revendeurs sur <strong>Rutherford</strong>.`
+    ? `${safeInviter} (${team}) vous invite à rejoindre son réseau de revendeurs sur <strong>Rutherford</strong>.`
     : isClient
-      ? `${inviter} (${team}) vous invite à suivre vos validations de presse et votre compte sur <strong>Rutherford</strong>.`
-      : `${inviter} vous a invité·e à rejoindre son compte <strong>Rutherford</strong> — accès à l'espace équipe, aux validations de presse et à l'Academy.`;
+      ? `${safeInviter} (${team}) vous invite à suivre vos validations de presse et votre compte sur <strong>Rutherford</strong>.`
+      : `${safeInviter} vous a invité·e à rejoindre son compte <strong>Rutherford</strong> — accès à l'espace équipe, aux validations de presse et à l'Academy.`;
   const cta = isReseller ? 'Rejoindre le réseau' : isClient ? 'Activer mon compte' : 'Rejoindre l’équipe';
   return {
     subject,

@@ -1,7 +1,10 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { createSupabaseServerClient, createSupabaseAdminClient } from '@/lib/supabase/server';
-import { isJobTitleKey, isKnownCountry, isTeamRoleKey } from '@/data/onboarding-options';
-import { deriveAccountType, teamOrgFromEmail } from '@/lib/account-type';
+import { isJobTitleKey, isKnownCountry, isTeamRoleKey, isValidPartnerRoles } from '@/data/onboarding-options';
+import { teamOrgFromEmail } from '@/lib/account-type';
+import { deriveAccountTypeWithSource, isConfirmedSource, type AccountTypeSource } from '@/lib/account-classification';
+import type { AccountType } from '@/data/account-types';
+import { renameOwnedOrganization } from '@/lib/organizations';
 import { syncLeadToPipedrive } from '@/lib/pipedrive';
 
 export const dynamic = 'force-dynamic';
@@ -40,7 +43,7 @@ export async function POST(request: NextRequest) {
 
   const { data: existing } = await supabase
     .from('profiles')
-    .select('full_name, onboarded_at')
+    .select('full_name, onboarded_at, account_type, account_type_source')
     .eq('id', user.id)
     .maybeSingle();
 
@@ -68,7 +71,9 @@ export async function POST(request: NextRequest) {
     };
     const admin = HAS_ADMIN ? createSupabaseAdminClient() : null;
     const writer = admin ?? supabase;
-    const update = admin ? { ...base, account_type: 'team' as const } : base;
+    const update = admin
+      ? { ...base, account_type: 'team' as const, account_type_source: 'domain' as const }
+      : base;
     const { error } = await writer.from('profiles').update(update).eq('id', user.id);
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
     return NextResponse.json({ ok: true, account_type: 'team' });
@@ -77,10 +82,8 @@ export async function POST(request: NextRequest) {
   if (
     !country ||
     !company ||
-    !jobTitle ||
     !fullName ||
     !isKnownCountry(country) ||
-    !isJobTitleKey(jobTitle) ||
     company.length > 200 ||
     fullName.length > 200
   ) {
@@ -90,25 +93,110 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid notification email' }, { status: 400 });
   }
 
-  const accountType = await deriveAccountType(user.email ?? '');
+  // Classification with provenance (brief § 2.3.a): a confirmed derivation is
+  // stamped; an 'unqualified' result never overwrites a confirmed stored type
+  // (no silent downgrade on a CRM outage) — it only stamps client + 'unqualified'
+  // when the stored source isn't confirmed either.
+  const derived = await deriveAccountTypeWithSource(user.email ?? '');
+  let accountType: AccountType;
+  let stamp: { account_type: AccountType; account_type_source: AccountTypeSource } | null;
+  if (derived.source !== 'unqualified') {
+    accountType = derived.type;
+    stamp = { account_type: derived.type, account_type_source: derived.source };
+  } else if (isConfirmedSource(existing?.account_type_source as string | null | undefined)) {
+    accountType = (existing?.account_type as AccountType | null) ?? 'client';
+    stamp = null;
+  } else {
+    accountType = 'client';
+    stamp = { account_type: 'client', account_type_source: 'unqualified' };
+  }
+
+  // Role referential per resolved type. Partners (reseller / distributor) use
+  // the multi-valued job_roles; clients keep the single printing job_title. A
+  // partner whose profile still carries a legacy printer job_title and submits
+  // job_roles goes through here too — that IS the requalification path.
+  const jobRolesIn = p.job_roles;
+  const isPartner = accountType === 'reseller' || accountType === 'distributor';
+  let roleFields: { job_title: string | null; job_roles?: string[] };
+  if (isPartner) {
+    if (
+      !Array.isArray(jobRolesIn) ||
+      jobRolesIn.length > 10 ||
+      !isValidPartnerRoles(accountType, jobRolesIn)
+    ) {
+      return NextResponse.json({ error: 'Missing or invalid fields' }, { status: 400 });
+    }
+    roleFields = { job_title: null, job_roles: jobRolesIn };
+  } else if (Array.isArray(jobRolesIn) && jobRolesIn.length > 0) {
+    // Declared partner on a client/unqualified account (brief § 2.3.a): the
+    // user says they're a reseller/distributor. Store the reseller-referential
+    // roles — a client-typed account WITH job_roles is the signal for the
+    // admin "à qualifier" queue. The declaration alone never sets the type.
+    if (jobRolesIn.length > 10 || !isValidPartnerRoles('reseller', jobRolesIn)) {
+      return NextResponse.json({ error: 'Missing or invalid fields' }, { status: 400 });
+    }
+    roleFields = { job_title: null, job_roles: jobRolesIn };
+  } else {
+    if (!jobTitle || !isJobTitleKey(jobTitle)) {
+      return NextResponse.json({ error: 'Missing or invalid fields' }, { status: 400 });
+    }
+    roleFields = { job_title: jobTitle }; // job_roles left untouched
+  }
+
   const firstOnboarding = !existing?.onboarded_at;
+
+  const admin = HAS_ADMIN ? createSupabaseAdminClient() : null;
+
+  // Organization = source of truth for the company name (brief § 3.2). When the
+  // profile is linked to an org, ownership decides — read server-side from
+  // organization_members, never from a client flag: the owner renames the org
+  // and profiles.company follows (they move together — company is only written
+  // when the rename actually landed); a non-owner's submitted company is
+  // IGNORED and the stored value kept, since the org name governs what they
+  // see. Orgless profiles keep the free-text behaviour (their personal org is
+  // created at onboarding).
+  let companyUpdate: { company?: string } = { company };
+  if (admin) {
+    try {
+      const { data: pr } = await admin
+        .from('profiles')
+        .select('organization_id')
+        .eq('id', user.id)
+        .maybeSingle();
+      const orgId = (pr?.organization_id as string | null) ?? null;
+      if (orgId) {
+        const { data: membership } = await admin
+          .from('organization_members')
+          .select('role')
+          .eq('org_id', orgId)
+          .eq('user_id', user.id)
+          .eq('status', 'active')
+          .maybeSingle();
+        const isOwner = ((membership?.role as string | null) ?? null) === 'owner';
+        const renamed = isOwner ? await renameOwnedOrganization(user.id, company) : false;
+        if (!renamed) companyUpdate = {};
+      }
+    } catch {
+      companyUpdate = {}; // can't verify governance — leave the stored company untouched
+    }
+  }
 
   const base = {
     full_name: fullName.slice(0, 200),
     country,
-    company,
-    job_title: jobTitle,
+    ...companyUpdate,
+    ...roleFields,
     notification_email: notif || null,
     onboarded_at: existing?.onboarded_at ?? new Date().toISOString(),
     updated_at: new Date().toISOString(),
   };
 
-  // account_type isn't in the authenticated UPDATE grant (see 20260606 / 20260613),
-  // so only the service-role client can set it. Fall back to a user-session write
-  // (without account_type) when the admin key isn't configured.
-  const admin = HAS_ADMIN ? createSupabaseAdminClient() : null;
+  // account_type / account_type_source aren't in the authenticated UPDATE grant
+  // (see 20260606 / 20260613 / 20260718), so only the service-role client can
+  // set them. Fall back to a user-session write (without the classification)
+  // when the admin key isn't configured.
   const writer = admin ?? supabase;
-  const update = admin ? { ...base, account_type: accountType } : base;
+  const update = admin && stamp ? { ...base, ...stamp } : base;
 
   const { error } = await writer.from('profiles').update(update).eq('id', user.id);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
@@ -120,7 +208,7 @@ export async function POST(request: NextRequest) {
       name: fullName || null,
       company,
       country,
-      jobTitle,
+      jobTitle: roleFields.job_title ?? (roleFields.job_roles ?? []).join(', '),
     });
   }
 
