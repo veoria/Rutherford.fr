@@ -4,7 +4,7 @@
     "title": "When extended gamut pays off",
     "excerpt": "Extended gamut printing removes the ink change between jobs, but it only pays above a certain job mix. Where the break-even actually sits for a converter.",
     "lead": "Extended gamut is usually sold as a color capability. For a packaging converter it is really a production economics decision, and the answer depends on the job mix rather than on the technology. Here is where the break-even sits, and what the conversion costs you back.",
-    "image": "/images/colorloop/dsc6999.jpg",
+    "image": "/images/blog/covers/extended-gamut-ecg-when-7-color-pays-off-8e30e5a9.jpg",
     "publishedAt": "2026-08-03",
     "category": "Production",
     "paragraphs": [
@@ -313,7 +313,7 @@
     "title": "New press, same color bottleneck",
     "excerpt": "Three new offset press investments in two weeks, all promising 35 to 40 percent more capacity. The color approval loop decides how much of it you actually get.",
     "lead": "July 2026 brought a run of new sheetfed offset press announcements in North America and the UK, each with a headline productivity figure attached. Those figures are earned at running speed. The hours that decide whether you ever see them are spent before the press reaches running speed, getting the sheet to color.",
-    "image": "/images/colorloop/dsc7105.jpg",
+    "image": "/images/blog/covers/new-press-investment-color-approval-gap-98d38b8b.jpg",
     "publishedAt": "2026-08-03",
     "category": "Production",
     "paragraphs": [
@@ -578,7 +578,7 @@
     "title": "Three things printers get wrong about PPWR recyclability",
     "excerpt": "Recyclability is not a 2030 topic, the grades are A, B and C only, and EN 18120 gives you no presumption of conformity. What the regulation actually says, two weeks before it applies.",
     "lead": "Ask around a pressroom what the PPWR requires and you will hear the same three answers, and all three are wrong. With the general application date now days away, here is what Regulation (EU) 2025/40 actually says about recyclability, and what it deliberately leaves open.",
-    "image": "/images/PPWR EU norme.png",
+    "image": "/images/blog/covers/ppwr-recyclability-grades-what-printers-get-wrong-b1e26460.jpg",
     "publishedAt": "2026-07-28",
     "category": "Regulations",
     "paragraphs": [],
@@ -827,7 +827,7 @@
     "title": "Why brand colors are harder to hold than process colors",
     "excerpt": "A brand color on a large flat area is the least forgiving thing on a packaging job. Why spot color tolerances are tighter, and what actually keeps them in range across a run.",
     "lead": "On a packaging job, the element most likely to trigger a rejection is rarely the image. It is the large flat area of the brand color, the one the client recognises from across a room. Spot colors are judged by a different standard than process colors, and the reasons are worth understanding before negotiating a tolerance.",
-    "image": "/images/luxury-packaging.jpg",
+    "image": "/images/blog/covers/spot-color-tolerances-packaging-pantone-bf45f081.jpg",
     "publishedAt": "2026-07-31",
     "category": "Color management",
     "paragraphs": [],
@@ -946,7 +946,7 @@
     "title": "Paper prices up: what waste really costs now",
     "excerpt": "Paper price increases in 2026 make every makeready sheet more expensive. Here is what that does to job cost, and the one lever printers still control.",
     "lead": "Graphic paper prices moved up again through spring and summer 2026, in Europe and in Asia, on top of higher ink and plate costs. For an offset printer, the paper price itself is not negotiable. The number of sheets spoiled before the color is approved is. That is where the margin of a job is now decided.",
-    "image": "/images/magazine-orange.jpeg",
+    "image": "/images/blog/covers/paper-price-increases-2026-makeready-waste-cost-d4d23621.jpg",
     "publishedAt": "2026-07-27",
     "category": "Production",
     "paragraphs": [
@@ -1450,7 +1450,7 @@
     "title": "Pressroom automation and closed loop",
     "excerpt": "2026 print surveys agree pressroom automation is now the baseline. On offset, the last manual loop is color, and closed loop is what closes it.",
     "lead": "The 2026 industry surveys agree on one point: pressroom automation is no longer a differentiator, it is the baseline. Most offset shops have automated plate changing, ink presetting and inline inspection, yet very few call their production highly optimized. On the press, the gap almost always sits in the same place: color. Here is why closed loop is the piece that turns an automated press into an autonomous one on color.",
-    "image": "/images/man-on-offset-press.jpg",
+    "image": "/images/blog/covers/pressroom-automation-closed-loop-color-2026-d60cb4b5.jpg",
     "publishedAt": "2026-07-20",
     "category": "Production",
     "paragraphs": [
