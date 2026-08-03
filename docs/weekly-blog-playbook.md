@@ -105,6 +105,8 @@ node -e "console.log(require('./data/blog-articles.json').map(a=>a.image).sort()
 
 Le pool est large (plus de 150 fichiers dans `public/images/`), il y a toujours une image libre. Privilégier les vraies photos ; les illustrations sur fond blanc dénotent dans une grille de photos, sauf quand le sujet le justifie (une couverture typographique pour un article de réglementation, par exemple).
 
+**Outil de cadrage (usage humain, pas pour les routines).** Avec le serveur dev lancé, `http://localhost:3001/dev/covers` liste les 54 articles, affiche la banque d'images et permet de recadrer une couverture (glisser pour déplacer, molette pour zoomer) ou d'uploader une nouvelle photo. La sauvegarde écrit le JPEG dans `public/images/blog/covers/` et met à jour `data/blog-articles.json`. La page renvoie un 404 hors développement.
+
 ## 6. Vérifications avant commit
 
 ```bash
