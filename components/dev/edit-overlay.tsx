@@ -518,8 +518,12 @@ body { padding-top: 46px; }
 .eo-btn { display: inline-flex; align-items: center; font: inherit; font-size: 13px; font-weight: 600; border: 1px solid #d6d6cb; background: #fff; color: #16160f; border-radius: 8px; padding: 7px 14px; cursor: pointer; text-decoration: none; }
 .eo-btn:hover { background: #f2f2ea; }
 .eo-btn.primary { background: #e0a800; border-color: #e0a800; }
-.eo-btn.ghost { background: transparent; color: #fff; border-color: rgba(255,255,255,0.35); }
-.eo-btn.ghost:hover { background: rgba(255,255,255,0.12); }
+/* Ghost is white-on-dark, which only works inside the bar. In the modals it
+   sits on white, so it keeps the normal dark text. */
+.eo-bar .eo-btn.ghost { background: transparent; color: #fff; border-color: rgba(255,255,255,0.35); }
+.eo-bar .eo-btn.ghost:hover { background: rgba(255,255,255,0.12); }
+.eo-modal .eo-btn.ghost { background: #fff; color: #16160f; border-color: #d6d6cb; }
+.eo-modal .eo-btn.ghost:hover { background: #f2f2ea; }
 .eo-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 .eo-modal { position: fixed; inset: 0; z-index: 2147483001; background: rgba(22,22,15,0.55); display: flex; align-items: center; justify-content: center; padding: 24px; }
 .eo-modal-card { background: #fff; border-radius: 14px; padding: 20px; width: 100%; max-width: 620px; max-height: 88vh; overflow: auto; }

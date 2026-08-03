@@ -17038,3 +17038,26 @@ textarea.cv-input { resize: vertical; min-height: 74px; }
   .glossary-group { grid-template-columns: 1fr; gap: 12px; }
   .glossary-letter { font-size: 32px; }
 }
+
+/* ---------------------------------------------------------------------------
+   Homepage copy: honour line breaks typed in the editor
+   ---------------------------------------------------------------------------
+   The home's text lives in data/home/*.json, where /dev/edit can put a real
+   newline inside a string. HTML would collapse it to a space, so the blocks
+   that render that copy use `pre-line`: newlines become breaks, every other
+   run of whitespace still collapses. A string with no newline renders exactly
+   as it did before, which is why this is safe to apply across the sections.
+   -------------------------------------------------------------------------- */
+.hero-section :is(h1, h2, h3, p, li),
+.rutherford-identity-section :is(h1, h2, h3, p, li),
+.brand-explainer-section :is(h1, h2, h3, p, li),
+.case-studies-section :is(h1, h2, h3, p, li),
+.console-cta-section :is(h1, h2, h3, p, li),
+.how-rutherford-section :is(h1, h2, h3, p, li),
+.colorloop-offset-section :is(h1, h2, h3, p, li),
+.audience-section :is(h1, h2, h3, p, li),
+.ppwr-section :is(h1, h2, h3, p, li),
+.blog-preview-section :is(h1, h2, h3, p, li),
+.team-section :is(h1, h2, h3, p, li) {
+  white-space: pre-line;
+}
