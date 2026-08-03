@@ -135,8 +135,9 @@ export function EditOverlay() {
     // meant to click one line.
     const candidates = new Map<string, HTMLElement[]>();
     for (const el of Array.from(document.querySelectorAll<HTMLElement>('body *'))) {
-      if (el.closest('.eo-ui')) continue;
       if (el.tagName === 'SCRIPT' || el.tagName === 'STYLE') continue;
+      if (el.dataset.eoText) continue;
+      if (el.closest('.eo-ui')) continue;
       const key = norm(el.textContent ?? '');
       if (!key || !textIndex.has(key)) continue;
       candidates.set(key, [...(candidates.get(key) ?? []), el]);
@@ -156,6 +157,7 @@ export function EditOverlay() {
 
     let images = 0;
     for (const img of Array.from(document.querySelectorAll<HTMLImageElement>('img'))) {
+      if (img.dataset.eoMedia) continue;
       if (img.closest('.eo-ui')) continue;
       const target = mediaIndex.get(cleanSrc(img.currentSrc || img.src));
       if (!target) continue;
@@ -167,10 +169,17 @@ export function EditOverlay() {
     return { texts, images };
   }, [textIndex, mediaIndex]);
 
-  // The homepage lazy-loads sections, so re-decorate as things appear. The
-  // count reports what is currently on the page, not what one pass just added.
+  // The homepage lazy-loads sections, so re-decorate as they appear.
+  //
+  // Decorating writes classes and data attributes, which the observer would see
+  // as new mutations: left connected it re-triggers itself forever and pins the
+  // CPU. So it is disconnected around each pass and the pass is debounced.
   useEffect(() => {
-    const run = () => {
+    let frame = 0;
+    let observer: MutationObserver | null = null;
+
+    const pass = () => {
+      observer?.disconnect();
       decorate();
       setStatus((current) => {
         if (current.kind === 'busy' || current.kind === 'error') return current;
@@ -178,14 +187,21 @@ export function EditOverlay() {
         const images = document.querySelectorAll('[data-eo-media]').length;
         return { kind: 'idle', message: `${texts} texts and ${images} photos editable on this page` };
       });
+      observer?.observe(document.body, { childList: true, subtree: true });
     };
-    run();
-    const observer = new MutationObserver(run);
+
+    const schedule = () => {
+      window.clearTimeout(frame);
+      frame = window.setTimeout(pass, 250);
+    };
+
+    pass();
+    observer = new MutationObserver(schedule);
     observer.observe(document.body, { childList: true, subtree: true });
-    const timer = window.setInterval(run, 1500);
+
     return () => {
-      observer.disconnect();
-      window.clearInterval(timer);
+      observer?.disconnect();
+      window.clearTimeout(frame);
     };
   }, [decorate]);
 
