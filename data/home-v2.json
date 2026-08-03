@@ -1,0 +1,440 @@
+{
+  "en": {
+    "hero": {
+      "kicker": "Closed loop color control",
+      "headMain": "You are not losing money on the run.",
+      "headEm": "You are losing it before the first good sheet.",
+      "lede": "Every job change burns paper, ink and press hours getting to color. Closed loop control gets you there faster and holds it, on the press you already own.",
+      "ctaPrimary": "Check your console, free",
+      "ctaGhost": "See how it works"
+    },
+    "bottleneck": {
+      "eyebrow": "The real bottleneck",
+      "titleMain": "Your pressroom is automated everywhere",
+      "titleEm": "except where it costs the most.",
+      "body": "Plate changing, ink presetting, inline inspection: most offset shops have all three. On the press, the last manual loop is still color, and it is the one that decides how much paper goes in the bin."
+    },
+    "idea": {
+      "eyebrow": "The idea",
+      "title": "Three things, one loop.",
+      "lede": "Measure the sheet, compare it to the target, correct the ink keys. Rutherford closes that loop on the press you already run.",
+      "cards": [
+        {
+          "vendor": "Measure",
+          "role": "IntelliTrax2, or your own device",
+          "body": "A full control bar read in under ten seconds, without contact. Rutherford also works with the measurement system already at your console."
+        },
+        {
+          "vendor": "Compare",
+          "role": "MeasureColor",
+          "body": "Real time DeltaE against the brand reference, with the out of tolerance zones called out before anyone touches a key."
+        },
+        {
+          "vendor": "Correct",
+          "role": "Rutherford ColorLoop",
+          "body": "Deviations become ink key corrections and go straight to the console. The operator approves, and the press holds color through the run."
+        }
+      ]
+    },
+    "process": {
+      "eyebrow": "How it works",
+      "title": "Four steps, then it runs.",
+      "steps": [
+        { "title": "Preset", "body": "CIP3 and CIP4 ink key presets load before the press starts. No manual entry." },
+        { "title": "Read", "body": "The control bar is measured across the whole sheet in seconds." },
+        { "title": "Compare", "body": "DeltaE is calculated against the reference and the drifting zones are flagged." },
+        { "title": "Correct", "body": "Corrections go to the console. The operator approves. The loop is closed." }
+      ]
+    },
+    "proof": {
+      "eyebrow": "Twenty five years in pressrooms",
+      "statSuffix": " systems",
+      "sub": "Deployed in more than 30 countries, on every major press brand. Rutherford is a long-time X-Rite PANTONE partner and works with MeasureColor and IntelliTrax2."
+    },
+    "retrofit": {
+      "eyebrow": "Retrofit",
+      "title": "Your press does not need replacing.",
+      "body": "What matters is not the age of the press, it is what the console exposes: an ink key interface that accepts corrections, a measurement source, and a mechanical baseline that holds. Most consoles still running today qualify.",
+      "chips": ["CP2000", "Prinect Press Center", "PQC-S", "KHS-AI", "ErgoTronic", "ColorTronic", "Pecom", "ColorPilot", "IPC", "PCS", "Omnicon"],
+      "link": "See what qualifies"
+    },
+    "roi": {
+      "eyebrow": "What it is worth",
+      "label": "Estimated yearly saving",
+      "amount": "≈ €145,000",
+      "lead": "for a B1 six-color packaging press. What could ColorLoop save in your pressroom?",
+      "cta": "Calculate your savings"
+    },
+    "end": {
+      "eyebrow": "Answer in one business day",
+      "title": "Send a few photos of your console.",
+      "body": "We tell you whether your press qualifies for closed loop color control. Free, no commitment, and we say no when the answer is no.",
+      "cta": "Request console validation"
+    }
+  },
+  "fr": {
+    "hero": {
+      "kicker": "Contrôle couleur closed loop",
+      "headMain": "Vous ne perdez pas d'argent pendant le tirage.",
+      "headEm": "Vous en perdez avant la première feuille bonne.",
+      "lede": "Chaque changement de travail brûle du papier, de l'encre et des heures presse avant d'arriver à la couleur. Le closed loop y arrive plus vite et tient la couleur, sur la presse que vous avez déjà.",
+      "ctaPrimary": "Validez votre console, gratuit",
+      "ctaGhost": "Voir comment ça marche"
+    },
+    "bottleneck": {
+      "eyebrow": "Le vrai goulot d'étranglement",
+      "titleMain": "Votre atelier est automatisé partout",
+      "titleEm": "sauf là où ça coûte le plus cher.",
+      "body": "Changement de plaques, préréglage d'encrage, contrôle en ligne : la plupart des ateliers offset ont les trois. Sur la presse, la dernière boucle manuelle reste la couleur, et c'est elle qui décide du nombre de feuilles à la benne."
+    },
+    "idea": {
+      "eyebrow": "L'idée",
+      "title": "Trois briques. Un closed loop.",
+      "lede": "Mesurer la feuille, la comparer à la cible, corriger les vis d'encrier. Rutherford ferme cette boucle sur la presse que vous faites déjà tourner.",
+      "cards": [
+        {
+          "vendor": "Mesurer",
+          "role": "IntelliTrax2, ou votre appareil",
+          "body": "Une barre de contrôle complète lue en moins de dix secondes, sans contact. Rutherford fonctionne aussi avec le système de mesure déjà présent à votre pupitre."
+        },
+        {
+          "vendor": "Comparer",
+          "role": "MeasureColor",
+          "body": "DeltaE en temps réel par rapport à la référence de la marque, avec les zones hors tolérance signalées avant que quiconque touche une clé."
+        },
+        {
+          "vendor": "Corriger",
+          "role": "Rutherford ColorLoop",
+          "body": "Les écarts deviennent des corrections de vis d'encrier envoyées directement au pupitre. L'opérateur valide, et la presse tient la couleur sur tout le tirage."
+        }
+      ]
+    },
+    "process": {
+      "eyebrow": "Le fonctionnement",
+      "title": "Quatre étapes, puis ça tourne.",
+      "steps": [
+        { "title": "Préréglage", "body": "Les préréglages de vis d'encrier CIP3 et CIP4 se chargent avant le démarrage. Aucune saisie manuelle." },
+        { "title": "Lecture", "body": "La barre de contrôle est mesurée sur toute la feuille en quelques secondes." },
+        { "title": "Comparaison", "body": "Le DeltaE est calculé par rapport à la référence et les zones qui dérivent sont signalées." },
+        { "title": "Correction", "body": "Les corrections partent au pupitre. L'opérateur valide. La boucle est fermée." }
+      ]
+    },
+    "proof": {
+      "eyebrow": "Vingt-cinq ans d'ateliers",
+      "statSuffix": " systèmes",
+      "sub": "Déployés dans plus de 30 pays, sur toutes les grandes marques de presses. Rutherford est partenaire X-Rite PANTONE de longue date et fonctionne avec MeasureColor et IntelliTrax2."
+    },
+    "retrofit": {
+      "eyebrow": "Rétrofit",
+      "title": "Votre presse n'a pas besoin d'être remplacée.",
+      "body": "Ce qui compte n'est pas l'âge de la presse, c'est ce que la console expose : une interface de vis d'encrier qui accepte les corrections, une source de mesure, et une base mécanique qui tient. La plupart des consoles encore en production sont éligibles.",
+      "chips": ["CP2000", "Prinect Press Center", "PQC-S", "KHS-AI", "ErgoTronic", "ColorTronic", "Pecom", "ColorPilot", "IPC", "PCS", "Omnicon"],
+      "link": "Voir ce qui est éligible"
+    },
+    "roi": {
+      "eyebrow": "Ce que ça vaut",
+      "label": "Économie annuelle estimée",
+      "amount": "≈ 145 000 €",
+      "lead": "pour une presse packaging B1 six couleurs. Combien ColorLoop économiserait-il dans votre atelier ?",
+      "cta": "Calculer vos économies"
+    },
+    "end": {
+      "eyebrow": "Réponse sous un jour ouvré",
+      "title": "Envoyez quelques photos de votre console.",
+      "body": "Nous vous disons si votre presse est éligible au contrôle couleur closed loop. Gratuit, sans engagement, et nous disons non quand c'est non.",
+      "cta": "Demander une validation console"
+    }
+  },
+  "de": {
+    "hero": {
+      "kicker": "Closed-Loop-Farbsteuerung",
+      "headMain": "Sie verlieren kein Geld im Fortdruck.",
+      "headEm": "Sie verlieren es vor dem ersten Gutbogen.",
+      "lede": "Jeder Auftragswechsel verbrennt Papier, Farbe und Maschinenstunden, bis die Farbe steht. Closed Loop kommt schneller dorthin und hält sie, auf der Druckmaschine, die Sie bereits haben.",
+      "ctaPrimary": "Konsole prüfen, kostenlos",
+      "ctaGhost": "So funktioniert es"
+    },
+    "bottleneck": {
+      "eyebrow": "Der eigentliche Engpass",
+      "titleMain": "Ihre Druckerei ist überall automatisiert,",
+      "titleEm": "nur dort nicht, wo es am meisten kostet.",
+      "body": "Plattenwechsel, Farbvoreinstellung, Inline-Inspektion: die meisten Offsetbetriebe haben alle drei. An der Maschine bleibt die letzte manuelle Schleife die Farbe, und sie entscheidet, wie viel Papier in die Makulatur geht."
+    },
+    "idea": {
+      "eyebrow": "Die Idee",
+      "title": "Drei Bausteine. Ein Closed Loop.",
+      "lede": "Den Bogen messen, mit dem Ziel vergleichen, die Farbzonenschrauben korrigieren. Rutherford schließt diese Schleife auf Ihrer bestehenden Maschine.",
+      "cards": [
+        {
+          "vendor": "Messen",
+          "role": "IntelliTrax2, oder Ihr Gerät",
+          "body": "Ein kompletter Messstreifen in unter zehn Sekunden, berührungslos. Rutherford arbeitet auch mit dem Messsystem, das bereits an Ihrem Pult steht."
+        },
+        {
+          "vendor": "Vergleichen",
+          "role": "MeasureColor",
+          "body": "DeltaE in Echtzeit gegen die Markenreferenz, mit Kennzeichnung der Zonen außerhalb der Toleranz, bevor jemand eine Zone verstellt."
+        },
+        {
+          "vendor": "Korrigieren",
+          "role": "Rutherford ColorLoop",
+          "body": "Abweichungen werden zu Korrekturen der Farbzonenschrauben und gehen direkt ans Pult. Der Bediener bestätigt, die Maschine hält die Farbe über die Auflage."
+        }
+      ]
+    },
+    "process": {
+      "eyebrow": "Der Ablauf",
+      "title": "Vier Schritte, dann läuft es.",
+      "steps": [
+        { "title": "Voreinstellung", "body": "CIP3- und CIP4-Voreinstellungen laden vor dem Anfahren. Keine manuelle Eingabe." },
+        { "title": "Messung", "body": "Der Messstreifen wird über den ganzen Bogen in Sekunden gemessen." },
+        { "title": "Vergleich", "body": "DeltaE wird gegen die Referenz berechnet, abweichende Zonen werden markiert." },
+        { "title": "Korrektur", "body": "Die Korrekturen gehen ans Pult. Der Bediener bestätigt. Die Schleife ist geschlossen." }
+      ]
+    },
+    "proof": {
+      "eyebrow": "Fünfundzwanzig Jahre in Druckereien",
+      "statSuffix": " Systeme",
+      "sub": "In mehr als 30 Ländern im Einsatz, auf allen großen Maschinenmarken. Rutherford ist langjähriger X-Rite PANTONE Partner und arbeitet mit MeasureColor und IntelliTrax2."
+    },
+    "retrofit": {
+      "eyebrow": "Nachrüstung",
+      "title": "Ihre Druckmaschine muss nicht ersetzt werden.",
+      "body": "Entscheidend ist nicht das Alter der Maschine, sondern was das Pult bereitstellt: eine Schnittstelle für Farbzonenschrauben, die Korrekturen annimmt, eine Messquelle und eine stabile mechanische Basis. Die meisten Pulte im Produktionsbetrieb qualifizieren sich.",
+      "chips": ["CP2000", "Prinect Press Center", "PQC-S", "KHS-AI", "ErgoTronic", "ColorTronic", "Pecom", "ColorPilot", "IPC", "PCS", "Omnicon"],
+      "link": "Sehen, was qualifiziert"
+    },
+    "roi": {
+      "eyebrow": "Was es wert ist",
+      "label": "Geschätzte jährliche Einsparung",
+      "amount": "≈ 145.000 €",
+      "lead": "für eine B1-Sechsfarben-Verpackungsmaschine. Was könnte ColorLoop in Ihrer Druckerei einsparen?",
+      "cta": "Einsparung berechnen"
+    },
+    "end": {
+      "eyebrow": "Antwort innerhalb eines Werktags",
+      "title": "Schicken Sie ein paar Fotos Ihres Pults.",
+      "body": "Wir sagen Ihnen, ob Ihre Maschine für Closed-Loop-Farbsteuerung qualifiziert ist. Kostenlos, unverbindlich, und wir sagen nein, wenn es nein ist.",
+      "cta": "Konsolenvalidierung anfragen"
+    }
+  },
+  "it": {
+    "hero": {
+      "kicker": "Controllo colore closed loop",
+      "headMain": "Non perde denaro durante la tiratura.",
+      "headEm": "Lo perde prima del primo foglio buono.",
+      "lede": "Ogni cambio lavoro brucia carta, inchiostro e ore macchina prima di arrivare al colore. Il closed loop ci arriva prima e lo mantiene, sulla macchina che ha già.",
+      "ctaPrimary": "Verifichi la console, gratis",
+      "ctaGhost": "Come funziona"
+    },
+    "bottleneck": {
+      "eyebrow": "Il vero collo di bottiglia",
+      "titleMain": "Il suo reparto è automatizzato ovunque",
+      "titleEm": "tranne dove costa di più.",
+      "body": "Cambio lastre, preregolazione inchiostro, controllo in linea: quasi tutti gli stampatori offset hanno tutti e tre. In macchina l'ultimo anello manuale resta il colore, ed è quello che decide quanta carta finisce nello scarto."
+    },
+    "idea": {
+      "eyebrow": "L'idea",
+      "title": "Tre elementi. Un closed loop.",
+      "lede": "Misurare il foglio, confrontarlo con il target, correggere le chiavi di inchiostro. Rutherford chiude quel loop sulla macchina che già fa girare.",
+      "cards": [
+        {
+          "vendor": "Misurare",
+          "role": "IntelliTrax2, o il suo strumento",
+          "body": "Una barra di controllo completa letta in meno di dieci secondi, senza contatto. Rutherford lavora anche con il sistema di misura già presente al pulpito."
+        },
+        {
+          "vendor": "Confrontare",
+          "role": "MeasureColor",
+          "body": "DeltaE in tempo reale rispetto alla referenza del brand, con le zone fuori tolleranza segnalate prima che qualcuno tocchi una chiave."
+        },
+        {
+          "vendor": "Correggere",
+          "role": "Rutherford ColorLoop",
+          "body": "Gli scostamenti diventano correzioni delle chiavi di inchiostro e vanno direttamente al pulpito. L'operatore conferma e la macchina tiene il colore per tutta la tiratura."
+        }
+      ]
+    },
+    "process": {
+      "eyebrow": "Il funzionamento",
+      "title": "Quattro passaggi, poi gira.",
+      "steps": [
+        { "title": "Preregolazione", "body": "Le preregolazioni CIP3 e CIP4 si caricano prima dell'avviamento. Nessun inserimento manuale." },
+        { "title": "Lettura", "body": "La barra di controllo viene misurata su tutto il foglio in pochi secondi." },
+        { "title": "Confronto", "body": "Il DeltaE viene calcolato rispetto alla referenza e le zone in deriva vengono segnalate." },
+        { "title": "Correzione", "body": "Le correzioni vanno al pulpito. L'operatore conferma. Il loop è chiuso." }
+      ]
+    },
+    "proof": {
+      "eyebrow": "Venticinque anni nei reparti stampa",
+      "statSuffix": " sistemi",
+      "sub": "Installati in più di 30 paesi, su tutte le principali marche di macchine. Rutherford è partner X-Rite PANTONE di lunga data e lavora con MeasureColor e IntelliTrax2."
+    },
+    "retrofit": {
+      "eyebrow": "Retrofit",
+      "title": "La sua macchina non va sostituita.",
+      "body": "Non conta l'età della macchina, conta cosa espone la console: un'interfaccia delle chiavi di inchiostro che accetta correzioni, una sorgente di misura e una base meccanica stabile. Quasi tutte le console ancora in produzione sono idonee.",
+      "chips": ["CP2000", "Prinect Press Center", "PQC-S", "KHS-AI", "ErgoTronic", "ColorTronic", "Pecom", "ColorPilot", "IPC", "PCS", "Omnicon"],
+      "link": "Vedere cosa è idoneo"
+    },
+    "roi": {
+      "eyebrow": "Quanto vale",
+      "label": "Risparmio annuo stimato",
+      "amount": "≈ 145.000 €",
+      "lead": "per una macchina packaging B1 a sei colori. Quanto potrebbe farle risparmiare ColorLoop?",
+      "cta": "Calcolare il risparmio"
+    },
+    "end": {
+      "eyebrow": "Risposta entro un giorno lavorativo",
+      "title": "Ci mandi qualche foto del suo pulpito.",
+      "body": "Le diciamo se la sua macchina è idonea al controllo colore closed loop. Gratis, senza impegno, e diciamo no quando è no.",
+      "cta": "Richiedi validazione console"
+    }
+  },
+  "es": {
+    "hero": {
+      "kicker": "Control del color closed loop",
+      "headMain": "No pierde dinero durante la tirada.",
+      "headEm": "Lo pierde antes del primer pliego bueno.",
+      "lede": "Cada cambio de trabajo quema papel, tinta y horas de prensa hasta llegar al color. El closed loop llega antes y lo mantiene, en la prensa que ya tiene.",
+      "ctaPrimary": "Compruebe su consola, gratis",
+      "ctaGhost": "Cómo funciona"
+    },
+    "bottleneck": {
+      "eyebrow": "El verdadero cuello de botella",
+      "titleMain": "Su taller está automatizado en todas partes",
+      "titleEm": "salvo donde más cuesta.",
+      "body": "Cambio de placas, preajuste de tinta, inspección en línea: casi todos los impresores offset tienen los tres. En la prensa, el último lazo manual sigue siendo el color, y es el que decide cuánto papel acaba en el contenedor."
+    },
+    "idea": {
+      "eyebrow": "La idea",
+      "title": "Tres piezas. Un closed loop.",
+      "lede": "Medir el pliego, compararlo con el objetivo, corregir las llaves de tinta. Rutherford cierra ese lazo en la prensa que ya hace girar.",
+      "cards": [
+        {
+          "vendor": "Medir",
+          "role": "IntelliTrax2, o su equipo",
+          "body": "Una barra de control completa leída en menos de diez segundos, sin contacto. Rutherford también funciona con el sistema de medición que ya tiene en la consola."
+        },
+        {
+          "vendor": "Comparar",
+          "role": "MeasureColor",
+          "body": "DeltaE en tiempo real frente a la referencia de la marca, con las zonas fuera de tolerancia señaladas antes de que nadie toque una llave."
+        },
+        {
+          "vendor": "Corregir",
+          "role": "Rutherford ColorLoop",
+          "body": "Las desviaciones se convierten en correcciones de llaves de tinta y van directas a la consola. El impresor valida y la prensa mantiene el color toda la tirada."
+        }
+      ]
+    },
+    "process": {
+      "eyebrow": "El funcionamiento",
+      "title": "Cuatro pasos y ya rueda.",
+      "steps": [
+        { "title": "Preajuste", "body": "Los preajustes CIP3 y CIP4 se cargan antes del arranque. Sin introducción manual." },
+        { "title": "Lectura", "body": "La barra de control se mide en todo el pliego en segundos." },
+        { "title": "Comparación", "body": "Se calcula el DeltaE frente a la referencia y se marcan las zonas que derivan." },
+        { "title": "Corrección", "body": "Las correcciones van a la consola. El impresor valida. El lazo queda cerrado." }
+      ]
+    },
+    "proof": {
+      "eyebrow": "Veinticinco años en salas de prensa",
+      "statSuffix": " sistemas",
+      "sub": "Desplegados en más de 30 países, en todas las grandes marcas de prensa. Rutherford es socio de X-Rite PANTONE desde hace años y trabaja con MeasureColor e IntelliTrax2."
+    },
+    "retrofit": {
+      "eyebrow": "Retrofit",
+      "title": "Su prensa no necesita ser sustituida.",
+      "body": "Lo que importa no es la edad de la prensa, sino lo que expone la consola: una interfaz de llaves de tinta que acepte correcciones, una fuente de medición y una base mecánica estable. Casi todas las consolas aún en producción son aptas.",
+      "chips": ["CP2000", "Prinect Press Center", "PQC-S", "KHS-AI", "ErgoTronic", "ColorTronic", "Pecom", "ColorPilot", "IPC", "PCS", "Omnicon"],
+      "link": "Ver qué es apto"
+    },
+    "roi": {
+      "eyebrow": "Lo que vale",
+      "label": "Ahorro anual estimado",
+      "amount": "≈ 145.000 €",
+      "lead": "para una prensa de packaging B1 de seis colores. ¿Cuánto le ahorraría ColorLoop?",
+      "cta": "Calcular su ahorro"
+    },
+    "end": {
+      "eyebrow": "Respuesta en un día laborable",
+      "title": "Envíenos unas fotos de su consola.",
+      "body": "Le decimos si su prensa es apta para el control del color closed loop. Gratis, sin compromiso, y decimos no cuando es no.",
+      "cta": "Solicitar validación de consola"
+    }
+  },
+  "pt": {
+    "hero": {
+      "kicker": "Controlo de cor closed loop",
+      "headMain": "Não perde dinheiro durante a tiragem.",
+      "headEm": "Perde-o antes da primeira folha boa.",
+      "lede": "Cada mudança de trabalho queima papel, tinta e horas de máquina até chegar à cor. O closed loop chega lá mais depressa e mantém a cor, na máquina que já tem.",
+      "ctaPrimary": "Verifique a sua consola, grátis",
+      "ctaGhost": "Como funciona"
+    },
+    "bottleneck": {
+      "eyebrow": "O verdadeiro estrangulamento",
+      "titleMain": "A sua oficina está automatizada em todo o lado",
+      "titleEm": "exceto onde custa mais.",
+      "body": "Mudança de chapas, pré-regulação de tinta, inspeção em linha: quase todos os impressores offset têm os três. Na máquina, o último ciclo manual continua a ser a cor, e é ele que decide quanto papel vai para o desperdício."
+    },
+    "idea": {
+      "eyebrow": "A ideia",
+      "title": "Três peças. Um closed loop.",
+      "lede": "Medir a folha, compará-la com o alvo, corrigir as chaves de tinta. A Rutherford fecha esse ciclo na máquina que já tem a trabalhar.",
+      "cards": [
+        {
+          "vendor": "Medir",
+          "role": "IntelliTrax2, ou o seu aparelho",
+          "body": "Uma barra de controlo completa lida em menos de dez segundos, sem contacto. A Rutherford também funciona com o sistema de medição que já está na sua consola."
+        },
+        {
+          "vendor": "Comparar",
+          "role": "MeasureColor",
+          "body": "DeltaE em tempo real face à referência da marca, com as zonas fora de tolerância assinaladas antes de alguém tocar numa chave."
+        },
+        {
+          "vendor": "Corrigir",
+          "role": "Rutherford ColorLoop",
+          "body": "Os desvios tornam-se correções das chaves de tinta e seguem diretamente para a consola. O operador valida e a máquina mantém a cor durante toda a tiragem."
+        }
+      ]
+    },
+    "process": {
+      "eyebrow": "O funcionamento",
+      "title": "Quatro passos e depois roda.",
+      "steps": [
+        { "title": "Pré-regulação", "body": "As pré-regulações CIP3 e CIP4 carregam antes do arranque. Sem introdução manual." },
+        { "title": "Leitura", "body": "A barra de controlo é medida em toda a folha em segundos." },
+        { "title": "Comparação", "body": "O DeltaE é calculado face à referência e as zonas em deriva são assinaladas." },
+        { "title": "Correção", "body": "As correções seguem para a consola. O operador valida. O ciclo está fechado." }
+      ]
+    },
+    "proof": {
+      "eyebrow": "Vinte e cinco anos em oficinas",
+      "statSuffix": " sistemas",
+      "sub": "Instalados em mais de 30 países, em todas as grandes marcas de máquinas. A Rutherford é parceira X-Rite PANTONE de longa data e trabalha com MeasureColor e IntelliTrax2."
+    },
+    "retrofit": {
+      "eyebrow": "Retrofit",
+      "title": "A sua máquina não precisa de ser substituída.",
+      "body": "O que conta não é a idade da máquina, é o que a consola expõe: uma interface de chaves de tinta que aceite correções, uma fonte de medição e uma base mecânica estável. Quase todas as consolas ainda em produção são elegíveis.",
+      "chips": ["CP2000", "Prinect Press Center", "PQC-S", "KHS-AI", "ErgoTronic", "ColorTronic", "Pecom", "ColorPilot", "IPC", "PCS", "Omnicon"],
+      "link": "Ver o que é elegível"
+    },
+    "roi": {
+      "eyebrow": "Quanto vale",
+      "label": "Poupança anual estimada",
+      "amount": "≈ 145 000 €",
+      "lead": "para uma máquina de packaging B1 de seis cores. Quanto poderia o ColorLoop poupar-lhe?",
+      "cta": "Calcular a poupança"
+    },
+    "end": {
+      "eyebrow": "Resposta num dia útil",
+      "title": "Envie algumas fotos da sua consola.",
+      "body": "Dizemos-lhe se a sua máquina é elegível para controlo de cor closed loop. Grátis, sem compromisso, e dizemos não quando é não.",
+      "cta": "Pedir validação de consola"
+    }
+  }
+}
