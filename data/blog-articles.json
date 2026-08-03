@@ -1,5 +1,270 @@
 [
   {
+    "slug": "new-press-investment-color-approval-gap",
+    "title": "New press, same color bottleneck",
+    "excerpt": "Three new offset press investments in two weeks, all promising 35 to 40 percent more capacity. The color approval loop decides how much of it you actually get.",
+    "lead": "July 2026 brought a run of new sheetfed offset press announcements in North America and the UK, each with a headline productivity figure attached. Those figures are earned at running speed. The hours that decide whether you ever see them are spent before the press reaches running speed, getting the sheet to color.",
+    "image": "/images/man-on-press.jpg",
+    "publishedAt": "2026-08-03",
+    "category": "Production",
+    "paragraphs": [
+      "Between 20 and 31 July 2026, three sheetfed offset investments were announced within days of each other on two continents: two Koenig & Bauer Rapida 106 presses for Prodigy Graphics in Toronto, a Heidelberg Speedmaster XL 106 for Zenith Print Group in the UK, and the first UK installation of a Komori G837P Advance EX Edition at Selsey Press. Each announcement carried a productivity claim of roughly 35 to 40 percent.",
+      "Those claims are real, and they are rated at running speed on a press that is already printing to color. As run lengths shorten, the share of press time spent running falls and the share spent changing over rises, so a rated speed gain returns less and less of itself. The constraint moves to makeready, and inside makeready it moves to color approval.",
+      "A new press shortens the mechanical part of makeready. Plate changes, blanket washes and CIP3 ink presetting are all faster than on a press from ten years ago. What it does not shorten by itself is the loop where an operator measures a sheet, judges the result and moves the ink keys by hand. That loop is manual on most installations, including brand new ones.",
+      "Closed loop color control is what automates that last step: the color bar is scanned, the software calculates the ink key correction and sends it to the console, and the operator validates instead of calculating. It applies to presses already on the floor as much as to presses on order, which is why the same conversation is happening in Toronto, in the UK, in Mexican packaging plants and in Japanese commercial shops at the same time."
+    ],
+    "body": [
+      {
+        "type": "p",
+        "text": "Between 20 and 31 July 2026, three sheetfed offset investments were announced within days of each other, on two continents. Each came with a productivity number in the headline. Read together they say something useful about where offset is going, and about the part of the job the machine builder cannot fix for you."
+      },
+      {
+        "type": "h2",
+        "text": "What the new offset press announcements actually promise"
+      },
+      {
+        "type": "p",
+        "text": "The three announcements are close enough in format to compare directly."
+      },
+      {
+        "type": "ul",
+        "items": [
+          "Prodigy Graphics, a trade printer in Toronto, is installing two Koenig & Bauer Rapida 106 presses, a four color plus coater and an eight color plus coater and perfector, and expects a 40 percent increase in efficiency and capacity.",
+          "Zenith Print Group in the UK has bought a Heidelberg Speedmaster XL 106-5-P+L, quoted at roughly 35 percent additional production capacity.",
+          "Selsey Press has installed the first Komori G837P Advance EX Edition in the UK, a perfecting press bought as a multi million pound investment."
+        ]
+      },
+      {
+        "type": "p",
+        "text": "Three builders, three formats, one shared claim: more sheets per shift. That claim is real. It is also rated at running speed, on a press that is already printing to color."
+      },
+      {
+        "type": "h2",
+        "text": "Where a rated capacity gain actually gets spent"
+      },
+      {
+        "type": "p",
+        "text": "The typical commercial and packaging job has been getting shorter for a decade. When run lengths fall, the share of press time spent running falls with them, and the share spent changing over rises. A press that runs 20 percent faster on a four hour job returns most of that gain. The same press on a forty minute job returns very little of it, because the job is dominated by everything that happens before the first good sheet."
+      },
+      {
+        "type": "p",
+        "text": "That is the arithmetic behind a lot of disappointing capex. The press meets its specification. The shop does not see the promised capacity, because the constraint moved."
+      },
+      {
+        "type": "ul",
+        "items": [
+          "Plate change and washup: automated on every current 106 format press, already fast, little headroom left",
+          "Ink presetting from CIP3 or CIP4 data: puts the ink zones approximately right before the first sheet",
+          "Color approval: print, measure, adjust the ink keys, print again, measure again, until the sheet is inside tolerance. This loop is manual on most presses, and it is where the remaining minutes sit"
+        ]
+      },
+      {
+        "type": "h3",
+        "text": "Does a new press make makeready faster?"
+      },
+      {
+        "type": "p",
+        "text": "Partly. A new press shortens the mechanical part of makeready: plate changes, blanket washes, format changes and ink presetting are all faster and more automated than on a press from ten years ago. What it does not shorten by itself is the color approval loop, because that loop depends on measuring the sheet and deciding what to change. On most installations, including brand new ones, an operator still reads a measurement, judges it and moves the ink keys by hand. The press got faster. The decision did not."
+      },
+      {
+        "type": "h2",
+        "text": "The part that does not come in the crate"
+      },
+      {
+        "type": "p",
+        "text": "CIP3 and CIP4 presetting is the standard answer here, and it is a genuinely good one. Ink zone openings are calculated from the plate image before the job starts, so the first sheet lands in the neighbourhood of the target rather than nowhere near it. Presetting is the reason makeready waste on a modern press is counted in dozens of sheets rather than hundreds."
+      },
+      {
+        "type": "p",
+        "text": "It is also open loop. Presetting predicts, it does not verify. Paper, ink batch, temperature, humidity, blanket condition and press speed all move the result away from the prediction, and nothing in the presetting chain measures that drift or corrects it. Closing the gap between the presetting sheet and the approved sheet is still manual work, and it is still repeated at every speed change and every recovery during the run."
+      },
+      {
+        "type": "h3",
+        "text": "What is closed loop color control on an offset press?"
+      },
+      {
+        "type": "p",
+        "text": "It is the step that turns a measurement into an ink key correction automatically. The color bar is scanned, the software compares each zone against the target values, calculates the correction and sends it to the press console. The operator validates rather than calculates. Because the loop works on measured data rather than on judgement, the second sheet is closer than it would otherwise be, the third closer again, and the run holds after approval. How that loop works, the waste and makeready numbers behind it and what a retrofit involves are set out in the [complete closed loop guide](/closed-loop-color-control). The measurement side is served by an ecosystem of scanning and reporting tools, X-Rite IntelliTrax2 and MeasureColor among them, but the correction itself is what closes the loop."
+      },
+      {
+        "type": "h2",
+        "text": "Why this is a worldwide pattern, not a local one"
+      },
+      {
+        "type": "p",
+        "text": "It is worth noting where these three announcements came from: Toronto and two UK shops, inside two weeks. The same conversation is happening in packaging plants in Mexico, in commercial shops in Japan and in carton converters across Europe, because the underlying pressure is identical everywhere. Run lengths are shorter, the tolerances brand owners impose are tighter, and experienced press operators are harder to recruit than they were. Closed loop color control is running on more than 1,000 systems in over 30 countries for exactly that reason: the constraint is not regional. North American printers weighing this alongside a press order will find the local view on the [Canada page](/canada)."
+      },
+      {
+        "type": "h3",
+        "text": "Does a press have to be new to run closed loop?"
+      },
+      {
+        "type": "p",
+        "text": "No. What matters is the console: whether it exposes an interface that accepts ink key corrections, and whether a measurement source is available press side. Many consoles from the previous generation qualify, including Heidelberg CP2000 and Prinect Press Center, Komori PQC-S and KHS-AI, Koenig & Bauer ErgoTronic and Manroland ColorPilot. The quickest way to settle it for a specific machine is the free [console eligibility check](/console-validation): a few photographs of the console, an answer within one business day. Terms used above, from makeready to ink zone, are defined in the [glossary](/glossary)."
+      },
+      {
+        "type": "h2",
+        "text": "The number to run before the press arrives"
+      },
+      {
+        "type": "p",
+        "text": "If a press order is on the table, the useful exercise is to split the promised gain in two. Ask the builder what share of the quoted 35 or 40 percent comes from running speed, and what share comes from faster changeover. Then take your own job list and work out how many hours per week actually go into color approval, at your average run length, in your ink and substrate mix. That second number is the one a press purchase leaves largely untouched and a closed loop addresses directly. The [ROI calculator](/roi) does the arithmetic on waste sheets, makeready minutes, ink and energy if you would rather not build the spreadsheet yourself."
+      },
+      {
+        "type": "p",
+        "text": "None of this is an argument against buying the press. A Rapida 106, an XL 106 or a G837P is a better machine than what it replaces, and the capacity is real. The point is narrower: the new press raises the ceiling, and the color approval loop sets the floor. Raising one without raising the other is how a 40 percent investment turns into a 15 percent result."
+      }
+    ],
+    "i18n": {
+      "fr": {
+        "title": "Presse neuve, couleur inchangée",
+        "excerpt": "Trois investissements en presses offset en deux semaines, tous annoncés à 35 ou 40 pour cent de capacité en plus. La validation couleur décide de ce que vous en récupérez.",
+        "lead": "Juillet 2026 a apporté une série d'annonces de presses offset feuille à feuille en Amérique du Nord et au Royaume-Uni, chacune avec son chiffre de productivité. Ces chiffres se gagnent en vitesse de tirage. Les heures qui décident si vous les verrez vraiment se passent avant, à amener la feuille à la couleur.",
+        "body": [
+          {
+            "type": "p",
+            "text": "Entre le 20 et le 31 juillet 2026, trois investissements en offset feuille à feuille ont été annoncés à quelques jours d'intervalle, sur deux continents. Chacun affichait un gain de productivité dans son titre. Lus ensemble, ils disent quelque chose d'utile sur la direction que prend l'offset, et sur la partie du travail que le constructeur ne peut pas régler à votre place."
+          },
+          {
+            "type": "h2",
+            "text": "Ce que promettent réellement ces nouvelles presses offset"
+          },
+          {
+            "type": "p",
+            "text": "Les trois annonces sont assez proches dans leur format pour être comparées directement."
+          },
+          {
+            "type": "ul",
+            "items": [
+              "Prodigy Graphics, imprimeur de labeur à Toronto, installe deux Koenig & Bauer Rapida 106, une quatre couleurs plus vernis et une huit couleurs plus vernis avec retiration, et attend 40 pour cent d'efficacité et de capacité en plus.",
+              "Zenith Print Group, au Royaume-Uni, a commandé une Heidelberg Speedmaster XL 106-5-P+L, annoncée à environ 35 pour cent de capacité de production supplémentaire.",
+              "Selsey Press a installé la première Komori G837P Advance EX Edition du Royaume-Uni, une presse à retiration achetée pour plusieurs millions de livres."
+            ]
+          },
+          {
+            "type": "p",
+            "text": "Trois constructeurs, trois formats, une promesse commune : plus de feuilles par équipe. Cette promesse est réelle. Elle est aussi mesurée en vitesse de tirage, sur une presse qui imprime déjà à la couleur."
+          },
+          {
+            "type": "h2",
+            "text": "Où part réellement un gain de capacité"
+          },
+          {
+            "type": "p",
+            "text": "Le travail type, en labeur comme en packaging, raccourcit depuis dix ans. Quand les tirages baissent, la part du temps presse passée à imprimer baisse avec eux, et la part passée à changer de travail monte. Une presse 20 pour cent plus rapide sur un travail de quatre heures restitue l'essentiel de ce gain. La même presse sur un travail de quarante minutes n'en restitue presque rien, parce que le travail est dominé par tout ce qui se passe avant la première feuille bonne."
+          },
+          {
+            "type": "p",
+            "text": "C'est l'arithmétique qui explique beaucoup d'investissements décevants. La presse tient sa spécification. L'atelier ne voit pas la capacité promise, parce que la contrainte s'est déplacée."
+          },
+          {
+            "type": "ul",
+            "items": [
+              "Changement de plaques et lavage : automatisés sur toutes les presses format 106 actuelles, déjà rapides, il reste peu de marge",
+              "Préréglage d'encrage à partir des données CIP3 ou CIP4 : place les zones d'encrage approximativement avant la première feuille",
+              "Validation couleur : imprimer, mesurer, corriger les vis d'encrier, réimprimer, remesurer, jusqu'à ce que la feuille entre dans la tolérance. Cette boucle est manuelle sur la plupart des presses, et c'est là que se logent les minutes restantes"
+            ]
+          },
+          {
+            "type": "h3",
+            "text": "Une presse neuve accélère-t-elle le calage ?"
+          },
+          {
+            "type": "p",
+            "text": "En partie. Une presse neuve raccourcit la part mécanique du calage : changements de plaques, lavages de blanchets, changements de format et préréglage d'encrage sont tous plus rapides et plus automatisés que sur une presse de dix ans. Ce qu'elle ne raccourcit pas d'elle-même, c'est la boucle de validation couleur, parce que cette boucle dépend de la mesure de la feuille et de la décision qui suit. Sur la plupart des installations, y compris neuves, un opérateur lit encore une mesure, la juge et bouge les vis d'encrier à la main. La presse est allée plus vite. La décision, non."
+          },
+          {
+            "type": "h2",
+            "text": "La partie qui n'arrive pas dans la caisse"
+          },
+          {
+            "type": "p",
+            "text": "Le préréglage CIP3 et CIP4 est la réponse habituelle, et c'est une bonne réponse. Les ouvertures de zones d'encrage sont calculées à partir de l'image de la plaque avant le démarrage, si bien que la première feuille tombe dans le voisinage de la cible plutôt que très loin. Le préréglage est la raison pour laquelle la gâche au calage sur une presse moderne se compte en dizaines de feuilles et non en centaines."
+          },
+          {
+            "type": "p",
+            "text": "Il reste pourtant en boucle ouverte. Le préréglage prédit, il ne vérifie pas. Papier, lot d'encre, température, hygrométrie, état des blanchets et vitesse de tirage écartent tous le résultat de la prédiction, et rien dans la chaîne de préréglage ne mesure cette dérive ni ne la corrige. Combler l'écart entre la feuille de préréglage et la feuille validée reste un travail manuel, répété à chaque changement de vitesse et à chaque reprise en cours de tirage."
+          },
+          {
+            "type": "h3",
+            "text": "Qu'est-ce que le closed loop sur une presse offset ?"
+          },
+          {
+            "type": "p",
+            "text": "C'est l'étape qui transforme automatiquement une mesure en correction de vis d'encrier. La gamme de contrôle est scannée, le logiciel compare chaque zone aux valeurs cibles, calcule la correction et l'envoie à la console de la presse. L'opérateur valide au lieu de calculer. Comme la boucle travaille sur des données mesurées et non sur une appréciation, la deuxième feuille est plus proche qu'elle ne l'aurait été, la troisième plus proche encore, et le tirage tient après la validation. Le fonctionnement de cette boucle, les chiffres de gâche et de calage associés et ce qu'implique un rétrofit sont détaillés dans le [guide complet du closed loop](/closed-loop-color-control). Le volet mesure s'appuie sur un écosystème d'outils de scan et de reporting, X-Rite IntelliTrax2 et MeasureColor notamment, mais c'est la correction qui ferme la boucle."
+          },
+          {
+            "type": "h2",
+            "text": "Pourquoi le phénomène est mondial et non local"
+          },
+          {
+            "type": "p",
+            "text": "L'origine de ces trois annonces mérite d'être notée : Toronto et deux imprimeries britanniques, en deux semaines. La même conversation a lieu dans les usines de packaging au Mexique, dans les imprimeries de labeur au Japon et chez les cartonniers européens, parce que la pression de fond est identique partout. Les tirages sont plus courts, les tolérances exigées par les marques plus serrées et les conducteurs offset expérimentés plus difficiles à recruter qu'avant. Le closed loop tourne sur plus de 1 000 systèmes dans plus de 30 pays pour cette raison précise : la contrainte n'est pas régionale. Les imprimeurs nord-américains qui étudient le sujet en parallèle d'une commande de presse trouveront la vue locale sur la [page Canada](/canada)."
+          },
+          {
+            "type": "h3",
+            "text": "Faut-il une presse neuve pour passer en closed loop ?"
+          },
+          {
+            "type": "p",
+            "text": "Non. Ce qui compte, c'est la console : expose-t-elle une interface qui accepte des corrections de vis d'encrier, et dispose-t-on d'une source de mesure au pied de la presse. Beaucoup de consoles de la génération précédente sont éligibles, dont Heidelberg CP2000 et Prinect Press Center, Komori PQC-S et KHS-AI, Koenig & Bauer ErgoTronic et Manroland ColorPilot. Le moyen le plus rapide de trancher pour une machine donnée reste la [validation de console gratuite](/console-validation) : quelques photos de la console, une réponse sous un jour ouvré. Les termes employés ici, du calage à la zone d'encrage, sont définis dans le [glossaire](/glossary)."
+          },
+          {
+            "type": "h2",
+            "text": "Le calcul à faire avant l'arrivée de la presse"
+          },
+          {
+            "type": "p",
+            "text": "Si une commande de presse est sur la table, l'exercice utile consiste à couper la promesse en deux. Demandez au constructeur quelle part des 35 ou 40 pour cent annoncés vient de la vitesse de tirage, et quelle part vient du changement de travail plus rapide. Prenez ensuite votre propre carnet de commandes et calculez combien d'heures par semaine partent réellement en validation couleur, à votre longueur de tirage moyenne, dans votre mélange d'encres et de supports. Ce second chiffre est celui qu'un achat de presse laisse largement intact et qu'un closed loop attaque directement. Le [calculateur de ROI](/roi) fait l'arithmétique sur la gâche, les minutes de calage, l'encre et l'énergie si vous préférez ne pas construire le tableur vous-même."
+          },
+          {
+            "type": "p",
+            "text": "Rien de tout cela n'est un argument contre l'achat de la presse. Une Rapida 106, une XL 106 ou une G837P est une meilleure machine que celle qu'elle remplace, et la capacité annoncée est réelle. Le propos est plus étroit : la presse neuve relève le plafond, la boucle de validation couleur fixe le plancher. Relever l'un sans relever l'autre, c'est ainsi qu'un investissement à 40 pour cent finit en résultat à 15 pour cent."
+          }
+        ]
+      },
+      "de": {
+        "title": "Neue Presse, alter Farbengpass",
+        "excerpt": "Drei neue Offsetdruckmaschinen in zwei Wochen, alle mit 35 bis 40 Prozent mehr Kapazität beworben. Die Farbfreigabe entscheidet, wie viel davon ankommt.",
+        "lead": "Im Juli 2026 folgten in Nordamerika und Großbritannien mehrere Investitionen in Bogenoffsetmaschinen aufeinander, jede mit einer Produktivitätszahl in der Schlagzeile. Diese Zahlen entstehen bei Produktionsgeschwindigkeit. Die Stunden, die über das Ergebnis entscheiden, liegen davor: beim Einrichten auf Farbe."
+      },
+      "it": {
+        "title": "Macchina nuova, stesso collo di bottiglia",
+        "excerpt": "Tre investimenti in macchine offset in due settimane, tutti annunciati con il 35 o 40 per cento di capacità in più. È l'approvazione colore a decidere quanta ne otterrete.",
+        "lead": "Luglio 2026 ha portato una serie di annunci di macchine offset a foglio in Nord America e nel Regno Unito, ciascuno con la sua cifra di produttività. Quelle cifre si guadagnano alla velocità di tiratura. Le ore che decidono se le vedrete davvero si consumano prima, per portare il foglio al colore."
+      },
+      "es": {
+        "title": "Prensa nueva, mismo cuello de botella",
+        "excerpt": "Tres inversiones en prensas offset en dos semanas, todas anunciadas con un 35 o 40 por ciento más de capacidad. La aprobación del color decide cuánta consigue.",
+        "lead": "Julio de 2026 trajo una serie de anuncios de prensas offset de pliego en Norteamérica y el Reino Unido, cada uno con su cifra de productividad. Esas cifras se ganan a velocidad de tirada. Las horas que deciden si realmente las verá se gastan antes, llevando el pliego al color."
+      },
+      "pt": {
+        "title": "Máquina nova, mesmo estrangulamento",
+        "excerpt": "Três investimentos em máquinas offset em duas semanas, todos anunciados com mais 35 ou 40 por cento de capacidade. A aprovação de cor decide quanto recebe.",
+        "lead": "Julho de 2026 trouxe uma série de anúncios de máquinas offset de folha na América do Norte e no Reino Unido, cada um com o seu número de produtividade. Esses números ganham-se à velocidade de tiragem. As horas que decidem se os vai realmente ver gastam-se antes, a levar a folha à cor."
+      }
+    },
+    "originalUrl": "https://rutherford.fr/blog/new-press-investment-color-approval-gap",
+    "sources": [
+      {
+        "label": "WhatTheyThink: Prodigy Graphics adds two Koenig & Bauer Rapida 106 presses",
+        "href": "https://whattheythink.com/news/131170-prodigy-graphics-enhances-capabilities-north-american-customers-two-new-koenig-bauer-rapida-106-presses/"
+      },
+      {
+        "label": "Printing Impressions: Prodigy Graphics invests in two new Koenig & Bauer Rapida 106 presses",
+        "href": "https://www.piworld.com/article/prodigy-graphics-invests-in-two-new-koenig-bauer-rapida-106-presses/"
+      },
+      {
+        "label": "Print Monthly: Zenith Print invests in new Heidelberg Speedmaster XL 106",
+        "href": "https://www.printmonthly.co.uk/news/zenith-print-invests-in-new-heidelberg-speedmaster-xl-106/"
+      },
+      {
+        "label": "Print Monthly: First Komori G837P Advance EX Edition installed in the UK",
+        "href": "https://www.printmonthly.co.uk/news/first-komori-g837p-advance-ex-edition-installed-in-uk/"
+      }
+    ]
+  },
+  {
     "slug": "ppwr-recyclability-grades-what-printers-get-wrong",
     "title": "Three things printers get wrong about PPWR recyclability",
     "excerpt": "Recyclability is not a 2030 topic, the grades are A, B and C only, and EN 18120 gives you no presumption of conformity. What the regulation actually says, two weeks before it applies.",
