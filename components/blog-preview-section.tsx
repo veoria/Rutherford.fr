@@ -2,6 +2,7 @@
 
 import articles from '@/data/blog-articles.json';
 import { useLanguage, type Locale } from '@/components/language-provider';
+import COPY_DATA from '@/data/home/blog-preview-section.json';
 
 type Article = {
   slug: string;
@@ -21,50 +22,7 @@ type Copy = {
   seeAll: string;
 };
 
-const COPY: Record<Locale, Copy> = {
-  en: {
-    kicker: 'From the blog',
-    headline: 'Latest insights',
-    intro: 'Rutherford notes on offset production, color management, and industry shifts.',
-    readMore: 'Read article',
-    seeAll: 'See all articles',
-  },
-  fr: {
-    kicker: 'Sur le blog',
-    headline: 'Derniers articles',
-    intro: 'Les notes Rutherford sur la production offset, la gestion couleur et les évolutions du secteur.',
-    readMore: 'Lire l’article',
-    seeAll: 'Voir tous les articles',
-  },
-  de: {
-    kicker: 'Aus dem Blog',
-    headline: 'Aktuelle Beiträge',
-    intro: 'Rutherford-Notizen zu Offsetproduktion, Farbmanagement und Branchenentwicklungen.',
-    readMore: 'Artikel lesen',
-    seeAll: 'Alle Artikel ansehen',
-  },
-  it: {
-    kicker: 'Dal blog',
-    headline: 'Ultimi approfondimenti',
-    intro: 'Note Rutherford su produzione offset, gestione del colore e cambiamenti del settore.',
-    readMore: 'Leggi l’articolo',
-    seeAll: 'Vedi tutti gli articoli',
-  },
-  es: {
-    kicker: 'Del blog',
-    headline: 'Últimos artículos',
-    intro: 'Notas de Rutherford sobre producción offset, gestión del color y cambios del sector.',
-    readMore: 'Leer el artículo',
-    seeAll: 'Ver todos los artículos',
-  },
-  pt: {
-    kicker: 'No blog',
-    headline: 'Artigos recentes',
-    intro: 'Notas da Rutherford sobre produção offset, gestão de cor e evoluções do setor.',
-    readMore: 'Ler o artigo',
-    seeAll: 'Ver todos os artigos',
-  },
-};
+const COPY = COPY_DATA as Record<Locale, Copy>;
 
 export function BlogPreviewSection() {
   const { locale } = useLanguage();

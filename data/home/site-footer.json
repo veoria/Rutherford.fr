@@ -1,0 +1,134 @@
+{
+  "en": {
+    "tagline": "Offset printing expertise, software, and technology, helping printers modernize production control.",
+    "platforms": "Platforms",
+    "resources": "Resources",
+    "company": "Company",
+    "follow": "Follow",
+    "rights": "All rights reserved",
+    "langAuto": "Language · auto-detected",
+    "resourceLabels": {
+      "blog": "Blog",
+      "glossary": "Glossary",
+      "support": "Support",
+      "console": "Console Validation",
+      "contact": "Contact"
+    },
+    "companyLabels": {
+      "about": "About Rutherford",
+      "colorloop": "ColorLoop",
+      "offset360": "Offset360",
+      "cases": "Case Studies"
+    }
+  },
+  "fr": {
+    "tagline": "Expertise offset, logiciel et technologie, pour moderniser le contrôle de production.",
+    "platforms": "Plateformes",
+    "resources": "Ressources",
+    "company": "Entreprise",
+    "follow": "Suivre",
+    "rights": "Tous droits réservés",
+    "langAuto": "Langue · détectée automatiquement",
+    "resourceLabels": {
+      "blog": "Blog",
+      "glossary": "Glossaire",
+      "support": "Support",
+      "console": "Validation console",
+      "contact": "Contact"
+    },
+    "companyLabels": {
+      "about": "À propos",
+      "colorloop": "ColorLoop",
+      "offset360": "Offset360",
+      "cases": "Cas clients"
+    }
+  },
+  "de": {
+    "tagline": "Offset-Expertise, Software und Technologie, zur Modernisierung der Produktionssteuerung.",
+    "platforms": "Plattformen",
+    "resources": "Ressourcen",
+    "company": "Unternehmen",
+    "follow": "Folgen",
+    "rights": "Alle Rechte vorbehalten",
+    "langAuto": "Sprache · automatisch erkannt",
+    "resourceLabels": {
+      "blog": "Blog",
+      "glossary": "Glossar",
+      "support": "Support",
+      "console": "Konsolenvalidierung",
+      "contact": "Kontakt"
+    },
+    "companyLabels": {
+      "about": "Über Rutherford",
+      "colorloop": "ColorLoop",
+      "offset360": "Offset360",
+      "cases": "Referenzen"
+    }
+  },
+  "it": {
+    "tagline": "Competenza offset, software e tecnologia, per modernizzare il controllo della produzione.",
+    "platforms": "Piattaforme",
+    "resources": "Risorse",
+    "company": "Azienda",
+    "follow": "Seguici",
+    "rights": "Tutti i diritti riservati",
+    "langAuto": "Lingua · rilevata automaticamente",
+    "resourceLabels": {
+      "blog": "Blog",
+      "glossary": "Glossario",
+      "support": "Supporto",
+      "console": "Validazione console",
+      "contact": "Contatti"
+    },
+    "companyLabels": {
+      "about": "Chi è Rutherford",
+      "colorloop": "ColorLoop",
+      "offset360": "Offset360",
+      "cases": "Case Study"
+    }
+  },
+  "es": {
+    "tagline": "Experiencia offset, software y tecnología, para modernizar el control de producción.",
+    "platforms": "Plataformas",
+    "resources": "Recursos",
+    "company": "Empresa",
+    "follow": "Seguir",
+    "rights": "Todos los derechos reservados",
+    "langAuto": "Idioma · detección automática",
+    "resourceLabels": {
+      "blog": "Blog",
+      "glossary": "Glosario",
+      "support": "Soporte",
+      "console": "Validación de consola",
+      "contact": "Contacto"
+    },
+    "companyLabels": {
+      "about": "Sobre Rutherford",
+      "colorloop": "ColorLoop",
+      "offset360": "Offset360",
+      "cases": "Casos prácticos"
+    }
+  },
+  "pt": {
+    "tagline": "Experiência em offset, software e tecnologia, para modernizar o controlo da produção.",
+    "platforms": "Plataformas",
+    "resources": "Recursos",
+    "company": "Empresa",
+    "follow": "Seguir",
+    "rights": "Todos os direitos reservados",
+    "langAuto": "Idioma · detetado automaticamente",
+    "resourceLabels": {
+      "blog": "Blog",
+      "glossary": "Glossário",
+      "support": "Apoio",
+      "console": "Validação de consola",
+      "contact": "Contacto"
+    },
+    "companyLabels": {
+      "about": "Sobre a Rutherford",
+      "colorloop": "ColorLoop",
+      "offset360": "Offset360",
+      "cases": "Casos de sucesso"
+    }
+  }
+}

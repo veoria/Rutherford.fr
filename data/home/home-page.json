@@ -1,0 +1,62 @@
+{
+  "en": {
+    "eyebrow": "Offset printing expertise",
+    "headlineLead": "Improve color control and",
+    "headlineAccent": "reduce makeready waste.",
+    "reduceLabel": "Reduce",
+    "supporting": "Faster makeready, steadier color, less waste. ColorLoop is Rutherford’s production software for offset.",
+    "primaryCta": "Request console validation",
+    "secondaryCta": "Request an audit",
+    "tertiaryCta": "Discover ColorLoop"
+  },
+  "fr": {
+    "eyebrow": "Expertise impression offset",
+    "headlineLead": "Améliorer le contrôle couleur et",
+    "headlineAccent": "réduire la gâche au calage.",
+    "reduceLabel": "Réduire",
+    "supporting": "Calage plus rapide, couleur stable, moins de gâche. ColorLoop, le logiciel de production offset de Rutherford.",
+    "primaryCta": "Demander une validation console",
+    "secondaryCta": "Demander un audit",
+    "tertiaryCta": "Découvrir ColorLoop"
+  },
+  "de": {
+    "eyebrow": "Expertise im Offsetdruck",
+    "headlineLead": "Farbsteuerung verbessern und",
+    "headlineAccent": "Makulatur beim Einrichten reduzieren.",
+    "reduceLabel": "Reduzieren",
+    "supporting": "Schnelleres Einrichten, stabile Farbe, weniger Makulatur. ColorLoop ist Rutherfords Produktionssoftware für Offset.",
+    "primaryCta": "Konsolenvalidierung anfragen",
+    "secondaryCta": "Audit anfragen",
+    "tertiaryCta": "ColorLoop entdecken"
+  },
+  "it": {
+    "eyebrow": "Competenza nella stampa offset",
+    "headlineLead": "Controllo colore più preciso.",
+    "headlineAccent": "Meno scarti in avviamento.",
+    "reduceLabel": "Meno",
+    "supporting": "Avviamento più rapido, colore stabile, meno scarto. ColorLoop è il software di produzione offset di Rutherford.",
+    "primaryCta": "Richiedi la validazione della console",
+    "secondaryCta": "Richiedi un audit",
+    "tertiaryCta": "Scopri ColorLoop"
+  },
+  "es": {
+    "eyebrow": "Experiencia en impresión offset",
+    "headlineLead": "Mejorar el control del color y",
+    "headlineAccent": "reducir el desperdicio de puesta a punto.",
+    "reduceLabel": "Reducir",
+    "supporting": "Puesta a punto más rápida, color estable, menos desperdicio. ColorLoop es el software de producción offset de Rutherford.",
+    "primaryCta": "Solicitar validación de consola",
+    "secondaryCta": "Solicitar una auditoría",
+    "tertiaryCta": "Descubrir ColorLoop"
+  },
+  "pt": {
+    "eyebrow": "Especialistas em impressão offset",
+    "headlineLead": "Melhorar o controlo de cor e",
+    "headlineAccent": "reduzir a maculatura de acerto.",
+    "reduceLabel": "Reduzir",
+    "supporting": "Acerto mais rápido, cor estável, menos maculatura. ColorLoop é o software de produção offset da Rutherford.",
+    "primaryCta": "Solicitar uma validação de consola",
+    "secondaryCta": "Solicitar uma auditoria",
+    "tertiaryCta": "Descobrir ColorLoop"
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "en": {
+    "kicker": "Stop losing money",
+    "headline": "Stop losing money on every makeready",
+    "supporting": "Color drift burns sheets, ink and press time. Check for free whether your press is eligible for Rutherford closed-loop color.",
+    "primaryCta": "Test your eligibility for free",
+    "secondaryCta": "Talk to Rutherford"
+  },
+  "fr": {
+    "kicker": "Arrêtez de perdre de l'argent",
+    "headline": "Arrêtez de perdre de l'argent à chaque calage",
+    "supporting": "La dérive couleur brûle des feuilles, de l'encre et du temps presse. Vérifiez gratuitement si votre presse est éligible au closed-loop Rutherford.",
+    "primaryCta": "Testez gratuitement votre éligibilité",
+    "secondaryCta": "Parler à Rutherford"
+  },
+  "de": {
+    "kicker": "Geld sparen",
+    "headline": "Verlieren Sie kein Geld mehr beim Einrichten",
+    "supporting": "Farbabweichung kostet Bogen, Farbe und Maschinenzeit. Prüfen Sie kostenlos, ob Ihre Druckmaschine für Rutherford Closed-Loop geeignet ist.",
+    "primaryCta": "Eignung kostenlos prüfen",
+    "secondaryCta": "Mit Rutherford sprechen"
+  },
+  "it": {
+    "kicker": "Smetta di perdere denaro",
+    "headline": "Smetta di perdere denaro a ogni avviamento",
+    "supporting": "La deriva colore brucia fogli, inchiostro e tempo macchina. Verifichi gratuitamente se la Sua macchina è idonea al closed-loop Rutherford.",
+    "primaryCta": "Verifichi gratis la Sua idoneità",
+    "secondaryCta": "Parla con Rutherford"
+  },
+  "es": {
+    "kicker": "Deje de perder dinero",
+    "headline": "Deje de perder dinero en cada puesta a punto",
+    "supporting": "La deriva del color quema pliegos, tinta y tiempo de prensa. Compruebe gratis si su prensa es elegible para el closed-loop de Rutherford.",
+    "primaryCta": "Pruebe gratis su elegibilidad",
+    "secondaryCta": "Hablar con Rutherford"
+  },
+  "pt": {
+    "kicker": "Pare de perder dinheiro",
+    "headline": "Pare de perder dinheiro em cada acerto",
+    "supporting": "A deriva de cor queima folhas, tinta e tempo de máquina. Verifique gratuitamente se a sua máquina de impressão é elegível para o closed-loop da Rutherford.",
+    "primaryCta": "Teste a sua elegibilidade gratuitamente",
+    "secondaryCta": "Fale com a Rutherford"
+  }
+}

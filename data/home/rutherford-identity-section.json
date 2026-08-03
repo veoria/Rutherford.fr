@@ -1,0 +1,242 @@
+{
+  "en": {
+    "kicker": "Who we are",
+    "title": "Rutherford.fr",
+    "body": [
+      {
+        "text": "European team specialized in "
+      },
+      {
+        "text": "offset and flexo color management",
+        "accent": true
+      },
+      {
+        "text": ". "
+      },
+      {
+        "text": "X-Rite PANTONE partner",
+        "accent": true
+      },
+      {
+        "text": ", we support printers, packaging converters and brands across "
+      },
+      {
+        "text": "more than 30 countries",
+        "accent": true
+      },
+      {
+        "text": ", with "
+      },
+      {
+        "text": "over 1,000 systems deployed worldwide",
+        "accent": true
+      },
+      {
+        "text": "."
+      }
+    ],
+    "years": "Years of expertise",
+    "countries": "Countries",
+    "systems": "Systems deployed"
+  },
+  "fr": {
+    "kicker": "Qui nous sommes",
+    "title": "Rutherford.fr",
+    "body": [
+      {
+        "text": "Équipe européenne spécialisée dans la "
+      },
+      {
+        "text": "gestion de la couleur en offset et flexo",
+        "accent": true
+      },
+      {
+        "text": ". "
+      },
+      {
+        "text": "Partenaire X-Rite PANTONE",
+        "accent": true
+      },
+      {
+        "text": ", nous accompagnons imprimeurs, convertisseurs et marques dans "
+      },
+      {
+        "text": "plus de 30 pays",
+        "accent": true
+      },
+      {
+        "text": ", avec "
+      },
+      {
+        "text": "plus de 1 000 systèmes déployés dans le monde",
+        "accent": true
+      },
+      {
+        "text": "."
+      }
+    ],
+    "years": "Années d'expertise",
+    "countries": "Pays",
+    "systems": "Systèmes déployés"
+  },
+  "de": {
+    "kicker": "Wer wir sind",
+    "title": "Rutherford.fr",
+    "body": [
+      {
+        "text": "Europäisches Team mit Fokus auf "
+      },
+      {
+        "text": "Farbmanagement für Offset und Flexo",
+        "accent": true
+      },
+      {
+        "text": ". Als "
+      },
+      {
+        "text": "X-Rite PANTONE Partner",
+        "accent": true
+      },
+      {
+        "text": " unterstützen wir Druckereien, Verpackungshersteller und Marken in "
+      },
+      {
+        "text": "mehr als 30 Ländern",
+        "accent": true
+      },
+      {
+        "text": ", mit "
+      },
+      {
+        "text": "über 1.000 weltweit installierten Systemen",
+        "accent": true
+      },
+      {
+        "text": "."
+      }
+    ],
+    "years": "Jahre Erfahrung",
+    "countries": "Länder",
+    "systems": "Installierte Systeme"
+  },
+  "it": {
+    "kicker": "Chi siamo",
+    "title": "Rutherford.fr",
+    "body": [
+      {
+        "text": "Siamo un team europeo specializzato nella "
+      },
+      {
+        "text": "gestione del colore per la stampa offset e flexo",
+        "accent": true
+      },
+      {
+        "text": ". In qualità di "
+      },
+      {
+        "text": "partner X-Rite PANTONE",
+        "accent": true
+      },
+      {
+        "text": ", supportiamo stampatori, converter di packaging e brand owner in "
+      },
+      {
+        "text": "oltre 30 Paesi",
+        "accent": true
+      },
+      {
+        "text": ", con "
+      },
+      {
+        "text": "più di 1.000 sistemi installati nel mondo",
+        "accent": true
+      },
+      {
+        "text": "."
+      }
+    ],
+    "years": "Anni di esperienza",
+    "countries": "Paesi",
+    "systems": "Sistemi installati"
+  },
+  "es": {
+    "kicker": "Quiénes somos",
+    "title": "Rutherford.fr",
+    "body": [
+      {
+        "text": "Equipo europeo especializado en "
+      },
+      {
+        "text": "gestión del color para offset y flexo",
+        "accent": true
+      },
+      {
+        "text": ". Como "
+      },
+      {
+        "text": "partner de X-Rite PANTONE",
+        "accent": true
+      },
+      {
+        "text": ", apoyamos a impresores, convertidores y marcas en "
+      },
+      {
+        "text": "más de 30 países",
+        "accent": true
+      },
+      {
+        "text": ", con "
+      },
+      {
+        "text": "más de 1.000 sistemas instalados en todo el mundo",
+        "accent": true
+      },
+      {
+        "text": "."
+      }
+    ],
+    "years": "Años de experiencia",
+    "countries": "Países",
+    "systems": "Sistemas instalados"
+  },
+  "pt": {
+    "kicker": "Quem somos",
+    "title": "Rutherford.fr",
+    "body": [
+      {
+        "text": "Equipa europeia especializada na "
+      },
+      {
+        "text": "gestão de cor em offset e flexografia",
+        "accent": true
+      },
+      {
+        "text": ". "
+      },
+      {
+        "text": "Parceiros X-Rite PANTONE",
+        "accent": true
+      },
+      {
+        "text": ", acompanhamos impressores, transformadores e marcas em "
+      },
+      {
+        "text": "mais de 30 países",
+        "accent": true
+      },
+      {
+        "text": ", com "
+      },
+      {
+        "text": "mais de 1.000 sistemas implementados em todo o mundo",
+        "accent": true
+      },
+      {
+        "text": "."
+      }
+    ],
+    "years": "Anos de experiência",
+    "countries": "Países",
+    "systems": "Sistemas implementados"
+  }
+}
