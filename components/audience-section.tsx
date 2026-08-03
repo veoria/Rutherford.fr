@@ -10,7 +10,7 @@ type Card = { title: string; body: string };
 const AUDIENCE_PHOTOS = [
   {
     src: homeMedia('audience-section.photo1'),
-    alt: 'Offset printer working inside a Heidelberg press',
+    alt: 'Offset printer marking up a plate in front of a Manroland Roland 500',
   },
   {
     src: homeMedia('audience-section.photo2'),
