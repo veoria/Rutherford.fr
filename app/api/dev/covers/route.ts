@@ -14,6 +14,8 @@ import { createHash } from 'node:crypto';
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
+import { IMAGE_EXTENSIONS, IMAGE_ROOTS } from './roots';
+
 export const dynamic = 'force-dynamic';
 
 const ROOT = process.cwd();
@@ -22,13 +24,23 @@ const PUBLIC_DIR = join(ROOT, 'public');
 const IMAGES_DIR = join(PUBLIC_DIR, 'images');
 const OUT_DIR = join(IMAGES_DIR, 'blog/covers');
 
-const PHOTO_EXT = /\.(jpe?g|png|webp|avif)$/i;
-
 /** Files that are logos, icons or social cards rather than usable cover photos. */
 const NOT_A_PHOTO =
   /(logo|pictogramme|picto|^ico-|^og-|^brand-|^printer-|screenshot|packshot|mockup|^how-rutherford)/i;
 
 type Article = { slug: string; title: string; image: string; publishedAt?: string; category?: string };
+
+type BankImage = {
+  /** Stable identity: the public path, or the absolute path for external files. */
+  id: string;
+  /** What the browser loads. */
+  url: string;
+  name: string;
+  root: string;
+  kind: 'photo' | 'graphic';
+  /** Present only for files Next can serve directly, i.e. assignable as is. */
+  publicPath?: string;
+};
 
 function isProd() {
   return process.env.NODE_ENV === 'production';
@@ -42,29 +54,44 @@ function writeArticles(articles: unknown) {
   writeFileSync(ARTICLES_PATH, `${JSON.stringify(articles, null, 2)}\n`, 'utf8');
 }
 
-/** Every image under public/images, as web paths, newest directories first. */
-function listBank(): { path: string; name: string; kind: 'photo' | 'graphic' }[] {
-  const out: { path: string; name: string; kind: 'photo' | 'graphic' }[] = [];
+/** Every usable image across the declared roots, grouped by root. */
+function listBank(): BankImage[] {
+  const out: BankImage[] = [];
 
-  const walk = (dir: string) => {
-    for (const entry of readdirSync(dir, { withFileTypes: true })) {
-      const full = join(dir, entry.name);
-      if (entry.isDirectory()) {
-        walk(full);
-        continue;
+  for (const root of IMAGE_ROOTS) {
+    if (!existsSync(root.dir)) continue;
+
+    const walk = (dir: string) => {
+      for (const entry of readdirSync(dir, { withFileTypes: true })) {
+        if (entry.name.startsWith('.')) continue;
+        const full = join(dir, entry.name);
+        if (entry.isDirectory()) {
+          walk(full);
+          continue;
+        }
+        if (!IMAGE_EXTENSIONS.test(entry.name)) continue;
+
+        const publicPath = root.isPublic
+          ? `/${full.slice(PUBLIC_DIR.length + 1).split('\\').join('/')}`
+          : undefined;
+
+        out.push({
+          id: publicPath ?? full,
+          url: publicPath
+            ? encodeURI(publicPath)
+            : `/api/dev/covers/file?p=${encodeURIComponent(full)}`,
+          name: entry.name,
+          root: root.id,
+          kind: NOT_A_PHOTO.test(entry.name) ? 'graphic' : 'photo',
+          publicPath,
+        });
       }
-      if (!PHOTO_EXT.test(entry.name)) continue;
-      const web = `/${full.slice(PUBLIC_DIR.length + 1).split('\\').join('/')}`;
-      out.push({
-        path: web,
-        name: entry.name,
-        kind: NOT_A_PHOTO.test(entry.name) ? 'graphic' : 'photo',
-      });
-    }
-  };
+    };
 
-  walk(IMAGES_DIR);
-  return out.sort((a, b) => a.path.localeCompare(b.path));
+    walk(root.dir);
+  }
+
+  return out.sort((a, b) => a.root.localeCompare(b.root) || a.name.localeCompare(b.name));
 }
 
 export async function GET() {
@@ -81,7 +108,12 @@ export async function GET() {
     }))
     .sort((a, b) => (b.publishedAt ?? '').localeCompare(a.publishedAt ?? ''));
 
-  return NextResponse.json({ articles, bank: listBank() });
+  const roots = IMAGE_ROOTS.filter((root) => existsSync(root.dir)).map(({ id, label }) => ({
+    id,
+    label,
+  }));
+
+  return NextResponse.json({ articles, bank: listBank(), roots });
 }
 
 export async function POST(request: Request) {

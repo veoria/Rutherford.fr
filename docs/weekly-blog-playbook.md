@@ -107,6 +107,8 @@ Le pool est large (plus de 150 fichiers dans `public/images/`), il y a toujours 
 
 **Outil de cadrage (usage humain, pas pour les routines).** Avec le serveur dev lancé, `http://localhost:3001/dev/covers` liste les 54 articles, affiche la banque d'images et permet de recadrer une couverture (glisser pour déplacer, molette pour zoomer) ou d'uploader une nouvelle photo. La sauvegarde écrit le JPEG dans `public/images/blog/covers/` et met à jour `data/blog-articles.json`. La page renvoie un 404 hors développement.
 
+La banque couvre quatre dossiers, déclarés dans `app/api/dev/covers/roots.ts` : `public/images`, le shooting Cartonajes, `Photo for blog rutherford.fr` et `Assets for Website Rutherford.fr`. Les trois derniers vivent hors du repo et sont servis par une route de dev ; seul le recadrage choisi atterrit dans le repo. Pour exposer un nouveau dossier, ajouter une entrée dans ce fichier.
+
 ## 6. Vérifications avant commit
 
 ```bash

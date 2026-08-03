@@ -23,7 +23,19 @@ type Article = {
   category?: string;
 };
 
-type BankImage = { path: string; name: string; kind: 'photo' | 'graphic' };
+type BankImage = {
+  /** Public path, or the absolute path when the file lives outside /public. */
+  id: string;
+  /** What the browser loads: a public path, or the dev streaming route. */
+  url: string;
+  name: string;
+  root: string;
+  kind: 'photo' | 'graphic';
+  /** Only set for files Next serves directly, i.e. assignable without a re-crop. */
+  publicPath?: string;
+};
+
+type Root = { id: string; label: string };
 
 const EXPORT_WIDTH = 1920;
 const EXPORT_HEIGHT = 1080;
@@ -35,9 +47,11 @@ const CARD_SAFE_WIDTH = STAGE_HEIGHT * 1.25;
 export function CoverEditor() {
   const [articles, setArticles] = useState<Article[]>([]);
   const [bank, setBank] = useState<BankImage[]>([]);
+  const [roots, setRoots] = useState<Root[]>([]);
   const [selected, setSelected] = useState<string | null>(null);
   const [filter, setFilter] = useState('');
   const [bankFilter, setBankFilter] = useState('');
+  const [rootFilter, setRootFilter] = useState<string>('all');
   const [showGraphics, setShowGraphics] = useState(false);
 
   const [source, setSource] = useState<HTMLImageElement | null>(null);
@@ -69,9 +83,10 @@ export function CoverEditor() {
       setStatus({ kind: 'error', message: 'Could not load the article list.' });
       return;
     }
-    const data = (await res.json()) as { articles: Article[]; bank: BankImage[] };
+    const data = (await res.json()) as { articles: Article[]; bank: BankImage[]; roots: Root[] };
     setArticles(data.articles);
     setBank(data.bank);
+    setRoots(data.roots ?? []);
   }, []);
 
   useEffect(() => {
@@ -268,9 +283,10 @@ export function CoverEditor() {
   const visibleBank = useMemo(() => {
     const q = bankFilter.trim().toLowerCase();
     return bank
+      .filter((b) => (rootFilter === 'all' ? true : b.root === rootFilter))
       .filter((b) => (showGraphics ? true : b.kind === 'photo'))
-      .filter((b) => (q ? b.path.toLowerCase().includes(q) : true));
-  }, [bank, bankFilter, showGraphics]);
+      .filter((b) => (q ? b.name.toLowerCase().includes(q) : true));
+  }, [bank, bankFilter, rootFilter, showGraphics]);
 
   return (
     <div className="ce">
@@ -435,6 +451,25 @@ export function CoverEditor() {
 
         <aside className="ce-panel">
           <h2>Image bank ({visibleBank.length})</h2>
+          <div className="ce-chips">
+            <button
+              type="button"
+              className={`ce-chip${rootFilter === 'all' ? ' is-active' : ''}`}
+              onClick={() => setRootFilter('all')}
+            >
+              All ({bank.length})
+            </button>
+            {roots.map((root) => (
+              <button
+                key={root.id}
+                type="button"
+                className={`ce-chip${rootFilter === root.id ? ' is-active' : ''}`}
+                onClick={() => setRootFilter(root.id)}
+              >
+                {root.label} ({bank.filter((b) => b.root === root.id).length})
+              </button>
+            ))}
+          </div>
           <input
             className="ce-input"
             placeholder="Filter by filename"
@@ -451,19 +486,20 @@ export function CoverEditor() {
           </label>
           <div className="ce-bank">
             {visibleBank.map((b) => {
-              const used = usedImages.has(decodeURIComponent(b.path));
+              const used = usedImages.has(decodeURIComponent(b.id));
               return (
                 <button
-                  key={b.path}
+                  key={b.id}
                   type="button"
                   className={`ce-thumb${used ? ' is-used' : ''}`}
-                  title={`${b.path}${used ? ' (already a cover)' : ''}`}
+                  title={`${b.name}${used ? ' (already a cover)' : ''}`}
                   disabled={!article}
-                  onClick={() => useImage(encodeURI(b.path), b.path, b.path)}
+                  onClick={() => useImage(b.url, b.name, b.publicPath ?? null)}
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={encodeURI(b.path)} alt="" loading="lazy" />
+                  <img src={b.url} alt="" loading="lazy" decoding="async" />
                   {used ? <span className="ce-badge">used</span> : null}
+                  <span className="ce-name">{b.name}</span>
                 </button>
               );
             })}
@@ -482,8 +518,8 @@ const CSS = `
 .ce-top p { margin: 0; color: #6b6b5f; max-width: 62ch; }
 .ce code { background: #ecece4; padding: 1px 5px; border-radius: 4px; font-size: 12px; }
 .ce-link { color: #16160f; font-weight: 600; text-decoration: none; border: 1px solid #d6d6cb; border-radius: 8px; padding: 8px 14px; background: #fff; white-space: nowrap; }
-.ce-grid { display: grid; grid-template-columns: 320px minmax(0, 1fr) 300px; gap: 20px; align-items: start; }
-@media (max-width: 1300px) { .ce-grid { grid-template-columns: 1fr; } }
+.ce-grid { display: grid; grid-template-columns: 300px minmax(0, 1fr) 380px; gap: 20px; align-items: start; }
+@media (max-width: 1400px) { .ce-grid { grid-template-columns: 260px minmax(0, 1fr); } .ce-grid > .ce-panel:last-child { grid-column: 1 / -1; } }
 .ce-panel { background: #fff; border: 1px solid #e4e4db; border-radius: 12px; padding: 14px; }
 .ce-panel h2, .ce-stage-wrap h2 { font-size: 15px; margin: 0 0 10px; }
 .ce-input { width: 100%; padding: 8px 10px; border: 1px solid #d6d6cb; border-radius: 8px; margin-bottom: 10px; font: inherit; }
@@ -519,11 +555,26 @@ const CSS = `
 .ce-status.is-ok { background: #e6f4ea; color: #14532d; }
 .ce-status.is-error { background: #fdeaea; color: #7f1d1d; }
 .ce-status.is-busy { background: #f2f2ea; color: #6b6b5f; }
-.ce-bank { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; max-height: 70vh; overflow: auto; }
-.ce-thumb { position: relative; padding: 0; border: 1px solid #e4e4db; border-radius: 6px; overflow: hidden; background: #ecece4; cursor: pointer; aspect-ratio: 1.25 / 1; }
+/* Thumbnails: height comes from padding-bottom rather than aspect-ratio.
+   A <button> in a grid does not size reliably from aspect-ratio, which is what
+   made the whole bank collapse into a single overlapping column. */
+.ce-bank { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; align-content: start; max-height: 68vh; overflow-y: auto; overflow-x: hidden; padding-right: 4px; }
+.ce-thumb { position: relative; display: block; width: 100%; height: 0; padding: 0 0 78% 0; margin: 0; border: 1px solid #e4e4db; border-radius: 8px; overflow: hidden; background: #ecece4; cursor: pointer; }
 .ce-thumb:hover { border-color: #16160f; }
 .ce-thumb:disabled { opacity: 0.5; cursor: not-allowed; }
-.ce-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.ce-thumb.is-used { opacity: 0.45; }
-.ce-badge { position: absolute; top: 3px; right: 3px; font-size: 9px; text-transform: uppercase; letter-spacing: 0.04em; background: rgba(0,0,0,0.7); color: #fff; padding: 1px 5px; border-radius: 999px; }
+.ce-thumb img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+.ce-thumb.is-used { opacity: 0.4; }
+.ce-thumb.is-used:hover { opacity: 0.75; }
+.ce-badge { position: absolute; top: 4px; right: 4px; font-size: 9px; text-transform: uppercase; letter-spacing: 0.04em; background: rgba(0,0,0,0.7); color: #fff; padding: 1px 5px; border-radius: 999px; }
+.ce-name { position: absolute; left: 0; right: 0; bottom: 0; font-size: 9px; line-height: 1.4; color: #fff; background: linear-gradient(transparent, rgba(0,0,0,0.75)); padding: 10px 5px 3px; text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ce-chips { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 10px; }
+.ce-chip { font: inherit; font-size: 11px; padding: 4px 9px; border: 1px solid #d6d6cb; background: #fff; border-radius: 999px; cursor: pointer; }
+.ce-chip:hover { background: #f2f2ea; }
+.ce-chip.is-active { background: #16160f; color: #fff; border-color: #16160f; }
+
+/* Kept last: below 1400px the bank spans the full width, so it gets as many
+   columns as fit instead of the two it uses in the narrow side panel. */
+@media (max-width: 1400px) {
+  .ce-bank { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); max-height: none; }
+}
 `;
