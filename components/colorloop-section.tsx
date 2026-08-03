@@ -4,6 +4,7 @@ import { useLanguage, type Locale } from '@/components/language-provider';
 import { SnapSlider } from '@/components/snap-slider';
 import COPY_DATA from '@/data/home/colorloop-section.json';
 import { homeMedia } from '@/lib/home-media';
+import { homeLink } from '@/lib/home-links';
 
 type Benefit = { title: string; body: string };
 
@@ -58,7 +59,7 @@ export function ColorLoopSection() {
           <div className="colorloop-offset-tech-media">
             <a
               className="colorloop-offset-tech-thumb"
-              href="https://www.xrite.com/categories/measurement-devices/intellitrax2"
+              href={homeLink('colorloop-section.intellitrax2')}
               target="_blank"
               rel="noreferrer"
               aria-label="IntelliTrax2 by X-Rite"
@@ -67,7 +68,7 @@ export function ColorLoopSection() {
             </a>
             <a
               className="colorloop-offset-tech-thumb"
-              href="https://www.xrite.com/categories/measurement-devices/intellitrax2"
+              href={homeLink('colorloop-section.intellitrax2')}
               target="_blank"
               rel="noreferrer"
               aria-label="IntelliTrax on press"
@@ -80,7 +81,7 @@ export function ColorLoopSection() {
         <div className="colorloop-offset-cta">
           <a
             className="button button-dark"
-            href="https://colorloop.ai/"
+            href={homeLink('colorloop-section.colorloop')}
             target="_blank"
             rel="noreferrer"
           >

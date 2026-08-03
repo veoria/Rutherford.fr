@@ -20,6 +20,7 @@ export const dynamic = 'force-dynamic';
 const ROOT = process.cwd();
 const HOME_DIR = join(ROOT, 'data/home');
 const MEDIA_PATH = join(HOME_DIR, 'media.json');
+const LINKS_PATH = join(HOME_DIR, 'links.json');
 const PENDING_PATH = join(HOME_DIR, '_pending-translation.json');
 const PUBLIC_DIR = join(ROOT, 'public');
 const IMAGES_DIR = join(PUBLIC_DIR, 'images');
@@ -81,6 +82,7 @@ export async function GET() {
   if (isProd()) return new NextResponse('Not found', { status: 404 });
 
   const media = readJson(MEDIA_PATH) as Record<string, string>;
+  const links = readJson(LINKS_PATH) as Record<string, string>;
   const pending = existsSync(PENDING_PATH) ? (readJson(PENDING_PATH) as Json[]) : [];
 
   const sections = SECTIONS.filter((s) => existsSync(sectionPath(s.id))).map((section) => {
@@ -89,6 +91,9 @@ export async function GET() {
       ...section,
       fields: flatten(data.en ?? {}),
       media: Object.entries(media)
+        .filter(([key]) => key.startsWith(`${section.id}.`))
+        .map(([key, value]) => ({ key, value })),
+      links: Object.entries(links)
         .filter(([key]) => key.startsWith(`${section.id}.`))
         .map(([key, value]) => ({ key, value })),
     };
@@ -106,11 +111,35 @@ export async function POST(request: Request) {
     mediaKey?: string;
     image?: string;
     dataUrl?: string;
+    linkKey?: string;
+    href?: string;
   };
   try {
     body = await request.json();
   } catch {
     return NextResponse.json({ error: 'Invalid JSON body.' }, { status: 400 });
+  }
+
+  // ---- button destination ------------------------------------------------
+  if (body.linkKey) {
+    const links = readJson(LINKS_PATH) as Record<string, string>;
+    if (!(body.linkKey in links)) {
+      return NextResponse.json({ error: `Unknown link key: ${body.linkKey}` }, { status: 404 });
+    }
+    const href = (body.href ?? '').trim();
+    // Anything that leaves the page has to be a destination a browser follows,
+    // and never a javascript: or data: URL.
+    const allowed = /^(\/|#|https:\/\/|http:\/\/|mailto:|tel:)/i.test(href);
+    if (!href || !allowed) {
+      return NextResponse.json(
+        { error: 'A link must start with /, #, https://, http://, mailto: or tel:' },
+        { status: 400 },
+      );
+    }
+    const previous = links[body.linkKey];
+    links[body.linkKey] = href;
+    writeJson(LINKS_PATH, links);
+    return NextResponse.json({ ok: true, linkKey: body.linkKey, href, previous });
   }
 
   // ---- media assignment -------------------------------------------------

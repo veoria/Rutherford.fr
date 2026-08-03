@@ -2,6 +2,7 @@
 
 import { useLanguage, type Locale } from '@/components/language-provider';
 import COPY_DATA from '@/data/home/roi-teaser.json';
+import { homeLink } from '@/lib/home-links';
 
 type TeaserCopy = {
   label: string;
@@ -28,7 +29,7 @@ export function RoiTeaser() {
           <span className="roi-teaser-amount">{t.amount}</span>
         </p>
         <p className="roi-teaser-lead">{t.lead}</p>
-        <a className="button button-light roi-teaser-cta" href="/roi">
+        <a className="button button-light roi-teaser-cta" href={homeLink('roi-teaser.cta')}>
           {t.cta} →
         </a>
       </div>

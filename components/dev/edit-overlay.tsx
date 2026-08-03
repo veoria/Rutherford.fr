@@ -19,7 +19,8 @@ import { useLanguage } from '@/components/language-provider';
 
 type Field = { path: string; value: string };
 type Media = { key: string; value: string };
-type Section = { id: string; label: string; fields: Field[]; media: Media[] };
+type Link = { key: string; value: string };
+type Section = { id: string; label: string; fields: Field[]; media: Media[]; links: Link[] };
 type BankImage = { id: string; url: string; name: string; root: string; kind: string; publicPath?: string };
 type Root = { id: string; label: string };
 
@@ -65,7 +66,12 @@ export function EditOverlay() {
   const [roots, setRoots] = useState<Root[]>([]);
 
   const [edits, setEdits] = useState<Record<string, { section: string; path: string; value: string }>>({});
-  const [editing, setEditing] = useState<{ target: TextTarget; el: HTMLElement } | null>(null);
+  const [editing, setEditing] = useState<{
+    target: TextTarget;
+    el: HTMLElement;
+    link: Link | null;
+  } | null>(null);
+  const linkRef = useRef<HTMLInputElement | null>(null);
   const [mediaTarget, setMediaTarget] = useState<MediaTarget | null>(null);
   const [status, setStatus] = useState<{ kind: 'idle' | 'busy' | 'ok' | 'error'; message: string }>({
     kind: 'idle',
@@ -231,9 +237,16 @@ export function EditOverlay() {
         const found = sections.find((s) => s.id === section);
         const field = found?.fields.find((f) => f.path === path);
         if (!found || !field) return;
+
+        // When the text sits inside a link, offer its destination as well.
+        const anchor = text.closest('a');
+        const href = anchor?.getAttribute('href') ?? null;
+        const link = href ? found.links.find((l) => l.value === href) ?? null : null;
+
         setEditing({
           target: { section, sectionLabel: found.label, path, original: field.value },
           el: text,
+          link,
         });
       }
     };
@@ -252,6 +265,23 @@ export function EditOverlay() {
     },
     [],
   );
+
+  /** Button destinations are written straight away: there is only one of them. */
+  const saveLink = useCallback(async (key: string, href: string) => {
+    setStatus({ kind: 'busy', message: 'Saving the link…' });
+    const res = await fetch('/api/dev/home', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ linkKey: key, href }),
+    });
+    const data = (await res.json()) as { error?: string; href?: string };
+    if (!res.ok) {
+      setStatus({ kind: 'error', message: data.error ?? 'Save failed.' });
+      return false;
+    }
+    setStatus({ kind: 'ok', message: `Link now points at ${data.href}` });
+    return true;
+  }, []);
 
   const commitText = useCallback(
     (value: string) => {
@@ -385,14 +415,27 @@ export function EditOverlay() {
               rows={Math.min(10, Math.ceil(editing.target.original.length / 70) + 1)}
               onKeyDown={(event) => {
                 if (event.key === 'Escape') setEditing(null);
-                if (event.key === 'Enter' && !event.shiftKey) {
+                // Enter inserts a line break, so applying needs the modifier.
+                if (event.key === 'Enter' && (event.metaKey || event.ctrlKey)) {
                   event.preventDefault();
                   commitText(event.currentTarget.value);
                 }
               }}
             />
+            {editing.link ? (
+              <label className="eo-linkfield">
+                <span>Where this button goes</span>
+                <input
+                  ref={linkRef}
+                  type="text"
+                  defaultValue={editing.link.value}
+                  placeholder="/console-validation, https://…, mailto:…"
+                />
+              </label>
+            ) : null}
+
             <p className="eo-modal-foot">
-              Enter to apply, Shift plus Enter for a line break, Escape to cancel. English only, the other
+              Enter starts a new line. Cmd plus Enter applies, Escape cancels. English only, the other
               languages stay as they are.
             </p>
             <div className="eo-modal-actions">
@@ -402,7 +445,15 @@ export function EditOverlay() {
               <button
                 type="button"
                 className="eo-btn primary"
-                onClick={() => commitText(inputRef.current?.value ?? editing.target.original)}
+                onClick={async () => {
+                  const link = editing.link;
+                  const nextHref = linkRef.current?.value.trim();
+                  if (link && nextHref && nextHref !== link.value) {
+                    const ok = await saveLink(link.key, nextHref);
+                    if (!ok) return;
+                  }
+                  commitText(inputRef.current?.value ?? editing.target.original);
+                }}
               >
                 Apply
               </button>
@@ -532,6 +583,10 @@ body { padding-top: 46px; }
 .eo-modal-head code { background: #ecece4; padding: 1px 6px; border-radius: 4px; }
 .eo-modal-card textarea { width: 100%; font: inherit; font-size: 15px; padding: 10px 12px; border: 1px solid #d6d6cb; border-radius: 10px; resize: vertical; }
 .eo-modal-card textarea:focus { outline: 2px solid #e0a800; outline-offset: -1px; }
+.eo-linkfield { display: block; margin-top: 12px; }
+.eo-linkfield span { display: block; font-size: 11px; color: #8a8a7c; margin-bottom: 4px; }
+.eo-linkfield input { width: 100%; font: inherit; font-size: 13px; padding: 8px 11px; border: 1px solid #d6d6cb; border-radius: 9px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+.eo-linkfield input:focus { outline: 2px solid #e0a800; outline-offset: -1px; }
 .eo-modal-foot { margin: 8px 0 0; font-size: 11px; color: #8a8a7c; }
 .eo-modal-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
 .eo-bankbar { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; margin: 16px 0 8px; padding-top: 14px; border-top: 1px solid #eeeee7; }

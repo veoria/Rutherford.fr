@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { useLanguage, type Locale } from '@/components/language-provider';
 import COPY_DATA from '@/data/home/team-showcase.json';
 import { homeMedia } from '@/lib/home-media';
+import { homeLink } from '@/lib/home-links';
 
 type Copy = {
   kicker: string;
@@ -60,7 +61,7 @@ export function TeamShowcase() {
           <p className="section-kicker team-content-kicker">{t.kicker}</p>
           <h2 className="team-content-headline">{t.headline}</h2>
           <p className="team-content-body">{t.body}</p>
-          <a className="button button-accent team-content-cta" href="mailto:contact@rutherford.fr">
+          <a className="button button-accent team-content-cta" href={homeLink('team-showcase.cta')}>
             {t.ctaLabel}
           </a>
         </div>

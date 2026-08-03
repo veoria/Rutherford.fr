@@ -3,6 +3,7 @@
 import articles from '@/data/blog-articles.json';
 import { useLanguage, type Locale } from '@/components/language-provider';
 import COPY_DATA from '@/data/home/blog-preview-section.json';
+import { homeLink } from '@/lib/home-links';
 
 type Article = {
   slug: string;
@@ -68,7 +69,7 @@ export function BlogPreviewSection() {
         </div>
 
         <div className="blog-preview-footer">
-          <a className="button button-outline-dark" href="/blog">
+          <a className="button button-outline-dark" href={homeLink('blog-preview-section.seeAll')}>
             {t.seeAll}
           </a>
         </div>

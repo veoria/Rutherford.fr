@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import { useLanguage, type Locale } from '@/components/language-provider';
 import COPY_DATA from '@/data/home/console-validation-cta.json';
+import { homeLink } from '@/lib/home-links';
 
 type Copy = {
   kicker: string;
@@ -65,11 +66,11 @@ export function ConsoleValidationCTA() {
           <div className="console-cta-actions">
             <a
               className="button button-accent"
-              href="/console-validation"
+              href={homeLink('console-validation-cta.primary')}
             >
               {t.primaryCta}
             </a>
-            <a className="button button-light-on-dark" href="mailto:contact@rutherford.fr">
+            <a className="button button-light-on-dark" href={homeLink('console-validation-cta.secondary')}>
               {t.secondaryCta}
             </a>
           </div>

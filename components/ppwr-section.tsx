@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { useLanguage, type Locale } from '@/components/language-provider';
 import COPY_DATA from '@/data/home/ppwr-section.json';
 import { homeMedia } from '@/lib/home-media';
+import { homeLink } from '@/lib/home-links';
 
 type Copy = {
   kicker: string;
@@ -50,7 +51,7 @@ export function PPWRSection() {
               <p>{t.dppBody}</p>
               <a
                 className="ppwr-card-link"
-                href="https://ppwrconnect.com"
+                href={homeLink('ppwr-section.ppwrConnect')}
                 target="_blank"
                 rel="noreferrer"
               >
@@ -75,7 +76,7 @@ export function PPWRSection() {
               <p>{t.ppwrBody}</p>
               <a
                 className="ppwr-card-link"
-                href="https://ppwrconnect.com"
+                href={homeLink('ppwr-section.ppwrConnect')}
                 target="_blank"
                 rel="noreferrer"
               >
@@ -89,7 +90,7 @@ export function PPWRSection() {
         <div className="ppwr-cta">
           <a
             className="button button-dark ppwr-cta-button"
-            href="https://ppwrconnect.com"
+            href={homeLink('ppwr-section.ppwrConnect')}
             target="_blank"
             rel="noreferrer"
           >

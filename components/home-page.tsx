@@ -7,6 +7,7 @@ import { ScrollReveal } from '@/components/scroll-reveal';
 import { HeroBackground } from '@/components/hero-background';
 import HERO_COPY_DATA from '@/data/home/home-page.json';
 import { homeMedia } from '@/lib/home-media';
+import { homeLink } from '@/lib/home-links';
 
 const BrandExplainerSection = dynamic(
   () => import('@/components/brand-explainer-section').then((module) => module.BrandExplainerSection),
@@ -139,10 +140,10 @@ export default function HomePage() {
             <p className="hero-supporting">{t.supporting}</p>
 
             <div className="hero-actions">
-              <a className="button button-dark hero-cta" href="/console-validation">
+              <a className="button button-dark hero-cta" href={homeLink('home-page.primaryCta')}>
                 {t.primaryCta}
               </a>
-              <a className="button button-light hero-cta" href="mailto:contact@rutherford.fr">
+              <a className="button button-light hero-cta" href={homeLink('home-page.secondaryCta')}>
                 {t.secondaryCta}
               </a>
             </div>
