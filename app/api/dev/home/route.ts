@@ -15,6 +15,8 @@ import { createHash } from 'node:crypto';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
+import { LAYOUT_PATH, pushHistory } from '../store';
+
 export const dynamic = 'force-dynamic';
 
 const ROOT = process.cwd();
@@ -83,6 +85,7 @@ export async function GET() {
 
   const media = readJson(MEDIA_PATH) as Record<string, string>;
   const links = readJson(LINKS_PATH) as Record<string, string>;
+  const layout = readJson(LAYOUT_PATH) as { order: string[]; hidden: string[] };
   const pending = existsSync(PENDING_PATH) ? (readJson(PENDING_PATH) as Json[]) : [];
 
   const sections = SECTIONS.filter((s) => existsSync(sectionPath(s.id))).map((section) => {
@@ -99,7 +102,7 @@ export async function GET() {
     };
   });
 
-  return NextResponse.json({ sections, pending });
+  return NextResponse.json({ sections, layout, pending });
 }
 
 export async function POST(request: Request) {
@@ -113,6 +116,7 @@ export async function POST(request: Request) {
     dataUrl?: string;
     linkKey?: string;
     href?: string;
+    layout?: { order?: string[]; hidden?: string[] };
   };
   try {
     body = await request.json();
@@ -139,7 +143,39 @@ export async function POST(request: Request) {
     const previous = links[body.linkKey];
     links[body.linkKey] = href;
     writeJson(LINKS_PATH, links);
+    pushHistory({
+      kind: 'link',
+      label: `link ${body.linkKey.split('.').pop()}`,
+      linkKey: body.linkKey,
+      href: previous,
+    });
     return NextResponse.json({ ok: true, linkKey: body.linkKey, href, previous });
+  }
+
+  // ---- section layout ----------------------------------------------------
+  if (body.layout) {
+    const known = new Set(SECTIONS.map((s) => s.id));
+    const order = Array.isArray(body.layout.order) ? body.layout.order.filter((id) => known.has(id)) : null;
+    const hidden = Array.isArray(body.layout.hidden)
+      ? body.layout.hidden.filter((id) => known.has(id))
+      : null;
+    if (!order || !hidden) {
+      return NextResponse.json({ error: 'layout needs an order and a hidden list.' }, { status: 400 });
+    }
+
+    const current = readJson(LAYOUT_PATH) as { order: string[]; hidden: string[] };
+    // Losing a section from `order` would drop it from the page for good, so a
+    // reorder has to be a permutation of what is already there.
+    if (order.length !== current.order.length) {
+      return NextResponse.json(
+        { error: 'A reorder must keep every section, only their order may change.' },
+        { status: 400 },
+      );
+    }
+
+    writeJson(LAYOUT_PATH, { order, hidden });
+    pushHistory({ kind: 'layout', label: 'section layout', layout: current });
+    return NextResponse.json({ ok: true, order, hidden });
   }
 
   // ---- media assignment -------------------------------------------------
@@ -176,6 +212,12 @@ export async function POST(request: Request) {
     const previous = media[body.mediaKey];
     media[body.mediaKey] = next;
     writeJson(MEDIA_PATH, media);
+    pushHistory({
+      kind: 'media',
+      label: `photo ${body.mediaKey.split('.').pop()}`,
+      mediaKey: body.mediaKey,
+      image: previous,
+    });
     return NextResponse.json({ ok: true, mediaKey: body.mediaKey, image: next, previous });
   }
 
@@ -209,6 +251,15 @@ export async function POST(request: Request) {
   if (applied.length === 0) return NextResponse.json({ ok: true, changed: 0 });
 
   writeJson(sectionPath(id), data);
+  pushHistory({
+    kind: 'copy',
+    label:
+      applied.length === 1
+        ? `text ${applied[0].path}`
+        : `${applied.length} texts in ${SECTIONS.find((s) => s.id === id)?.label ?? id}`,
+    section: id,
+    edits: applied.map((change) => ({ path: change.path, value: change.from })),
+  });
 
   // Record what drifted, so the five other locales can be caught up on purpose.
   const pending = (existsSync(PENDING_PATH) ? readJson(PENDING_PATH) : []) as {

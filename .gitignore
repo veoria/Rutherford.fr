@@ -16,3 +16,7 @@ dist
 
 # TypeScript incremental build cache (regenerated on every check)
 tsconfig.tsbuildinfo
+
+# Dev editor working files, local only
+data/home/_history.json
+data/home/_pending-translation.json

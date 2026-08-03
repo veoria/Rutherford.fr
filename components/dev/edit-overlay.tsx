@@ -102,17 +102,33 @@ export function EditOverlay() {
   const [themeOpen, setThemeOpen] = useState(false);
   const [themeDraft, setThemeDraft] = useState<Record<string, string>>({});
 
+  const [layout, setLayout] = useState<{ order: string[]; hidden: string[] }>({ order: [], hidden: [] });
+  const [sectionsOpen, setSectionsOpen] = useState(false);
+  const [history, setHistory] = useState<{ depth: number; next: { label: string } | null }>({
+    depth: 0,
+    next: null,
+  });
+
   const cropper = useRef<CropperHandle | null>(null);
   const objectUrl = useRef<string | null>(null);
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
 
   const load = useCallback(async () => {
-    const [home, covers, theme] = await Promise.all([
+    const [home, covers, theme, hist] = await Promise.all([
       fetch('/api/dev/home', { cache: 'no-store' }),
       fetch('/api/dev/covers', { cache: 'no-store' }),
       fetch('/api/dev/theme', { cache: 'no-store' }),
+      fetch('/api/dev/history', { cache: 'no-store' }),
     ]);
-    if (home.ok) setSections(((await home.json()) as { sections: Section[] }).sections);
+    if (hist.ok) setHistory(await hist.json());
+    if (home.ok) {
+      const data = (await home.json()) as {
+        sections: Section[];
+        layout: { order: string[]; hidden: string[] };
+      };
+      setSections(data.sections);
+      setLayout(data.layout ?? { order: [], hidden: [] });
+    }
     if (covers.ok) {
       const data = (await covers.json()) as { bank: BankImage[]; roots: Root[] };
       setBank(data.bank);
@@ -387,6 +403,39 @@ export function EditOverlay() {
     [mediaTarget, pickedPublicPath],
   );
 
+  /** Steps back through the shared undo stack: text, photos, links, colours, layout. */
+  const undo = useCallback(async () => {
+    setStatus({ kind: 'busy', message: 'Undoing…' });
+    const res = await fetch('/api/dev/history', { method: 'POST' });
+    const data = (await res.json()) as { error?: string; undone?: string };
+    if (!res.ok) {
+      setStatus({ kind: 'error', message: data.error ?? 'Nothing to undo.' });
+      return;
+    }
+    setStatus({ kind: 'ok', message: `Undone: ${data.undone}` });
+    window.setTimeout(() => window.location.reload(), 700);
+  }, []);
+
+  const saveLayout = useCallback(
+    async (next: { order: string[]; hidden: string[] }) => {
+      setLayout(next);
+      setStatus({ kind: 'busy', message: 'Saving the layout…' });
+      const res = await fetch('/api/dev/home', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ layout: next }),
+      });
+      const data = (await res.json()) as { error?: string };
+      if (!res.ok) {
+        setStatus({ kind: 'error', message: data.error ?? 'Save failed.' });
+        return;
+      }
+      setStatus({ kind: 'ok', message: 'Layout saved' });
+      window.setTimeout(() => window.location.reload(), 700);
+    },
+    [],
+  );
+
   /** Paints a colour straight onto the document, so the page previews live. */
   const previewToken = useCallback((name: string, value: string) => {
     setThemeDraft((current) => ({ ...current, [name]: value }));
@@ -439,6 +488,33 @@ export function EditOverlay() {
         <span className="eo-locale">English</span>
         <span className="eo-hint">{status.message || 'Click any text or photo to edit it'}</span>
         <div className="eo-bar-actions">
+          <button
+            type="button"
+            className="eo-btn eo-undo"
+            disabled={history.depth === 0 || status.kind === 'busy'}
+            onClick={undo}
+            title={history.next ? `Undo ${history.next.label}` : 'Nothing to undo'}
+            aria-label="Undo the last change"
+          >
+            <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+              <path
+                d="M9 7H15a5 5 0 0 1 0 10h-4M9 7 5.5 4M9 7l-3.5 3"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+            {history.depth > 0 ? <span className="eo-undo-count">{history.depth}</span> : null}
+          </button>
+          <button
+            type="button"
+            className={`eo-btn${sectionsOpen ? ' primary' : ''}`}
+            onClick={() => setSectionsOpen((open) => !open)}
+          >
+            Sections
+          </button>
           {dirtyCount > 0 ? (
             <button type="button" className="eo-btn ghost" onClick={() => window.location.reload()}>
               Discard
@@ -464,6 +540,71 @@ export function EditOverlay() {
           </a>
         </div>
       </div>
+
+      {sectionsOpen ? (
+        <aside className="eo-theme">
+          <p className="eo-theme-head">Sections</p>
+          <p className="eo-theme-sub">
+            Untick to take a section off the page, drag order with the arrows. Nothing is deleted: a
+            hidden section keeps its text and photos and comes back the moment you tick it again.
+          </p>
+
+          <ol className="eo-sections">
+            {layout.order.map((id, index) => {
+              const section = sections.find((s) => s.id === id);
+              const hidden = layout.hidden.includes(id);
+              return (
+                <li key={id} className={hidden ? 'is-hidden' : ''}>
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={!hidden}
+                      onChange={() =>
+                        saveLayout({
+                          order: layout.order,
+                          hidden: hidden
+                            ? layout.hidden.filter((h) => h !== id)
+                            : [...layout.hidden, id],
+                        })
+                      }
+                    />
+                    <span>{section?.label ?? id}</span>
+                  </label>
+                  <span className="eo-move">
+                    <button
+                      type="button"
+                      disabled={index === 0}
+                      title="Move up"
+                      onClick={() => {
+                        const order = [...layout.order];
+                        [order[index - 1], order[index]] = [order[index], order[index - 1]];
+                        saveLayout({ order, hidden: layout.hidden });
+                      }}
+                    >
+                      ↑
+                    </button>
+                    <button
+                      type="button"
+                      disabled={index === layout.order.length - 1}
+                      title="Move down"
+                      onClick={() => {
+                        const order = [...layout.order];
+                        [order[index], order[index + 1]] = [order[index + 1], order[index]];
+                        saveLayout({ order, hidden: layout.hidden });
+                      }}
+                    >
+                      ↓
+                    </button>
+                  </span>
+                </li>
+              );
+            })}
+          </ol>
+          <p className="eo-theme-sub" style={{ margin: '10px 0 0' }}>
+            The hero and the footer are fixtures and are not listed.
+          </p>
+        </aside>
+      ) : null}
 
       {themeOpen ? (
         <aside className="eo-theme">
@@ -709,6 +850,18 @@ body { padding-top: 46px; }
 .eo-modal .eo-btn.ghost { background: #fff; color: #16160f; border-color: #d6d6cb; }
 .eo-modal .eo-btn.ghost:hover { background: #f2f2ea; }
 .eo-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.eo-undo { padding: 7px 10px; gap: 5px; }
+.eo-undo-count { font-size: 10px; background: #16160f; color: #fff; border-radius: 999px; padding: 0 5px; line-height: 15px; }
+.eo-sections { list-style: none; margin: 0; padding: 0; counter-reset: s; }
+.eo-sections li { display: flex; align-items: center; gap: 8px; padding: 5px 6px; border-radius: 8px; }
+.eo-sections li:hover { background: #f7f7f3; }
+.eo-sections li.is-hidden span { opacity: 0.45; text-decoration: line-through; }
+.eo-sections label { display: flex; align-items: center; gap: 8px; flex: 1; font-size: 12px; cursor: pointer; min-width: 0; }
+.eo-sections label span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.eo-move { display: flex; gap: 2px; flex: 0 0 auto; }
+.eo-move button { font: inherit; font-size: 12px; line-height: 1; width: 22px; height: 22px; border: 1px solid #d6d6cb; background: #fff; border-radius: 6px; cursor: pointer; }
+.eo-move button:hover:not(:disabled) { background: #f2f2ea; }
+.eo-move button:disabled { opacity: 0.3; cursor: not-allowed; }
 .eo-theme { position: fixed; top: 54px; right: 12px; z-index: 2147483000; width: 320px; max-height: calc(100vh - 70px); overflow-y: auto; background: #fff; border: 1px solid #d6d6cb; border-radius: 14px; padding: 16px; box-shadow: 0 20px 60px rgba(0,0,0,0.22); }
 .eo-theme-head { margin: 0 0 4px; font-size: 14px; font-weight: 700; color: #16160f; }
 .eo-theme-sub { margin: 0 0 14px; font-size: 11px; line-height: 1.5; color: #6b6b5f; }

@@ -6,6 +6,7 @@ import { SiteNav } from '@/components/site-nav';
 import { ScrollReveal } from '@/components/scroll-reveal';
 import { HeroBackground } from '@/components/hero-background';
 import HERO_COPY_DATA from '@/data/home/home-page.json';
+import HOME_LAYOUT from '@/data/home/layout.json';
 import { homeMedia } from '@/lib/home-media';
 import { homeLink } from '@/lib/home-links';
 
@@ -69,6 +70,25 @@ type HeroCopy = {
 };
 
 const HERO_COPY = HERO_COPY_DATA as Record<Locale, HeroCopy>;
+
+/**
+ * Which blocks the page shows, and in what order. Driven by
+ * data/home/layout.json so /dev/edit can hide or reorder a section without
+ * touching this file. The hero and the footer are fixtures and stay put.
+ */
+const SECTIONS = {
+  'roi-teaser': RoiTeaser,
+  'rutherford-identity-section': RutherfordIdentitySection,
+  'brand-explainer-section': BrandExplainerSection,
+  'case-studies-showcase': CaseStudiesShowcase,
+  'console-validation-cta': ConsoleValidationCTA,
+  'how-rutherford-helps': HowRutherfordHelps,
+  'colorloop-section': ColorLoopSection,
+  'audience-section': AudienceSection,
+  'ppwr-section': PPWRSection,
+  'blog-preview-section': BlogPreviewSection,
+  'team-showcase': TeamShowcase,
+};
 
 export default function HomePage() {
   const { locale } = useLanguage();
@@ -151,27 +171,12 @@ export default function HomePage() {
         </div>
       </section>
 
-      <RoiTeaser />
-
-      <RutherfordIdentitySection />
-
-      <BrandExplainerSection />
-
-      <CaseStudiesShowcase />
-
-      <ConsoleValidationCTA />
-
-      <HowRutherfordHelps />
-
-      <ColorLoopSection />
-
-      <AudienceSection />
-
-      <PPWRSection />
-
-      <BlogPreviewSection />
-
-      <TeamShowcase />
+      {(HOME_LAYOUT as { order: string[]; hidden: string[] }).order
+        .filter((id) => !(HOME_LAYOUT as { hidden: string[] }).hidden.includes(id))
+        .map((id) => {
+          const Section = SECTIONS[id as keyof typeof SECTIONS];
+          return Section ? <Section key={id} /> : null;
+        })}
 
       <SiteFooter />
     </main>
