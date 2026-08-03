@@ -1,5 +1,314 @@
 [
   {
+    "slug": "extended-gamut-ecg-when-7-color-pays-off",
+    "title": "When extended gamut printing pays off",
+    "excerpt": "Extended gamut printing removes the ink change between jobs, but it only pays above a certain job mix. Where the break-even actually sits for a converter.",
+    "lead": "Extended gamut is usually sold as a color capability. For a packaging converter it is really a production economics decision, and the answer depends on the job mix rather than on the technology. Here is where the break-even sits, and what the conversion costs you back.",
+    "image": "/images/ink-red.jpg",
+    "publishedAt": "2026-08-03",
+    "category": "Production",
+    "paragraphs": [
+      "Extended color gamut printing, or ECG, adds orange, green and violet to CMYK so that spot colors are reproduced as builds from a fixed ink set rather than as dedicated mixed inks. The operational consequence is the one that matters commercially: the press stops changing inks between jobs.",
+      "A seven-ink set reproduces roughly 90 percent of PANTONE spot tones, against about 55 percent for conventional CMYK. The savings show up in changeover time, ink inventory, makeready waste, and in the ability to gang jobs that share an ink set rather than a brand color.",
+      "The costs move the other way: seven inks want seven units, separations become a per-job color decision, and a brand color that used to be one ink becomes a build whose DeltaE is the compound of three or four. That last point is why extended gamut and closed loop color control tend to arrive together.",
+      "The break-even is a function of job mix, not volume. ECG pays on high SKU counts and short runs with frequent ink set changes. It does not pay on long runs of the same two brand colors. And no conversion holds up on a press that cannot keep a measured condition today."
+    ],
+    "body": [
+      {
+        "type": "p",
+        "text": "Extended gamut is usually presented as a color capability: more colors, a bigger space, fewer compromises for the designer. For a packaging converter that framing misses the point. The decision is a production economics one, and the answer changes with the job mix rather than with the technology."
+      },
+      {
+        "type": "p",
+        "text": "The pitch is simple enough. Replace the mixed spot inks with a fixed set of seven, stop washing up between jobs, print most brand colors as builds. The pitch is accurate. What it leaves out is that the saving lands in one column and the new costs land in two others."
+      },
+      {
+        "type": "h2",
+        "text": "What extended gamut printing actually changes"
+      },
+      {
+        "type": "p",
+        "text": "Extended gamut, or ECG, adds orange, green and violet to CMYK so that spot colors are reproduced as builds from a fixed ink set instead of as dedicated mixed inks. The definition sits in the [glossary](/glossary#extended-gamut), but the operational consequence is the part that matters: the press stops changing inks between jobs."
+      },
+      {
+        "type": "p",
+        "text": "That single change is what moves the numbers. A converter running eight short jobs a shift with two spot colors each is not spending its time printing. It is spending it washing up, matching a mixed ink to a drawdown, and climbing back to color. Take the ink changes out and the press gains hours that were never billable."
+      },
+      {
+        "type": "h3",
+        "text": "How many PANTONE colors can a seven-ink set actually reproduce?"
+      },
+      {
+        "type": "p",
+        "text": "Around 90 percent of PANTONE spot tones, against roughly 55 percent with conventional CMYK, on X-Rite figures. The remaining tenth matters more than the number suggests: it tends to contain the saturated corporate colors brands are least willing to compromise on, certain reflex blues, fluorescents and metallics that no build reproduces. Check your own top twenty brand colors against the gamut before committing, not the PANTONE book as a whole."
+      },
+      {
+        "type": "h2",
+        "text": "Where the money actually is"
+      },
+      {
+        "type": "p",
+        "text": "The savings are concrete and they all sit downstream of the ink change:"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "Changeover and washup time between jobs, which Esko has put at an average 52 percent reduction across applications and around 60 percent on offset folding cartons",
+          "Ink inventory: a fixed set of seven replaces a shelf of mixed spot inks, along with the leftovers that expire on it",
+          "Makeready waste, because there is one press condition to reach and hold rather than a new one per ink set",
+          "Ganging: jobs with different brand colors can share a form as soon as they share an ink set",
+          "Rerun predictability: the same seven inks and the same curves give the same result three months later"
+        ]
+      },
+      {
+        "type": "p",
+        "text": "The last two are the ones converters underestimate. Ganging changes what you are able to quote. Rerun predictability changes what you are able to promise."
+      },
+      {
+        "type": "h3",
+        "text": "When does extended gamut become profitable for a converter?"
+      },
+      {
+        "type": "p",
+        "text": "The break-even is a function of job mix, not of volume. Extended gamut pays when you run many short jobs with few spot colors each: high SKU count, short runs, frequent repeats. It does not pay when you run the same two brand colors for weeks, because the ink change you saved happens twice a month and a mixed ink hits its target more exactly than a build ever will. As a rough filter: if the press changes ink sets more than once per shift, the case is worth building. If it changes once a week, it is not."
+      },
+      {
+        "type": "h2",
+        "text": "What the conversion costs you back"
+      },
+      {
+        "type": "p",
+        "text": "Three costs move in the other direction, and they are usually why a conversion stalls."
+      },
+      {
+        "type": "ul",
+        "items": [
+          "Units. Seven inks want seven units. A six-unit press runs a reduced set and covers less of the gamut, which is workable but changes the promise you make to the brand",
+          "Prepress. Separations become a per-job color decision rather than a mechanical one, and the profiles and device links have to be maintained like production tooling",
+          "Process stability. This is the real one, and it is covered below"
+        ]
+      },
+      {
+        "type": "p",
+        "text": "There is also a commercial cost that has nothing to do with the press. The brand has to approve the build. A color that has been a mixed PANTONE ink for fifteen years becomes a build with a measured tolerance, and somebody on the brand side has to sign that off. Bring measurement data to that conversation, not a sample."
+      },
+      {
+        "type": "h3",
+        "text": "Does extended gamut work on a six-unit press?"
+      },
+      {
+        "type": "p",
+        "text": "Partly. CMYK plus two of orange, green and violet covers a useful share of the gamut, and many converters start there because it needs no capital. What you lose is coverage in the region the missing ink serves, so the ink you drop should be chosen from your own brand color set rather than by convention."
+      },
+      {
+        "type": "h2",
+        "text": "The prerequisite nobody prices in"
+      },
+      {
+        "type": "p",
+        "text": "In a spot color workflow, a brand color is one ink and its stability is one ink stability. In extended gamut, the same brand color is a build from three or four inks, and its DeltaE is the compound of every one of them. Half a point of density drift on the orange moves a brand color that would not have moved at all when it was a mixed ink."
+      },
+      {
+        "type": "p",
+        "text": "That is why extended gamut and closed loop color control tend to arrive together. Measuring the sheet and writing the corrections back to the ink keys automatically is what keeps a seven-ink build inside tolerance for the length of a run. Converting to ECG on a press whose color is still corrected by eye moves the problem rather than solving it: you replace one hard-to-hit ink with four that all have to be right at once. How the loop works is covered in the [complete closed loop guide](/closed-loop-color-control)."
+      },
+      {
+        "type": "p",
+        "text": "This is also why ECG conversions travel badly when they are run as a local project. A brand that qualifies a seven-ink build in one plant expects the same build in the others, and with 1,000+ systems in 30+ countries that expectation is the normal case: a converter approving an extended gamut standard in Europe usually has to reproduce it in [North America](/usa) or Asia within the year. The ink set is the easy part to copy. The measured process behind it is not."
+      },
+      {
+        "type": "h2",
+        "text": "A decision checklist"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "Count ink set changes per shift, not jobs per shift. That is the number the saving comes from",
+          "Test your top twenty brand colors against the seven-ink gamut, not the PANTONE book as a whole",
+          "Confirm the unit count, and what a reduced set would cost you in coverage on those specific colors",
+          "Confirm the press holds a measured condition today. If it does not, fix that before converting anything",
+          "Get one brand to approve one build, with measurement data, before converting the shop"
+        ]
+      },
+      {
+        "type": "p",
+        "text": "The standardization side has improved. PRINTING United Alliance published a seven-color CMYK plus OGV dataset and profile in November 2024, with the stated goal of doing for seven-color what GRACoL did for CMYK. That gives brands, prepress and press a common reference, and removes one of the older objections to ECG: that every converter was building its own private standard."
+      },
+      {
+        "type": "p",
+        "text": "Related reading on why brand colors are the least forgiving thing on the sheet: [why brand colors are harder to hold than process colors](/blog/spot-color-tolerances-packaging-pantone). To put numbers on what stable color is worth on your own job mix, use the [ROI calculator](/roi). [ColorLoop Pack](/colorloop) is the packaging configuration built for spot color and extended gamut work."
+      }
+    ],
+    "i18n": {
+      "fr": {
+        "title": "Quand la gamme étendue devient rentable",
+        "excerpt": "La gamme étendue supprime le changement d’encre entre les travaux, mais elle ne devient rentable qu’au-delà d’un certain mix de travaux. Où se situe vraiment le seuil.",
+        "lead": "La gamme étendue est vendue comme une capacité couleur. Pour un converter packaging, c’est d’abord une décision d’économie de production, et la réponse dépend du mix de travaux, pas de la technologie. Voici où se situe le seuil de rentabilité, et ce que la conversion coûte en retour.",
+        "body": [
+          {
+            "type": "p",
+            "text": "La gamme étendue est généralement présentée comme une capacité couleur : plus de couleurs, un espace plus large, moins de compromis pour le designer. Pour un converter packaging, cette présentation passe à côté du sujet. La décision est économique, et la réponse dépend du mix de travaux plutôt que de la technologie."
+          },
+          {
+            "type": "p",
+            "text": "La promesse est simple : remplacer les tons directs mélangés par un jeu fixe de sept encres, supprimer les lavages entre travaux, et imprimer la plupart des couleurs de marque en composition. La promesse est exacte. Ce qu’elle omet, c’est que le gain tombe dans une colonne et que les nouveaux coûts tombent dans deux autres."
+          },
+          {
+            "type": "h2",
+            "text": "Ce que la gamme étendue change réellement"
+          },
+          {
+            "type": "p",
+            "text": "La gamme étendue, ou ECG, ajoute l’orange, le vert et le violet au CMJN pour reproduire les tons directs en composition à partir d’un jeu d’encres fixe, au lieu d’encres dédiées mélangées. La définition figure dans le [glossaire](/glossary#extended-gamut), mais l’essentiel est la conséquence opérationnelle : la presse cesse de changer d’encre entre les travaux."
+          },
+          {
+            "type": "p",
+            "text": "C’est ce seul changement qui déplace les chiffres. Un converter qui enchaîne huit travaux courts par équipe, avec deux tons directs chacun, ne passe pas son temps à imprimer. Il le passe à laver, à faire correspondre une encre mélangée à un tiré à part, et à remonter à la couleur. Supprimez les changements d’encre et la presse récupère des heures qui n’ont jamais été facturables."
+          },
+          {
+            "type": "h3",
+            "text": "Combien de couleurs PANTONE un jeu de sept encres reproduit-il ?"
+          },
+          {
+            "type": "p",
+            "text": "Environ 90 % des tons directs PANTONE, contre à peu près 55 % en CMJN classique, selon les chiffres X-Rite. Le dixième restant compte davantage que le pourcentage ne le laisse croire : il contient les couleurs de marque saturées sur lesquelles les donneurs d’ordres transigent le moins, certains bleus reflex, les fluorescents et les métalliques qu’aucune composition ne reproduit. Testez vos vingt principales couleurs de marque contre la gamme avant de vous engager, pas le nuancier PANTONE dans son ensemble."
+          },
+          {
+            "type": "h2",
+            "text": "Où se trouve réellement l’argent"
+          },
+          {
+            "type": "p",
+            "text": "Les gains sont concrets et tous situés en aval du changement d’encre :"
+          },
+          {
+            "type": "ul",
+            "items": [
+              "Le temps de changement et de lavage entre travaux, qu’Esko chiffre à 52 % de réduction en moyenne toutes applications confondues, et environ 60 % sur l’étui carton en offset",
+              "Le stock d’encres : un jeu fixe de sept remplace une étagère d’encres mélangées, et les restes qui y périment",
+              "La gâche au calage, parce qu’il y a une condition de presse à atteindre et à tenir, et non une nouvelle par jeu d’encres",
+              "Le groupage : des travaux aux couleurs de marque différentes peuvent partager une forme dès qu’ils partagent le jeu d’encres",
+              "La prévisibilité des relances : les mêmes sept encres et les mêmes courbes donnent le même résultat trois mois plus tard"
+            ]
+          },
+          {
+            "type": "p",
+            "text": "Les deux derniers points sont ceux que les converters sous-estiment. Le groupage change ce que vous pouvez chiffrer. La prévisibilité des relances change ce que vous pouvez promettre."
+          },
+          {
+            "type": "h3",
+            "text": "À partir de quand la gamme étendue est-elle rentable pour un converter ?"
+          },
+          {
+            "type": "p",
+            "text": "Le seuil dépend du mix de travaux, pas du volume. La gamme étendue paie quand vous enchaînez beaucoup de travaux courts avec peu de tons directs chacun : nombre de références élevé, tirages courts, relances fréquentes. Elle ne paie pas quand vous imprimez les deux mêmes couleurs de marque pendant des semaines, car le changement d’encre économisé n’arrive que deux fois par mois, et une encre mélangée atteint sa cible plus exactement qu’une composition ne le fera jamais. Filtre rapide : si la presse change de jeu d’encres plus d’une fois par équipe, le dossier mérite d’être monté. Si elle en change une fois par semaine, non."
+          },
+          {
+            "type": "h2",
+            "text": "Ce que la conversion coûte en retour"
+          },
+          {
+            "type": "p",
+            "text": "Trois coûts vont dans l’autre sens, et ce sont eux qui bloquent généralement une conversion."
+          },
+          {
+            "type": "ul",
+            "items": [
+              "Les groupes. Sept encres demandent sept groupes. Une presse six groupes tourne avec un jeu réduit et couvre moins de gamme, ce qui reste exploitable mais change la promesse faite à la marque",
+              "Le prépresse. Les séparations deviennent une décision couleur travail par travail et non plus un geste mécanique, et les profils et device links doivent être entretenus comme un outillage de production",
+              "La stabilité du procédé. C’est le vrai sujet, traité plus bas"
+            ]
+          },
+          {
+            "type": "p",
+            "text": "Il existe aussi un coût commercial sans rapport avec la presse : la marque doit valider la composition. Une couleur qui était une encre PANTONE mélangée depuis quinze ans devient une composition de sept encres avec une tolérance mesurée, et quelqu’un côté marque doit la signer. Présentez des relevés de mesure à cette réunion, pas un échantillon."
+          },
+          {
+            "type": "h3",
+            "text": "La gamme étendue fonctionne-t-elle sur une presse six groupes ?"
+          },
+          {
+            "type": "p",
+            "text": "En partie. Le CMJN plus deux encres parmi orange, vert et violet couvre une part utile de la gamme, et beaucoup de converters commencent ainsi parce que cela ne demande aucun investissement. Ce que vous perdez, c’est la couverture dans la zone que sert l’encre absente : le choix de l’encre écartée doit donc sortir de votre propre jeu de couleurs de marque, pas de la convention."
+          },
+          {
+            "type": "h2",
+            "text": "Le prérequis que personne ne chiffre"
+          },
+          {
+            "type": "p",
+            "text": "Dans un workflow en tons directs, une couleur de marque est une encre, et sa stabilité est celle d’une seule encre. En gamme étendue, la même couleur est une composition de trois ou quatre encres, et son DeltaE est le cumul de toutes. Un demi-point de dérive de densité sur l’orange déplace une couleur de marque qui n’aurait pas bougé du tout en encre mélangée."
+          },
+          {
+            "type": "p",
+            "text": "C’est pour cela que la gamme étendue et le closed loop arrivent souvent ensemble. Mesurer la feuille et renvoyer automatiquement les corrections vers les vis d’encrier, c’est ce qui maintient une composition de sept encres dans la tolérance sur toute la durée du tirage. Passer à l’ECG sur une presse dont la couleur se corrige encore à l’œil déplace le problème au lieu de le résoudre : vous remplacez une encre difficile à tenir par quatre qui doivent toutes être justes en même temps. Le fonctionnement de la boucle est détaillé dans le [guide complet du closed loop](/closed-loop-color-control)."
+          },
+          {
+            "type": "p",
+            "text": "C’est aussi pour cela que les conversions ECG voyagent mal quand elles sont menées comme un projet local. Une marque qui qualifie une composition de sept encres dans une usine attend la même dans les autres, et avec plus de 1 000 systèmes installés dans plus de 30 pays, c’est le cas normal plutôt que l’exception : un converter qui valide un standard gamme étendue en Europe doit souvent le reproduire en [Amérique du Nord](/usa) ou en Asie dans l’année. Le jeu d’encres est la partie facile à copier. Le procédé mesuré derrière ne l’est pas."
+          },
+          {
+            "type": "h2",
+            "text": "Grille de décision"
+          },
+          {
+            "type": "ul",
+            "items": [
+              "Comptez les changements de jeu d’encres par équipe, pas les travaux par équipe. C’est de ce chiffre que vient le gain",
+              "Testez vos vingt principales couleurs de marque contre la gamme des sept encres, pas le nuancier PANTONE entier",
+              "Confirmez le nombre de groupes, et ce qu’un jeu réduit vous coûterait en couverture sur ces couleurs précises",
+              "Confirmez que la presse tient une condition mesurée aujourd’hui. Sinon, corrigez cela avant toute conversion",
+              "Faites valider une composition par une marque, relevés de mesure à l’appui, avant de convertir l’atelier"
+            ]
+          },
+          {
+            "type": "p",
+            "text": "Le volet normalisation a progressé. PRINTING United Alliance a publié en novembre 2024 un jeu de données et un profil sept couleurs CMJN plus OGV, avec l’objectif affiché de faire pour le sept couleurs ce que GRACoL a fait pour le CMJN. Marques, prépresse et presse disposent ainsi d’une référence commune qui n’existait pas il y a quelques années, ce qui lève une des vieilles objections à l’ECG : chaque converter construisait son standard privé."
+          },
+          {
+            "type": "p",
+            "text": "À lire aussi, sur les couleurs de marque et pourquoi elles pardonnent le moins : [pourquoi les couleurs de marque sont plus difficiles à tenir que les couleurs de process](/blog/spot-color-tolerances-packaging-pantone). Pour chiffrer ce que vaut une couleur stable sur votre propre mix de travaux, utilisez le [calculateur ROI](/roi). [ColorLoop Pack](/colorloop) est la configuration packaging conçue pour le travail en tons directs et en gamme étendue."
+          }
+        ]
+      },
+      "de": {
+        "title": "Wann sich der erweiterte Farbraum rechnet",
+        "excerpt": "Der erweiterte Farbraum spart den Farbwechsel zwischen Aufträgen, rechnet sich aber erst ab einem bestimmten Auftragsmix. Wo die Schwelle tatsächlich liegt.",
+        "lead": "Der erweiterte Farbraum wird als Farbfähigkeit verkauft. Für einen Verpackungsverarbeiter ist er vor allem eine produktionswirtschaftliche Entscheidung, und die Antwort hängt vom Auftragsmix ab, nicht von der Technik. Hier liegt die Schwelle, und das kostet die Umstellung im Gegenzug."
+      },
+      "it": {
+        "title": "Quando la gamma estesa diventa redditizia",
+        "excerpt": "La gamma estesa elimina il cambio inchiostro tra i lavori, ma diventa redditizia solo oltre un certo mix di lavori. Dove si colloca davvero la soglia.",
+        "lead": "La gamma estesa viene venduta come una capacità di colore. Per un converter del packaging è prima di tutto una decisione di economia di produzione, e la risposta dipende dal mix di lavori, non dalla tecnologia. Ecco dove si colloca la soglia di redditività e che cosa costa in cambio la conversione."
+      },
+      "es": {
+        "title": "Cuándo sale rentable la gama extendida",
+        "excerpt": "La gama extendida elimina el cambio de tinta entre trabajos, pero solo sale rentable por encima de cierto mix de trabajos. Dónde está realmente el umbral.",
+        "lead": "La gama extendida se vende como una capacidad de color. Para un convertidor de packaging es ante todo una decisión de economía de producción, y la respuesta depende del mix de trabajos, no de la tecnología. Aquí está el umbral de rentabilidad y lo que la conversión cuesta a cambio."
+      },
+      "pt": {
+        "title": "Quando a gama estendida compensa",
+        "excerpt": "A gama estendida elimina a mudança de tinta entre trabalhos, mas só compensa acima de um certo mix de trabalhos. Onde está realmente o limiar.",
+        "lead": "A gama estendida é vendida como uma capacidade de cor. Para um converter de embalagem é sobretudo uma decisão de economia de produção, e a resposta depende do mix de trabalhos, não da tecnologia. Eis onde está o limiar de rentabilidade e o que a conversão custa em troca."
+      }
+    },
+    "originalUrl": "https://rutherford.fr/blog/extended-gamut-ecg-when-7-color-pays-off",
+    "sources": [
+      {
+        "label": "PRINTING United Alliance, Expanded Color Gamut (ECG)",
+        "href": "https://www.printing.org/library/standards/specifications-for-print-production/expanded-color-gamut"
+      },
+      {
+        "label": "Idealliance, Expanded Color Gamut (ECG) Project",
+        "href": "https://idealliance.org/specifications/expanded-color-gamut-ecg-project/"
+      },
+      {
+        "label": "X-Rite, Extended Gamut Printing: Benefits and How To’s",
+        "href": "https://www.xrite.com/blog/5-tools-to-print-extended-gamut"
+      }
+    ]
+  },
+  {
     "slug": "new-press-investment-color-approval-gap",
     "title": "New press, same color bottleneck",
     "excerpt": "Three new offset press investments in two weeks, all promising 35 to 40 percent more capacity. The color approval loop decides how much of it you actually get.",
