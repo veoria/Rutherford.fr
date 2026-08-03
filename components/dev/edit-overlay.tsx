@@ -26,6 +26,21 @@ type Root = { id: string; label: string };
 
 type TextTarget = { section: string; sectionLabel: string; path: string; original: string };
 type MediaTarget = { key: string; value: string };
+type Token = { name: string; label: string; role: string; value: string };
+
+/** Relative luminance, per WCAG 2.1. */
+function luminance(hex: string): number {
+  const [r, g, b] = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255);
+  const channel = (c: number) => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4);
+  return 0.2126 * channel(r) + 0.7152 * channel(g) + 0.0722 * channel(b);
+}
+
+/** Contrast ratio between two hex colours, 1 to 21. */
+function contrast(a: string, b: string): number {
+  if (!/^#[0-9a-f]{6}$/i.test(a) || !/^#[0-9a-f]{6}$/i.test(b)) return 0;
+  const [x, y] = [luminance(a), luminance(b)];
+  return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05);
+}
 
 /** Collapses whitespace and unifies the quote characters JSX and JSON disagree on. */
 const norm = (value: string) =>
@@ -83,20 +98,30 @@ export function EditOverlay() {
   const [rootFilter, setRootFilter] = useState('all');
   const [bankFilter, setBankFilter] = useState('');
 
+  const [tokens, setTokens] = useState<Token[]>([]);
+  const [themeOpen, setThemeOpen] = useState(false);
+  const [themeDraft, setThemeDraft] = useState<Record<string, string>>({});
+
   const cropper = useRef<CropperHandle | null>(null);
   const objectUrl = useRef<string | null>(null);
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
 
   const load = useCallback(async () => {
-    const [home, covers] = await Promise.all([
+    const [home, covers, theme] = await Promise.all([
       fetch('/api/dev/home', { cache: 'no-store' }),
       fetch('/api/dev/covers', { cache: 'no-store' }),
+      fetch('/api/dev/theme', { cache: 'no-store' }),
     ]);
     if (home.ok) setSections(((await home.json()) as { sections: Section[] }).sections);
     if (covers.ok) {
       const data = (await covers.json()) as { bank: BankImage[]; roots: Root[] };
       setBank(data.bank);
       setRoots(data.roots ?? []);
+    }
+    if (theme.ok) {
+      const data = (await theme.json()) as { tokens: Token[] };
+      setTokens(data.tokens);
+      setThemeDraft(Object.fromEntries(data.tokens.map((t) => [t.name, t.value])));
     }
   }, []);
 
@@ -362,6 +387,38 @@ export function EditOverlay() {
     [mediaTarget, pickedPublicPath],
   );
 
+  /** Paints a colour straight onto the document, so the page previews live. */
+  const previewToken = useCallback((name: string, value: string) => {
+    setThemeDraft((current) => ({ ...current, [name]: value }));
+    document.documentElement.style.setProperty(`--${name}`, value);
+  }, []);
+
+  const resetTheme = useCallback(() => {
+    for (const token of tokens) document.documentElement.style.removeProperty(`--${token.name}`);
+    setThemeDraft(Object.fromEntries(tokens.map((t) => [t.name, t.value])));
+  }, [tokens]);
+
+  const saveTheme = useCallback(async () => {
+    setStatus({ kind: 'busy', message: 'Saving the palette…' });
+    const res = await fetch('/api/dev/theme', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ values: themeDraft }),
+    });
+    const data = (await res.json()) as { error?: string; changed?: string[] };
+    if (!res.ok) {
+      setStatus({ kind: 'error', message: data.error ?? 'Save failed.' });
+      return;
+    }
+    setStatus({ kind: 'ok', message: `${data.changed?.length ?? 0} colour(s) saved` });
+    window.setTimeout(() => window.location.reload(), 800);
+  }, [themeDraft]);
+
+  const themeDirty = useMemo(
+    () => tokens.filter((t) => themeDraft[t.name] && themeDraft[t.name] !== t.value),
+    [tokens, themeDraft],
+  );
+
   const visibleBank = useMemo(() => {
     const q = bankFilter.trim().toLowerCase();
     return bank
@@ -395,11 +452,87 @@ export function EditOverlay() {
           >
             {dirtyCount === 0 ? 'Nothing to save' : `Save ${dirtyCount} change(s)`}
           </button>
+          <button
+            type="button"
+            className={`eo-btn${themeOpen ? ' primary' : ''}`}
+            onClick={() => setThemeOpen((open) => !open)}
+          >
+            Colours
+          </button>
           <a className="eo-btn" href="/dev/home">
             Field list
           </a>
         </div>
       </div>
+
+      {themeOpen ? (
+        <aside className="eo-theme">
+          <p className="eo-theme-head">Brand palette</p>
+          <p className="eo-theme-sub">
+            These seven colours drive the whole site: the accent alone is used 206 times. Changes
+            preview live and only reach the stylesheet when you save.
+          </p>
+
+          {tokens.map((token) => {
+            const value = themeDraft[token.name] ?? token.value;
+            const changed = value !== token.value;
+            return (
+              <label key={token.name} className={`eo-swatch${changed ? ' is-changed' : ''}`}>
+                <input
+                  type="color"
+                  value={value}
+                  onChange={(event) => previewToken(token.name, event.target.value)}
+                />
+                <span className="eo-swatch-label">
+                  <strong>{token.label}</strong>
+                  <em>--{token.name}</em>
+                </span>
+                <input
+                  className="eo-swatch-hex"
+                  type="text"
+                  value={value}
+                  onChange={(event) => {
+                    const next = event.target.value;
+                    setThemeDraft((current) => ({ ...current, [token.name]: next }));
+                    if (/^#[0-9a-f]{6}$/i.test(next)) previewToken(token.name, next);
+                  }}
+                />
+              </label>
+            );
+          })}
+
+          <div className="eo-contrast">
+            {[
+              ['Body text on the page', themeDraft.text, themeDraft.bg, 4.5],
+              ['Secondary text on the page', themeDraft.muted, themeDraft.bg, 4.5],
+              ['Accent on the page', themeDraft.accent, themeDraft.bg, 3],
+            ].map(([label, fg, bg, min]) => {
+              const ratio = contrast(String(fg ?? ''), String(bg ?? ''));
+              const ok = ratio >= Number(min);
+              return (
+                <p key={String(label)} className={ok ? 'is-ok' : 'is-warn'}>
+                  {String(label)}: {ratio ? ratio.toFixed(1) : '–'}:1{' '}
+                  {ok ? 'readable' : `below the ${min}:1 minimum`}
+                </p>
+              );
+            })}
+          </div>
+
+          <div className="eo-theme-actions">
+            <button
+              type="button"
+              className="eo-btn primary"
+              disabled={themeDirty.length === 0 || status.kind === 'busy'}
+              onClick={saveTheme}
+            >
+              {themeDirty.length === 0 ? 'No change' : `Save ${themeDirty.length} colour(s)`}
+            </button>
+            <button type="button" className="eo-btn" onClick={resetTheme}>
+              Reset
+            </button>
+          </div>
+        </aside>
+      ) : null}
 
       {editing ? (
         <div className="eo-modal" role="dialog" aria-label="Edit text">
@@ -576,6 +709,22 @@ body { padding-top: 46px; }
 .eo-modal .eo-btn.ghost { background: #fff; color: #16160f; border-color: #d6d6cb; }
 .eo-modal .eo-btn.ghost:hover { background: #f2f2ea; }
 .eo-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.eo-theme { position: fixed; top: 54px; right: 12px; z-index: 2147483000; width: 320px; max-height: calc(100vh - 70px); overflow-y: auto; background: #fff; border: 1px solid #d6d6cb; border-radius: 14px; padding: 16px; box-shadow: 0 20px 60px rgba(0,0,0,0.22); }
+.eo-theme-head { margin: 0 0 4px; font-size: 14px; font-weight: 700; color: #16160f; }
+.eo-theme-sub { margin: 0 0 14px; font-size: 11px; line-height: 1.5; color: #6b6b5f; }
+.eo-swatch { display: flex; align-items: center; gap: 10px; padding: 6px; border-radius: 9px; margin-bottom: 4px; }
+.eo-swatch.is-changed { background: #fffaeb; }
+.eo-swatch input[type=color] { width: 34px; height: 34px; padding: 0; border: 1px solid #d6d6cb; border-radius: 8px; background: none; cursor: pointer; flex: 0 0 auto; }
+.eo-swatch-label { flex: 1; min-width: 0; }
+.eo-swatch-label strong { display: block; font-size: 12px; font-weight: 600; color: #16160f; }
+.eo-swatch-label em { display: block; font-style: normal; font-size: 10px; color: #8a8a7c; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+.eo-swatch-hex { width: 82px; font: inherit; font-size: 11px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; padding: 5px 7px; border: 1px solid #d6d6cb; border-radius: 7px; flex: 0 0 auto; }
+.eo-contrast { margin: 12px 0; padding: 10px; border-radius: 9px; background: #f7f7f3; }
+.eo-contrast p { margin: 0 0 4px; font-size: 11px; line-height: 1.4; }
+.eo-contrast p:last-child { margin-bottom: 0; }
+.eo-contrast p.is-ok { color: #14532d; }
+.eo-contrast p.is-warn { color: #9a3412; font-weight: 600; }
+.eo-theme-actions { display: flex; gap: 8px; }
 .eo-modal { position: fixed; inset: 0; z-index: 2147483001; background: rgba(22,22,15,0.55); display: flex; align-items: center; justify-content: center; padding: 24px; }
 .eo-modal-card { background: #fff; border-radius: 14px; padding: 20px; width: 100%; max-width: 620px; max-height: 88vh; overflow: auto; }
 .eo-modal-card.is-wide { max-width: 760px; }
