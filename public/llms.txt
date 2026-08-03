@@ -31,7 +31,7 @@ The entry point for any printer is the free **console validation**: submit a few
 
 ## Recent articles
 
-- [When extended gamut printing pays off](https://rutherford.fr/blog/extended-gamut-ecg-when-7-color-pays-off): extended gamut (CMYK plus orange, green and violet) reproduces about 90 percent of PANTONE tones and removes the ink change between jobs, but the break-even depends on the job mix, and a seven-ink build only holds inside tolerance on a press under closed loop control
+- [When extended gamut pays off](https://rutherford.fr/blog/extended-gamut-ecg-when-7-color-pays-off): extended gamut (CMYK plus orange, green and violet) reproduces about 90 percent of PANTONE tones and removes the ink change between jobs, but the break-even depends on the job mix, and a seven-ink build only holds inside tolerance on a press under closed loop control
 - [New press, same color bottleneck](https://rutherford.fr/blog/new-press-investment-color-approval-gap): three July 2026 sheetfed offset investments promise 35 to 40 percent more capacity at running speed, but the color approval loop is what a new press does not shorten, and closed loop is what does
 - [Three things printers get wrong about PPWR recyclability](https://rutherford.fr/blog/ppwr-recyclability-grades-what-printers-get-wrong): recyclability applies from 12 August 2026 not 2030, the grades are A, B and C only, and EN 18120 is not cited in the Official Journal so it carries no presumption of conformity
 - [What makes a press console closed-loop ready](https://rutherford.fr/blog/press-console-closed-loop-compatibility): the ink-key interface, measurement source and mechanical baseline a console needs, brand by brand, and how the free eligibility check settles it from a few photographs
