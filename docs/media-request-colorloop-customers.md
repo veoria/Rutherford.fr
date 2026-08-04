@@ -13,40 +13,32 @@ attachment or paste it below the signature, do not make the email long.
 
 **Subject:** A few photos of your pressroom, and a link back to your site
 
-**Alternative subject:** Would you let us feature your ColorLoop installation?
-
 Hi {{first_name}},
 
-We are writing a series of articles on how closed loop color control actually
-works in production, and we would like your pressroom in it.
+We publish articles about how closed loop color control works in real
+production. Here is the one we just did on Cartonajes Pans:
 
-What we are asking for is simple: **a few photos, and a short video if you have
-one**, of your press, your console and your team at work. Nothing produced. A
-phone is fine, and honestly a phone is often better than a staged shoot.
+https://rutherford.fr/blog/cartonajes-pans-closed-loop-manroland
 
-**What you get back:**
+We would like to do the same with your pressroom.
 
-▪ A page on rutherford.fr about your operation, with a link to your website
-▪ The finished photos and video, edited, yours to use however you like
-▪ Coverage on our LinkedIn, Instagram and YouTube, where your customers already are
+All we need is **a few photos, and a short video if you have one**: the press,
+the console, your team at work. A phone is fine.
 
-The link matters more than it sounds. An article on rutherford.fr that names
-your company and links to your site is a genuine editorial backlink from a
-domain in your own industry. Search engines weigh that far more than a directory
-listing, and it keeps working long after the post stops circulating.
+What you get back:
 
-Two examples of what this looks like when it is done:
+▪ An article on rutherford.fr about your operation, with a link to your website
+▪ The edited photos and video, yours to use
+▪ Coverage on our LinkedIn, Instagram and YouTube
 
-▪ Moderna Printing: https://youtu.be/vYN1mjCK9VU
-▪ Viappiani Printing: https://youtu.be/r7_4EdplcdE
+The link is the part worth having. An article that names your company and links
+to your site is an editorial backlink from a domain in your own industry, and it
+keeps working long after the post stops circulating.
 
-And the blog these would feed: https://rutherford.fr/blog
+There is a one page shot list below. Fifteen minutes on the floor, and no wrong
+answer: send what you have.
 
-I have put a one page shot list below. It takes about fifteen minutes on the
-floor, and there is no wrong answer: send what you have and we will work with it.
-
-If you would rather we came to you with a camera, tell us where you are and we
-will look at the diary.
+If you would rather we came with a camera, tell us where you are.
 
 Best regards,
 {{owner_first_name}}
