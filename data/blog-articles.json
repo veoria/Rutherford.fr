@@ -1,5 +1,233 @@
 [
   {
+    "slug": "cartonajes-pans-closed-loop-manroland",
+    "title": "Closed loop at Cartonajes Pans",
+    "excerpt": "Five IntelliTrax2 and Rutherford systems with MeasureColor, in production on Manroland Sheetfed presses of different generations at a Spanish packaging printer.",
+    "lead": "Cartonajes Pans runs five complete closed loop color control systems across a pressroom of Manroland Sheetfed machines from different generations. What makes the installation worth writing about is not the count, it is that formulation, measurement and press control were connected to each other rather than bought separately.",
+    "image": "/images/blog/covers/cartonajes-pans-closed-loop.jpg",
+    "publishedAt": "2026-08-04",
+    "category": "Production",
+    "paragraphs": [
+      "At Cartonajes Pans, five complete systems combining X-Rite IntelliTrax2 with Rutherford closed loop technology and MeasureColor are running in production on Manroland Sheetfed offset presses of different generations.",
+      "The installation covers the whole chain: ink formulation with X-Rite InkFormulation, automated spectral measurement on the sheet, and closed loop ink key control directly at the press console.",
+      "Presses of different generations sharing one color standard is the part most pressrooms find hardest. It is also what makes a fleet behave like a single production tool rather than a collection of machines.",
+      "The project was supported on site by Solida Color, Rutherford partner in Spain. A testimonial video filmed with the Cartonajes Pans team is coming shortly on the X-Rite page."
+    ],
+    "body": [
+      {
+        "type": "p",
+        "text": "At Cartonajes Pans, five complete systems combining X-Rite IntelliTrax2 with Rutherford closed loop technology and MeasureColor are running in production on Manroland Sheetfed offset presses of different generations."
+      },
+      {
+        "type": "figure",
+        "src": "/images/blog/cartonajes-pans-manroland-sheetfed.jpg",
+        "alt": "Manroland Sheetfed press frame at Cartonajes Pans",
+        "caption": "Manroland Sheetfed, one of several press generations sharing the same color standard."
+      },
+      {
+        "type": "h2",
+        "text": "One ecosystem rather than three purchases"
+      },
+      {
+        "type": "p",
+        "text": "Most pressrooms buy color in pieces: a formulation tool here, a measurement device there, a control system later. Each works, and none of them talk to the next. What was built at Cartonajes Pans is the opposite, a chain where every step feeds the one after it."
+      },
+      {
+        "type": "ul",
+        "items": [
+          "Ink formulation with X-Rite InkFormulation, so the ink that arrives at the press is the ink the standard assumes",
+          "Automated spectral measurement of the sheet with IntelliTrax2",
+          "Process control and reporting with MeasureColor",
+          "Closed loop ink key correction at the console with Rutherford ColorLoop"
+        ]
+      },
+      {
+        "type": "p",
+        "text": "The value is in the joins. A measurement that nobody acts on is a report. A correction based on an ink whose behaviour is unknown is a guess. Connected end to end, the same reference travels from the ink kitchen to the ink keys."
+      },
+      {
+        "type": "figure",
+        "src": "/images/blog/cartonajes-pans-measurecolor-console.jpg",
+        "alt": "Press console at Cartonajes Pans with MeasureColor and IntelliTrax2",
+        "caption": "The console: the measured sheet, the deviation per zone, and the correction that follows."
+      },
+      {
+        "type": "h2",
+        "text": "Why presses of different generations is the interesting part"
+      },
+      {
+        "type": "p",
+        "text": "A pressroom rarely renews its fleet in one go. Machines arrive over the years, and each generation has its own console, its own habits and its own operators. Holding one color standard across that mix is harder than holding it on a new press, and far more useful."
+      },
+      {
+        "type": "p",
+        "text": "It is also the case for closed loop as a retrofit rather than a replacement. What decides eligibility is not the age of the press but what its console exposes: an ink key interface that accepts corrections, a measurement source, and a mechanical baseline in reasonable condition."
+      },
+      {
+        "type": "h3",
+        "text": "Can closed loop run on presses of different ages in the same pressroom?"
+      },
+      {
+        "type": "p",
+        "text": "Yes, and that is usually the point. Each press keeps its own console and its own operators, while the color reference and the tolerance are shared. Cartonajes Pans runs five systems across Manroland Sheetfed machines of different generations on that basis."
+      },
+      {
+        "type": "h3",
+        "text": "What does ink formulation have to do with press side color control?"
+      },
+      {
+        "type": "p",
+        "text": "More than most people expect. Closed loop corrects ink film thickness through the ink keys, so it can only work within what the ink itself can reach. When formulation is characterized with the same instruments used at the press, the correction and the ink agree with each other instead of fighting."
+      },
+      {
+        "type": "figure",
+        "src": "/images/blog/cartonajes-pans-console-team.jpg",
+        "alt": "Operators at the press console at Cartonajes Pans",
+        "caption": "The judgement stays with the printers. What changes is what they have to spend the shift on."
+      },
+      {
+        "type": "h2",
+        "text": "Thank you"
+      },
+      {
+        "type": "p",
+        "text": "Our thanks to the whole Cartonajes Pans print team for their professionalism and for agreeing to share their experience on camera, and to Solida Color, our partner in Spain, and Oscar Miravitlles for the on-site expertise and support."
+      },
+      {
+        "type": "p",
+        "text": "The testimonial video filmed with the team will be available shortly on the X-Rite page."
+      },
+      {
+        "type": "h2",
+        "text": "Would this work on your presses?"
+      },
+      {
+        "type": "p",
+        "text": "The honest answer is that it depends on your consoles, and it takes a day to find out rather than a meeting. Send a few photos of your console from your phone and we will tell you whether your presses qualify, within one business day. It is free, and we say no when the answer is no. [Check your console](/console-validation), or read the [complete guide to closed loop color control](/closed-loop-color-control)."
+      }
+    ],
+    "i18n": {
+      "fr": {
+        "title": "Closed loop chez Cartonajes Pans",
+        "excerpt": "Cinq systèmes IntelliTrax2 et Rutherford avec MeasureColor, en production sur des presses Manroland Sheetfed de générations différentes chez un imprimeur packaging espagnol.",
+        "lead": "Cartonajes Pans fait tourner cinq systèmes complets de contrôle couleur closed loop sur un parc de presses Manroland Sheetfed de générations différentes. Ce qui rend l'installation intéressante n'est pas le nombre, c'est que la formulation, la mesure et le pilotage presse ont été connectés entre eux au lieu d'être achetés séparément.",
+        "body": [
+          {
+            "type": "p",
+            "text": "Chez Cartonajes Pans, cinq systèmes complets associant X-Rite IntelliTrax2, la technologie closed loop Rutherford et MeasureColor tournent en production sur des presses offset Manroland Sheetfed de générations différentes."
+          },
+          {
+            "type": "figure",
+            "src": "/images/blog/cartonajes-pans-manroland-sheetfed.jpg",
+            "alt": "Presse Manroland Sheetfed chez Cartonajes Pans",
+            "caption": "Manroland Sheetfed, l'une des générations de presses qui partagent le même standard couleur."
+          },
+          {
+            "type": "h2",
+            "text": "Un écosystème, pas trois achats"
+          },
+          {
+            "type": "p",
+            "text": "La plupart des ateliers achètent la couleur par morceaux : un outil de formulation ici, un appareil de mesure là, un système de pilotage plus tard. Chacun fonctionne, aucun ne parle au suivant. Ce qui a été construit chez Cartonajes Pans est l'inverse, une chaîne où chaque étape alimente la suivante."
+          },
+          {
+            "type": "ul",
+            "items": [
+              "Formulation d'encre avec X-Rite InkFormulation, pour que l'encre qui arrive à la presse soit celle que le standard suppose",
+              "Mesure spectrale automatisée de la feuille avec IntelliTrax2",
+              "Contrôle du process et reporting avec MeasureColor",
+              "Correction closed loop des vis d'encrier au pupitre avec Rutherford ColorLoop"
+            ]
+          },
+          {
+            "type": "p",
+            "text": "La valeur est dans les jonctions. Une mesure sur laquelle personne n'agit est un rapport. Une correction fondée sur une encre dont on ignore le comportement est un pari. Connectée de bout en bout, la même référence voyage de la cuisine d'encre jusqu'aux vis d'encrier."
+          },
+          {
+            "type": "figure",
+            "src": "/images/blog/cartonajes-pans-measurecolor-console.jpg",
+            "alt": "Pupitre presse chez Cartonajes Pans avec MeasureColor et IntelliTrax2",
+            "caption": "Le pupitre : la feuille mesurée, l'écart par zone, et la correction qui suit."
+          },
+          {
+            "type": "h2",
+            "text": "Pourquoi les générations différentes sont le vrai sujet"
+          },
+          {
+            "type": "p",
+            "text": "Un atelier renouvelle rarement son parc d'un coup. Les machines arrivent au fil des années, et chaque génération a son pupitre, ses habitudes et ses opérateurs. Tenir un standard couleur unique sur ce mélange est plus difficile que sur une presse neuve, et bien plus utile."
+          },
+          {
+            "type": "p",
+            "text": "C'est aussi l'argument du closed loop en rétrofit plutôt qu'en remplacement. Ce qui décide de l'éligibilité n'est pas l'âge de la presse mais ce que son pupitre expose : une interface de vis d'encrier qui accepte les corrections, une source de mesure, et une base mécanique en état correct."
+          },
+          {
+            "type": "h3",
+            "text": "Le closed loop peut-il tourner sur des presses d’âges différents dans le même atelier ?"
+          },
+          {
+            "type": "p",
+            "text": "Oui, et c'est généralement tout l'intérêt. Chaque presse garde son pupitre et ses opérateurs, pendant que la référence couleur et la tolérance sont partagées. Cartonajes Pans fait tourner cinq systèmes sur des Manroland Sheetfed de générations différentes sur cette base."
+          },
+          {
+            "type": "h3",
+            "text": "Quel rapport entre la formulation d'encre et le contrôle couleur à la presse ?"
+          },
+          {
+            "type": "p",
+            "text": "Plus étroit qu'on ne l'imagine. Le closed loop corrige l'épaisseur du film d'encre par les vis d'encrier, il ne peut donc agir que dans les limites de ce que l'encre elle-même peut atteindre. Quand la formulation est caractérisée avec les mêmes instruments que ceux utilisés à la presse, la correction et l'encre vont dans le même sens au lieu de se contrarier."
+          },
+          {
+            "type": "figure",
+            "src": "/images/blog/cartonajes-pans-console-team.jpg",
+            "alt": "Opérateurs au pupitre chez Cartonajes Pans",
+            "caption": "Le jugement reste aux imprimeurs. Ce qui change, c'est ce à quoi ils passent leur poste."
+          },
+          {
+            "type": "h2",
+            "text": "Merci"
+          },
+          {
+            "type": "p",
+            "text": "Merci à toute l'équipe d'impression de Cartonajes Pans pour son professionnalisme et pour avoir accepté de partager son expérience devant la caméra, ainsi qu'à Solida Color, notre partenaire en Espagne, et à Oscar Miravitlles pour son expertise et son accompagnement sur site."
+          },
+          {
+            "type": "p",
+            "text": "La vidéo témoignage tournée avec l'équipe sera disponible prochainement sur la page X-Rite."
+          },
+          {
+            "type": "h2",
+            "text": "Est-ce que ça marcherait sur vos presses ?"
+          },
+          {
+            "type": "p",
+            "text": "La réponse honnête est que ça dépend de vos consoles, et que ça se vérifie en une journée plutôt qu'en réunion. Envoyez quelques photos de votre console depuis votre téléphone et nous vous dirons si vos presses sont éligibles, sous un jour ouvré. C'est gratuit, et nous disons non quand c'est non. [Validez votre console](/console-validation), ou lisez le [guide complet du closed loop](/closed-loop-color-control)."
+          }
+        ]
+      },
+      "es": {
+        "title": "Closed loop en Cartonajes Pans",
+        "excerpt": "Cinco sistemas IntelliTrax2 y Rutherford con MeasureColor, en producción sobre prensas Manroland Sheetfed de distintas generaciones en un impresor de packaging español.",
+        "lead": "Cartonajes Pans tiene cinco sistemas completos de control del color closed loop funcionando sobre un parque de prensas Manroland Sheetfed de distintas generaciones. Lo interesante de la instalación no es el número, sino que la formulación, la medición y el control en prensa se conectaron entre sí en lugar de comprarse por separado."
+      }
+    },
+    "originalUrl": "https://rutherford.fr/blog/cartonajes-pans-closed-loop-manroland",
+    "sources": [
+      {
+        "label": "X-Rite IntelliTrax2",
+        "href": "https://www.xrite.com/categories/measurement-devices/intellitrax2"
+      },
+      {
+        "label": "MeasureColor",
+        "href": "https://www.measurecolor.com/"
+      },
+      {
+        "label": "Manroland Sheetfed",
+        "href": "https://www.manrolandsheetfed.com/"
+      }
+    ]
+  },
+  {
     "slug": "extended-gamut-ecg-when-7-color-pays-off",
     "title": "When extended gamut pays off",
     "excerpt": "Extended gamut printing removes the ink change between jobs, but it only pays above a certain job mix. Where the break-even actually sits for a converter.",
