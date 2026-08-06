@@ -241,14 +241,29 @@ export async function POST(request: NextRequest) {
   if (asanaTaskGid && movedPhotos.length && process.env.SUPABASE_SERVICE_ROLE_KEY) {
     try {
       const supabase = createSupabaseAdminClient();
-      const previews: { field: string; file: Blob }[] = [];
-      for (const { field, path } of movedPhotos) {
+      const previews: { field: string; file: Blob; ext: string }[] = [];
+      for (const { field, path, ext } of movedPhotos) {
+        // Both dimensions AND resize:'contain' are required. The transform
+        // defaults to resize:'cover', and with a single dimension Storage
+        // resizes *and crops* to fill the box — which is why the Asana previews
+        // came out cut while the Dropbox originals were intact. 'contain' fits
+        // the whole photo inside 1600×1600, so the framing is preserved.
         const { data: signed } = await supabase.storage
           .from(BUCKET)
-          .createSignedUrl(path, 600, { transform: { width: 1600, quality: 68 } });
-        if (!signed?.signedUrl) continue;
-        const res = await fetch(signed.signedUrl, { cache: 'no-store' }).catch(() => null);
-        if (res?.ok) previews.push({ field, file: await res.blob() });
+          .createSignedUrl(path, 600, {
+            transform: { width: 1600, height: 1600, resize: 'contain', quality: 68 },
+          });
+        const res = signed?.signedUrl
+          ? await fetch(signed.signedUrl, { cache: 'no-store' }).catch(() => null)
+          : null;
+        if (res?.ok) {
+          previews.push({ field, file: await res.blob(), ext });
+          continue;
+        }
+        // No transform (HEIC source, transforms disabled, quota…): attach the
+        // original rather than leaving the task short of a photo.
+        const { data: original } = await supabase.storage.from(BUCKET).download(path);
+        if (original) previews.push({ field, file: original, ext });
       }
       if (previews.length) await addConsoleValidationPreviews(asanaTaskGid, previews);
     } catch (error) {
