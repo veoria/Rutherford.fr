@@ -57,6 +57,7 @@ board Install comme source de vérité et **parse ces lignes** dans sa table
 
 | Ligne du bloc | Colonne OrderTrack |
 |---|---|
+| `Owner of the deal` | `owner_name` |
 | `Contact` | `contact_name` |
 | `Products name` / `Products code` | `product_name` / `product_code` |
 | `PO` | `po_number` |
@@ -77,6 +78,28 @@ vides, les séparateurs. Un bloc plus propre corromprait silencieusement les
 données d'un autre système en production. C'est aussi pourquoi ce flux écrit dans
 Asana plutôt que directement dans OrderTrack : Asana reste la source de vérité,
 le sens unique est préservé.
+
+**On peut en revanche ajouter — à la fin, jamais au milieu.** Le parseur
+d'OrderTrack fonctionne par libellé et tolère déjà un libellé sans colonne
+(`License number RGP`), donc une ligne supplémentaire en queue de bloc ne casse
+rien alors qu'un réordonnancement, si. Deux lignes ont été ajoutées à ce titre :
+
+```
+Pipedrive : https://<domaine>.pipedrive.com/deal/2410
+Dropbox : /Serveur RIG/documents/EMILIE/Ventes/<titre> - PO-… SO-…
+```
+
+La carte ne portait ni le deal CRM ni le dossier commercial — deux choses qu'il
+fallait retrouver à la main. Et la seconde est exactement ce qu'attend la colonne
+`dropbox_folder_path` d'OrderTrack, **vide sur 148 commandes sur 148** : côté
+OrderTrack, il ne reste qu'à lire le libellé `Dropbox`.
+
+### Ce que ce flux répare pour OrderTrack
+
+`xrite_id` est extrait du marqueur `IDxxxx` du **nom de tâche** : 11 commandes
+sur 148 n'en ont pas, parce que le nom du deal ne portait pas le marqueur. Ici le
+marqueur est ajouté d'office quand il manque, donc le trou se referme de
+lui-même.
 
 *(À noter : au 09/08/2026 OrderTrack n'a aucune intégration Pipedrive — sa tâche
 « Intégration Pipedrive (création ordres côté X-Rite) » est en section

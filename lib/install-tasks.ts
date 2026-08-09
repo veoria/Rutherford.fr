@@ -24,7 +24,10 @@ import type { WonDeal } from '@/lib/pipedrive';
  * So: keep every line, keep the blank placeholders, keep the separators. A
  * tidier block would silently corrupt someone else's production data.
  */
-export function installNotes(deal: WonDeal): string {
+export function installNotes(
+  deal: WonDeal,
+  links?: { pipedriveUrl?: string | null; dropboxFolder?: string | null }
+): string {
   const f = deal.fields;
   return [
     `Owner of the deal : ${deal.ownerName ?? ''}`,
@@ -45,6 +48,14 @@ export function installNotes(deal: WonDeal): string {
     'Tracking number :',
     'License number RGP :',
     'PO RGP :',
+    // Appended AFTER the seventeen lines the Zap emits, never inserted among
+    // them: OrderTrack's parser is label-driven and already tolerates labels it
+    // has no column for ("License number RGP"), so adding at the end is safe
+    // while reordering would not be. Two things the card never carried and
+    // everyone had to hunt for — the CRM deal and the sales folder. The second
+    // is exactly what OrderTrack's empty `dropbox_folder_path` column wants.
+    `Pipedrive : ${links?.pipedriveUrl ?? ''}`,
+    `Dropbox : ${links?.dropboxFolder ?? ''}`,
   ].join('\n');
 }
 

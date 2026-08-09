@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { getAdminAccess } from '@/lib/admin-access';
-import { describeInstallFields, getWonDeal, pipedriveEnabled } from '@/lib/pipedrive';
+import { describeInstallFields, getWonDeal, pipedriveDealUrl, pipedriveEnabled } from '@/lib/pipedrive';
 import { installNotes } from '@/lib/install-tasks';
 
 export const dynamic = 'force-dynamic';
@@ -41,18 +41,22 @@ export async function GET(request: NextRequest) {
     ...report,
     preview: (() => {
       const taskName = new RegExp(`ID${dealId}(\\D|$)`).test(title) ? title : `${title} - ID${dealId}`;
+      const dropboxFolderName = `${taskName} - PO-${deal.fields.PO ?? ''} SO-${deal.fields.SO ?? ''}`;
       return {
         dealId,
         taskName,
         dueOn: deal.delivery,
-        notes: installNotes(deal),
+        notes: installNotes(deal, {
+          pipedriveUrl: pipedriveDealUrl(dealId),
+          dropboxFolder: `<${dropboxFolderName}>`,
+        }),
         customFields: {
           PUPI: deal.fields['Press interface'] ?? '',
           PO: deal.fields.PO ?? '',
           'SO Number': deal.fields.SO ?? '',
           ID: dealId,
         },
-        dropboxFolderName: `${taskName} - PO-${deal.fields.PO ?? ''} SO-${deal.fields.SO ?? ''}`,
+        dropboxFolderName,
       };
     })(),
   });

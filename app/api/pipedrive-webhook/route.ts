@@ -96,9 +96,17 @@ export async function POST(request: NextRequest) {
   const title = deal.title || String(current.title ?? '').trim() || `Deal ${dealId}`;
   const name = new RegExp(`ID${dealId}(\\D|$)`).test(title) ? title : `${title} - ID${dealId}`;
 
+  // The Zap's third step: the sales folder, named "<deal title> - PO-… SO-…".
+  // It runs BEFORE the task so its path can go into the description — the card
+  // is what people open, and the folder was previously theirs to find. Failure
+  // is survivable: the line comes out blank and the card is still created.
+  const folder = await createOrderFolder(
+    `${name} - PO-${deal.fields.PO ?? ''} SO-${deal.fields.SO ?? ''}`
+  );
+
   const gid = await createInstallTask({
     name,
-    notes: installNotes(deal),
+    notes: installNotes(deal, { pipedriveUrl: pipedriveDealUrl(dealId), dropboxFolder: folder }),
     dealId,
     dueOn: deal.delivery,
     pupi: deal.fields['Press interface'] ?? '',
@@ -106,12 +114,6 @@ export async function POST(request: NextRequest) {
     so: deal.fields.SO ?? '',
   });
   await settleWonDeal(dealId, gid);
-
-  // The Zap's third step: the sales folder, named "<deal title> - PO-… SO-…".
-  // Independent of the task — a Dropbox hiccup must not cost us the card.
-  const folder = await createOrderFolder(
-    `${name} - PO-${deal.fields.PO ?? ''} SO-${deal.fields.SO ?? ''}`
-  );
 
   // The back-office journal is where an admin finds out this ran at all — the
   // board itself only shows the card, not who put it there. A failure is logged
