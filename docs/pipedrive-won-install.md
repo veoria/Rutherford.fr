@@ -64,6 +64,27 @@ License number RGP :       laissé vide
 PO RGP :                   laissé vide
 ```
 
+### Vérifier les noms exacts — `GET /api/admin/pipedrive-fields`
+
+Les noms des champs personnalisés sont la seule chose que cette intégration ne
+peut pas vérifier depuis un poste de développement : il faut le token Pipedrive.
+D'où ce diagnostic admin, en lecture seule (réservé aux admins `canManage`) :
+
+- `GET /api/admin/pipedrive-fields` → quel champ Pipedrive atterrit sur quelle
+  ligne du bloc, la liste des libellés qui ne correspondent à **rien** (leur
+  ligne sortira vide), et l'inventaire complet des champs de deal avec leur nom
+  exact et leur clé — de quoi épingler celle qui diverge.
+- `GET /api/admin/pipedrive-fields?deal=2410` → en plus, le nom de tâche et le
+  bloc de description **exacts** que ce deal produirait. Rien n'est créé : c'est
+  la répétition générale à regarder avant de couper le Zap.
+
+À l'exécution, un libellé sans correspondance est aussi journalisé
+(`[pipedrive] deal … : no Pipedrive field matches …`) dans les logs Vercel.
+
+⚠️ Un déploiement *preview* n'a que les variables d'environnement de scope
+Preview : si `PIPEDRIVE_API_TOKEN` n'existe qu'en Production, interrogez la route
+sur rutherford.fr, pas sur l'URL de preview.
+
 Les champs personnalisés sont résolus **par leur nom** via `/dealFields` au
 moment de l'exécution, pas par leur clé de 40 caractères : renommer un champ
 dans Pipedrive n'exige aucun déploiement, et une clé en dur ne peut pas pourrir
@@ -73,6 +94,10 @@ vide. Si un champ porte chez vous un nom trop éloigné, épinglez-le :
 
 ## Mise en service
 
+0. **Contrôle des noms de champs** : une fois la branche déployée, ouvrir
+   `https://rutherford.fr/api/admin/pipedrive-fields` (connecté en admin) et
+   vérifier que `unmatched` est vide. Sinon, relever le nom exact dans
+   `dealFields` et l'épingler via `PIPEDRIVE_DEAL_FIELDS`.
 1. **Migration** : passer `supabase/migrations/20260809_pipedrive_won_installs.sql`
    dans le SQL editor.
 2. **Variables** (Vercel → `rutherford-fr` → Production) :

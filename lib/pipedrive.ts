@@ -340,7 +340,7 @@ const normalizeFieldName = (value: string) =>
     .replace(/[^a-z0-9]+/g, ' ')
     .trim();
 
-type DealField = { key: string; name: string; options: Map<string, string> };
+type DealField = { key: string; name: string; fieldType: string; options: Map<string, string> };
 
 // Field definitions change about once a year — cache for the process lifetime.
 let _dealFields: Map<string, DealField> | null = null;
@@ -356,7 +356,12 @@ async function dealFields(): Promise<Map<string, DealField>> {
       for (const option of field.options ?? []) {
         if (option?.id !== undefined) options.set(String(option.id), String(option.label ?? ''));
       }
-      byName.set(normalizeFieldName(field.name), { key: field.key, name: field.name, options });
+      byName.set(normalizeFieldName(field.name), {
+        key: field.key,
+        name: field.name,
+        fieldType: String(field.field_type ?? ''),
+        options,
+      });
     }
   } catch (error) {
     console.error('PipeDrive dealFields fetch failed:', error);
@@ -412,6 +417,54 @@ const INSTALL_FIELDS: { label: string; names: string[] }[] = [
 ];
 
 const DELIVERY_NAMES = ['delivery', 'delivery date', 'date de livraison', 'livraison'];
+
+const ALL_INSTALL_FIELDS = [...INSTALL_FIELDS, { label: 'Delivery', names: DELIVERY_NAMES }];
+
+export type InstallFieldMapping = {
+  configured: boolean;
+  /** One row per line of the Install description block. */
+  mapping: { label: string; matchedName: string | null; key: string | null; type: string | null; source: 'name' | 'override' | null; lookedFor: string[] }[];
+  /** Labels no Pipedrive field satisfies — their line comes out blank. */
+  unmatched: string[];
+  /** Every deal field, so the exact spelling can be read off and pinned. */
+  dealFields: { name: string; key: string; type: string }[];
+};
+
+/**
+ * Which Pipedrive field ends up on which line of the Install block. This is a
+ * read-only report for the back-office: field names are the one thing this
+ * integration can't verify from a developer's machine, so it has to be
+ * answerable from production in one request.
+ */
+export async function describeInstallFields(): Promise<InstallFieldMapping> {
+  if (!TOKEN) return { configured: false, mapping: [], unmatched: [], dealFields: [] };
+  const defs = await dealFields();
+  const byKey = new Map([...defs.values()].map((f) => [f.key, f]));
+
+  const mapping = ALL_INSTALL_FIELDS.map(({ label, names }) => {
+    const overrideKey = FIELD_OVERRIDES[label];
+    const field = overrideKey ? byKey.get(overrideKey) : names.map((n) => defs.get(normalizeFieldName(n))).find(Boolean);
+    return {
+      label,
+      matchedName: field?.name ?? null,
+      key: field?.key ?? overrideKey ?? null,
+      type: field?.fieldType ?? null,
+      source: (overrideKey ? 'override' : field ? 'name' : null) as 'name' | 'override' | null,
+      lookedFor: names,
+    };
+  });
+
+  return {
+    configured: true,
+    mapping,
+    // Delivery falls back to the deal's expected close date, so a miss there
+    // isn't a blank line — don't report it as one.
+    unmatched: mapping.filter((m) => !m.key && m.label !== 'Delivery').map((m) => m.label),
+    dealFields: [...defs.values()]
+      .map((f) => ({ name: f.name, key: f.key, type: f.fieldType }))
+      .sort((a, b) => a.name.localeCompare(b.name)),
+  };
+}
 
 export type WonDeal = {
   id: number;
@@ -493,7 +546,7 @@ export async function getWonDeal(dealId: number, payload?: any): Promise<WonDeal
   const read = (names: string[], label?: string): string => {
     const overrideKey = label ? FIELD_OVERRIDES[label] : undefined;
     const candidates = overrideKey
-      ? [byKey.get(overrideKey) ?? { key: overrideKey, name: label ?? '', options: new Map<string, string>() }]
+      ? [byKey.get(overrideKey) ?? { key: overrideKey, name: label ?? '', fieldType: '', options: new Map<string, string>() }]
       : names.map((n) => defs.get(normalizeFieldName(n))).filter(Boolean as unknown as (v: DealField | undefined) => v is DealField);
     for (const field of candidates) {
       const raw = custom[field.key] ?? deal[field.key];
@@ -505,6 +558,17 @@ export async function getWonDeal(dealId: number, payload?: any): Promise<WonDeal
 
   const fields: Record<string, string> = {};
   for (const { label, names } of INSTALL_FIELDS) fields[label] = read(names, label);
+
+  // A label nobody matches is a configuration miss, not an empty deal — say so
+  // once per deal rather than shipping a silently truncated block.
+  const unmatched = INSTALL_FIELDS.filter(
+    ({ label, names }) => !FIELD_OVERRIDES[label] && !names.some((n) => defs.get(normalizeFieldName(n)))
+  ).map((f) => f.label);
+  if (unmatched.length) {
+    console.warn(
+      `[pipedrive] deal ${dealId}: no Pipedrive field matches ${unmatched.join(', ')} — those lines stay blank. See /api/admin/pipedrive-fields.`
+    );
+  }
 
   const [ownerName, orgName, personName, products] = await Promise.all([
     relatedName(deal.user_id ?? deal.owner_id, (id) => pd(`/users/${id}`)),
