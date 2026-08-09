@@ -39,11 +39,21 @@ export async function GET(request: NextRequest) {
   const title = deal.title || `Deal ${dealId}`;
   return NextResponse.json({
     ...report,
-    preview: {
-      dealId,
-      taskName: new RegExp(`ID${dealId}(\\D|$)`).test(title) ? title : `${title} - ID${dealId}`,
-      dueOn: deal.delivery,
-      notes: installNotes(deal),
-    },
+    preview: (() => {
+      const taskName = new RegExp(`ID${dealId}(\\D|$)`).test(title) ? title : `${title} - ID${dealId}`;
+      return {
+        dealId,
+        taskName,
+        dueOn: deal.delivery,
+        notes: installNotes(deal),
+        customFields: {
+          PUPI: deal.fields['Press interface'] ?? '',
+          PO: deal.fields.PO ?? '',
+          'SO Number': deal.fields.SO ?? '',
+          ID: dealId,
+        },
+        dropboxFolderName: `${taskName} - PO-${deal.fields.PO ?? ''} SO-${deal.fields.SO ?? ''}`,
+      };
+    })(),
   });
 }

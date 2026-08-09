@@ -27,9 +27,19 @@ est vide, rien n'est créé — le Zap peut continuer à tourner.
    organisation, contact, produits (nom + code), date de livraison et les champs
    personnalisés du bloc.
 6. **Création** (`createInstallTask`, `lib/asana.ts`) : carte dans *Install*,
-   colonne **To control**, échéance = date de livraison, assignée à FX,
-   Emilie en collaboratrice, champ **ID** = id du deal.
-7. **Traces** : entrée `install.task_created` au journal d'audit (onglet
+   colonne **To control**, échéance = *To ship*, assignée à FX, Emilie en
+   collaboratrice, champs personnalisés **PUPI**, **PO**, **SO Number** — plus
+   **ID** = id du deal, que l'équipe saisissait à la main.
+   *Les champs PO / SO Number sont numériques côté Asana : une référence comme
+   `PO20024-121` n'y entre pas et reste dans le bloc de description, qui la
+   porte de toute façon.*
+7. **Dossier Dropbox** (`createOrderFolder`, `lib/dropbox.ts`) : troisième étape
+   du Zap — `<DROPBOX_ORDERS_FOLDER>/<titre du deal> - PO-… SO-…`, soit
+   `/Serveur RIG/documents/EMILIE/Ventes` en production. Piloté par sa **propre**
+   variable, pour pouvoir basculer la moitié Asana avant celle-ci. Un dossier
+   déjà présent est un succès, pas une erreur : un webhook rejoué ne doit pas
+   créer un « … (1) ».
+8. **Traces** : entrée `install.task_created` au journal d'audit (onglet
    **Journal** du back-office) et message Discord si `DISCORD_WEBHOOK_URL` est
    réglé. Un échec de création est journalisé en `install.task_failed` — un deal
    gagné sans carte est précisément ce qu'il faut voir.
@@ -78,25 +88,27 @@ Les deux flux ne se marchent donc pas dessus.)*
 Le bloc reproduit à l'identique celui du Zap, lignes vides comprises (l'équipe
 les complète à la main au fil de l'install) :
 
-```
-Owner of the deal : …      propriétaire du deal
-Delivery : …               champ « Delivery », sinon date de clôture prévue
-Organisation : …           organisation liée
-Contact : …                personne liée
-Products name : …          produits du deal
-Products code : …          codes catalogue des produits
-PO : …                     champ personnalisé
-SO : …                     champ personnalisé
-Press interface : …        champ personnalisé
-Press : …                  champ personnalisé
-Numbers of units : … - Keys : …
-Screen mount : …
-Computer : …
-AnyDesk : …
-Tracking number :          laissé vide (rempli à la main)
-License number RGP :       laissé vide
-PO RGP :                   laissé vide
-```
+Correspondance relevée sur la configuration du Zap (09/08/2026). Le libellé du
+bloc et le champ Pipedrive derrière portent rarement le même nom :
+
+| Ligne du bloc | Champ Pipedrive |
+|---|---|
+| `Owner of the deal` | **Owner Name** |
+| `Delivery` | **To ship** *(et non « Delivery »)* |
+| `Organisation` | **Org Name** |
+| `Contact` | **Person Id Name** |
+| `Products name` / `Products code` | **Products Name** / **Products Product Code** |
+| `PO` | **Order number** *(et non « PO »)* |
+| `SO` | **SO XRite** *(et non « SO »)* |
+| `Press interface` | **PUPI** (valeur de l'énumération) |
+| `Press` | **Press** (valeur de l'énumération) |
+| `Numbers of units` / `Keys` | **Number of units** / **Number of Keys** |
+| `Screen mount` | *constante* « Desk or Wall » — pas un champ |
+| `Computer`, `AnyDesk`, `Tracking number`, `License number RGP`, `PO RGP` | *vides* — remplis à la main |
+
+Chaque libellé accepte aussi des orthographes de repli (`PO` accepte
+`Order number`, `PO`, `PO number`, `Purchase order`…) : renommer un champ dans
+Pipedrive ne casse rien tant que l'un des noms correspond.
 
 ### Vérifier les noms exacts — `GET /api/admin/pipedrive-fields`
 

@@ -343,6 +343,38 @@ const INSTALL_FOLLOWER = process.env.ASANA_INSTALL_FOLLOWER_GID || '774875611076
 // in by hand. Also what makes a redelivered webhook findable.
 const INSTALL_DEAL_FIELD = process.env.ASANA_INSTALL_DEAL_FIELD || '1212566134774832';
 const WORKSPACE = process.env.ASANA_WORKSPACE_GID || '15445560112122';
+// Custom fields the Zap fills at creation, alongside the description block.
+const INSTALL_FIELD_PUPI = '1204760456515121'; // enum
+const INSTALL_FIELD_PO = '1207866418142682'; // number
+const INSTALL_FIELD_SO = '1211897247577905'; // number
+
+/** Asana number fields reject anything that isn't a number, and Pipedrive's PO
+ * is often a reference like "PO20024-121". Only pass through what is genuinely
+ * numeric — the description block carries the full value either way. */
+const asNumber = (value: string): number | null =>
+  /^-?\d+(\.\d+)?$/.test(value.trim()) ? Number(value.trim()) : null;
+
+// PUPI enum options, resolved by name so a new interface added in Asana works
+// without a deploy. Cached for the process lifetime.
+let _pupiOptions: Map<string, string> | null = null;
+async function pupiOptionGid(label: string): Promise<string | null> {
+  const wanted = label.trim().toLowerCase();
+  if (!wanted) return null;
+  if (!_pupiOptions) {
+    try {
+      const res = await asana('GET', `/custom_fields/${INSTALL_FIELD_PUPI}?opt_fields=enum_options.name`);
+      _pupiOptions = new Map(
+        (res?.data?.enum_options ?? [])
+          .filter((o: any) => o?.gid && o?.name)
+          .map((o: any) => [String(o.name).trim().toLowerCase(), String(o.gid)])
+      );
+    } catch (error) {
+      console.error('Asana PUPI options fetch failed:', error);
+      return null; // leave the field unset rather than fail the task
+    }
+  }
+  return _pupiOptions.get(wanted) ?? null;
+}
 
 export function installBoardEnabled(): boolean {
   return Boolean(TOKEN && INSTALL_PROJECT);
@@ -355,6 +387,10 @@ export type InstallTask = {
   dealId: number;
   /** Delivery date (YYYY-MM-DD); null leaves the task undated. */
   dueOn: string | null;
+  /** Board custom fields the Zap also sets, straight from the deal. */
+  pupi: string;
+  po: string;
+  so: string;
 };
 
 /** Create the Install task. Returns its gid, or null when not configured / on
@@ -362,6 +398,15 @@ export type InstallTask = {
 export async function createInstallTask(task: InstallTask): Promise<string | null> {
   if (!TOKEN || !INSTALL_PROJECT) return null;
   try {
+    const customFields: Record<string, string | number> = {};
+    if (INSTALL_DEAL_FIELD) customFields[INSTALL_DEAL_FIELD] = task.dealId;
+    const pupi = await pupiOptionGid(task.pupi);
+    if (pupi) customFields[INSTALL_FIELD_PUPI] = pupi;
+    const po = asNumber(task.po);
+    if (po !== null) customFields[INSTALL_FIELD_PO] = po;
+    const so = asNumber(task.so);
+    if (so !== null) customFields[INSTALL_FIELD_SO] = so;
+
     const created = await asana('POST', '/tasks', {
       name: task.name,
       notes: task.notes,
@@ -369,7 +414,7 @@ export async function createInstallTask(task: InstallTask): Promise<string | nul
       ...(task.dueOn ? { due_on: task.dueOn } : {}),
       ...(ASSIGNEE ? { assignee: ASSIGNEE } : {}),
       ...(INSTALL_FOLLOWER ? { followers: [INSTALL_FOLLOWER] } : {}),
-      ...(INSTALL_DEAL_FIELD ? { custom_fields: { [INSTALL_DEAL_FIELD]: task.dealId } } : {}),
+      custom_fields: customFields,
     });
 
     const gid = created?.data?.gid as string | undefined;

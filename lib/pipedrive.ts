@@ -404,19 +404,24 @@ function renderFieldValue(value: unknown, field: DealField | undefined): string 
  * first name that exists wins, and a label nobody matches simply stays blank
  * (the block already ships with blank placeholders the team fills in by hand).
  */
+// Names taken from the Zap's own field mapping — the block's label and the
+// Pipedrive field behind it rarely match ("PO" is fed by *Order number*, "SO" by
+// *SO XRite*, "Delivery" by *To ship*). The alternatives after each are
+// tolerated in case a field is renamed.
+//
+// Not listed, deliberately: Screen mount is a constant in the Zap ("Desk or
+// Wall"), and Computer / AnyDesk / Tracking / RGP are blank placeholders the
+// team fills in by hand. They're not Pipedrive fields at all.
 const INSTALL_FIELDS: { label: string; names: string[] }[] = [
-  { label: 'PO', names: ['po', 'po number', 'purchase order'] },
-  { label: 'SO', names: ['so', 'so number', 'sales order'] },
-  { label: 'Press interface', names: ['press interface', 'pupi', 'interface'] },
+  { label: 'PO', names: ['order number', 'po', 'po number', 'purchase order'] },
+  { label: 'SO', names: ['so xrite', 'so', 'so number', 'sales order'] },
+  { label: 'Press interface', names: ['pupi', 'press interface', 'interface'] },
   { label: 'Press', names: ['press', 'press type'] },
-  { label: 'Numbers of units', names: ['numbers of units', 'number of units', 'units'] },
-  { label: 'Keys', names: ['keys', 'number of keys', 'nb keys'] },
-  { label: 'Screen mount', names: ['screen mount', 'screen support'] },
-  { label: 'Computer', names: ['computer', 'pc'] },
-  { label: 'AnyDesk', names: ['anydesk', 'any desk'] },
+  { label: 'Numbers of units', names: ['number of units', 'numbers of units', 'units'] },
+  { label: 'Keys', names: ['number of keys', 'keys', 'nb keys'] },
 ];
 
-const DELIVERY_NAMES = ['delivery', 'delivery date', 'date de livraison', 'livraison'];
+const DELIVERY_NAMES = ['to ship', 'delivery', 'delivery date', 'date de livraison', 'livraison'];
 
 const ALL_INSTALL_FIELDS = [...INSTALL_FIELDS, { label: 'Delivery', names: DELIVERY_NAMES }];
 

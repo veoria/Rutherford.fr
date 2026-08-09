@@ -7,6 +7,7 @@ import {
   installBoardEnabled,
 } from '@/lib/asana';
 import { getWonDeal, pipedriveDealUrl } from '@/lib/pipedrive';
+import { createOrderFolder } from '@/lib/dropbox';
 import { claimWonDeal, installNotes, settleWonDeal } from '@/lib/install-tasks';
 import { notifyDiscordInstallTask } from '@/lib/discord';
 import { recordAudit } from '@/lib/admin-audit';
@@ -100,8 +101,17 @@ export async function POST(request: NextRequest) {
     notes: installNotes(deal),
     dealId,
     dueOn: deal.delivery,
+    pupi: deal.fields['Press interface'] ?? '',
+    po: deal.fields.PO ?? '',
+    so: deal.fields.SO ?? '',
   });
   await settleWonDeal(dealId, gid);
+
+  // The Zap's third step: the sales folder, named "<deal title> - PO-… SO-…".
+  // Independent of the task — a Dropbox hiccup must not cost us the card.
+  const folder = await createOrderFolder(
+    `${name} - PO-${deal.fields.PO ?? ''} SO-${deal.fields.SO ?? ''}`
+  );
 
   // The back-office journal is where an admin finds out this ran at all — the
   // board itself only shows the card, not who put it there. A failure is logged
@@ -115,10 +125,10 @@ export async function POST(request: NextRequest) {
     summary: gid
       ? `Deal gagné ID ${dealId}${deal.orgName ? ` (${deal.orgName})` : ''} — tâche Install créée : ${name}`
       : `Deal gagné ID ${dealId}${deal.orgName ? ` (${deal.orgName})` : ''} — création de la tâche Install échouée`,
-    metadata: { dealId, asanaTaskGid: gid, taskName: name, delivery: deal.delivery },
+    metadata: { dealId, asanaTaskGid: gid, taskName: name, delivery: deal.delivery, dropboxFolder: folder },
   });
 
-  if (!gid) return skip('asana_create_failed', { dealId });
+  if (!gid) return skip('asana_create_failed', { dealId, dropboxFolder: folder });
 
   await notifyDiscordInstallTask({
     dealId,
@@ -129,5 +139,5 @@ export async function POST(request: NextRequest) {
     pipedriveUrl: pipedriveDealUrl(dealId),
   });
 
-  return NextResponse.json({ ok: true, dealId, asanaTaskGid: gid });
+  return NextResponse.json({ ok: true, dealId, asanaTaskGid: gid, dropboxFolder: folder });
 }

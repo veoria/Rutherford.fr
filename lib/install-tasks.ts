@@ -38,9 +38,10 @@ export function installNotes(deal: WonDeal): string {
     `Press interface : ${f['Press interface'] ?? ''}`,
     `Press : ${f.Press ?? ''}`,
     `Numbers of units : ${f['Numbers of units'] ?? ''} - Keys : ${f.Keys ?? ''}`,
-    `Screen mount : ${f['Screen mount'] ?? ''}`,
-    `Computer : ${f.Computer ?? ''}`,
-    `AnyDesk : ${f.AnyDesk ?? ''}`,
+    // Constant in the Zap, not a Pipedrive field.
+    'Screen mount : Desk or Wall',
+    'Computer :',
+    'AnyDesk :',
     'Tracking number :',
     'License number RGP :',
     'PO RGP :',

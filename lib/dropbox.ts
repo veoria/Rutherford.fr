@@ -167,6 +167,43 @@ export async function uploadFilesToFolder(
   return { links, count };
 }
 
+// Sales folder for a won deal — the Zap's third step. Separate root from the
+// console-validation folder, and gated on its own env var so the Asana half of
+// the cutover can be switched on before this one.
+const ORDERS_FOLDER = (process.env.DROPBOX_ORDERS_FOLDER || '').replace(/\/+$/, '');
+
+export function dropboxOrdersEnabled(): boolean {
+  return dropboxEnabled() && Boolean(ORDERS_FOLDER);
+}
+
+/**
+ * Create "<DROPBOX_ORDERS_FOLDER>/<name>" for a won deal. An existing folder is
+ * a success, not an error: the point is that the folder exists, and a webhook
+ * that gets replayed must not spawn "… (1)". Returns the path, or null when not
+ * configured / on failure — never throws.
+ */
+export async function createOrderFolder(name: string): Promise<string | null> {
+  if (!dropboxOrdersEnabled()) return null;
+  const path = `${ORDERS_FOLDER}/${dropboxSafeName(name)}`;
+  try {
+    const token = await getAccessToken();
+    const res = await fetch('https://api.dropboxapi.com/2/files/create_folder_v2', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json', ...teamHeaders() },
+      body: JSON.stringify({ path, autorename: false }),
+      signal: AbortSignal.timeout(TIMEOUT_MS),
+      cache: 'no-store',
+    });
+    if (res.ok) return path;
+    if (res.status === 409) return path; // already there — that's the desired state
+    console.error('Dropbox order folder failed:', res.status, await res.text().catch(() => ''));
+    return null;
+  } catch (error) {
+    console.error('Dropbox order folder threw:', error);
+    return null;
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Diagnostics & repair (admin /api/admin/dropbox-debug).
 //
