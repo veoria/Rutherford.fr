@@ -10,10 +10,19 @@ import { createSupabaseAdminClient } from '@/lib/supabase/server';
 import type { WonDeal } from '@/lib/pipedrive';
 
 /**
- * The Install description block, in the order the team reads it. Empty lines are
- * kept: the block has always shipped with blank placeholders (tracking, RGP
- * license) that get filled in by hand as the install progresses, and the board's
- * own rules read this text — a stable shape matters more than a short one.
+ * The Install description block, in the order the team reads it.
+ *
+ * This block is a CONTRACT, not free text. OrderTrack — the X-Rite-facing SaaS —
+ * treats the Install board as its source of truth and parses these very lines
+ * into its `orders` table: `Contact` → contact_name, `Products name` /
+ * `Products code`, `PO` → po_number, `SO` → so_number, `Press interface`,
+ * `Numbers of units` (it keeps the whole `6 - Keys : 32` remainder),
+ * `Screen mount`, `Computer`, `PO RGP` → po_xrite. Country, customer and press
+ * model come from the task NAME, split on ` - ` as
+ * `Country - Company - Press - IDxxxx`.
+ *
+ * So: keep every line, keep the blank placeholders, keep the separators. A
+ * tidier block would silently corrupt someone else's production data.
  */
 export function installNotes(deal: WonDeal): string {
   const f = deal.fields;

@@ -39,6 +39,40 @@ board créent la sous-tâche « control order », renseignent PUPI / PO / SO qua
 carte change de colonne, puis créent la sous-tâche « License » au passage en
 *To install*.
 
+## ⚠️ Le bloc de description est un contrat, pas du texte libre
+
+**OrderTrack** (le SaaS côté X-Rite, `fxdavis75/rutherford-ordertrack`) prend le
+board Install comme source de vérité et **parse ces lignes** dans sa table
+`orders` — vérifié sur la base OrderTrack le 09/08/2026 :
+
+| Ligne du bloc | Colonne OrderTrack |
+|---|---|
+| `Contact` | `contact_name` |
+| `Products name` / `Products code` | `product_name` / `product_code` |
+| `PO` | `po_number` |
+| `SO` | `so_number` |
+| `Press interface` | `press_interface` (valeur complète, ex. `PUPI-B 0973`) |
+| `Numbers of units` | `number_of_units` — **tout le reste de la ligne**, `6 - Keys : 32` |
+| `Screen mount` / `Computer` | `screen_mount` / `computer` |
+| `PO RGP` | `po_xrite` |
+
+Et le **nom de la tâche** est découpé sur ` - ` en
+`Pays - Société - Presse - IDxxxx` → `country`, `customer_org`, `press_model`.
+C'est pour ça que le nom doit rester exactement le titre du deal (format garanti
+par `createConsoleValidationDeal`) et que le marqueur `IDxxxx` est ajouté d'office
+s'il manque.
+
+Conséquence : **ne pas « ranger » le bloc**. Garder toutes les lignes, les lignes
+vides, les séparateurs. Un bloc plus propre corromprait silencieusement les
+données d'un autre système en production. C'est aussi pourquoi ce flux écrit dans
+Asana plutôt que directement dans OrderTrack : Asana reste la source de vérité,
+le sens unique est préservé.
+
+*(À noter : au 09/08/2026 OrderTrack n'a aucune intégration Pipedrive — sa tâche
+« Intégration Pipedrive (création ordres côté X-Rite) » est en section
+« 9 — V2 / Future », non terminée, et sa base ne contient aucune table Pipedrive.
+Les deux flux ne se marchent donc pas dessus.)*
+
 ## Champs Pipedrive → bloc de description
 
 Le bloc reproduit à l'identique celui du Zap, lignes vides comprises (l'équipe
