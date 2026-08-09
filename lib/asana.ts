@@ -323,6 +323,102 @@ export async function addConsoleValidationPreviews(
   return attached;
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Install board — one task per won Pipedrive deal.
+//
+// Mirrors what the Zap did: create the task in "Install", drop it in the
+// "To control" column, due on the delivery date, with Emilie as collaborator.
+// Everything after that is already automated *inside* Asana — the board's own
+// rules spawn the "control order" subtask, fill PUPI/PO/SO when the card moves,
+// and later spawn the "License" subtask — so this deliberately stops at the
+// creation step and leaves the workflow columns alone.
+//
+// Gated on ASANA_INSTALL_PROJECT with no default, on purpose: the token is
+// already live in production, and a default would start creating tasks next to
+// the Zap that is still running.
+const INSTALL_PROJECT = process.env.ASANA_INSTALL_PROJECT;
+const INSTALL_SECTION = process.env.ASANA_INSTALL_SECTION || '1201798768968949'; // "To control"
+const INSTALL_FOLLOWER = process.env.ASANA_INSTALL_FOLLOWER_GID || '774875611076804'; // Emilie
+// "ID" (number) on the Install board — the deal id, which the team used to type
+// in by hand. Also what makes a redelivered webhook findable.
+const INSTALL_DEAL_FIELD = process.env.ASANA_INSTALL_DEAL_FIELD || '1212566134774832';
+const WORKSPACE = process.env.ASANA_WORKSPACE_GID || '15445560112122';
+
+export function installBoardEnabled(): boolean {
+  return Boolean(TOKEN && INSTALL_PROJECT);
+}
+
+export type InstallTask = {
+  /** The deal title verbatim — `Country - Company - Machine - ID{deal}`. */
+  name: string;
+  notes: string;
+  dealId: number;
+  /** Delivery date (YYYY-MM-DD); null leaves the task undated. */
+  dueOn: string | null;
+};
+
+/** Create the Install task. Returns its gid, or null when not configured / on
+ * failure — never throws, so a webhook always answers Pipedrive. */
+export async function createInstallTask(task: InstallTask): Promise<string | null> {
+  if (!TOKEN || !INSTALL_PROJECT) return null;
+  try {
+    const created = await asana('POST', '/tasks', {
+      name: task.name,
+      notes: task.notes,
+      projects: [INSTALL_PROJECT],
+      ...(task.dueOn ? { due_on: task.dueOn } : {}),
+      ...(ASSIGNEE ? { assignee: ASSIGNEE } : {}),
+      ...(INSTALL_FOLLOWER ? { followers: [INSTALL_FOLLOWER] } : {}),
+      ...(INSTALL_DEAL_FIELD ? { custom_fields: { [INSTALL_DEAL_FIELD]: task.dealId } } : {}),
+    });
+
+    const gid = created?.data?.gid as string | undefined;
+    // A new task lands in the board's first column; move it to the one the
+    // install cycle actually starts from.
+    if (gid && INSTALL_SECTION) {
+      await asana('POST', `/sections/${INSTALL_SECTION}/addTask`, { task: gid }).catch(() => {});
+    }
+    return gid ?? null;
+  } catch (error) {
+    console.error('Asana install task create failed:', error);
+    return null;
+  }
+}
+
+/**
+ * Find an existing Install task for a deal — by the "ID" custom field, then by
+ * the `ID{deal}` marker every task name carries. This is the guard against
+ * doubling up with the Zap while both run in parallel: the Zap's tasks aren't in
+ * our database, but they are on the board under the same name.
+ * Null means "none found" — including when the search itself failed, so the
+ * database claim stays the authority on what we created ourselves.
+ */
+export async function findInstallTaskByDealId(dealId: number): Promise<string | null> {
+  if (!TOKEN || !INSTALL_PROJECT || !dealId) return null;
+  const search = async (query: string): Promise<{ gid: string; name: string }[]> => {
+    try {
+      const res = await asana(
+        'GET',
+        `/workspaces/${WORKSPACE}/tasks/search?projects.any=${INSTALL_PROJECT}&${query}&opt_fields=name&limit=20`
+      );
+      return Array.isArray(res?.data) ? res.data : [];
+    } catch (error) {
+      console.error('Asana install task search failed:', error);
+      return [];
+    }
+  };
+
+  const byField = INSTALL_DEAL_FIELD
+    ? await search(`custom_fields.${INSTALL_DEAL_FIELD}.value=${dealId}`)
+    : [];
+  if (byField[0]?.gid) return byField[0].gid;
+
+  // Full-text is fuzzy, so confirm the marker really is in the name.
+  const marker = new RegExp(`ID${dealId}(\\D|$)`);
+  const byText = await search(`text=${encodeURIComponent(`ID${dealId}`)}`);
+  return byText.find((t) => marker.test(t?.name ?? ''))?.gid ?? null;
+}
+
 export type AsanaStory = { text: string; isComment: boolean; createdByName: string | null };
 
 /** Read a story (comment / activity) by gid. Used by the webhook to relay a

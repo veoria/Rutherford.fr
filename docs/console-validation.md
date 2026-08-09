@@ -110,5 +110,9 @@ MSGRAPH_TENANT_ID= · MSGRAPH_CLIENT_ID= · MSGRAPH_CLIENT_SECRET= · MAIL_FROM=
 6. Turn the 4 Zaps **off** (don't delete — rollback). The Pipedrive Deal actions in
    Zapier deprecate **2026-07-31**, so don't miss that window.
 
+The one Zap that outlived those four — deal **WON** → task in the Asana *Install*
+board — is replaced by `/api/pipedrive-webhook`. See
+[`docs/pipedrive-won-install.md`](./pipedrive-won-install.md).
+
 Server-side failures are logged (`… failed`) and visible in the Vercel runtime logs
 without ever failing the visitor's submission.

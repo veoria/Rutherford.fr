@@ -185,6 +185,8 @@ const AUDIT_ACTION_LABELS: Record<string, string> = {
   'storage.cleanup': 'Nettoyage stockage',
   'dropbox.move': 'Déplacement Dropbox',
   'dropbox.backfill': 'Reprise Dropbox',
+  'install.task_created': 'Install créé (deal gagné)',
+  'install.task_failed': 'Install NON créé (deal gagné)',
 };
 // Domaines (noms au singulier, minuscule) pour la composition de repli.
 const AUDIT_DOMAIN_LABELS: Record<string, string> = {

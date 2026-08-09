@@ -321,6 +321,215 @@ export async function getPersonLabelByEmail(
   }
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Won deals → the Asana "Install" board (replaces the last remaining Zap).
+//
+// A won deal has to reach the Install board with the same description block the
+// team has read for years, so everything below exists to rebuild that block from
+// the deal. The awkward part is that the values live in Pipedrive *custom*
+// fields, whose API keys are 40-char hashes with no meaning — so we resolve them
+// by their human name at runtime (/dealFields) instead of hard-coding hashes
+// that would silently rot the day someone renames a field.
+
+/** Accent/case/punctuation-insensitive form, so "SO Number" matches "so_number". */
+const normalizeFieldName = (value: string) =>
+  value
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim();
+
+type DealField = { key: string; name: string; options: Map<string, string> };
+
+// Field definitions change about once a year — cache for the process lifetime.
+let _dealFields: Map<string, DealField> | null = null;
+
+async function dealFields(): Promise<Map<string, DealField>> {
+  if (_dealFields) return _dealFields;
+  const byName = new Map<string, DealField>();
+  try {
+    const res = await pd('/dealFields');
+    for (const field of Array.isArray(res?.data) ? res.data : []) {
+      if (!field?.key || !field?.name) continue;
+      const options = new Map<string, string>();
+      for (const option of field.options ?? []) {
+        if (option?.id !== undefined) options.set(String(option.id), String(option.label ?? ''));
+      }
+      byName.set(normalizeFieldName(field.name), { key: field.key, name: field.name, options });
+    }
+  } catch (error) {
+    console.error('PipeDrive dealFields fetch failed:', error);
+    return byName; // don't cache a failure — the next won deal retries
+  }
+  _dealFields = byName;
+  return byName;
+}
+
+// Escape hatch: PIPEDRIVE_DEAL_FIELDS={"PO":"<40-char key>"} pins a label to a
+// key when the Pipedrive field is named differently from what we expect.
+const FIELD_OVERRIDES: Record<string, string> = (() => {
+  try {
+    const parsed = JSON.parse(process.env.PIPEDRIVE_DEAL_FIELDS || '{}');
+    return parsed && typeof parsed === 'object' ? parsed : {};
+  } catch {
+    console.error('PIPEDRIVE_DEAL_FIELDS is not valid JSON — ignored');
+    return {};
+  }
+})();
+
+/** Render whatever a custom field holds: option ids → labels, sets → joined
+ * labels, money/address objects → their scalar, everything else → text. */
+function renderFieldValue(value: unknown, field: DealField | undefined): string {
+  if (value === null || value === undefined || value === '') return '';
+  if (Array.isArray(value)) {
+    return value.map((v) => renderFieldValue(v, field)).filter(Boolean).join(', ');
+  }
+  if (typeof value === 'object') {
+    const record = value as Record<string, unknown>;
+    const scalar = record.value ?? record.name ?? record.formatted_address ?? record.id;
+    return scalar === undefined || scalar === null ? '' : String(scalar);
+  }
+  return field?.options.get(String(value)) ?? String(value);
+}
+
+/**
+ * The description block of an Install task, in the order the team reads it.
+ * Each entry is a label plus the Pipedrive field names that may carry it — the
+ * first name that exists wins, and a label nobody matches simply stays blank
+ * (the block already ships with blank placeholders the team fills in by hand).
+ */
+const INSTALL_FIELDS: { label: string; names: string[] }[] = [
+  { label: 'PO', names: ['po', 'po number', 'purchase order'] },
+  { label: 'SO', names: ['so', 'so number', 'sales order'] },
+  { label: 'Press interface', names: ['press interface', 'pupi', 'interface'] },
+  { label: 'Press', names: ['press', 'press type'] },
+  { label: 'Numbers of units', names: ['numbers of units', 'number of units', 'units'] },
+  { label: 'Keys', names: ['keys', 'number of keys', 'nb keys'] },
+  { label: 'Screen mount', names: ['screen mount', 'screen support'] },
+  { label: 'Computer', names: ['computer', 'pc'] },
+  { label: 'AnyDesk', names: ['anydesk', 'any desk'] },
+];
+
+const DELIVERY_NAMES = ['delivery', 'delivery date', 'date de livraison', 'livraison'];
+
+export type WonDeal = {
+  id: number;
+  title: string;
+  ownerName: string | null;
+  orgName: string | null;
+  personName: string | null;
+  /** YYYY-MM-DD — the Delivery field, or the deal's expected close date. */
+  delivery: string | null;
+  productNames: string[];
+  productCodes: string[];
+  /** Label → rendered value, for the labels listed in INSTALL_FIELDS. */
+  fields: Record<string, string>;
+};
+
+/** A related record's name, whether the payload inlined it (`{name}`) or only
+ * carries its id. Best-effort: an unresolvable name leaves the line blank. */
+async function relatedName(value: unknown, path: (id: number) => Promise<any>): Promise<string | null> {
+  if (value && typeof value === 'object') return (value as any).name ?? null;
+  const id = Number(value);
+  if (!id) return null;
+  try {
+    const res = await path(id);
+    return (res?.data?.name as string) ?? null;
+  } catch {
+    return null;
+  }
+}
+
+/** Product names + codes on the deal, deduplicated in order. Best-effort. */
+async function dealProducts(dealId: number): Promise<{ names: string[]; codes: string[] }> {
+  const names: string[] = [];
+  const codes: string[] = [];
+  try {
+    const res = await pdv2(`/deals/${dealId}/products`);
+    for (const item of Array.isArray(res?.data) ? res.data : []) {
+      let name = (item?.name as string) ?? null;
+      let code = (item?.product?.code as string) ?? (item?.code as string) ?? null;
+      // v2 attaches the product by id only — resolve the catalogue entry.
+      if ((!name || !code) && item?.product_id) {
+        const product = await pdv2(`/products/${item.product_id}`).catch(() => null);
+        name = name || ((product?.data?.name as string) ?? null);
+        code = code || ((product?.data?.code as string) ?? null);
+      }
+      if (name && !names.includes(name)) names.push(name);
+      if (code && !codes.includes(code)) codes.push(code);
+    }
+  } catch (error) {
+    console.error('PipeDrive deal products fetch failed:', error);
+  }
+  return { names, codes };
+}
+
+/**
+ * Everything an Install task needs about a won deal. `payload` is the webhook's
+ * own copy of the deal, used when it already inlines a value so we spend fewer
+ * API calls; the deal is re-fetched regardless, because a webhook can be
+ * replayed and the live record is the one that matters.
+ * Returns null when Pipedrive isn't configured or the deal can't be read.
+ */
+export async function getWonDeal(dealId: number, payload?: any): Promise<WonDeal | null> {
+  if (!TOKEN || !dealId) return null;
+  let deal: any = payload ?? null;
+  try {
+    const res = await pdv2(`/deals/${dealId}`);
+    if (res?.data) deal = { ...(payload ?? {}), ...res.data };
+  } catch (error) {
+    console.error('PipeDrive deal fetch failed:', error);
+    if (!deal) return null;
+  }
+
+  const defs = await dealFields();
+  // v2 nests custom fields under `custom_fields`; v1 payloads flatten them onto
+  // the deal itself. Look in both.
+  const custom = (deal.custom_fields && typeof deal.custom_fields === 'object' ? deal.custom_fields : {}) as Record<string, unknown>;
+  // An override pins a label to a key; keep the field's real definition so enum
+  // ids still render as their labels.
+  const byKey = new Map([...defs.values()].map((f) => [f.key, f]));
+  const read = (names: string[], label?: string): string => {
+    const overrideKey = label ? FIELD_OVERRIDES[label] : undefined;
+    const candidates = overrideKey
+      ? [byKey.get(overrideKey) ?? { key: overrideKey, name: label ?? '', options: new Map<string, string>() }]
+      : names.map((n) => defs.get(normalizeFieldName(n))).filter(Boolean as unknown as (v: DealField | undefined) => v is DealField);
+    for (const field of candidates) {
+      const raw = custom[field.key] ?? deal[field.key];
+      const rendered = renderFieldValue(raw, field);
+      if (rendered) return rendered;
+    }
+    return '';
+  };
+
+  const fields: Record<string, string> = {};
+  for (const { label, names } of INSTALL_FIELDS) fields[label] = read(names, label);
+
+  const [ownerName, orgName, personName, products] = await Promise.all([
+    relatedName(deal.user_id ?? deal.owner_id, (id) => pd(`/users/${id}`)),
+    relatedName(deal.org_id ?? deal.organization_id, (id) => pdv2(`/organizations/${id}`)),
+    relatedName(deal.person_id, (id) => pdv2(`/persons/${id}`)),
+    dealProducts(dealId),
+  ]);
+
+  const delivery = read(DELIVERY_NAMES, 'Delivery') || (deal.expected_close_date ? String(deal.expected_close_date) : '');
+
+  return {
+    id: dealId,
+    title: String(deal.title ?? '').trim(),
+    ownerName,
+    orgName: orgName ?? (deal.org_name ? String(deal.org_name) : null),
+    personName: personName ?? (deal.person_name ? String(deal.person_name) : null),
+    // Pipedrive dates are already YYYY-MM-DD; anything else is dropped rather
+    // than guessed, since Asana rejects a malformed due_on outright.
+    delivery: /^\d{4}-\d{2}-\d{2}$/.test(delivery) ? delivery : null,
+    productNames: products.names,
+    productCodes: products.codes,
+    fields,
+  };
+}
+
 const PARTNER_LABEL_RE = /reseller|revendeur|oem|distributor|distributeur/;
 
 /**

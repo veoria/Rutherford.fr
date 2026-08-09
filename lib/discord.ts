@@ -59,6 +59,29 @@ export async function notifyDiscordConsoleValidation(v: {
   await postEmbed(`🆕 Nouvelle validation console${v.dealId ? ` — ID ${v.dealId}` : ''}`, fields);
 }
 
+/** Ping the team when a won deal opens an install. Worth its own message during
+ * the Zapier cutover: it's how you see the automation fire. No-op without a
+ * webhook. */
+export async function notifyDiscordInstallTask(i: {
+  dealId: number;
+  name: string;
+  orgName: string | null;
+  delivery: string | null;
+  asanaUrl?: string | null;
+  pipedriveUrl?: string | null;
+}): Promise<void> {
+  if (!WEBHOOK_URL) return;
+  const fields: EmbedField[] = [{ name: 'Tâche', value: i.name }];
+  if (i.orgName) fields.push({ name: 'Organisation', value: i.orgName, inline: true });
+  if (i.delivery) fields.push({ name: 'Livraison', value: i.delivery, inline: true });
+  const links = linkList([
+    { label: 'Asana', url: i.asanaUrl },
+    { label: 'Pipedrive', url: i.pipedriveUrl },
+  ]);
+  if (links) fields.push({ name: 'Liens', value: links });
+  await postEmbed(`✅ Deal gagné — install à préparer (ID ${i.dealId})`, fields);
+}
+
 /** Alert the team when the console-validations photo bucket crosses its storage
  * threshold (monthly cron). No-op without a webhook. */
 export async function notifyDiscordStorageAlert(a: {
