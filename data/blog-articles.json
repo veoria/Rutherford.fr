@@ -1,5 +1,262 @@
 [
   {
+    "slug": "shorter-runs-makeready-cost-print-consolidation",
+    "title": "Shorter runs, higher makeready cost",
+    "excerpt": "European print capacity keeps consolidating, and the presses still running take shorter jobs, which pushes makeready cost per thousand sheets up.",
+    "lead": "Bertelsmann confirmed at the end of July 2026 that Vogel Druck will stop production by mid 2027, ending 280 jobs at a plant built for catalogs and magazines. The headline is capacity leaving Europe. The operational story underneath is different: the presses that stay loaded are running shorter jobs, more often, and makeready stops being a rounding error once that happens.",
+    "image": "/images/man-on-offset-press.jpg",
+    "publishedAt": "2026-08-10",
+    "category": "News",
+    "paragraphs": [
+      "Vogel Druck, part of Bertelsmann Marketing Services, will wind down its site near Würzburg by 30 June 2027, with 280 jobs affected. The company pointed to a structural decline in demand from publishers and retailers in web and sheetfed offset, not to a single bad year.",
+      "Capacity is not simply disappearing, it is being redistributed. Publication gravure in Europe has fallen to around 48 presses, more than 60 percent below its 2015 level, while press manufacturers report growing order intake in packaging sheetfed systems. Presses are still being bought, for shorter and more varied work.",
+      "When average run length falls, the arithmetic of the pressroom changes. Makeready waste is a fixed cost per job, so spreading it over fewer good sheets raises the cost per thousand in a straight line. The metric that decides which plants stay loaded is cost per job change, not cost per thousand impressions.",
+      "That is also why closed loop color control pays back faster in a short run mix than in a long one: it returns its value at every job change, and it produces the measured proof that brand owners now ask for when they consolidate their supplier panels across countries."
+    ],
+    "body": [
+      {
+        "type": "p",
+        "text": "Vogel Druck, part of Bertelsmann Marketing Services, will wind down its Höchberg site near Würzburg by 30 June 2027. The reason given by the company was not a bad quarter but a structural one: demand from publishers and retailers in web and sheetfed offset has been declining for years, the site has been loss making, and no recovery is expected. 280 jobs go with it."
+      },
+      {
+        "type": "p",
+        "text": "That closure is one point on a long line. European publication gravure has shrunk to roughly 48 presses after the Prinovis Ahrensburg shutdown, down about 30 percent against 2021 and more than 60 percent against 2015. Retail catalogs went digital, and the tonnage went with them."
+      },
+      {
+        "type": "p",
+        "text": "Capital has not left print, though. Koenig & Bauer opened 2026 with order intake of 297.6 million euros, up 21.4 percent and its strongest first quarter in two years, with paper and packaging sheetfed systems up 12.4 percent. Presses are still being bought. They are being bought for packaging and for short run commercial work, not for 400,000 copy catalogs."
+      },
+      {
+        "type": "h2",
+        "text": "Why shorter runs raise makeready cost"
+      },
+      {
+        "type": "p",
+        "text": "Makeready waste is a fixed cost per job. Whether a job runs 3,000 sheets or 60,000, the press still needs plates hung, ink keys brought to target, and a set of sheets pulled and measured before the first good one comes off. Spread that fixed cost over fewer good sheets and the cost per thousand rises in a straight line."
+      },
+      {
+        "type": "p",
+        "text": "A pressroom that used to average 25,000 sheets per job and now averages 10,000 has not lost 60 percent of its volume. It has multiplied its number of job changes by 2.5 for the same tonnage. Every one of those extra changes carries its own paper, ink, energy and press hours, and every one of them is an opportunity to end up outside tolerance."
+      },
+      {
+        "type": "ul",
+        "items": [
+          "More job changes per shift for the same output",
+          "A larger share of press hours spent producing nothing sellable",
+          "More color approvals, so more chances to drift off standard",
+          "Higher exposure to paper cost, because waste is bought at the same price as production"
+        ]
+      },
+      {
+        "type": "p",
+        "text": "This is why the useful number in a consolidating market is cost per job change, not cost per thousand impressions. Two plants with the same press model and the same crew size can sit far apart on that number, and the gap never shows up in a capacity comparison."
+      },
+      {
+        "type": "h3",
+        "text": "How much does a makeready actually cost?"
+      },
+      {
+        "type": "p",
+        "text": "It depends on the press and the job, but the order of magnitude is stable: a manual color approach on a mid format sheetfed press typically burns several hundred sheets before the operator signs off, and each of those sheets carries the same paper, ink and energy cost as a sellable one. On a plant making twenty job changes a day, cutting 150 sheets per makeready is roughly 3,000 sheets a day, every day. The [2026 paper price increases](/blog/paper-price-increases-2026-makeready-waste-cost) make that arithmetic worse, not better."
+      },
+      {
+        "type": "h2",
+        "text": "The plants that keep the work"
+      },
+      {
+        "type": "p",
+        "text": "Brand owners and publishers are consolidating their supplier panels at the same time as printers consolidate their capacity. Fewer approved plants, more countries covered per plant, and a written expectation that the same job printed in two of them measures the same. That expectation now sits in contracts rather than in habits."
+      },
+      {
+        "type": "ul",
+        "items": [
+          "Measured proof of color, job by job, not only a signed OK sheet",
+          "The same tolerance applied in every plant of the group",
+          "Fast requalification when a job moves from one site to another",
+          "Data that still stands up in an audit six months after the run"
+        ]
+      },
+      {
+        "type": "p",
+        "text": "None of that holds if color is still set by eye at each console. It requires the ink keys to be driven from measurement, on every job, in the loop."
+      },
+      {
+        "type": "h3",
+        "text": "Does closed loop color control still pay off on short runs?"
+      },
+      {
+        "type": "p",
+        "text": "Yes, and usually faster than on long runs. Closed loop delivers most of its value at the start of a job, when it brings the ink keys to target and holds them there. The more job changes a press makes in a week, the more times that return happens. In a short run mix it is the number of makereadies, not the tonnage, that drives the [return on investment](/roi)."
+      },
+      {
+        "type": "h3",
+        "text": "What does a press need before closed loop can be added?"
+      },
+      {
+        "type": "p",
+        "text": "An ink key interface the console will open, a measurement source on the sheet, and a press in reasonable mechanical condition. Age matters far less than most printers expect: systems run today on consoles two and three press generations old. A [console eligibility check](/console-validation) settles the question from a few photographs of the console and the machine plate, before anyone quotes anything."
+      },
+      {
+        "type": "h2",
+        "text": "Consolidation is regional, the standard is not"
+      },
+      {
+        "type": "p",
+        "text": "The same redistribution is under way outside Europe. North American commercial plants are merging while packaging capacity grows, Asian converters absorb work that used to be printed closer to the brand, and Latin American plants are being qualified for export packaging. What travels with the job is the standard, not the press. A converter serving a European brand from [a plant in the United States](/usa) is judged against the same numbers as the plant it replaced."
+      },
+      {
+        "type": "p",
+        "text": "That is what a deployed base is for. Rutherford closed loop control runs on 1,000+ systems in 30+ countries, on presses of many brands and generations, which is what makes the same target reachable in Lyon, in Ohio and in Guangzhou, with the same ColorLoop logic at the console, fed by measurement from IntelliTrax2, MeasureColor or the device already on the floor. How the loop works end to end is set out in the [complete guide to closed loop color control](/closed-loop-color-control)."
+      },
+      {
+        "type": "p",
+        "text": "Capacity will keep leaving the segments that shrink. The plants that stay loaded will be the ones that can change jobs cheaply and prove their color while doing it. That is a production decision, and it can be made on the press already standing in the building."
+      }
+    ],
+    "i18n": {
+      "fr": {
+        "title": "Tirages plus courts, calages plus chers",
+        "excerpt": "La capacité d'impression européenne continue de se concentrer, et les presses qui tournent prennent des travaux plus courts, ce qui renchérit le calage.",
+        "lead": "Bertelsmann a confirmé fin juillet 2026 l'arrêt de Vogel Druck d'ici mi 2027, soit 280 postes dans une usine conçue pour les catalogues et les magazines. Le titre, c'est de la capacité qui quitte l'Europe. Le sujet de production est ailleurs : les presses qui restent chargées enchaînent des travaux plus courts, plus souvent, et le calage cesse alors d'être une variable négligeable.",
+        "body": [
+          {
+            "type": "p",
+            "text": "Vogel Druck, filiale de Bertelsmann Marketing Services, arrêtera son site de Höchberg, près de Würzburg, d'ici le 30 juin 2027. La raison avancée n'est pas un mauvais trimestre mais une tendance de fond : la demande des éditeurs et des enseignes en offset rotative et feuille à feuille recule depuis des années, le site perd de l'argent et aucun redressement n'est attendu. 280 postes disparaissent avec lui."
+          },
+          {
+            "type": "p",
+            "text": "Cette fermeture s'inscrit dans une série longue. L'héliogravure d'édition européenne est tombée à une cinquantaine de presses après l'arrêt de Prinovis Ahrensburg, soit environ 30 pour cent de moins qu'en 2021 et plus de 60 pour cent de moins qu'en 2015. Les catalogues de la distribution sont passés au numérique, et le tonnage est parti avec eux."
+          },
+          {
+            "type": "p",
+            "text": "Les investissements, eux, n'ont pas quitté l'impression. Koenig & Bauer a ouvert 2026 avec 297,6 millions d'euros de prises de commandes, en hausse de 21,4 pour cent et au plus haut depuis deux ans pour un premier trimestre, dont 12,4 pour cent de hausse sur les presses feuille à feuille papier et emballage. On achète toujours des presses. On les achète pour l'emballage et pour des travaux courts, pas pour des catalogues à 400 000 exemplaires."
+          },
+          {
+            "type": "h2",
+            "text": "Pourquoi des tirages plus courts renchérissent le calage"
+          },
+          {
+            "type": "p",
+            "text": "La gâche au calage est un coût fixe par travail. Que le tirage soit de 3 000 ou de 60 000 feuilles, il faut monter les plaques, amener les vis d'encrier à la cible, puis sortir et mesurer une série de feuilles avant la première bonne. Répartissez ce coût fixe sur moins de feuilles bonnes et le coût aux mille monte de façon linéaire."
+          },
+          {
+            "type": "p",
+            "text": "Un atelier qui tournait à 25 000 feuilles par travail et se retrouve à 10 000 n'a pas perdu 60 pour cent de son volume. Il a multiplié par 2,5 son nombre de changements de travail à tonnage égal. Chacun de ces changements consomme son papier, son encre, son énergie et ses heures presse, et chacun est une occasion de sortir de tolérance."
+          },
+          {
+            "type": "ul",
+            "items": [
+              "Plus de changements de travail par équipe pour la même production",
+              "Une part croissante d'heures presse qui ne produit rien de vendable",
+              "Plus de validations couleur, donc plus de risques de dérive",
+              "Une exposition accrue au prix du papier, la gâche étant achetée au même prix que la production"
+            ]
+          },
+          {
+            "type": "p",
+            "text": "D'où l'indicateur qui compte dans un marché qui se concentre : le coût par changement de travail, pas le coût aux mille tours. Deux ateliers équipés de la même presse, avec le même effectif, peuvent être très éloignés sur ce chiffre, et l'écart n'apparaît jamais dans une comparaison de capacité."
+          },
+          {
+            "type": "h3",
+            "text": "Combien coûte réellement un calage ?"
+          },
+          {
+            "type": "p",
+            "text": "Cela dépend de la presse et du travail, mais l'ordre de grandeur est stable : une approche couleur manuelle sur une presse feuille à feuille demi format brûle couramment plusieurs centaines de feuilles avant le bon à rouler, et chacune coûte le même papier, la même encre et la même énergie qu'une feuille vendable. Sur un site qui fait vingt changements par jour, économiser 150 feuilles par calage représente environ 3 000 feuilles quotidiennes. Les [hausses du prix du papier en 2026](/blog/paper-price-increases-2026-makeready-waste-cost) n'améliorent pas ce calcul."
+          },
+          {
+            "type": "h2",
+            "text": "Les ateliers qui gardent le travail"
+          },
+          {
+            "type": "p",
+            "text": "Les marques et les éditeurs resserrent leur panel de fournisseurs au moment même où les imprimeurs concentrent leur capacité. Moins de sites référencés, plus de pays couverts par site, et une exigence écrite : le même travail imprimé dans deux d'entre eux doit se mesurer pareil. Cette exigence figure désormais dans les contrats, plus seulement dans les habitudes."
+          },
+          {
+            "type": "ul",
+            "items": [
+              "Une preuve mesurée de la couleur, travail par travail, pas seulement un BAT signé",
+              "La même tolérance appliquée dans tous les sites du groupe",
+              "Une requalification rapide quand un travail passe d'un site à l'autre",
+              "Des données qui tiennent encore lors d'un audit six mois après le tirage"
+            ]
+          },
+          {
+            "type": "p",
+            "text": "Rien de tout cela ne tient si la couleur se règle encore à l'oeil sur chaque console. Il faut que les vis d'encrier soient pilotées par la mesure, sur chaque travail, en closed loop."
+          },
+          {
+            "type": "h3",
+            "text": "Le closed loop reste-t-il rentable sur des tirages courts ?"
+          },
+          {
+            "type": "p",
+            "text": "Oui, et généralement plus vite que sur des tirages longs. Le closed loop apporte l'essentiel de sa valeur au démarrage du travail, quand il amène les vis d'encrier à la cible et les y maintient. Plus une presse enchaîne de changements dans la semaine, plus ce gain se répète. Sur un mix de travaux courts, c'est le nombre de calages, pas le tonnage, qui détermine le [retour sur investissement](/roi)."
+          },
+          {
+            "type": "h3",
+            "text": "Que faut-il sur une presse avant d'ajouter le closed loop ?"
+          },
+          {
+            "type": "p",
+            "text": "Une interface de vis d'encrier que la console accepte d'ouvrir, une source de mesure sur la feuille, et une presse en état mécanique correct. L'âge compte beaucoup moins qu'on ne le croit : des systèmes tournent aujourd'hui sur des consoles de deux ou trois générations de presse. Une [validation console](/console-validation) tranche la question à partir de quelques photos de la console et de la plaque machine, avant tout chiffrage."
+          },
+          {
+            "type": "h2",
+            "text": "La concentration est régionale, le standard ne l'est pas"
+          },
+          {
+            "type": "p",
+            "text": "Le même mouvement est à l'oeuvre hors d'Europe. Les imprimeries commerciales nord américaines fusionnent pendant que la capacité emballage progresse, les converters asiatiques absorbent des travaux autrefois imprimés plus près de la marque, et des sites latino américains se qualifient pour l'emballage d'export. Ce qui voyage avec le travail, c'est le standard, pas la presse. Un converter qui sert une marque européenne depuis [un site aux États-Unis](/usa) est jugé sur les mêmes chiffres que le site qu'il remplace."
+          },
+          {
+            "type": "p",
+            "text": "C'est à cela que sert un parc déployé. Le closed loop Rutherford tourne sur plus de 1 000 systèmes dans plus de 30 pays, sur des presses de marques et de générations très diverses, ce qui rend la même cible atteignable à Lyon, dans l'Ohio et à Guangzhou, avec la même logique ColorLoop à la console, alimentée par IntelliTrax2, MeasureColor ou le dispositif déjà en place. Le fonctionnement complet de la boucle est détaillé dans le [guide complet du closed loop](/closed-loop-color-control)."
+          },
+          {
+            "type": "p",
+            "text": "La capacité continuera de quitter les segments qui reculent. Les ateliers qui resteront chargés seront ceux qui changent de travail à bas coût et prouvent leur couleur en le faisant. C'est une décision de production, et elle se prend sur la presse déjà installée dans l'atelier."
+          }
+        ]
+      },
+      "de": {
+        "title": "Kürzere Auflagen, teureres Einrichten",
+        "excerpt": "Die europäische Druckkapazität konsolidiert weiter, und die verbleibenden Maschinen fahren kürzere Auflagen, was die Kosten pro Einrichtung nach oben treibt.",
+        "lead": "Bertelsmann hat Ende Juli 2026 das Aus von Vogel Druck bis Mitte 2027 bestätigt, 280 Arbeitsplätze in einem Werk für Kataloge und Zeitschriften. Die Schlagzeile lautet: Kapazität verlässt Europa. Produktionstechnisch zählt etwas anderes: Die ausgelasteten Maschinen fahren kürzere Aufträge, häufiger, und damit wird das Einrichten zum bestimmenden variablen Kostenblock."
+      },
+      "it": {
+        "title": "Tirature più corte, avviamenti più cari",
+        "excerpt": "La capacità di stampa europea continua a concentrarsi e le macchine che restano lavorano tirature più corte, il che fa salire il costo di avviamento.",
+        "lead": "A fine luglio 2026 Bertelsmann ha confermato la chiusura di Vogel Druck entro metà 2027, con 280 posti di lavoro in uno stabilimento pensato per cataloghi e riviste. Il titolo è la capacità che lascia l'Europa. La sostanza produttiva è un'altra: le macchine ancora cariche cambiano lavoro più spesso, e a quel punto l'avviamento smette di essere una voce trascurabile."
+      },
+      "es": {
+        "title": "Tiradas más cortas, puestas a punto más caras",
+        "excerpt": "La capacidad de impresión europea sigue concentrándose y las máquinas que quedan asumen trabajos más cortos, lo que encarece cada puesta a punto.",
+        "lead": "Bertelsmann confirmó a finales de julio de 2026 el cierre de Vogel Druck para mediados de 2027, con 280 empleos en una planta pensada para catálogos y revistas. El titular es la capacidad que abandona Europa. Lo que cuenta en producción es otra cosa: las máquinas que siguen cargadas cambian de trabajo con más frecuencia, y entonces la puesta a punto deja de ser un detalle."
+      },
+      "pt": {
+        "title": "Tiragens mais curtas, acertos mais caros",
+        "excerpt": "A capacidade de impressão europeia continua a concentrar-se e as máquinas que ficam assumem trabalhos mais curtos, o que encarece cada acerto de máquina.",
+        "lead": "A Bertelsmann confirmou no final de julho de 2026 o encerramento da Vogel Druck até meados de 2027, com 280 postos de trabalho numa unidade pensada para catálogos e revistas. O título é a capacidade que sai da Europa. Em produção, o que conta é outra coisa: as máquinas que continuam carregadas mudam de trabalho com mais frequência, e o acerto deixa de ser um detalhe."
+      }
+    },
+    "originalUrl": "https://rutherford.fr/blog/shorter-runs-makeready-cost-print-consolidation",
+    "sources": [
+      {
+        "label": "print.de: Bertelsmann plant die Schliessung von Vogel Druck (30 July 2026)",
+        "href": "https://www.print.de/allgemein/bertelsmann-plant-die-schliessung-von-vogel-druck/"
+      },
+      {
+        "label": "Fastmarkets: European rotogravure printing capacity continues to shrink",
+        "href": "https://www.fastmarkets.com/insights/european-rotogravure-printing-capacity-continues-to-shrink/"
+      },
+      {
+        "label": "Koenig & Bauer: Q1 2026 order intake and results",
+        "href": "https://www.koenig-bauer.com/en/newsroom/press-releases/article/koenig-bauer-starts-2026-with-strong-momentum-massive-increase-in-order-intake-and-successful-turnaround-in-the-st-segment"
+      }
+    ]
+  },
+  {
     "slug": "cartonajes-pans-closed-loop-manroland",
     "title": "Closed loop at Cartonajes Pans",
     "excerpt": "Five IntelliTrax2 and Rutherford systems with MeasureColor, in production on Manroland Sheetfed presses of different generations at a Spanish packaging printer.",
