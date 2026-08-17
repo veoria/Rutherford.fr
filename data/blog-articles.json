@@ -1,5 +1,238 @@
 [
   {
+    "slug": "ppwr-substance-limits-ink-reformulation-color",
+    "title": "PPWR: new inks, same color target",
+    "excerpt": "PPWR substance limits applied on 12 August 2026 and they cover inks and coatings, so reformulated ink sets are reaching the press with new color behavior.",
+    "lead": "The European Commission published its final PPWR guidance days before the regulation applied on 12 August 2026. The headline requirement is a substance one: 100 mg/kg for four heavy metals, and PFAS thresholds in food contact packaging. The limits are measured on the packaging unit as a whole, inks and coatings included, which is why compliance work that started in a laboratory finishes in the pressroom.",
+    "image": "/images/ink-red.jpg",
+    "publishedAt": "2026-08-17",
+    "category": "Regulations",
+    "paragraphs": [
+      "The EU Packaging and Packaging Waste Regulation applied on 12 August 2026 with no phase in for its substance restrictions. Lead, cadmium, mercury and hexavalent chromium are capped at a combined 100 mg/kg across all packaging, and food contact packaging faces PFAS thresholds of 25 ppb for any individual non polymeric substance, 250 ppb for the sum, and 50 ppm for total fluorine.",
+      "The limits apply to the packaging unit as a whole. Inks, varnishes, coatings, glues and adhesives are counted with the board, not separately from it, and there is no blanket exemption for recycled content. A compliant carton printed with a non compliant varnish is a non compliant carton.",
+      "The practical consequence is a wave of substitutions arriving on press at the same time: reformulated pigment systems, PFAS free barrier coatings, higher recycled fibre content. Each of them is a compliance win and a color problem, because ink presets and correction curves were learned on the materials being replaced.",
+      "Closed loop color control does not certify a substance, but it absorbs the instability that reformulation creates, and it produces measured proof of what was actually printed, on which substrate, to which target. That record is what brand owners ask for when an entire supplier panel reformulates in the same quarter."
+    ],
+    "body": [
+      {
+        "type": "p",
+        "text": "The EU Packaging and Packaging Waste Regulation applied on 12 August 2026, and the part that reaches the pressroom fastest is not recyclability grading or labelling. It is the substance restrictions. From that date, the combined concentration of lead, cadmium, mercury and hexavalent chromium in packaging cannot exceed 100 mg/kg, and food contact packaging cannot exceed 25 ppb for any individual non polymeric PFAS, 250 ppb for the sum of non polymeric PFAS, or 50 ppm for total fluorine. There is no phase in period: all three thresholds started applying on the same day."
+      },
+      {
+        "type": "p",
+        "text": "The detail that matters for a printer is where the limit is measured. It applies to the packaging unit as a whole, which means inks, varnishes, coatings, glues and adhesives are counted with the board rather than assessed separately. A compliant carton printed with a non compliant varnish is a non compliant carton. And there is no blanket exemption for recycled content: glass has a narrow derogation for recycled cullet, paper and board do not."
+      },
+      {
+        "type": "h2",
+        "text": "PPWR compliance is written on paper and paid for on press"
+      },
+      {
+        "type": "p",
+        "text": "The result is a set of substitutions that were already under way and are now compulsory. Ink suppliers have reformulated pigment systems to stay under the metals limit. Barrier coatings built on fluorochemistry are being replaced by dispersion and bio based alternatives. Converters are pulling more recycled fibre into unchanged specifications. Every one of those changes is a compliance win, and every one of them moves color."
+      },
+      {
+        "type": "ul",
+        "items": [
+          "New pigment chemistry changes the solid ink density needed to reach the same LAB value.",
+          "PFAS free barrier coatings change surface energy and gloss, so an identical ink film reads differently under the spectrophotometer.",
+          "Higher recycled content means a greyer and more variable base white, which shifts every tint printed above it.",
+          "Different setting and drying behaviour changes trapping between units, and wet on wet trapping is where spot colors go wrong first.",
+          "Board from a new supplier arrives with its own absorbency, so ink lay is not what the CIP3 preset expects."
+        ]
+      },
+      {
+        "type": "h3",
+        "text": "Does a PPWR compliant ink set print the same as the one it replaces?"
+      },
+      {
+        "type": "p",
+        "text": "No. It is formulated to reach the same target color, not to behave the same way on press. Pigment loading, tack and setting speed all move, and that shows up as a different ink key opening for the same coverage, and a different curve across the run. The target does not change. The route to it does, and so does the number of sheets it takes to get there."
+      },
+      {
+        "type": "h2",
+        "text": "Where the cost actually lands"
+      },
+      {
+        "type": "p",
+        "text": "Makeready is where a substrate or ink change gets paid for. Ink presetting from CIP3 data is only as good as the correction curves behind it, and those curves were learned from what the press did with the previous ink on the previous board. Change both inside the same quarter and the presets open the ink keys too far or not far enough. The operator pulls more sheets before the first good one, on every job, until the curves catch up."
+      },
+      {
+        "type": "p",
+        "text": "Twenty extra sheets per job change does not sound like much until you multiply it by the number of job changes in a short run packaging mix, at 2026 board prices. That multiplication is most of what a [closed loop ROI calculation](/roi) contains, and reformulation makes the multiplier bigger for as long as the materials keep moving."
+      },
+      {
+        "type": "h3",
+        "text": "How do you hold color when the substrate keeps changing?"
+      },
+      {
+        "type": "p",
+        "text": "You stop relying on presets alone and let measurement drive the ink keys during the run. Closed loop control measures the sheet, compares it against the target, and corrects zone by zone while the press is running, so a new ink or a new board is absorbed within the first few sheets instead of over the first few thousand. The [complete guide to closed loop color control](/closed-loop-color-control) sets out how the loop is built, from measurement source to console interface. Measurement systems such as IntelliTrax2 or MeasureColor supply the data; the loop is what turns it into ink key movement without an operator guessing."
+      },
+      {
+        "type": "h2",
+        "text": "The documentation side, stated honestly"
+      },
+      {
+        "type": "p",
+        "text": "PPWR also requires an EU Declaration of Conformity and a technical file for every packaging type, retained for five years for single use packaging and ten years for reusable packaging, with evidence kept at component level for inks, coatings, pigments and recycled inputs. Any change of ink, coating, supplier or production site means that file has to be updated. Packaging must also carry the name and postal address of the manufacturer and the importer, so traceability now runs down to the printed unit."
+      },
+      {
+        "type": "p",
+        "text": "Closed loop color control does not test for PFAS and does not certify a substance. It should not be sold as if it did. What it produces is the other half of the record: measured color data for what was actually printed, on which substrate, against which target, on which date, shift by shift. When a brand owner audits a supplier panel that has reformulated everything at once, that record is what separates a claim from a proof."
+      },
+      {
+        "type": "h3",
+        "text": "Which PPWR requirements apply to printers outside the EU?"
+      },
+      {
+        "type": "p",
+        "text": "All of them, if the packaging is placed on the EU market. The obligation follows the packaging, not the plant. A converter in Morocco, Turkey, China or the United States printing cartons for a European brand inherits the same substance limits and the same conformity documentation as a converter in Germany."
+      },
+      {
+        "type": "h2",
+        "text": "One specification, every plant"
+      },
+      {
+        "type": "p",
+        "text": "That is what makes this a global reformulation rather than a European one. Brand owners do not maintain two ink sets, one for Europe and one for everywhere else, when the European one is the strictest. The specification travels, and the color problem travels with it. Rutherford runs more than 1,000 systems in over 30 countries, and the same ink and coating substitutions are landing in [North American pressrooms](/usa) as in European ones, on presses of very different ages and generations."
+      },
+      {
+        "type": "p",
+        "text": "The compliance file will be closed by the quality department. The color will be settled on press, one job change at a time. If you want to know whether your console can drive a closed loop before the next reformulated ink set arrives, the [console eligibility check](/console-validation) answers it from a few photographs."
+      }
+    ],
+    "i18n": {
+      "fr": {
+        "title": "PPWR : nouvelles encres, même cible couleur",
+        "excerpt": "Les limites de substances du PPWR s'appliquent depuis le 12 août 2026 et couvrent encres et vernis : les gammes reformulées arrivent sur presse avec un autre comportement couleur.",
+        "lead": "La Commission européenne a publié ses lignes directrices finales quelques jours avant l'entrée en application du PPWR, le 12 août 2026. L'exigence la plus immédiate porte sur les substances : 100 mg/kg pour quatre métaux lourds, et des seuils PFAS pour les emballages au contact alimentaire. Les limites se mesurent sur l'unité d'emballage complète, encres et vernis compris, et c'est pour cela qu'un travail de conformité commencé en laboratoire se termine dans l'atelier d'impression.",
+        "body": [
+          {
+            "type": "p",
+            "text": "Le règlement européen sur les emballages et les déchets d'emballages s'applique depuis le 12 août 2026, et la partie qui atteint le plus vite l'atelier d'impression n'est ni le classement de recyclabilité ni l'étiquetage. Ce sont les restrictions de substances. Depuis cette date, la concentration cumulée de plomb, cadmium, mercure et chrome hexavalent dans un emballage ne peut pas dépasser 100 mg/kg, et les emballages au contact alimentaire ne peuvent pas dépasser 25 ppb pour un PFAS non polymérique donné, 250 ppb pour la somme des PFAS non polymériques, ni 50 ppm de fluor total. Aucune période de transition : les trois seuils sont entrés en vigueur le même jour."
+          },
+          {
+            "type": "p",
+            "text": "Le détail qui compte pour un imprimeur, c'est l'endroit où la limite se mesure. Elle porte sur l'unité d'emballage dans son ensemble, ce qui signifie que les encres, vernis, revêtements et colles sont comptés avec le carton, et non évalués séparément. Un carton conforme imprimé avec un vernis non conforme reste un carton non conforme. Et il n'existe pas d'exemption générale pour la matière recyclée : le verre bénéficie d'une dérogation étroite pour le calcin, le papier et le carton non."
+          },
+          {
+            "type": "h2",
+            "text": "La conformité PPWR s'écrit sur le papier et se paie sur presse"
+          },
+          {
+            "type": "p",
+            "text": "Le résultat, c'est une série de substitutions déjà engagées et désormais obligatoires. Les fabricants d'encres ont reformulé leurs systèmes pigmentaires pour rester sous la limite des métaux. Les revêtements barrière construits sur la chimie fluorée sont remplacés par des alternatives en dispersion ou biosourcées. Les converters intègrent davantage de fibre recyclée dans des cahiers des charges inchangés. Chacun de ces changements est un gain de conformité, et chacun d'eux déplace la couleur."
+          },
+          {
+            "type": "ul",
+            "items": [
+              "Une nouvelle chimie pigmentaire modifie la densité d'encre nécessaire pour atteindre la même valeur LAB.",
+              "Les revêtements barrière sans PFAS changent l'énergie de surface et le brillant : un film d'encre identique se lit différemment au spectrophotomètre.",
+              "Un taux de recyclé plus élevé donne un blanc de base plus gris et plus variable, ce qui décale toutes les teintes imprimées par-dessus.",
+              "Le séchage et la prise changent, donc le trapping entre groupes change aussi, et c'est là que les tons directs partent en premier.",
+              "Un carton d'un nouveau fournisseur arrive avec son absorption propre : la prise d'encre n'est plus celle que le preset CIP3 attend."
+            ]
+          },
+          {
+            "type": "h3",
+            "text": "Une gamme d'encres conforme PPWR imprime-t-elle comme celle qu'elle remplace ?"
+          },
+          {
+            "type": "p",
+            "text": "Non. Elle est formulée pour atteindre la même cible couleur, pas pour se comporter de la même façon sur presse. La charge pigmentaire, le tack et la vitesse de prise bougent, et cela se traduit par une ouverture de vis d'encrier différente pour la même couverture, et par une autre courbe le long du tirage. La cible ne change pas. Le chemin pour l'atteindre, si, et le nombre de feuilles nécessaires aussi."
+          },
+          {
+            "type": "h2",
+            "text": "Où le coût atterrit vraiment"
+          },
+          {
+            "type": "p",
+            "text": "Le calage est l'endroit où se paie un changement d'encre ou de support. Le presetting d'encre à partir des données CIP3 ne vaut que ce que valent les courbes de correction derrière lui, et ces courbes ont été apprises sur le comportement de la presse avec l'encre précédente et le carton précédent. Changez les deux dans le même trimestre et les presets ouvrent les vis d'encrier trop ou pas assez. Le conducteur tire davantage de feuilles avant la première bonne, sur chaque travail, jusqu'à ce que les courbes rattrapent la réalité."
+          },
+          {
+            "type": "p",
+            "text": "Vingt feuilles de plus par changement de travail, cela paraît peu, jusqu'à ce que vous multipliiez par le nombre de calages d'un mix packaging en petites séries, aux prix du carton de 2026. Cette multiplication constitue l'essentiel d'un [calcul de ROI closed loop](/roi), et la reformulation en augmente le multiplicateur aussi longtemps que les matières continuent de bouger."
+          },
+          {
+            "type": "h3",
+            "text": "Comment tenir la couleur quand le support change en permanence ?"
+          },
+          {
+            "type": "p",
+            "text": "En cessant de vous appuyer sur les seuls presets, et en laissant la mesure piloter les vis d'encrier pendant le tirage. Le closed loop mesure la feuille, la compare à la cible et corrige zone par zone presse en marche : une nouvelle encre ou un nouveau carton est absorbé en quelques feuilles au lieu de quelques milliers. Le [guide complet du closed loop](/closed-loop-color-control) détaille la construction de la boucle, de la source de mesure jusqu'à l'interface console. Des systèmes de mesure comme IntelliTrax2 ou MeasureColor fournissent la donnée ; le closed loop est ce qui la transforme en mouvement de vis d'encrier sans que le conducteur ait à deviner."
+          },
+          {
+            "type": "h2",
+            "text": "Le volet documentaire, dit honnêtement"
+          },
+          {
+            "type": "p",
+            "text": "Le PPWR impose aussi une déclaration UE de conformité et un dossier technique pour chaque type d'emballage, conservés cinq ans pour l'emballage à usage unique et dix ans pour l'emballage réemployable, avec des preuves au niveau du composant pour les encres, vernis, pigments et matières recyclées. Tout changement d'encre, de vernis, de fournisseur ou de site de production oblige à mettre ce dossier à jour. L'emballage doit également porter le nom et l'adresse postale du fabricant et de l'importateur : la traçabilité descend désormais jusqu'à l'unité imprimée."
+          },
+          {
+            "type": "p",
+            "text": "Le closed loop ne teste pas les PFAS et ne certifie aucune substance. Il ne faut pas le vendre comme tel. Ce qu'il produit, c'est l'autre moitié du dossier : la donnée couleur mesurée de ce qui a réellement été imprimé, sur quel support, contre quelle cible, à quelle date, équipe par équipe. Quand une marque audite un panel de fournisseurs qui ont tous reformulé au même moment, c'est ce relevé qui sépare une affirmation d'une preuve."
+          },
+          {
+            "type": "h3",
+            "text": "Quelles exigences PPWR s'appliquent aux imprimeurs hors Union européenne ?"
+          },
+          {
+            "type": "p",
+            "text": "Toutes, dès lors que l'emballage est mis sur le marché européen. L'obligation suit l'emballage, pas l'usine. Un converter au Maroc, en Turquie, en Chine ou aux États-Unis qui imprime des étuis pour une marque européenne hérite des mêmes limites de substances et de la même documentation de conformité qu'un converter allemand."
+          },
+          {
+            "type": "h2",
+            "text": "Une seule spécification, tous les ateliers"
+          },
+          {
+            "type": "p",
+            "text": "C'est ce qui fait de cette reformulation un sujet mondial et non européen. Les marques ne maintiennent pas deux gammes d'encres, une pour l'Europe et une pour le reste du monde, quand la gamme européenne est la plus stricte. La spécification voyage, et le problème couleur voyage avec elle. Rutherford exploite plus de 1 000 systèmes dans plus de 30 pays, et les mêmes substitutions d'encres et de vernis arrivent dans les [ateliers nord-américains](/usa) comme dans les ateliers européens, sur des presses de générations très différentes."
+          },
+          {
+            "type": "p",
+            "text": "Le dossier de conformité sera clos par le service qualité. La couleur, elle, se règle sur presse, calage après calage. Si vous voulez savoir si votre console peut piloter un closed loop avant l'arrivée de la prochaine gamme reformulée, le [test d'éligibilité console](/console-validation) répond à partir de quelques photos."
+          }
+        ]
+      },
+      "de": {
+        "title": "PPWR: neue Farben, gleiches Farbziel",
+        "excerpt": "Die PPWR-Stoffgrenzwerte gelten seit dem 12. August 2026 und erfassen Druckfarben und Lacke. Reformulierte Farbserien erreichen die Maschine mit neuem Farbverhalten.",
+        "lead": "Die Europäische Kommission veröffentlichte ihre finalen PPWR-Leitlinien wenige Tage vor dem Geltungsbeginn am 12. August 2026. Die unmittelbarste Anforderung betrifft Stoffe: 100 mg/kg für vier Schwermetalle und PFAS-Grenzwerte für Lebensmittelkontaktverpackungen. Gemessen wird an der gesamten Verpackungseinheit, Druckfarben und Lacke eingeschlossen. Deshalb endet Compliance-Arbeit, die im Labor beginnt, in der Druckerei."
+      },
+      "it": {
+        "title": "PPWR: nuovi inchiostri, stesso target colore",
+        "excerpt": "I limiti sulle sostanze del PPWR si applicano dal 12 agosto 2026 e riguardano inchiostri e vernici: le serie riformulate arrivano in macchina con un altro comportamento colore.",
+        "lead": "La Commissione europea ha pubblicato le linee guida finali sul PPWR pochi giorni prima dell'entrata in applicazione, il 12 agosto 2026. Il requisito più immediato riguarda le sostanze: 100 mg/kg per quattro metalli pesanti e soglie PFAS per gli imballaggi a contatto con alimenti. I limiti si misurano sull'intera unità di imballaggio, inchiostri e vernici compresi, ed è per questo che un lavoro di conformità iniziato in laboratorio finisce in sala stampa."
+      },
+      "es": {
+        "title": "PPWR: nuevas tintas, mismo objetivo de color",
+        "excerpt": "Los límites de sustancias del PPWR se aplican desde el 12 de agosto de 2026 y alcanzan a tintas y barnices: las gamas reformuladas llegan a máquina con otro comportamiento de color.",
+        "lead": "La Comisión Europea publicó sus directrices finales del PPWR pocos días antes de la entrada en aplicación, el 12 de agosto de 2026. El requisito más inmediato es de sustancias: 100 mg/kg para cuatro metales pesados y umbrales de PFAS en envases en contacto con alimentos. Los límites se miden sobre la unidad de envase completa, tintas y barnices incluidos, y por eso un trabajo de conformidad que empieza en el laboratorio termina en la sala de prensa."
+      },
+      "pt": {
+        "title": "PPWR: tintas novas, mesmo alvo de cor",
+        "excerpt": "Os limites de substâncias do PPWR aplicam-se desde 12 de agosto de 2026 e abrangem tintas e vernizes: as gamas reformuladas chegam à máquina com outro comportamento de cor.",
+        "lead": "A Comissão Europeia publicou as orientações finais do PPWR poucos dias antes da entrada em aplicação, a 12 de agosto de 2026. O requisito mais imediato é de substâncias: 100 mg/kg para quatro metais pesados e limiares de PFAS nas embalagens em contacto com alimentos. Os limites medem-se sobre a unidade de embalagem completa, tintas e vernizes incluídos, e é por isso que um trabalho de conformidade iniciado em laboratório termina na sala de impressão."
+      }
+    },
+    "originalUrl": "https://rutherford.fr/blog/ppwr-substance-limits-ink-reformulation-color",
+    "sources": [
+      {
+        "label": "Intertek: EU PPWR requirements effective from August 2026",
+        "href": "https://www.intertek.com/products-retail/insight-bulletins/2026/1536-eu-ppwr-requirements-effective-from-august/"
+      },
+      {
+        "label": "Coolset: PPWR substance restrictions, PFAS and heavy metals",
+        "href": "https://www.coolset.com/academy/pfas-heavy-metals-ppwr"
+      },
+      {
+        "label": "Packaging Law: European Commission publishes final PPWR guidance",
+        "href": "https://www.packaginglaw.com/news/european-commission-publishes-final-ppwr-guidance-advance-august-2026-application-date"
+      }
+    ]
+  },
+  {
     "slug": "shorter-runs-makeready-cost-print-consolidation",
     "title": "Shorter runs, higher makeready cost",
     "excerpt": "European print capacity keeps consolidating, and the presses still running take shorter jobs, which pushes makeready cost per thousand sheets up.",

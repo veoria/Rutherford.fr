@@ -30,6 +30,7 @@ The entry point for any printer is the free **console validation**: submit a few
 - Brand eligibility pages: /console-validation/heidelberg, /komori, /koenig-bauer, /manroland, /mitsubishi, /ryobi, /goss, /presstek
 
 ## Recent articles
+- [PPWR: new inks, same color target](https://rutherford.fr/blog/ppwr-substance-limits-ink-reformulation-color): the PPWR substance limits applied on 12 August 2026 (100 mg/kg for four heavy metals, PFAS thresholds in food contact packaging) and are measured on the whole packaging unit including inks and coatings, so reformulated ink sets and PFAS-free barrier coatings reach the press with new color behavior that static presets no longer match
 - [Shorter runs, higher makeready cost](https://rutherford.fr/blog/shorter-runs-makeready-cost-print-consolidation): European print capacity keeps consolidating, the presses that stay loaded run shorter jobs, and makeready waste being a fixed cost per job makes cost per job change the number that decides which plants keep the work
 - [Closed loop at Cartonajes Pans](https://rutherford.fr/blog/cartonajes-pans-closed-loop-manroland): five IntelliTrax2 and Rutherford systems with MeasureColor, on Manroland Sheetfed presses of different generations.
 - [When extended gamut pays off](https://rutherford.fr/blog/extended-gamut-ecg-when-7-color-pays-off): extended gamut (CMYK plus orange, green and violet) reproduces about 90 percent of PANTONE tones and removes the ink change between jobs, but the break-even depends on the job mix, and a seven-ink build only holds inside tolerance on a press under closed loop control
@@ -37,7 +38,6 @@ The entry point for any printer is the free **console validation**: submit a few
 - [Three things printers get wrong about PPWR recyclability](https://rutherford.fr/blog/ppwr-recyclability-grades-what-printers-get-wrong): recyclability applies from 12 August 2026 not 2030, the grades are A, B and C only, and EN 18120 is not cited in the Official Journal so it carries no presumption of conformity
 - [What makes a press console closed-loop ready](https://rutherford.fr/blog/press-console-closed-loop-compatibility): the ink-key interface, measurement source and mechanical baseline a console needs, brand by brand, and how the free eligibility check settles it from a few photographs
 - [Why brand colors are harder to hold than process colors](https://rutherford.fr/blog/spot-color-tolerances-packaging-pantone): why spot colors on large flat areas drift more and are judged more harshly than pictorial content, and what holds them in range across a run
-- [Paper prices up: what waste really costs now](https://rutherford.fr/blog/paper-price-increases-2026-makeready-waste-cost): the 2026 paper price increases in Europe and Asia make every spoiled makeready sheet more expensive, and cutting sheets to color with closed loop is the lever printers still control
 
 ## Contact
 
