@@ -1,5 +1,238 @@
 [
   {
+    "slug": "offset-press-retrofit-color-control",
+    "title": "Offset press retrofit, not replacement",
+    "excerpt": "Komori is buying a semiconductor chiller maker. When press builders diversify, an offset press retrofit becomes the realistic route to better color.",
+    "lead": "Komori confirmed in mid August 2026 a 250 million dollar acquisition of Maruyama Chiller, a Japanese manufacturer of temperature control units for semiconductor production. It is the third large offset press builder to put serious money outside printing, after Heidelberg and RMGT. For a printer the consequence is practical rather than strategic: the press in your hall has to stay competitive longer, on upgrades that will not arrive in a new machine.",
+    "image": "/images/colorloop/dsc7212.jpg",
+    "publishedAt": "2026-08-24",
+    "category": "News",
+    "paragraphs": [
+      "Komori confirmed in mid August 2026 that it is acquiring Maruyama Chiller Corporation, a maker of temperature control units for semiconductor production equipment, in a deal valued at about 250 million dollars, with the share transfer due to complete on 2 October 2026. Heidelberg has already built businesses in charging stations, sodium ion energy storage and defense. RMGT makes automotive components alongside presses.",
+      "None of this means offset is being abandoned: Komori's own press sales grew 2.5 percent in the quarter to June 2026, carried by sheetfed. It does mean that engineering attention and capital follow revenue growth elsewhere, so the cadence of genuinely new offset platforms slows while the installed base is asked to keep working.",
+      "That changes the question in the pressroom. A sheetfed press bought in 2012 is a mid life asset that will print for another decade, so the decision stops being when to replace it and becomes what to add to it. On an offset press the last process still driven by human judgement at full speed is color, and closed loop control is the part that can be retrofitted to a press already installed.",
+      "Closed loop color control attaches to the console interface an existing press already has, measures the sheet, and drives the ink zones automatically during the run. The same architecture runs on Heidelberg, Komori, Manroland, Koenig and Bauer and Mitsubishi presses of very different ages, in the 1,000 plus systems installed in more than 30 countries."
+    ],
+    "body": [
+      {
+        "type": "p",
+        "text": "Komori confirmed in mid August 2026 that it is acquiring Maruyama Chiller Corporation, a Japanese manufacturer of temperature control units for semiconductor production equipment, in a deal valued at about 250 million dollars. The share transfer is expected to complete on 2 October 2026 and Maruyama becomes a wholly owned subsidiary. Nothing in that sentence is about printing."
+      },
+      {
+        "type": "p",
+        "text": "It is not an isolated move. Heidelberg has built a second business around Amperfied charging stations, signed a partnership with PHENOGY on sodium ion energy storage, and set up ONBERG, a defense joint venture with Ondas. RMGT makes automotive components alongside presses. Among the large offset builders, Koenig and Bauer is close to the only one still concentrating on printing alone. The financial background is not hidden either: Heidelberg reported net sales of 404 million euros in the first quarter of its 2026/27 financial year, down 13.3 percent year on year, with an adjusted EBITDA margin of 0.2 percent against 4.4 percent a year earlier."
+      },
+      {
+        "type": "h2",
+        "text": "What OEM diversification means for an offset press retrofit"
+      },
+      {
+        "type": "p",
+        "text": "A press builder that finds growth in chillers, chargers or defense systems is not abandoning offset. Komori's press sales grew 2.5 percent in the quarter to June 2026, carried by sheetfed. But engineering attention, capital and product roadmaps follow revenue growth, and that has a predictable effect in the pressroom: the cadence of genuinely new offset platforms slows down while the installed base is asked to keep working."
+      },
+      {
+        "type": "p",
+        "text": "Most European and North American pressrooms already run that way. A sheetfed press bought in 2012 is a mid life asset, not an old one, and it will print for another decade. The question stops being when to replace it and becomes what to add to it."
+      },
+      {
+        "type": "ul",
+        "items": [
+          "Presses stay in production longer, so the gap between the newest machine in the hall and the oldest keeps widening.",
+          "Consoles, ink zone electronics and measurement hardware age at a different speed from the printing units they sit next to.",
+          "New requirements, PPWR documentation among them, arrive faster than press replacement cycles.",
+          "Brand owners judge every plant against one color specification, whatever the age of the equipment behind it.",
+          "Capital for a new press is harder to justify in a market where volume is flat and job length keeps falling."
+        ]
+      },
+      {
+        "type": "h3",
+        "text": "Does a press builder moving into other markets make my press obsolete?"
+      },
+      {
+        "type": "p",
+        "text": "No. It makes the press a longer term asset than the purchase plan assumed. Parts, service and consumables continue, and offset remains profitable for the builders. What changes is where improvement comes from: less from the next machine generation, more from what you add to the machine you already run."
+      },
+      {
+        "type": "h2",
+        "text": "The upgrade that does not need a new press"
+      },
+      {
+        "type": "p",
+        "text": "On an offset press, the last process still driven by human judgement at full speed is color. Ink presetting from CIP3 data gets the first sheets close, then an operator reads the sheet and moves the ink keys, and the accuracy of the run depends on how often that loop is repeated. Closed loop color control replaces the human half of it: the sheet is measured, the measurement is compared against the target, and the corrections go back to the ink zones automatically while the press runs."
+      },
+      {
+        "type": "p",
+        "text": "That is a retrofit, not a machine. It connects to the console interface an existing press already has, takes its readings from a scanning spectrophotometer such as IntelliTrax2 or from MeasureColor, and leaves the printing units untouched. It is also why the same architecture runs on Heidelberg, Komori, Manroland, Koenig and Bauer and Mitsubishi presses of very different generations, in the 1,000 plus systems installed in more than 30 countries."
+      },
+      {
+        "type": "h3",
+        "text": "Can closed loop color control be added to an existing offset press?"
+      },
+      {
+        "type": "p",
+        "text": "In most cases yes. What decides it is the console, not the age of the press: the system needs a usable ink key interface, a measurement source and a mechanically sound ink train. Presses built from the mid 1990s onward are frequently eligible. [What a console needs to be closed loop ready](/blog/press-console-closed-loop-compatibility) goes through the interfaces brand by brand, and a [free console validation](/console-validation) settles the question from a few photographs of your console and press plate."
+      },
+      {
+        "type": "h2",
+        "text": "Long life presses are a worldwide pattern"
+      },
+      {
+        "type": "p",
+        "text": "The consolidation is European, the installed base logic is not. Komori's own quarter shows how uneven the market is: sales in Europe up 40 percent, sales in the United States down 40 percent, over the same three months. Plants in [North America](/usa), Asia and Latin America are making the same arbitration between a capital purchase and an upgrade to the presses already installed, and the brand owners buying from all of them apply one specification across every site."
+      },
+      {
+        "type": "p",
+        "text": "That is the practical argument for standardising on a color control layer that is independent of press brand and press generation. When a group runs a 2008 press in one country and a 2024 press in another, the only way both hold the same DeltaE is for the same measurement and correction logic to sit on both."
+      },
+      {
+        "type": "h3",
+        "text": "How do I know a retrofit pays before committing to it?"
+      },
+      {
+        "type": "p",
+        "text": "Run the arithmetic on makeready waste, not on the price of the system. Count the sheets pulled before the first good sheet, multiply by the number of job changes in a month, then by the cost of the board. [The ROI calculation](/roi) does exactly that, and short run packaging work makes the multiplier larger every year."
+      },
+      {
+        "type": "h2",
+        "text": "The press you own is the one to improve"
+      },
+      {
+        "type": "p",
+        "text": "Press builders diversifying is a signal about their revenue mix, not a verdict on offset. It does tell printers where to look for the next productivity gain, and it is not in a catalogue of new machines. It is in the loop between the sheet and the ink keys on the presses already installed. The [complete guide to closed loop color control](/closed-loop-color-control) sets out how that loop works, and [Offset360](/offset360) is the bundle that puts measurement, software and control together on an existing press."
+      }
+    ],
+    "i18n": {
+      "fr": {
+        "title": "Moderniser la presse, pas la remplacer",
+        "excerpt": "Komori rachète un fabricant de refroidisseurs pour semi-conducteurs. Quand les constructeurs se diversifient, le retrofit de la presse offset devient la vraie voie.",
+        "lead": "Komori a confirmé mi août 2026 le rachat de Maruyama Chiller, fabricant japonais d'unités de régulation thermique pour la production de semi-conducteurs, pour environ 250 millions de dollars. C'est le troisième grand constructeur de presses offset à investir sérieusement hors de l'impression, après Heidelberg et RMGT. Pour un imprimeur, la conséquence est concrète : la presse de votre atelier devra rester compétitive plus longtemps, avec des améliorations qui n'arriveront pas dans une machine neuve.",
+        "body": [
+          {
+            "type": "p",
+            "text": "Komori a confirmé mi août 2026 le rachat de Maruyama Chiller Corporation, fabricant japonais d'unités de régulation thermique pour les équipements de production de semi-conducteurs, pour environ 250 millions de dollars. Le transfert des actions doit être finalisé le 2 octobre 2026 et Maruyama devient une filiale à 100 pour cent. Rien dans cette phrase ne parle d'impression."
+          },
+          {
+            "type": "p",
+            "text": "Ce n'est pas un cas isolé. Heidelberg a bâti une seconde activité autour des bornes de recharge Amperfied, signé un partenariat avec PHENOGY sur le stockage d'énergie sodium ion, et créé ONBERG, une coentreprise de défense avec Ondas. RMGT fabrique des composants automobiles en parallèle de ses presses. Parmi les grands constructeurs offset, Koenig and Bauer est à peu près le seul à rester concentré sur l'impression seule. Le contexte financier n'est pas caché non plus : Heidelberg a publié un chiffre d'affaires de 404 millions d'euros au premier trimestre de son exercice 2026/27, en recul de 13,3 pour cent sur un an, avec une marge d'EBITDA ajusté de 0,2 pour cent contre 4,4 pour cent un an plus tôt."
+          },
+          {
+            "type": "h2",
+            "text": "Ce que la diversification des constructeurs change pour le retrofit d'une presse offset"
+          },
+          {
+            "type": "p",
+            "text": "Un constructeur qui trouve sa croissance dans les refroidisseurs, les bornes ou la défense n'abandonne pas l'offset. Les ventes de presses de Komori ont progressé de 2,5 pour cent sur le trimestre clos en juin 2026, portées par le feuille à feuille. Mais l'attention des bureaux d'études, les capitaux et les feuilles de route suivent la croissance, avec un effet prévisible dans l'atelier : le rythme des plateformes offset réellement nouvelles ralentit pendant qu'on demande au parc installé de continuer à produire."
+          },
+          {
+            "type": "p",
+            "text": "La plupart des ateliers européens et nord-américains fonctionnent déjà ainsi. Une presse feuille à feuille achetée en 2012 est un actif de milieu de vie, pas une vieille machine, et elle imprimera encore une décennie. La question n'est plus quand la remplacer, mais quoi lui ajouter."
+          },
+          {
+            "type": "ul",
+            "items": [
+              "Les presses restent en production plus longtemps, donc l'écart entre la machine la plus récente de l'atelier et la plus ancienne se creuse.",
+              "Les consoles, l'électronique des zones d'encrage et le matériel de mesure vieillissent à une autre vitesse que les groupes d'impression qu'ils pilotent.",
+              "Les nouvelles exigences, la documentation PPWR par exemple, arrivent plus vite que les cycles de renouvellement des presses.",
+              "Les marques jugent chaque site sur un seul cahier des charges couleur, quel que soit l'âge des équipements derrière.",
+              "Un investissement dans une presse neuve se justifie plus difficilement sur un marché où les volumes stagnent et où les tirages raccourcissent."
+            ]
+          },
+          {
+            "type": "h3",
+            "text": "Un constructeur qui se diversifie rend-il ma presse obsolète ?"
+          },
+          {
+            "type": "p",
+            "text": "Non. Il en fait un actif à durée de vie plus longue que ce que prévoyait le plan d'achat. Les pièces, le service et les consommables continuent, et l'offset reste rentable pour les constructeurs. Ce qui change, c'est l'origine des gains : moins la génération de machine suivante, davantage ce que vous ajoutez à la machine que vous exploitez déjà."
+          },
+          {
+            "type": "h2",
+            "text": "L'amélioration qui ne demande pas de presse neuve"
+          },
+          {
+            "type": "p",
+            "text": "Sur une presse offset, le dernier processus encore piloté au jugé à pleine vitesse, c'est la couleur. Le prérèglage d'encrage à partir des données CIP3 approche les premières feuilles, puis un conducteur lit la feuille et agit sur les vis d'encrier, et la précision du tirage dépend de la fréquence à laquelle cette boucle est répétée. Le closed loop remplace la moitié humaine de cette boucle : la feuille est mesurée, la mesure est comparée à la cible, et les corrections repartent vers les zones d'encrage automatiquement pendant que la presse tourne."
+          },
+          {
+            "type": "p",
+            "text": "C'est un retrofit, pas une machine. Le système se connecte à l'interface de console dont la presse dispose déjà, prend ses mesures sur un spectrophotomètre à balayage comme IntelliTrax2 ou depuis MeasureColor, et ne touche pas aux groupes d'impression. C'est aussi pour cela que la même architecture tourne sur des presses Heidelberg, Komori, Manroland, Koenig and Bauer et Mitsubishi de générations très différentes, dans les 1 000 systèmes et plus installés dans plus de 30 pays."
+          },
+          {
+            "type": "h3",
+            "text": "Peut-on ajouter le closed loop sur une presse offset existante ?"
+          },
+          {
+            "type": "p",
+            "text": "Dans la majorité des cas, oui. Ce qui décide, c'est la console, pas l'âge de la presse : il faut une interface de commande d'encrage exploitable, une source de mesure et un groupe encreur en bon état mécanique. Les presses construites à partir du milieu des années 1990 sont fréquemment éligibles. [Ce qu'il faut à une console pour être closed loop](/blog/press-console-closed-loop-compatibility) détaille les interfaces marque par marque, et une [validation console gratuite](/console-validation) tranche la question à partir de quelques photos de votre console et de la plaque de la presse."
+          },
+          {
+            "type": "h2",
+            "text": "Les presses à longue durée de vie, un phénomène mondial"
+          },
+          {
+            "type": "p",
+            "text": "La consolidation est européenne, la logique du parc installé ne l'est pas. Le trimestre de Komori montre à quel point le marché est contrasté : ventes en hausse de 40 pour cent en Europe, en baisse de 40 pour cent aux États-Unis, sur les mêmes trois mois. Les sites d'[Amérique du Nord](/usa), d'Asie et d'Amérique latine font le même arbitrage entre un investissement machine et une amélioration des presses déjà installées, et les marques qui achètent chez tous appliquent un seul cahier des charges à chaque site."
+          },
+          {
+            "type": "p",
+            "text": "C'est l'argument concret pour standardiser sur une couche de contrôle couleur indépendante de la marque et de la génération de presse. Quand un groupe exploite une presse de 2008 dans un pays et une presse de 2024 dans un autre, le seul moyen que les deux tiennent le même DeltaE, c'est que la même logique de mesure et de correction soit installée sur les deux."
+          },
+          {
+            "type": "h3",
+            "text": "Comment savoir si un retrofit est rentable avant de s'engager ?"
+          },
+          {
+            "type": "p",
+            "text": "Faites le calcul sur la gâche au calage, pas sur le prix du système. Comptez les feuilles passées avant la première feuille bonne, multipliez par le nombre de changements de travail dans le mois, puis par le coût du support. [Le calcul de ROI](/roi) fait exactement cela, et le packaging en petits tirages augmente ce multiplicateur chaque année."
+          },
+          {
+            "type": "h2",
+            "text": "La presse à améliorer est celle que vous avez"
+          },
+          {
+            "type": "p",
+            "text": "La diversification des constructeurs dit quelque chose de leur mix de revenus, pas de l'avenir de l'offset. Elle indique en revanche aux imprimeurs où chercher le prochain gain de productivité, et ce n'est pas dans un catalogue de machines neuves. C'est dans la boucle entre la feuille et les vis d'encrier sur les presses déjà installées. Le [guide complet du closed loop](/closed-loop-color-control) explique comment cette boucle fonctionne, et [Offset360](/offset360) est le bundle qui réunit mesure, logiciel et pilotage sur une presse existante."
+          }
+        ]
+      },
+      "de": {
+        "title": "Nachrüsten statt Neukauf",
+        "excerpt": "Komori kauft einen Hersteller von Halbleiter-Chillern. Wenn Druckmaschinenbauer diversifizieren, wird die Nachrüstung der Offsetmaschine zum realistischen Weg.",
+        "lead": "Komori hat Mitte August 2026 die Übernahme von Maruyama Chiller für rund 250 Millionen Dollar bestätigt, einem japanischen Hersteller von Temperiergeräten für die Halbleiterfertigung. Es ist der dritte grosse Offsetmaschinenbauer, der ausserhalb des Drucks investiert, nach Heidelberg und RMGT. Für eine Druckerei heisst das ganz praktisch: Ihre Maschine muss länger wettbewerbsfähig bleiben, mit Verbesserungen, die nicht in einer neuen Maschine geliefert werden."
+      },
+      "it": {
+        "title": "Retrofit invece di sostituzione",
+        "excerpt": "Komori acquista un produttore di chiller per semiconduttori. Quando i costruttori si diversificano, il retrofit della macchina offset diventa la strada realistica.",
+        "lead": "A metà agosto 2026 Komori ha confermato l'acquisizione di Maruyama Chiller per circa 250 milioni di dollari, produttore giapponese di unità di controllo termico per la produzione di semiconduttori. È il terzo grande costruttore di macchine offset a investire fuori dalla stampa, dopo Heidelberg e RMGT. Per uno stampatore la conseguenza è concreta: la macchina in reparto dovrà restare competitiva più a lungo, con miglioramenti che non arriveranno dentro una macchina nuova."
+      },
+      "es": {
+        "title": "Retrofit en vez de sustitución",
+        "excerpt": "Komori compra un fabricante de enfriadores para semiconductores. Cuando los constructores se diversifican, el retrofit de la prensa offset es la vía realista.",
+        "lead": "Komori confirmó a mediados de agosto de 2026 la compra de Maruyama Chiller por unos 250 millones de dólares, fabricante japonés de unidades de control térmico para la producción de semiconductores. Es el tercer gran constructor de prensas offset que invierte fuera de la impresión, después de Heidelberg y RMGT. Para un impresor la consecuencia es práctica: su prensa deberá seguir siendo competitiva más tiempo, con mejoras que no llegarán dentro de una máquina nueva."
+      },
+      "pt": {
+        "title": "Retrofit em vez de substituição",
+        "excerpt": "A Komori compra um fabricante de chillers para semicondutores. Quando os construtores se diversificam, o retrofit da máquina offset é a via realista.",
+        "lead": "A Komori confirmou em meados de agosto de 2026 a compra da Maruyama Chiller por cerca de 250 milhões de dólares, fabricante japonês de unidades de controlo térmico para a produção de semicondutores. É o terceiro grande construtor de máquinas offset a investir fora da impressão, depois da Heidelberg e da RMGT. Para um impressor a consequência é prática: a sua máquina terá de se manter competitiva mais tempo, com melhorias que não chegarão dentro de uma máquina nova."
+      }
+    },
+    "originalUrl": "https://rutherford.fr/blog/offset-press-retrofit-color-control",
+    "sources": [
+      {
+        "label": "Print21: Komori to diversify in $250m move",
+        "href": "https://print21.com.au/omori-to-diversify-in-250m-move/"
+      },
+      {
+        "label": "TipRanks: Komori to acquire Maruyama Chiller in push into semiconductor equipment",
+        "href": "https://www.tipranks.com/news/company-announcements/komori-to-acquire-maruyama-chiller-in-push-into-semiconductor-equipment"
+      },
+      {
+        "label": "Investing.com: Heidelberg Q1 FY27 slides, diversification push amid margin pressure",
+        "href": "https://ca.investing.com/news/company-news/heidelberg-q1-fy27-slides-diversification-push-amid-margin-pressure-93CH-4807382"
+      }
+    ]
+  },
+  {
     "slug": "ppwr-substance-limits-ink-reformulation-color",
     "title": "PPWR: new inks, same color target",
     "excerpt": "PPWR substance limits applied on 12 August 2026 and they cover inks and coatings, so reformulated ink sets are reaching the press with new color behavior.",
