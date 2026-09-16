@@ -1,5 +1,266 @@
 [
   {
+    "slug": "g7-calibration-european-printers-north-america",
+    "title": "G7 for European exporters",
+    "excerpt": "North American buyers ask for G7 calibration. How European printers already on ISO 12647-2 add G7 and hold it on press through every production run.",
+    "lead": "A European printer that wins work from a brand in the United States or Canada usually meets the same line in the specification: G7 required. It rarely means abandoning ISO 12647-2 or PSO. It means proving a second, appearance based target, and holding it through every production run, not just on the day of the test.",
+    "image": "/images/offset-printing-09-10-2020.jpg",
+    "publishedAt": "2026-09-16",
+    "category": "Standards",
+    "paragraphs": [
+      "North American brand owners and packaging buyers usually specify G7 calibration, often with GRACoL 2013 as the reference print condition. For a European printer built around ISO 12647-2 and PSO this is not a change of standard: G7 is a calibration method based on gray balance and a neutral print density curve, and it sits on top of the process control already in place.",
+      "The G7 Master qualification has three tiers: Grayscale for gray balance and tonality, Targeted for the solids and overprints of a reference such as GRACoL 2013, and Colorspace for the full reference print condition, which contract proofing requires. Qualification is carried out with a certified G7 Expert, evaluated by an independent laboratory and valid for one year.",
+      "GRACoL 2013 and Fogra51 are close but built on different characterization data (CGATS21-2 CRPC6 and FOGRA51), so an exporter should separate, proof and measure against the dataset named in the customer specification, job by job.",
+      "The hard part is holding G7 through twelve months of production. Closed loop color control measures the color bar during the run with IntelliTrax2 and MeasureColor, and ColorLoop corrects the ink keys automatically, against G7 for the export job and ISO 12647-2 for the next one, with the measurements kept as a record for the buyer."
+    ],
+    "body": [
+      {
+        "type": "p",
+        "text": "A European printer that wins work from a North American brand owner usually finds the same line in the print specification: G7 required, often with GRACoL 2013 as the reference. For a plant built around ISO 12647-2 and PSO, that reads like a change of doctrine. It is not. G7 calibration is a method for setting up a press, and it sits comfortably on top of the process control a European shop already runs. The real work lies elsewhere: holding the result through production, job after job, on presses that were calibrated once."
+      },
+      {
+        "type": "h2",
+        "text": "Why G7 calibration matters to European printers exporting to North America"
+      },
+      {
+        "type": "p",
+        "text": "G7 is the calibration method maintained by Idealliance, now part of PRINTING United Alliance, and it is the dominant reference in the North American print supply chain. Brand owners, packaging buyers and prepress houses in the United States and Canada build their files, proofs and approval routines around it. When they add a supplier in Europe, they do not rewrite that chain for one plant. They ask the plant to join it."
+      },
+      {
+        "type": "p",
+        "text": "In practice the request arrives in three forms, sometimes all at once:"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "A qualification requirement: the facility must hold a current G7 Master certification at a stated level.",
+          "A print condition: files are separated and proofed to GRACoL 2013 (CRPC6) rather than to Fogra51 and PSO Coated v3.",
+          "A reporting requirement: measured press sheets, or a conformance report, delivered with the job."
+        ]
+      },
+      {
+        "type": "h3",
+        "text": "Do European printers need G7 if they already run ISO 12647-2?"
+      },
+      {
+        "type": "p",
+        "text": "Only when the customer asks for it, but export customers usually do. ISO 12647-2 and G7 are not competing standards: many shops calibrate with G7 and verify against ISO 12647-2 aim values, and one press can satisfy both. The [comparison of G7 and ISO 12647](/blog/g7-vs-iso-12647-offset-color) explains the difference in method, and what it changes for a pressroom that already controls tone value increase color by color."
+      },
+      {
+        "type": "h2",
+        "text": "What G7 asks of an offset press"
+      },
+      {
+        "type": "p",
+        "text": "ISO 12647-2 fixes numbers per color: the Lab values of the solids, the tone value increase curves, the tolerances. G7 starts from appearance. It defines a neutral print density curve and a gray balance relative to the substrate, so that two presses on different papers and different continents produce grays and tonality that look the same. The [glossary entry for G7](/glossary#g7) gives the short version. The pressroom version is that gray balance becomes the thing you watch, because a gray with a cast shows a problem before any single solid drifts out of tolerance."
+      },
+      {
+        "type": "p",
+        "text": "The G7 Master qualification has three tiers, each including the one before:"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "G7 Grayscale: neutral gray balance and tonality, for work where no specific color space has to be matched.",
+          "G7 Targeted: Grayscale, plus solid primaries and overprints that hit the Lab aims of a reference such as GRACoL 2013.",
+          "G7 Colorspace: Targeted, plus a match to the whole reference print condition, the level required for contract proofing."
+        ]
+      },
+      {
+        "type": "h3",
+        "text": "Which G7 level does an export customer usually expect?"
+      },
+      {
+        "type": "p",
+        "text": "Packaging and brand work rarely stops at Grayscale, because the brand owner wants the process colors, not only the grays, to land where the proof says. Targeted is the usual starting point for an offset supplier, Colorspace when the same plant also produces proofs. Qualification is carried out with a certified G7 Expert, the measured sheets are evaluated by an independent laboratory, and the certification is valid for one year."
+      },
+      {
+        "type": "h2",
+        "text": "GRACoL 2013 and Fogra51: close, not interchangeable"
+      },
+      {
+        "type": "p",
+        "text": "European printers sometimes assume that GRACoL 2013 and Fogra51 are the same premium coated condition under two names. They are close: both describe high quality coated stock, both are measured in M1 to account for optical brighteners, and both can be reached from ISO 12647-2 aims. But they are built from different characterization data, CGATS21-2 CRPC6 on one side and FOGRA51 on the other, and a contract proof made to one is not a proof of the other. The practical rule for an exporter is simple: separate, proof and measure against the dataset named in the customer specification, and attach that choice to the job, not to the press."
+      },
+      {
+        "type": "h2",
+        "text": "Calibration lasts a day, the certification lasts a year"
+      },
+      {
+        "type": "p",
+        "text": "This is where most export programs run into trouble. A G7 calibration is performed under controlled conditions: fresh plates, stable ink, the right paper, an expert watching the numbers. The certification then covers twelve months of real production, with different operators, different board lots, a fountain solution that warms up through the shift and ink zones that drift as the run goes on. A press that passed in March can be printing grays with a visible cast in June without anyone having touched a curve."
+      },
+      {
+        "type": "p",
+        "text": "The buyer in North America never sees the calibration day. They see the pallets that arrive, and more and more often the measurement data that comes with them."
+      },
+      {
+        "type": "h3",
+        "text": "How do you keep G7 gray balance stable through a production run?"
+      },
+      {
+        "type": "p",
+        "text": "By measuring during the run and correcting the ink zones from the measurement, not from the operator's eye. A scanning spectrophotometer such as X-Rite IntelliTrax2 reads the color bar, MeasureColor compares it with the target, and ColorLoop sends the correction back to the ink keys on the console while the press runs. The target can be G7 and GRACoL 2013 for the export job and ISO 12647-2 for the next one, and the measurements stored along the way are the record you send with the delivery."
+      },
+      {
+        "type": "h2",
+        "text": "One plant, two references, the same loop"
+      },
+      {
+        "type": "p",
+        "text": "Few European exporters print only for North America. The same hall runs a job for a Paris brand to PSO in the morning and a job for a [United States](/usa) retailer to GRACoL in the afternoon, and a group with a converting plant in [Canada](/canada) wants both sites to look alike on the shelf. The pattern repeats worldwide: plants in Asia and Latin America supplying North American brands face the same double specification. What makes it manageable is not a second calibration team but a single control layer that switches target per job and holds whichever one is loaded, which is how the 1,000+ closed loop systems installed in more than 30 countries are used day to day."
+      },
+      {
+        "type": "p",
+        "text": "G7 sets the destination. Closed loop control keeps the press on it for the whole year the certification covers. The [complete guide to closed loop color control](/closed-loop-color-control) explains how measurement, comparison and correction work together on an existing press, whatever standard sits at the end of the loop."
+      }
+    ],
+    "i18n": {
+      "fr": {
+        "title": "G7 pour les exportateurs européens",
+        "excerpt": "Les acheteurs nord-américains exigent la calibration G7. Comment un imprimeur européen déjà en ISO 12647-2 l'ajoute et la tient pendant tout le tirage.",
+        "lead": "Un imprimeur européen qui remporte un marché auprès d'une marque aux États-Unis ou au Canada trouve presque toujours la même ligne dans le cahier des charges : G7 exigé. Cela ne veut presque jamais dire abandonner l'ISO 12647-2 ou le PSO. Cela veut dire prouver une seconde cible, fondée sur l'apparence, et la tenir à chaque tirage de production, pas seulement le jour du test.",
+        "body": [
+          {
+            "type": "p",
+            "text": "Un imprimeur européen qui remporte un marché auprès d'une marque nord-américaine trouve presque toujours la même ligne dans le cahier des charges impression : G7 exigé, souvent avec GRACoL 2013 comme référence. Pour un site construit autour de l'ISO 12647-2 et du PSO, cela ressemble à un changement de doctrine. Ce n'en est pas un. La calibration G7 est une méthode de réglage de la presse, et elle s'ajoute sans difficulté au contrôle de process qu'un atelier européen pratique déjà. Le vrai travail est ailleurs : tenir le résultat en production, travail après travail, sur des presses calibrées une seule fois."
+          },
+          {
+            "type": "h2",
+            "text": "Pourquoi la calibration G7 compte pour les imprimeurs européens qui exportent vers l'Amérique du Nord"
+          },
+          {
+            "type": "p",
+            "text": "Le G7 est la méthode de calibration maintenue par Idealliance, aujourd'hui intégrée à PRINTING United Alliance, et c'est la référence dominante de la chaîne graphique nord-américaine. Marques, acheteurs packaging et studios de prépresse aux États-Unis et au Canada construisent leurs fichiers, leurs épreuves et leurs circuits de validation autour de lui. Quand ils ajoutent un fournisseur en Europe, ils ne réécrivent pas cette chaîne pour un seul site. Ils demandent au site de la rejoindre."
+          },
+          {
+            "type": "p",
+            "text": "Dans les faits, la demande arrive sous trois formes, parfois toutes à la fois :"
+          },
+          {
+            "type": "ul",
+            "items": [
+              "Une exigence de qualification : le site doit détenir une certification G7 Master en cours de validité, à un niveau précisé.",
+              "Une condition d'impression : les fichiers sont séparés et épreuvés en GRACoL 2013 (CRPC6) plutôt qu'en Fogra51 et PSO Coated v3.",
+              "Une exigence de reporting : des feuilles mesurées, ou un rapport de conformité, livrés avec le travail."
+            ]
+          },
+          {
+            "type": "h3",
+            "text": "Un imprimeur européen a-t-il besoin du G7 s'il travaille déjà en ISO 12647-2 ?"
+          },
+          {
+            "type": "p",
+            "text": "Seulement si le client le demande, mais les clients export le demandent généralement. L'ISO 12647-2 et le G7 ne sont pas des normes concurrentes : beaucoup d'ateliers calibrent en G7 puis vérifient contre les valeurs cibles de l'ISO 12647-2, et une même presse peut satisfaire les deux. La [comparaison entre G7 et ISO 12647](/blog/g7-vs-iso-12647-offset-color) détaille la différence de méthode, et ce qu'elle change pour un atelier qui contrôle déjà l'engraissement couleur par couleur."
+          },
+          {
+            "type": "h2",
+            "text": "Ce que le G7 demande à une presse offset"
+          },
+          {
+            "type": "p",
+            "text": "L'ISO 12647-2 fixe des valeurs par couleur : les Lab des aplats, les courbes d'engraissement, les tolérances. Le G7 part de l'apparence. Il définit une courbe de densité neutre et un équilibre des gris relatifs au support, pour que deux presses sur des papiers différents et des continents différents produisent des gris et une tonalité qui se ressemblent. La [définition du G7 dans le glossaire](/glossary#g7) en donne la version courte. La version atelier, c'est que l'équilibre des gris devient ce que vous surveillez, car un gris qui prend une dominante révèle un problème avant qu'un aplat ne sorte de tolérance."
+          },
+          {
+            "type": "p",
+            "text": "La qualification G7 Master comporte trois niveaux, chacun incluant le précédent :"
+          },
+          {
+            "type": "ul",
+            "items": [
+              "G7 Grayscale : équilibre des gris neutre et tonalité, pour les travaux où aucun espace colorimétrique précis n'est à atteindre.",
+              "G7 Targeted : Grayscale, plus des aplats primaires et des superpositions qui atteignent les valeurs Lab d'une référence comme GRACoL 2013.",
+              "G7 Colorspace : Targeted, plus la conformité à l'ensemble de la condition d'impression de référence, niveau exigé pour l'épreuvage contractuel."
+            ]
+          },
+          {
+            "type": "h3",
+            "text": "Quel niveau G7 un client export attend-il en général ?"
+          },
+          {
+            "type": "p",
+            "text": "Le packaging et les travaux de marque s'arrêtent rarement au niveau Grayscale, car la marque veut que les couleurs process, et pas seulement les gris, tombent là où l'épreuve l'indique. Targeted est le point de départ habituel pour un imprimeur offset, Colorspace quand le même site produit aussi les épreuves. La qualification se fait avec un G7 Expert certifié, les feuilles mesurées sont évaluées par un laboratoire indépendant, et la certification est valable un an."
+          },
+          {
+            "type": "h2",
+            "text": "GRACoL 2013 et Fogra51 : proches, pas interchangeables"
+          },
+          {
+            "type": "p",
+            "text": "Les imprimeurs européens supposent parfois que GRACoL 2013 et Fogra51 désignent la même condition couché premium sous deux noms. Elles sont proches : toutes deux décrivent un papier couché de qualité, toutes deux sont mesurées en M1 pour tenir compte des azurants optiques, et toutes deux sont atteignables à partir des valeurs cibles de l'ISO 12647-2. Mais elles reposent sur des données de caractérisation différentes, CGATS21-2 CRPC6 d'un côté et FOGRA51 de l'autre, et une épreuve contractuelle faite pour l'une ne vaut pas pour l'autre. La règle pratique pour un exportateur est simple : séparer, épreuver et mesurer selon le jeu de données cité dans le cahier des charges du client, et rattacher ce choix au travail, pas à la presse."
+          },
+          {
+            "type": "h2",
+            "text": "La calibration dure un jour, la certification dure un an"
+          },
+          {
+            "type": "p",
+            "text": "C'est là que la plupart des programmes export se heurtent à la réalité. Une calibration G7 se fait dans des conditions maîtrisées : plaques neuves, encre stable, bon papier, un expert qui surveille les chiffres. La certification couvre ensuite douze mois de production réelle, avec des conducteurs différents, des lots de carton différents, une solution de mouillage qui monte en température au fil de l'équipe et des zones d'encrage qui dérivent pendant le tirage. Une presse validée en mars peut imprimer en juin des gris avec une dominante visible sans que personne n'ait touché une courbe."
+          },
+          {
+            "type": "p",
+            "text": "L'acheteur nord-américain ne voit jamais le jour de la calibration. Il voit les palettes qui arrivent, et de plus en plus souvent les données de mesure qui les accompagnent."
+          },
+          {
+            "type": "h3",
+            "text": "Comment tenir l'équilibre des gris G7 pendant tout un tirage ?"
+          },
+          {
+            "type": "p",
+            "text": "En mesurant pendant le tirage et en corrigeant les zones d'encrage à partir de la mesure, pas à l'œil du conducteur. Un spectrophotomètre à balayage comme X-Rite IntelliTrax2 lit la barre de contrôle, MeasureColor la compare à la cible, et ColorLoop renvoie la correction aux vis d'encrier de la console pendant que la presse tourne. La cible peut être G7 et GRACoL 2013 pour le travail export, ISO 12647-2 pour le suivant, et les mesures enregistrées au passage constituent le dossier que vous joignez à la livraison."
+          },
+          {
+            "type": "h2",
+            "text": "Un site, deux références, la même boucle"
+          },
+          {
+            "type": "p",
+            "text": "Peu d'exportateurs européens impriment uniquement pour l'Amérique du Nord. Le même atelier passe le matin un travail en PSO pour une marque parisienne et l'après-midi un travail en GRACoL pour un distributeur des [États-Unis](/usa), et un groupe qui possède une usine de transformation au [Canada](/canada) veut que ses deux sites se ressemblent en rayon. Le schéma se répète partout dans le monde : les sites d'Asie et d'Amérique latine qui fournissent des marques nord-américaines affrontent le même double cahier des charges. Ce qui le rend gérable, ce n'est pas une seconde équipe de calibration, mais une seule couche de contrôle qui change de cible à chaque travail et tient celle qui est chargée : c'est ainsi que sont utilisés au quotidien les plus de 1 000 systèmes closed loop installés dans plus de 30 pays."
+          },
+          {
+            "type": "p",
+            "text": "Le G7 fixe la destination. Le closed loop maintient la presse dessus pendant toute l'année que couvre la certification. Le [guide complet du closed loop](/closed-loop-color-control) explique comment mesure, comparaison et correction s'articulent sur une presse existante, quelle que soit la norme au bout de la boucle."
+          }
+        ]
+      },
+      "de": {
+        "title": "G7 für europäische Exporteure",
+        "excerpt": "Nordamerikanische Einkäufer verlangen G7-Kalibrierung. Wie europäische Druckereien mit ISO 12647-2 G7 ergänzen und im Fortdruck stabil halten.",
+        "lead": "Eine europäische Druckerei, die Aufträge einer Marke in den USA oder in Kanada gewinnt, findet in der Spezifikation fast immer dieselbe Zeile: G7 erforderlich. Das heißt selten, ISO 12647-2 oder PSO aufzugeben. Es heißt, ein zweites, erscheinungsbasiertes Ziel nachzuweisen und es in jedem Produktionslauf zu halten, nicht nur am Tag des Tests."
+      },
+      "it": {
+        "title": "G7 per gli esportatori europei",
+        "excerpt": "I buyer nordamericani chiedono la calibrazione G7. Come uno stampatore europeo già in ISO 12647-2 la aggiunge e la mantiene in ogni tiratura.",
+        "lead": "Uno stampatore europeo che acquisisce lavori da un brand negli Stati Uniti o in Canada trova quasi sempre la stessa riga nel capitolato: G7 richiesto. Raramente significa abbandonare la ISO 12647-2 o il PSO. Significa dimostrare un secondo obiettivo, basato sull'aspetto, e mantenerlo in ogni tiratura di produzione, non solo il giorno del test."
+      },
+      "es": {
+        "title": "G7 para exportadores europeos",
+        "excerpt": "Los compradores norteamericanos exigen calibración G7. Cómo un impresor europeo que ya trabaja en ISO 12647-2 la incorpora y la mantiene en tirada.",
+        "lead": "Un impresor europeo que gana trabajo de una marca en Estados Unidos o Canadá suele encontrar la misma línea en la especificación: G7 obligatorio. Rara vez significa abandonar la ISO 12647-2 o PSO. Significa demostrar un segundo objetivo, basado en la apariencia, y mantenerlo en cada tirada de producción, no solo el día de la prueba."
+      },
+      "pt": {
+        "title": "G7 para exportadores europeus",
+        "excerpt": "Os compradores norte-americanos exigem calibração G7. Como um impressor europeu que já trabalha em ISO 12647-2 a acrescenta e a mantém na tiragem.",
+        "lead": "Um impressor europeu que ganha trabalho de uma marca nos Estados Unidos ou no Canadá encontra quase sempre a mesma linha na especificação: G7 obrigatório. Raramente significa abandonar a ISO 12647-2 ou o PSO. Significa demonstrar um segundo objetivo, baseado na aparência, e mantê-lo em cada tiragem de produção, e não apenas no dia do teste."
+      }
+    },
+    "originalUrl": "https://rutherford.fr/blog/g7-calibration-european-printers-north-america",
+    "sources": [
+      {
+        "label": "Idealliance: three-tier G7 Master qualification program",
+        "href": "https://idealliance.org/idealliance-introduces-three-tier-g7-master-qualification-program/"
+      },
+      {
+        "label": "PRINTING United Alliance: G7 Master Facility Certification",
+        "href": "https://www.printing.org/library/technical-excellence/certifications/g7-master-facility-qualification"
+      },
+      {
+        "label": "Idealliance: PRINTING United Alliance announces G7+",
+        "href": "https://idealliance.org/printing-united-alliance-announce-g7/"
+      }
+    ]
+  },
+  {
     "slug": "offset-press-retrofit-color-control",
     "title": "Offset press retrofit, not replacement",
     "excerpt": "Komori is buying a semiconductor chiller maker. When press builders diversify, an offset press retrofit becomes the realistic route to better color.",
