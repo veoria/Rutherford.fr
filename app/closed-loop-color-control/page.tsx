@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { SEO_COPY, localizedMetadata } from '@/lib/seo';
 import { PillarClosedLoopPage } from '@/components/pillar-closed-loop-page';
 
 const BASE = 'https://rutherford.fr';
@@ -7,20 +8,16 @@ const title = 'Closed-loop color control for offset printing: the complete guide
 const description =
   'How closed-loop color control works on an offset press: measure, compare, correct the ink keys automatically. Up to 65% less makeready waste, ISO 12647-2 and G7 held in production, retrofit on any press.';
 
-export const metadata: Metadata = {
-  title,
-  description,
-  keywords: ['closed-loop color control', 'offset color automation', 'makeready waste', 'ink key correction', 'ISO 12647-2', 'G7', 'ColorLoop'],
-  alternates: { canonical: CANONICAL },
-  openGraph: {
-    title,
-    description,
-    url: CANONICAL,
-    siteName: 'Rutherford.fr',
-    images: [{ url: '/images/og-home.png', width: 1200, height: 630, alt: 'Closed-loop color control for offset printing' }],
+export function generateMetadata(): Metadata {
+  return localizedMetadata({
+    path: '/closed-loop-color-control',
+    title: SEO_COPY.closedLoop.title,
+    description: SEO_COPY.closedLoop.description,
     type: 'article',
-  },
-};
+    image: { url: '/images/og-home.png', alt: 'Closed-loop color control for offset printing' },
+    keywords: ['closed-loop color control', 'offset color automation', 'makeready waste', 'ink key correction', 'ISO 12647-2', 'G7', 'ColorLoop'],
+  });
+}
 
 // FAQPage: the schema generative engines quote most (group playbook, pillar 2).
 const FAQ_JSON_LD = {

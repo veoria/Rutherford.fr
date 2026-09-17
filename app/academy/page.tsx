@@ -1,12 +1,15 @@
 import type { Metadata } from 'next';
+import { SEO_COPY, localizedMetadata } from '@/lib/seo';
 import { notFound } from 'next/navigation';
 import { AcademyPage } from '@/components/academy-page';
 
-export const metadata: Metadata = {
-  title: 'Rutherford Academy: Offset color management masterclasses',
-  description:
-    'Online courses and masterclasses on closed-loop color, MeasureColor, IntelliTrax2 and ColorLoop, built by Rutherford for offset printers, packaging converters and brand owners.',
-};
+export function generateMetadata(): Metadata {
+  return localizedMetadata({
+    path: '/academy',
+    title: SEO_COPY.academy.title,
+    description: SEO_COPY.academy.description,
+  });
+}
 
 export const dynamic = 'force-dynamic';
 

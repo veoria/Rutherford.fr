@@ -26,21 +26,22 @@ export default function ConfidentialitePage() {
           <h2>2. Données que nous collectons</h2>
           <p>
             Compte (nom, adresse e-mail, société, pays, poste), demandes de validation console (presse, photos, notes),
-            progression et certificats Academy, e-mail de notification, et mesure d’audience (avec votre consentement).
+            progression et certificats Academy, messages envoyés via le formulaire de contact (nom, e-mail, société, pays, téléphone, message), inscription à la newsletter (e-mail, langue, date du consentement), e-mail de notification, et mesure d’audience (avec votre consentement).
           </p>
 
           <h2>3. Finalités et bases légales</h2>
           <ul>
             <li>Création et gestion de votre compte — exécution du contrat.</li>
             <li>Traitement des validations console et du support — intérêt légitime / exécution.</li>
-            <li>Communications commerciales — votre consentement.</li>
+            <li>Réponse aux demandes de contact — intérêt légitime.</li>
+            <li>Newsletter et communications commerciales — votre consentement, retirable à tout moment via le lien de désinscription présent dans chaque e-mail.</li>
             <li>Mesure d’audience — votre consentement (cookies).</li>
           </ul>
 
           <h2>4. Destinataires et sous-traitants</h2>
           <p>
             Prestataires techniques : Supabase (base de données, hébergement UE), Microsoft 365 (envoi d’e-mails),
-            Pipedrive (CRM), Asana (suivi des demandes), Google Analytics (mesure d’audience). [Compléter la liste et les
+            Pipedrive (CRM et envoi de la newsletter via Pipedrive Campaigns), Asana (suivi des demandes), Discord (notification interne des demandes), Google Analytics, PostHog et LinkedIn Insight Tag (mesure d’audience, avec votre consentement). [Compléter la liste et les
             localisations exactes.]
           </p>
 

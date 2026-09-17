@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { brandConsoleSeo, localizedMetadata } from '@/lib/seo';
 import { notFound } from 'next/navigation';
 import { ConsoleValidationPage } from '@/components/console-validation-page';
 import { PRESS_BRANDS_PAGES, getPressBrand } from '@/data/press-brands';
@@ -12,16 +13,12 @@ export function generateStaticParams(): RouteParams[] {
 export function generateMetadata({ params }: { params: RouteParams }): Metadata {
   const brand = getPressBrand(params.brand);
   if (!brand) return { title: 'Console validation | Rutherford.fr' };
-  return {
-    title: `${brand.name} console compatibility, closed-loop color control | Rutherford.fr`,
-    description: `Check for free whether your ${brand.name} press (${brand.consoles}) is eligible for Rutherford closed-loop color. A few photos, two minutes, answer within one business day.`,
-    openGraph: {
-      title: `${brand.name} console compatibility, closed-loop color control`,
-      description: `Free eligibility check for ${brand.name} ${brand.presses}. Stop losing money on makeready.`,
-      url: `https://rutherford.fr/console-validation/${brand.slug}`,
-      type: 'website',
-    },
-  };
+  const seo = brandConsoleSeo(brand.name, brand.consoles);
+  return localizedMetadata({
+    path: `/console-validation/${brand.slug}`,
+    title: seo.title,
+    description: seo.description,
+  });
 }
 
 export default function BrandConsoleValidationRoute({ params }: { params: RouteParams }) {

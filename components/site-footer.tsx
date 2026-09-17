@@ -6,6 +6,7 @@ import { useLanguage, type Locale } from '@/components/language-provider';
 import { SocialLinks } from '@/components/social-links';
 import type { SocialLink } from '@/components/social-links';
 import COPY_DATA from '@/data/home/site-footer.json';
+import { NewsletterSignup } from '@/components/newsletter-signup';
 
 // The language selector lives in the footer now (country is auto-detected, so
 // the header no longer needs it). FR first to match the design.
@@ -20,7 +21,7 @@ const FOOTER_LANGS: { code: Locale; label: string }[] = [
 ];
 
 const socialLinks: SocialLink[] = [
-  { label: 'LinkedIn', href: 'https://www.linkedin.com/company/rutherford-graphic-products-llc' },
+  { label: 'LinkedIn', href: 'https://www.linkedin.com/company/rutherfordfr' },
   { label: 'Instagram', href: 'https://www.instagram.com/rutherfordgraphic/' },
   { label: 'YouTube', href: 'https://www.youtube.com/channel/UChiClIodg9rbuTDnInE4GmQ' },
   { label: 'TikTok', href: 'https://www.tiktok.com/@rutherfordgraphic' },
@@ -64,12 +65,14 @@ export function SiteFooter() {
     router.push(target);
   };
 
+  const lhref = (path: string) => (locale === 'en' ? path : `/${locale}${path}`);
+
   const resourceLinks: { key: ResourceKey; href: string }[] = [
-    { key: 'blog', href: '/blog' },
-    { key: 'glossary', href: '/glossary' },
-    { key: 'support', href: '/support' },
-    { key: 'console', href: '/console-validation' },
-    { key: 'contact', href: 'mailto:contact@rutherford.fr' },
+    { key: 'blog', href: lhref('/blog') },
+    { key: 'glossary', href: lhref('/glossary') },
+    { key: 'support', href: lhref('/support') },
+    { key: 'console', href: lhref('/console-validation') },
+    { key: 'contact', href: lhref('/contact') },
   ];
 
   const companyLinks: { key: CompanyKey; href: string }[] = [
@@ -83,6 +86,8 @@ export function SiteFooter() {
     <footer className="site-footer">
       <div className="container">
         <div className="footer-shell">
+          <NewsletterSignup variant="footer" source="footer" />
+
           <div className="footer-grid">
             <div className="footer-brand">
               <a className="footer-brand-wordmark" href="/" aria-label="Rutherford.fr">

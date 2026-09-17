@@ -1,36 +1,15 @@
 import type { Metadata } from 'next';
+import { SEO_COPY, localizedMetadata } from '@/lib/seo';
 import { RoiPage } from '@/components/roi-page';
 
-const title = 'ROI calculator | Rutherford.fr';
-const description =
-  'Estimate how much ColorLoop can save your pressroom: makeready waste, makeready time, ink, paper and energy — calculated from your own production figures.';
-
-export const metadata: Metadata = {
-  title,
-  description,
-  openGraph: {
-    title,
-    description,
-    url: 'https://rutherford.fr/roi',
-    siteName: 'Rutherford.fr',
-    images: [
-      {
-        url: '/images/og-roi.png',
-        width: 1200,
-        height: 630,
-        alt: 'Rutherford closed-loop color control',
-      },
-    ],
-    locale: 'en_US',
-    type: 'website',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title,
-    description,
-    images: ['/images/og-roi.png'],
-  },
-};
+export function generateMetadata(): Metadata {
+  return localizedMetadata({
+    path: '/roi',
+    title: SEO_COPY.roi.title,
+    description: SEO_COPY.roi.description,
+    image: { url: '/images/og-roi.png', alt: 'Rutherford closed-loop color control' },
+  });
+}
 
 export default function RoiRoute() {
   return <RoiPage />;

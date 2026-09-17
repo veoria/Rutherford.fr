@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { BlogArticlePage } from '@/components/blog-article-page';
-import { getAllArticles, getArticleBySlug } from '@/lib/blog';
+import { articleLocales, getAllArticles, getArticleBySlug } from '@/lib/blog';
+import { localizedMetadata, type Localized } from '@/lib/seo';
 
 type ArticlePageProps = {
   params: {
@@ -21,17 +22,23 @@ export function generateMetadata({ params }: ArticlePageProps): Metadata {
     };
   }
 
-  return {
-    title: `${article.title} | Rutherford Blog`,
-    description: article.lead,
-    openGraph: {
-      title: `${article.title} | Rutherford Blog`,
-      description: article.lead,
-      type: 'article',
-      url: `/blog/${article.slug}`,
-      images: article.image ? [{ url: article.image, alt: article.title }] : undefined,
-    },
-  };
+  const locales = articleLocales(article);
+  const title: Record<string, string> = {};
+  const description: Record<string, string> = {};
+  for (const locale of locales) {
+    const t = locale === 'en' ? undefined : article.i18n?.[locale];
+    title[locale] = `${t?.title ?? article.title} | Rutherford Blog`;
+    description[locale] = t?.lead ?? t?.excerpt ?? article.lead;
+  }
+
+  return localizedMetadata({
+    path: `/blog/${article.slug}`,
+    title: title as Localized,
+    description: description as Localized,
+    type: 'article',
+    locales,
+    image: article.image ? { url: article.image, alt: article.title } : undefined,
+  });
 }
 
 export default function ArticlePage({ params }: ArticlePageProps) {
@@ -47,7 +54,8 @@ export default function ArticlePage({ params }: ArticlePageProps) {
     headline: article.title,
     description: article.lead,
     image: article.image ? `https://rutherford.fr${article.image}` : undefined,
-    datePublished: article.publishedAt,
+    ...(article.publishedAt ? { datePublished: article.publishedAt } : {}),
+    inLanguage: articleLocales(article),
     author: { '@type': 'Organization', name: 'Rutherford.fr', url: 'https://rutherford.fr' },
     publisher: { '@type': 'Organization', name: 'Rutherford.fr', url: 'https://rutherford.fr' },
     mainEntityOfPage: `https://rutherford.fr/blog/${article.slug}`,

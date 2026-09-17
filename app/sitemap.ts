@@ -1,5 +1,5 @@
 import type { MetadataRoute } from 'next';
-import { getAllArticles } from '@/lib/blog';
+import { articleLocales, getAllArticles } from '@/lib/blog';
 import { ALL_COURSES } from '@/data/academy-courses';
 import { PRESS_BRANDS_PAGES } from '@/data/press-brands';
 import { ALL_REGIONS } from '@/data/regions';
@@ -8,20 +8,26 @@ const BASE = 'https://rutherford.fr';
 const PREFIX_LOCALES = ['fr', 'de', 'it', 'es', 'pt'];
 
 // Language alternates (hreflang) for a given canonical (English, unprefixed) path.
-function languages(path: string): Record<string, string> {
+// Only the locales passed in are listed, so untranslated pages don't advertise
+// duplicate English content under /fr, /de, etc.
+function languages(path: string, locales: string[] = PREFIX_LOCALES): Record<string, string> {
   const suffix = path === '/' ? '' : path;
-  return Object.fromEntries(PREFIX_LOCALES.map((l) => [l, `${BASE}/${l}${suffix}`]));
+  return {
+    en: `${BASE}${suffix || '/'}`,
+    ...Object.fromEntries(locales.filter((l) => l !== 'en').map((l) => [l, `${BASE}/${l}${suffix}`])),
+    'x-default': `${BASE}${suffix || '/'}`,
+  };
 }
 
-type Entry = { path: string; changeFrequency: MetadataRoute.Sitemap[number]['changeFrequency']; priority: number; lastModified?: string | Date };
+type Entry = { path: string; changeFrequency: MetadataRoute.Sitemap[number]['changeFrequency']; priority: number; lastModified?: string | Date; locales?: string[] };
 
-function entry({ path, changeFrequency, priority, lastModified }: Entry): MetadataRoute.Sitemap[number] {
+function entry({ path, changeFrequency, priority, lastModified, locales }: Entry): MetadataRoute.Sitemap[number] {
   return {
     url: `${BASE}${path}`,
     ...(lastModified ? { lastModified } : {}),
     changeFrequency,
     priority,
-    alternates: { languages: languages(path) },
+    alternates: { languages: languages(path, locales) },
   };
 }
 
@@ -35,6 +41,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: '/academy', changeFrequency: 'weekly' as const, priority: 0.8 },
     { path: '/glossary', changeFrequency: 'monthly' as const, priority: 0.7 },
     { path: '/blog', changeFrequency: 'weekly' as const, priority: 0.7 },
+    { path: '/contact', changeFrequency: 'yearly' as const, priority: 0.5 },
     { path: '/support', changeFrequency: 'yearly' as const, priority: 0.3 },
   ].map(entry);
 
@@ -52,6 +59,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'yearly',
       priority: 0.5,
       lastModified: article.publishedAt,
+      locales: articleLocales(article),
     }),
   );
 

@@ -17061,3 +17061,65 @@ textarea.cv-input { resize: vertical; min-height: 74px; }
 .team-section :is(h1, h2, h3, p, li) {
   white-space: pre-line;
 }
+
+/* Newsletter signup ("The Pressroom Letter"): footer (dark) and inline (light) */
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+.newsletter-signup { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: clamp(20px, 4vw, 48px); align-items: center; position: relative; }
+.newsletter-signup-copy { display: grid; gap: 8px; }
+.newsletter-signup-kicker { margin: 0; font-size: 0.76rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; }
+.newsletter-signup-title { margin: 0; font-size: clamp(1.3rem, 2.4vw, 1.7rem); line-height: 1.2; letter-spacing: -0.02em; text-wrap: balance; }
+.newsletter-signup-lead { margin: 0; font-size: 0.95rem; line-height: 1.5; }
+.newsletter-signup-form { display: grid; gap: 12px; min-width: 0; }
+.newsletter-signup-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.newsletter-signup-input { flex: 1 1 220px; min-width: 0; font: inherit; font-size: 15px; padding: 13px 16px; border-radius: 10px; outline: none; }
+.newsletter-signup-button { flex: 0 0 auto; font: inherit; font-size: 15px; font-weight: 600; padding: 13px 22px; border-radius: 10px; border: 0; cursor: pointer; white-space: nowrap; }
+.newsletter-signup-button[disabled] { opacity: 0.6; cursor: default; }
+.newsletter-signup-consent { display: flex; gap: 10px; align-items: flex-start; font-size: 0.82rem; line-height: 1.45; cursor: pointer; }
+.newsletter-signup-consent input { margin-top: 2px; flex: 0 0 auto; width: 16px; height: 16px; }
+.newsletter-signup-consent a { color: inherit; text-decoration: underline; }
+.newsletter-signup-error { margin: 0; font-size: 0.85rem; }
+.newsletter-signup-success { margin: 0; font-size: 1rem; font-weight: 600; }
+
+.newsletter-signup-footer { padding: 8px 0 34px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
+.newsletter-signup-footer .newsletter-signup-kicker { color: rgba(255, 255, 255, 0.48); }
+.newsletter-signup-footer .newsletter-signup-title { color: #fff; }
+.newsletter-signup-footer .newsletter-signup-lead,
+.newsletter-signup-footer .newsletter-signup-consent { color: rgba(255, 255, 255, 0.66); }
+.newsletter-signup-footer .newsletter-signup-input { background: rgba(255, 255, 255, 0.06); border: 1px solid #3a3a3a; color: #fff; }
+.newsletter-signup-footer .newsletter-signup-input::placeholder { color: rgba(255, 255, 255, 0.45); }
+.newsletter-signup-footer .newsletter-signup-input:focus { border-color: #8a8a8a; }
+.newsletter-signup-footer .newsletter-signup-button { background: #fff; color: #111; }
+.newsletter-signup-footer .newsletter-signup-error { color: #ff9b8f; }
+.newsletter-signup-footer .newsletter-signup-success { color: #fff; }
+
+.newsletter-signup-inline { margin: 24px 0 0; padding: 28px 24px; background: #fff; border: 1px solid #e7e7e0; border-radius: 18px; }
+.newsletter-signup-inline .newsletter-signup-kicker { color: #6f6a62; }
+.newsletter-signup-inline .newsletter-signup-title { color: #16130f; }
+.newsletter-signup-inline .newsletter-signup-lead,
+.newsletter-signup-inline .newsletter-signup-consent { color: #5d584f; }
+.newsletter-signup-inline .newsletter-signup-input { background: #fff; border: 1px solid #dedcd7; color: #16130f; }
+.newsletter-signup-inline .newsletter-signup-input:focus { border-color: #9dbdf5; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12); }
+.newsletter-signup-inline .newsletter-signup-button { background: #16130f; color: #fff; }
+.newsletter-signup-inline .newsletter-signup-error { color: #c4332b; }
+.newsletter-signup-inline .newsletter-signup-success { color: #1b7a45; }
+
+.newsletter-signup-input:focus-visible,
+.newsletter-signup-button:focus-visible,
+.newsletter-signup-consent input:focus-visible { outline: 2px solid #5b8def; outline-offset: 2px; }
+
+@media (max-width: 760px) {
+  .newsletter-signup { grid-template-columns: 1fr; }
+}
+
+/* Contact page */
+.contact-console-hint { margin: 14px 0 0; font-size: 0.95rem; color: #5d584f; }
+.contact-console-hint a { font-weight: 600; }
+.contact-call { display: flex; align-items: center; gap: 10px; margin-top: 16px; font-size: 14.5px; color: #3c3a36; cursor: pointer; }
+.contact-call input { width: 16px; height: 16px; }
+.contact-phone { margin-top: 12px; max-width: 320px; }
+.contact-privacy { font-size: 12.5px; color: #8a847b; }
+.contact-privacy a { color: inherit; }
+@media (max-width: 640px) {
+  .contact-form .cv-grid2 { grid-template-columns: 1fr; }
+  .contact-form .cv-stepnav { flex-direction: column-reverse; align-items: stretch; }
+}

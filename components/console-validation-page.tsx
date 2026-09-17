@@ -459,6 +459,8 @@ export function ConsoleValidationPage({
       // Analytics is cookieless, so it counts the leads the consent-gated
       // trackers miss.
       (window as any).gtag?.('event', 'console_validation_submit', { event_category: 'lead', machine: machineName });
+      const linkedinConversion = process.env.NEXT_PUBLIC_LINKEDIN_CONVERSION_CONSOLE;
+      if (linkedinConversion) (window as any).lintrk?.('track', { conversion_id: Number(linkedinConversion) });
       track('console_validation_submit', {
         country,
         machine: machineName,

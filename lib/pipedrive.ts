@@ -365,3 +365,121 @@ export async function listPartnerEmailDomains(): Promise<Map<string, string>> {
   }
   return domains;
 }
+
+export type NewsletterSignup = {
+  email: string;
+  locale: string;
+  source: string;
+};
+
+/**
+ * Newsletter signup → PipeDrive Person with marketing status "subscribed", so
+ * the contact shows up in Pipedrive Campaigns lists. The visitor ticked an
+ * explicit consent box before this is called. Never throws, no-op without a
+ * token.
+ */
+export async function subscribeNewsletterInPipedrive(signup: NewsletterSignup): Promise<void> {
+  if (!TOKEN || !signup.email) return;
+  try {
+    let personId = await findPersonId(signup.email);
+    if (!personId) {
+      const created = await pd('/persons', {
+        method: 'POST',
+        body: JSON.stringify({
+          name: signup.email,
+          email: [signup.email],
+          marketing_status: 'subscribed',
+        }),
+      });
+      personId = (created?.data?.id as number) ?? null;
+    } else {
+      await pd(`/persons/${personId}`, {
+        method: 'PUT',
+        body: JSON.stringify({ marketing_status: 'subscribed' }),
+      }).catch((error) => console.error('PipeDrive marketing status update failed:', error));
+    }
+
+    if (personId) {
+      const lines = [
+        '<b>Inscription newsletter</b>',
+        `Langue : ${signup.locale}`,
+        `Source : ${signup.source}`,
+        `Consentement : case cochée le ${new Date().toISOString().slice(0, 10)}`,
+      ];
+      await pd('/notes', {
+        method: 'POST',
+        body: JSON.stringify({ content: lines.join('<br>'), person_id: personId }),
+      });
+    }
+  } catch (error) {
+    console.error('PipeDrive newsletter signup failed:', error);
+  }
+}
+
+export type ContactRequest = {
+  name: string;
+  email: string;
+  company: string;
+  country: string;
+  phone: string;
+  topic: string;
+  message: string;
+  wantsCall: boolean;
+  locale: string;
+  source?: string;
+};
+
+/**
+ * Contact form → PipeDrive Person + Organization + Note. Never throws, no-op
+ * without a token.
+ */
+export async function syncContactRequestToPipedrive(request: ContactRequest): Promise<void> {
+  if (!TOKEN || !request.email) return;
+  try {
+    const orgId = request.company ? await findOrgId(request.company) : null;
+
+    let personId = await findPersonId(request.email);
+    if (!personId) {
+      const created = await pd('/persons', {
+        method: 'POST',
+        body: JSON.stringify({
+          name: request.name || request.email,
+          email: [request.email],
+          ...(request.phone ? { phone: [request.phone] } : {}),
+          ...(orgId ? { org_id: orgId } : {}),
+        }),
+      });
+      personId = (created?.data?.id as number) ?? null;
+    } else if (orgId) {
+      await pd(`/persons/${personId}`, { method: 'PUT', body: JSON.stringify({ org_id: orgId }) }).catch(
+        () => {}
+      );
+    }
+
+    const escape = (value: string) =>
+      value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>');
+    const lines = [
+      '<b>Demande de contact (site)</b>',
+      `Sujet : ${escape(request.topic)}`,
+      request.company ? `Société : ${escape(request.company)}` : null,
+      request.country ? `Pays : ${escape(request.country)}` : null,
+      request.phone ? `Téléphone : ${escape(request.phone)}` : null,
+      request.wantsCall ? '<b>Souhaite être rappelé</b>' : null,
+      `Langue : ${request.locale}`,
+      request.source ? `Source : ${escape(request.source)}` : null,
+      '',
+      escape(request.message),
+    ].filter((line) => line !== null);
+
+    await pd('/notes', {
+      method: 'POST',
+      body: JSON.stringify({
+        content: lines.join('<br>'),
+        ...(personId ? { person_id: personId } : {}),
+        ...(orgId ? { org_id: orgId } : {}),
+      }),
+    });
+  } catch (error) {
+    console.error('PipeDrive contact sync failed:', error);
+  }
+}

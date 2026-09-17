@@ -10,37 +10,37 @@ export const CONSENT_KEY = 'rf-consent';
 
 const COPY: Record<Locale, { text: string; learn: string; accept: string; refuse: string }> = {
   en: {
-    text: 'We use analytics cookies to understand how the site is used and improve it.',
+    text: 'We use analytics cookies (Google Analytics, PostHog, LinkedIn) to understand how the site is used and improve it.',
     learn: 'Learn more',
     accept: 'Accept',
     refuse: 'Refuse',
   },
   fr: {
-    text: 'Nous utilisons des cookies de mesure d’audience pour comprendre l’usage du site et l’améliorer.',
+    text: 'Nous utilisons des cookies de mesure d’audience (Google Analytics, PostHog, LinkedIn) pour comprendre l’usage du site et l’améliorer.',
     learn: 'En savoir plus',
     accept: 'Accepter',
     refuse: 'Refuser',
   },
   de: {
-    text: 'Wir verwenden Analyse-Cookies, um die Nutzung der Website zu verstehen und sie zu verbessern.',
+    text: 'Wir verwenden Analyse-Cookies (Google Analytics, PostHog, LinkedIn), um die Nutzung der Website zu verstehen und sie zu verbessern.',
     learn: 'Mehr erfahren',
     accept: 'Akzeptieren',
     refuse: 'Ablehnen',
   },
   it: {
-    text: 'Usiamo cookie di analisi per capire come viene usato il sito e migliorarlo.',
+    text: 'Usiamo cookie di analisi (Google Analytics, PostHog, LinkedIn) per capire come viene usato il sito e migliorarlo.',
     learn: 'Scopri di più',
     accept: 'Accetta',
     refuse: 'Rifiuta',
   },
   es: {
-    text: 'Usamos cookies de análisis para entender cómo se usa el sitio y mejorarlo.',
+    text: 'Usamos cookies de análisis (Google Analytics, PostHog, LinkedIn) para entender cómo se usa el sitio y mejorarlo.',
     learn: 'Más información',
     accept: 'Aceptar',
     refuse: 'Rechazar',
   },
   pt: {
-    text: 'Utilizamos cookies de análise para perceber como o site é utilizado e melhorá-lo.',
+    text: 'Utilizamos cookies de análise (Google Analytics, PostHog, LinkedIn) para perceber como o site é utilizado e melhorá-lo.',
     learn: 'Saber mais',
     accept: 'Aceitar',
     refuse: 'Recusar',

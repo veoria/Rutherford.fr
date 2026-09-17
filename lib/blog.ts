@@ -45,18 +45,11 @@ export type BlogArticle = {
   }>;
 };
 
-const baseArticles = articles as BlogArticle[];
-
-function buildPublishedDate(index: number) {
-  const date = new Date(Date.UTC(2026, 3, 8));
-  date.setUTCDate(date.getUTCDate() - index * 6);
-  return date.toISOString().slice(0, 10);
-}
-
-const blogArticles = baseArticles.map((article, index) => ({
-  ...article,
-  publishedAt: article.publishedAt ?? buildPublishedDate(index),
-}));
+// Articles carried over from the previous site have no known publication date:
+// they keep publishedAt undefined rather than an invented one, so the sitemap,
+// the BlogPosting schema and the index only show real dates. The JSON order
+// (newest first) drives the listing.
+const blogArticles = articles as BlogArticle[];
 
 export function getAllArticles(): BlogArticle[] {
   return blogArticles;
@@ -64,4 +57,12 @@ export function getAllArticles(): BlogArticle[] {
 
 export function getArticleBySlug(slug: string): BlogArticle | undefined {
   return blogArticles.find((article) => article.slug === slug);
+}
+
+/** Locales with a real translation of the article (English base always counts). */
+export function articleLocales(article: BlogArticle): Array<'en' | 'fr' | 'de' | 'it' | 'es' | 'pt'> {
+  const translated = Object.entries(article.i18n ?? {})
+    .filter(([, t]) => Boolean(t?.title))
+    .map(([locale]) => locale) as Array<'fr' | 'de' | 'it' | 'es' | 'pt'>;
+  return ['en', ...translated];
 }

@@ -2,6 +2,7 @@
 
 import { useState, type FormEvent } from 'react';
 import { useLanguage, type Locale } from '@/components/language-provider';
+import { trackConversion } from '@/lib/track';
 import { SiteNav } from '@/components/site-nav';
 import { SiteFooter } from '@/components/site-footer';
 import { ColorLoopROI } from '@/components/colorloop-roi';
@@ -45,7 +46,7 @@ const COPY: Record<Locale, RoiCopy> = {
       lead: 'In under a minute, estimate the waste, makeready time and costs you can recover on your offset presses — from your own figures.',
       ctaCalc: 'Calculate your savings',
       ctaConsole: 'Request console validation',
-      trust: '25+ years · 30+ countries · 1,000+ systems deployed · X-Rite PANTONE partner',
+      trust: '25+ years · 30+ countries · 1,000+ systems deployed · works with IntelliTrax2 and MeasureColor',
     },
     capture: {
       kicker: 'Detailed estimate',
@@ -96,7 +97,7 @@ const COPY: Record<Locale, RoiCopy> = {
       lead: 'Estimez en moins d’une minute la gâche, le temps de calage et les coûts que vous pouvez récupérer sur vos presses offset — à partir de vos propres chiffres.',
       ctaCalc: 'Calculez vos économies',
       ctaConsole: 'Demander une validation console',
-      trust: '25+ ans · 30+ pays · 1 000+ systèmes déployés · partenaire X-Rite PANTONE',
+      trust: '25+ ans · 30+ pays · 1 000+ systèmes déployés · compatible IntelliTrax2 et MeasureColor',
     },
     capture: {
       kicker: 'Estimation détaillée',
@@ -147,7 +148,7 @@ const COPY: Record<Locale, RoiCopy> = {
       lead: 'Schätzen Sie in unter einer Minute die Makulatur, die Einrichtungszeit und die Kosten, die Sie an Ihren Offset-Druckmaschinen einsparen können — anhand Ihrer eigenen Zahlen.',
       ctaCalc: 'Ersparnis berechnen',
       ctaConsole: 'Konsolenvalidierung anfragen',
-      trust: '25+ Jahre · 30+ Länder · 1.000+ installierte Systeme · X-Rite PANTONE Partner',
+      trust: '25+ Jahre · 30+ Länder · 1.000+ installierte Systeme · kompatibel mit IntelliTrax2 und MeasureColor',
     },
     capture: {
       kicker: 'Detaillierte Schätzung',
@@ -198,7 +199,7 @@ const COPY: Record<Locale, RoiCopy> = {
       lead: 'Stimi in meno di un minuto lo scarto, il tempo di avviamento e i costi che può recuperare sulle Sue macchine offset — a partire dai Suoi dati.',
       ctaCalc: 'Calcola il Suo risparmio',
       ctaConsole: 'Richiedi validazione console',
-      trust: '25+ anni · 30+ paesi · 1.000+ sistemi installati · partner X-Rite PANTONE',
+      trust: '25+ anni · 30+ paesi · 1.000+ sistemi installati · compatibile con IntelliTrax2 e MeasureColor',
     },
     capture: {
       kicker: 'Stima dettagliata',
@@ -249,7 +250,7 @@ const COPY: Record<Locale, RoiCopy> = {
       lead: 'Estime en menos de un minuto el desperdicio, el tiempo de puesta a punto y los costes que puede recuperar en sus prensas offset — a partir de sus propias cifras.',
       ctaCalc: 'Calcule su ahorro',
       ctaConsole: 'Solicitar validación de consola',
-      trust: '25+ años · 30+ países · 1.000+ sistemas instalados · partner X-Rite PANTONE',
+      trust: '25+ años · 30+ países · 1.000+ sistemas instalados · compatible con IntelliTrax2 y MeasureColor',
     },
     capture: {
       kicker: 'Estimación detallada',
@@ -300,7 +301,7 @@ const COPY: Record<Locale, RoiCopy> = {
       lead: 'Em menos de um minuto, estime a maculatura, o tempo de acerto e os custos que pode recuperar nas suas máquinas offset, a partir dos seus próprios números.',
       ctaCalc: 'Calcule a sua poupança',
       ctaConsole: 'Solicitar uma validação de consola',
-      trust: '25+ anos · 30+ países · 1.000+ sistemas implementados · parceiro X-Rite PANTONE',
+      trust: '25+ anos · 30+ países · 1.000+ sistemas implementados · compatível com IntelliTrax2 e MeasureColor',
     },
     capture: {
       kicker: 'Estimativa detalhada',
@@ -365,7 +366,7 @@ export function RoiPage() {
       });
       if (!res.ok) throw new Error('request failed');
       setStatus('sent');
-      window.gtag?.('event', 'roi_lead_submit', { method: 'roi_calculator' });
+      trackConversion('roi_lead_submit', { method: 'roi_calculator' });
     } catch {
       setStatus('error');
     }

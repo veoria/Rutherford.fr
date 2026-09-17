@@ -1,5 +1,6 @@
 'use client';
 
+import { NewsletterSignup } from '@/components/newsletter-signup';
 import { SiteFooter } from '@/components/site-footer';
 import { SiteNav } from '@/components/site-nav';
 import { useLanguage } from '@/components/language-provider';
@@ -140,6 +141,7 @@ export function BlogArticlePage({ article }: { article: BlogArticle }) {
                 <a className="button button-light" href={lhref('/roi')}>{labels.ctaRoi}</a>
               </div>
             </div>
+            <NewsletterSignup variant="inline" source={`blog:${article.slug}`} />
 
             <div className="article-actions">
               <a className="article-textlink" href={lhref('/blog')}>

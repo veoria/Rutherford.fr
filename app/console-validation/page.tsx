@@ -1,30 +1,16 @@
 import type { Metadata } from 'next';
+import { SEO_COPY, localizedMetadata } from '@/lib/seo';
 import { ConsoleValidationPage } from '@/components/console-validation-page';
 import { getCvInvitationByToken } from '@/lib/console-invitations';
 
-const ogTitle = 'Console validation | Rutherford.fr';
-const ogDescription =
-  'See if your press qualifies for closed-loop color. Free console validation in 2 minutes.';
-
-export const metadata: Metadata = {
-  title: ogTitle,
-  description: ogDescription,
-  openGraph: {
-    title: ogTitle,
-    description: ogDescription,
-    url: 'https://rutherford.fr/console-validation',
-    siteName: 'Rutherford.fr',
-    images: [{ url: '/images/og-console-validation.png', width: 1200, height: 630, alt: 'Is your press ready for closed-loop color?' }],
-    locale: 'en_US',
-    type: 'website',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: ogTitle,
-    description: ogDescription,
-    images: ['/images/og-console-validation.png'],
-  },
-};
+export function generateMetadata(): Metadata {
+  return localizedMetadata({
+    path: '/console-validation',
+    title: SEO_COPY.consoleValidation.title,
+    description: SEO_COPY.consoleValidation.description,
+    image: { url: '/images/og-console-validation.png', alt: 'Is your press ready for closed-loop color?' },
+  });
+}
 
 export const dynamic = 'force-dynamic';
 
@@ -43,7 +29,7 @@ const FAQ = [
   },
   {
     q: 'What happens after I submit the form?',
-    a: 'Our team reviews your photos and comes back within one business day with your press eligibility, either for Rutherford ColorLoop on your existing measurement setup or for the complete X-Rite Offset360 bundle.',
+    a: 'Our team reviews your photos and comes back within one business day with your press eligibility, either for Rutherford ColorLoop on your existing measurement setup or for a complete measurement and closed-loop setup.',
   },
 ];
 

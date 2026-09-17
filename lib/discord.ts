@@ -95,3 +95,24 @@ export async function notifyDiscordSupport(t: {
   if (links) fields.push({ name: 'Liens', value: links });
   await postEmbed('🆘 Nouveau ticket support', fields);
 }
+
+/** Ping the team on a new contact form message. No-op without a webhook. */
+export async function notifyDiscordContact(v: {
+  name: string;
+  email: string;
+  company: string;
+  country: string;
+  topic: string;
+  wantsCall: boolean;
+  message: string;
+}): Promise<void> {
+  if (!WEBHOOK_URL) return;
+  const fields: EmbedField[] = [];
+  if (v.name) fields.push({ name: 'Nom', value: v.name, inline: true });
+  if (v.company) fields.push({ name: 'Société', value: v.company, inline: true });
+  if (v.country) fields.push({ name: 'Pays', value: v.country, inline: true });
+  fields.push({ name: 'E-mail', value: v.email });
+  fields.push({ name: 'Sujet', value: v.topic + (v.wantsCall ? ' · rappel demandé' : '') });
+  fields.push({ name: 'Message', value: v.message.slice(0, 1000) });
+  await postEmbed('✉️ Nouveau message de contact', fields);
+}
