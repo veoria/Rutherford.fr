@@ -995,7 +995,7 @@
       "At Cartonajes Pans, five complete systems combining X-Rite IntelliTrax2 with Rutherford closed loop technology and MeasureColor are running in production on Manroland Sheetfed offset presses of different generations.",
       "The installation covers the whole chain: ink formulation with X-Rite InkFormulation, automated spectral measurement on the sheet, and closed loop ink key control directly at the press console.",
       "Presses of different generations sharing one color standard is the part most pressrooms find hardest. It is also what makes a fleet behave like a single production tool rather than a collection of machines.",
-      "The project was supported on site by Solida Color, Rutherford partner in Spain. A testimonial video filmed with the Cartonajes Pans team is coming shortly on the X-Rite page."
+      "The project was supported on site by Solida Color, Rutherford partner in Spain. A testimonial video filmed with the Cartonajes Pans team is coming soon."
     ],
     "body": [
       {
@@ -1079,7 +1079,7 @@
       },
       {
         "type": "p",
-        "text": "The testimonial video filmed with the team will be available shortly on the X-Rite page."
+        "text": "The testimonial video filmed with the team is coming soon."
       },
       {
         "type": "h2",
@@ -1177,7 +1177,7 @@
           },
           {
             "type": "p",
-            "text": "La vidéo témoignage tournée avec l'équipe sera disponible prochainement sur la page X-Rite."
+            "text": "La vidéo témoignage tournée avec l'équipe sera bientôt disponible."
           },
           {
             "type": "h2",
@@ -1252,7 +1252,7 @@
       },
       {
         "type": "p",
-        "text": "Around 90 percent of PANTONE spot tones, against roughly 55 percent with conventional CMYK, on X-Rite figures. The remaining tenth matters more than the number suggests: it tends to contain the saturated corporate colors brands are least willing to compromise on, certain reflex blues, fluorescents and metallics that no build reproduces. Check your own top twenty brand colors against the gamut before committing, not the PANTONE book as a whole."
+        "text": "Around 90 percent of PANTONE spot tones, against roughly 55 percent with conventional CMYK by commonly cited estimates. The remaining tenth matters more than the number suggests: it tends to contain the saturated corporate colors brands are least willing to compromise on, certain reflex blues, fluorescents and metallics that no build reproduces. Check your own top twenty brand colors against the gamut before committing, not the PANTONE book as a whole."
       },
       {
         "type": "h2",
@@ -1383,7 +1383,7 @@
           },
           {
             "type": "p",
-            "text": "Environ 90 % des tons directs PANTONE, contre à peu près 55 % en CMJN classique, selon les chiffres X-Rite. Le dixième restant compte davantage que le pourcentage ne le laisse croire : il contient les couleurs de marque saturées sur lesquelles les donneurs d’ordres transigent le moins, certains bleus reflex, les fluorescents et les métalliques qu’aucune composition ne reproduit. Testez vos vingt principales couleurs de marque contre la gamme avant de vous engager, pas le nuancier PANTONE dans son ensemble."
+            "text": "Environ 90 % des tons directs PANTONE, contre à peu près 55 % en CMJN classique, selon les estimations couramment citées. Le dixième restant compte davantage que le pourcentage ne le laisse croire : il contient les couleurs de marque saturées sur lesquelles les donneurs d’ordres transigent le moins, certains bleus reflex, les fluorescents et les métalliques qu’aucune composition ne reproduit. Testez vos vingt principales couleurs de marque contre la gamme avant de vous engager, pas le nuancier PANTONE dans son ensemble."
           },
           {
             "type": "h2",
@@ -1788,8 +1788,8 @@
   {
     "slug": "ppwr-recyclability-grades-what-printers-get-wrong",
     "title": "Three things printers get wrong about PPWR recyclability",
-    "excerpt": "Recyclability is not a 2030 topic, the grades are A, B and C only, and EN 18120 gives you no presumption of conformity. What the regulation actually says, two weeks before it applies.",
-    "lead": "Ask around a pressroom what the PPWR requires and you will hear the same three answers, and all three are wrong. With the general application date now days away, here is what Regulation (EU) 2025/40 actually says about recyclability, and what it deliberately leaves open.",
+    "excerpt": "The PPWR has applied since 12 August 2026, yet recyclability has its own later dates, the grades are A, B and C only, and EN 18120 is not a presumption of conformity. What the regulation actually says.",
+    "lead": "Ask around a pressroom what the PPWR requires and you will hear the same three answers, and all three are wrong. The regulation has applied since 12 August 2026, so here is what Regulation (EU) 2025/40 actually says about recyclability, and what it deliberately leaves open.",
     "image": "/images/blog/covers/ppwr-recyclability-grades-what-printers-get-wrong-1056a33a.jpg",
     "publishedAt": "2026-07-28",
     "category": "Regulations",
@@ -1797,30 +1797,34 @@
     "body": [
       {
         "type": "p",
-        "text": "The PPWR entered into force in February 2025 and applies from 12 August 2026. In the weeks before that date, three misreadings keep coming back in conversations with packaging printers and converters. Each one leads to a different planning mistake, and each one is worth correcting before it costs a redesign cycle."
+        "text": "The PPWR entered into force in February 2025 and has applied since 12 August 2026. Around that date, three misreadings kept coming back in conversations with packaging printers and converters. Each one leads to a different planning mistake, and each one is worth correcting before it costs a redesign cycle."
       },
       {
         "type": "h2",
-        "text": "Mistake one: treating recyclability as a 2030 problem"
+        "text": "Mistake one: reading the recyclability dates as a single deadline"
       },
       {
         "type": "p",
-        "text": "This is the most common and the most expensive. The widespread belief is that recyclability becomes an obligation at the start of 2030, which leaves comfortable room to plan."
+        "text": "Two opposite readings circulate. One says recyclability became enforceable on 12 August 2026. The other says it is a 2030 topic with comfortable room to plan. Both miss how Article 6 is built."
       },
       {
         "type": "p",
-        "text": "It does not. Article 6(1) imposes the general obligation from 12 August 2026: from that date, all packaging placed on the Union market must be recyclable. What arrives later is the graded performance layer built on top of that duty:"
+        "text": "Article 6(1) states that all packaging placed on the market shall be recyclable, and it sits in a regulation that has applied since 12 August 2026. But Article 6(2) defines recyclable through two conditions, and each has its own start date:"
       },
       {
         "type": "ul",
         "items": [
-          "At least grade C from 1 January 2030, or 24 months after the relevant delegated acts enter into force, whichever is later",
-          "At least grade B from 1 January 2038"
+          "Design for recycling: from 1 January 2030, or 24 months after the Article 6(4) delegated acts enter into force, whichever is later",
+          "Recycled at scale: from 1 January 2035, or five years after the Article 6(5) implementing acts enter into force, whichever is later"
         ]
       },
       {
         "type": "p",
-        "text": "The distinction matters because the two dates answer different questions. 2026 answers \"is this packaging recyclable at all\". 2030 and 2038 answer \"how well\". A portfolio planned only against 2030 has already missed the first requirement."
+        "text": "The graded layer follows the same logic. Under Article 6(3), packaging must be recyclable within grades A, B or C from 1 January 2030, or 24 months after the delegated acts enter into force, whichever is later, and within grades A or B from 1 January 2038."
+      },
+      {
+        "type": "p",
+        "text": "The practical point: the enforceable test starts in 2030 at the earliest, but the criteria it will apply are due by 1 January 2028. That leaves little time for portfolio redesign, substrate qualification and new color targets on the press. Planning that starts in 2030 starts too late."
       },
       {
         "type": "h2",
@@ -1832,7 +1836,7 @@
       },
       {
         "type": "p",
-        "text": "The PPWR grading system has three letters: A, B and C. Packaging that does not reach at least grade C is described as technically non-recyclable and carries no letter at all. That category is what disappears from the market in 2030, and grade C follows it in 2038."
+        "text": "The PPWR grading system has three letters: A, B and C. Table 3 of Annex II sets the design for recycling thresholds at 95 percent or more for grade A, 80 percent or more for grade B and 70 percent or more for grade C. Packaging below 70 percent is technically non-recyclable and carries no letter at all. That category is what disappears from the market from the 2030 date, and grade C follows it in 2038."
       },
       {
         "type": "p",
@@ -1840,15 +1844,15 @@
       },
       {
         "type": "h2",
-        "text": "Mistake three: treating EN 18120 as a safe harbour"
+        "text": "Mistake three: treating EN 18120 as a safe harbor"
       },
       {
         "type": "p",
-        "text": "EN 18120 has been published and is emerging as the technical reference for recyclability assessment under the PPWR. Several suppliers already present conformity with it as compliance with the regulation."
+        "text": "The EN 18120 series, published by CEN in 2026, is emerging as the technical reference for design for recycling assessment of plastic packaging. Several suppliers already present conformity with it as compliance with the regulation."
       },
       {
         "type": "p",
-        "text": "It is not, at least not yet. EN 18120 has not been cited in the Official Journal of the European Union as a harmonised standard, and without that citation it carries no presumption of conformity. A company that conforms to EN 18120 is not thereby compliant with Article 6. Treat it as the best available technical reference, use it, document against it, and watch the Official Journal for a future citation. Just do not present it internally as legal cover it does not currently provide."
+        "text": "The text does not support that shortcut. Under Article 36, a standard only gives a presumption of conformity once its reference is published in the Official Journal of the European Union as a harmonized standard. And Article 6(2) ties deemed compliance with design for recycling to the delegated acts, which the Commission must adopt after taking European standards into consideration. Use EN 18120, document against it, and treat it as the best available technical reference. Just do not present it internally as legal cover unless its reference appears in the Official Journal."
       },
       {
         "type": "h2",
@@ -1856,15 +1860,15 @@
       },
       {
         "type": "p",
-        "text": "There is an honest gap in the framework that is worth understanding rather than glossing over. The Article 6 delegated acts that will set out the detailed design for recycling criteria and the grade methodology have not been adopted, and work on them has not begun."
+        "text": "There is an honest gap in the framework that is worth understanding rather than glossing over. The detailed design for recycling criteria and the method for expressing grades are to be set by delegated acts under Article 6(4), which the Commission must adopt by 1 January 2028."
       },
       {
         "type": "p",
-        "text": "That is precisely why the 2030 threshold carries its conditionality: 1 January 2030, or 24 months after those acts enter into force, whichever is later. The detailed criteria do not yet exist in binding form, so the regulation ties the graded deadline to their adoption. If you are being sold a definitive grade assessment today, ask which binding criteria it applies."
+        "text": "That is precisely why the 2030 threshold carries its conditionality: 1 January 2030, or 24 months after those acts enter into force, whichever is later. The regulation ties the graded deadline to the adoption of binding criteria. If you are being sold a definitive grade assessment today, ask which binding criteria it applies."
       },
       {
         "type": "p",
-        "text": "One threshold you can already work with is the recycled at scale criterion. Packaging counts as recycled at scale when the annual quantity recycled per material and packaging format category reaches 55 percent at EU level, and 30 percent for wood packaging. It is distinct from the grade: it decides whether a recycling route counts at all. A theoretically elegant recycling route that nobody actually operates at volume does not get your packaging over the line."
+        "text": "One threshold is already written into the regulation: the recycled at scale criterion. Under Article 3, packaging waste counts as recycled at scale when the annual quantity recycled per packaging category reaches 55 percent at EU level, and 30 percent for wood. It is distinct from the grade and applies from 1 January 2035 at the earliest: it decides whether a recycling route counts at all. A theoretically elegant recycling route that nobody actually operates at volume does not get your packaging over the line."
       },
       {
         "type": "h2",
@@ -1872,7 +1876,7 @@
       },
       {
         "type": "p",
-        "text": "Recyclability is decided by structure and materials, not by ink. But the compliance file that sits behind a Declaration of Conformity is built from production data, and production data is only as good as the process that generates it."
+        "text": "Recyclability is decided by structure and materials, not by ink. But the compliance file that sits behind an EU declaration of conformity is built from production data, and production data is only as good as the process that generates it."
       },
       {
         "type": "p",
@@ -1884,21 +1888,22 @@
       },
       {
         "type": "h2",
-        "text": "What to do in the next two weeks"
+        "text": "What to do now"
       },
       {
         "type": "ul",
         "items": [
-          "Check that your portfolio is assessed against Article 6(1) as of 12 August 2026, not only against 2030",
+          "Map your portfolio against both Article 6 conditions and their dates: design for recycling from 2030 and recycled at scale from 2035, each subject to the later of the fixed date or the relevant Commission acts",
           "Reject any assessment that uses grades outside A, B and C",
-          "Keep using EN 18120 as a technical reference, but do not treat it as a presumption of conformity until it is cited in the Official Journal",
-          "For each recycling route you rely on, verify it meets the recycled at scale threshold for that material and format category",
+          "Keep using EN 18120 as a technical reference, but do not treat it as a presumption of conformity unless its reference is published in the Official Journal",
+          "Follow the Article 6(4) delegated acts, due by 1 January 2028, since they will set the binding criteria",
+          "For each recycling route you rely on, verify it can meet the recycled at scale threshold for that material and packaging category",
           "Make sure your production measurement data is exportable, timestamped and traceable to a specific run"
         ]
       },
       {
         "type": "p",
-        "text": "The eight free courses in the [Rutherford PPWR Academy](/academy) go through all of this in detail, in eight languages, written against the official text."
+        "text": "The free courses in the [Rutherford PPWR Academy](/academy) go through these topics in more detail."
       },
       {
         "type": "p",
@@ -2900,47 +2905,48 @@
   },
   {
     "slug": "ppwr-august-2026-deadline-offset-printers",
-    "title": "PPWR: what changes for printers on August 12, 2026",
-    "excerpt": "The EU PPWR applies from August 12, 2026. What packaging printers worldwide must have ready, and why clean production data makes it easier.",
-    "lead": "The EU Packaging and Packaging Waste Regulation (PPWR) starts applying on August 12, 2026. From that date, every packaging type placed on the EU market needs a signed Declaration of Conformity backed by technical documentation. Here is what that means for offset and packaging printers, inside and outside Europe.",
+    "title": "PPWR: what changed for printers on August 12, 2026",
+    "excerpt": "The EU PPWR has applied since August 12, 2026. What packaging printers worldwide must now have in place, and why clean production data makes it easier.",
+    "lead": "The EU Packaging and Packaging Waste Regulation (PPWR) has applied since August 12, 2026. Packaging placed on the EU market must now be backed by technical documentation and an EU declaration of conformity drawn up by the manufacturer. Here is what that means for offset and packaging printers, inside and outside Europe.",
     "image": "/images/blog/photo-ppwr-august-2026-deadline-offset-printers.jpg",
     "publishedAt": "2026-07-15",
     "category": "Regulations",
     "paragraphs": [
-      "The PPWR is the EU regulation that reshapes how packaging is designed, documented and recycled. It entered into force in early 2025, and its general application date is August 12, 2026. From that day, packaging placed on the EU market must be covered by a Declaration of Conformity and technical documentation that proves it meets the regulation.",
-      "This is not only a European story. Any printer or converter whose packaging ends up on the EU market is concerned, whether the plant is in the United States, Turkey, India or Brazil. Brand owners are already pushing the data request down the chain: substrates, inks, recycled content, recyclability, and proof.",
-      "For the pressroom, the practical work is data. Shops that already standardize color and log their production have most of the raw material: targets, measurements, DeltaE per job, substrates and run records. Shops that still manage color by eye will feel the documentation burden much more.",
+      "The PPWR is the EU regulation that reshapes how packaging is designed, documented and recycled. It entered into force in February 2025 and has applied since August 12, 2026. Since that date, manufacturers must draw up technical documentation and an EU declaration of conformity before placing packaging on the EU market.",
+      "This is not only a European story. Any printer or converter whose packaging ends up on the EU market is concerned, whether the plant is in the United States, Turkey, India or Brazil. Brand owners are pushing the data request down the chain: substrates, inks, recycled content, recyclability, and proof.",
+      "For the pressroom, the practical work is data. Shops that already standardize color and log their production have most of the raw material: targets, measurements, DeltaE per job, substrates and run records. Shops that still manage color by eye feel the documentation burden much more.",
       "Closed loop color control does not make packaging compliant by itself, but it produces exactly the kind of clean, per-job production data that compliance files and brand owner audits are built on. That is the pragmatic way in for printers: fix the data at the press first."
     ],
     "body": [
       {
         "type": "p",
-        "text": "The EU Packaging and Packaging Waste Regulation, PPWR, entered into force in February 2025. Its general application date is August 12, 2026. From that date, every distinct packaging type placed on the EU market needs a signed Declaration of Conformity (DoC), backed by technical documentation that can be shown to authorities on request."
+        "text": "The EU Packaging and Packaging Waste Regulation, PPWR (Regulation (EU) 2025/40), entered into force in February 2025 and has applied since August 12, 2026. Since that date, a manufacturer must carry out the conformity assessment and draw up the technical documentation set out in Annex VII before placing packaging on the EU market, then draw up a signed EU declaration of conformity once compliance is demonstrated. Both must be kept for 5 years for single-use packaging and 10 years for reusable packaging."
       },
       {
         "type": "h2",
-        "text": "What actually changes on August 12, 2026"
+        "text": "What changed on August 12, 2026"
       },
       {
         "type": "ul",
         "items": [
-          "A Declaration of Conformity becomes mandatory for each packaging type placed on the EU market.",
-          "Technical documentation must exist behind each DoC: materials, substances, recyclability, recycled content where relevant.",
-          "Obligations follow the packaging, not the printer: importers and distributors placing packaging on the EU market carry duties too.",
-          "Further milestones follow, including recyclability performance grades and, on the current signals, a Digital Product Passport for packaging later in the decade."
+          "Technical documentation and an EU declaration of conformity are now required before packaging is placed on the EU market (Articles 15 and 39).",
+          "The declaration states that the requirements of Articles 5 to 12 have been demonstrated, and by drawing it up the manufacturer takes responsibility for compliance.",
+          "The manufacturer is generally the company that has the packaging or packaged product made under its own name or trademark, which is why brand owners ask their printers and converters for the data behind the file.",
+          "Substance rules apply now: the sum of lead, cadmium, mercury and hexavalent chromium in packaging or packaging components must not exceed 100 mg/kg, and PFAS limits apply to food-contact packaging (Article 5).",
+          "Obligations follow the packaging, not the printer: importers and distributors carry their own duties (Articles 18 and 19)."
         ]
       },
       {
         "type": "p",
-        "text": "The EU is also standing up its Digital Product Passport infrastructure: the EU DPP Registry is expected to come online in July 2026, and a packaging DPP has been signalled on the 2028 timeline. The exact scope will be fixed by delegated acts, but the direction is clear: packaging will carry a data record, and that record starts in production."
+        "text": "Other obligations arrive later, each with its own date. A harmonized label on material composition applies from August 12, 2028, or 24 months after the implementing acts, whichever is later (Article 12). Packaging must be recyclable within grades A, B or C from January 1, 2030, or 24 months after the Article 6 delegated acts, whichever is later, and within grades A or B from January 1, 2038 (Article 6). Minimum recycled content targets for plastic parts of packaging apply from January 1, 2030, or 3 years after the implementing act, whichever is later (Article 7). The PPWR does not create a separate packaging Digital Product Passport, but where the packaged product needs one under the Ecodesign Regulation, the PPWR expects that passport to carry the packaging information too."
       },
       {
         "type": "h2",
-        "text": "A worldwide deadline, not a European one"
+        "text": "A worldwide rule, not a European one"
       },
       {
         "type": "p",
-        "text": "The PPWR applies to packaging placed on the EU market, wherever it was printed. A folding carton printed in Ohio, a label printed in Izmir or a flexible film printed in Guangzhou all fall under the same requirement the moment the packaged product is sold in the EU. This is why brand owners have started asking their converters worldwide for structured production data, and why pressrooms on every continent are standardizing now. Rutherford supports that shift with closed loop color deployed on more than 1,000 systems in over 30 countries, from [North American plants](/usa) to European packaging groups."
+        "text": "The PPWR applies to packaging placed on the EU market, wherever it was printed. A folding carton printed in Ohio, a label printed in Izmir or a flexible film printed in Guangzhou all fall under the same requirements the moment the packaged product is placed on the EU market. This is why brand owners ask their converters worldwide for structured production data, and why pressrooms on every continent are standardizing. Rutherford supports that shift with closed loop color deployed on more than 1,000 systems in over 30 countries, from [North American plants](/usa) to European packaging groups."
       },
       {
         "type": "h2",
@@ -2956,15 +2962,15 @@
       },
       {
         "type": "p",
-        "text": "Yes, indirectly but firmly. The obligations attach to packaging placed on the EU market, so any printer or converter exporting packaging, or printing for a brand that sells in the EU, will be asked for conformity data. Non-EU printers who can hand over clean, structured production records will keep those contracts; those who cannot will create risk for their customers."
+        "text": "Yes, indirectly but firmly. The obligations attach to packaging placed on the EU market, so any printer or converter exporting packaging, or printing for a brand that sells in the EU, can expect to be asked for conformity data. Non-EU printers who can hand over clean, structured production records will keep those contracts; those who cannot create risk for their customers."
       },
       {
         "type": "h3",
-        "text": "What should a printer have ready before August 12, 2026?"
+        "text": "What should a printer have in place now that the PPWR applies?"
       },
       {
         "type": "p",
-        "text": "Three things. First, know which of your jobs end up on the EU market. Second, be able to document materials and production per job: substrates, inks, measured color, run records. Third, agree with your brand owners who signs the Declaration of Conformity and what data they need from you. Our [PPWR and DPP printer checklist](/blog/ppwr-dpp-readiness-checklist-packaging-printers) walks through the full list."
+        "text": "Three things. First, know which of your jobs end up on the EU market. Second, be able to document materials and production per job: substrates, inks, measured color, run records. Third, agree with each brand owner which company acts as manufacturer and draws up the EU declaration of conformity, and what data they need from you. If those conversations did not happen before August 12, they are now overdue. Our [PPWR and DPP printer checklist](/blog/ppwr-dpp-readiness-checklist-packaging-printers) walks through the full list."
       },
       {
         "type": "h3",
@@ -2980,43 +2986,44 @@
       },
       {
         "type": "p",
-        "text": "August 12, 2026 is close, and the packaging DPP is on the horizon behind it. Printers who treat this as a data problem, not a paperwork problem, will move faster: standardize color, measure every run, keep the records. The compliance file then writes itself from data you already trust."
+        "text": "August 12, 2026 has passed, and the 2028 and 2030 milestones are next. Printers who treat this as a data problem, not a paperwork problem, move faster: standardize color, measure every run, keep the records. The compliance file then writes itself from data you already trust."
       }
     ],
     "i18n": {
       "fr": {
-        "title": "PPWR : ce qui change pour les imprimeurs le 12 août 2026",
-        "excerpt": "Le PPWR s’applique à partir du 12 août 2026. Ce que les imprimeurs d’emballage du monde entier doivent préparer, et pourquoi des données propres aident.",
-        "lead": "Le règlement européen sur les emballages et déchets d’emballages (PPWR) s’applique à partir du 12 août 2026. Dès cette date, chaque type d’emballage mis sur le marché de l’UE doit être couvert par une déclaration de conformité signée, appuyée par une documentation technique. Voici ce que cela change pour les imprimeurs offset et packaging, en Europe et ailleurs.",
+        "title": "PPWR : ce qui a changé pour les imprimeurs le 12 août 2026",
+        "excerpt": "Le PPWR s’applique depuis le 12 août 2026. Ce que les imprimeurs d’emballage du monde entier doivent désormais avoir en place, et pourquoi des données propres aident.",
+        "lead": "Le règlement européen sur les emballages et déchets d’emballages (PPWR) s’applique depuis le 12 août 2026. Tout emballage mis sur le marché de l’UE doit désormais s’appuyer sur une documentation technique et une déclaration UE de conformité établies par le fabricant. Voici ce que cela change pour les imprimeurs offset et packaging, en Europe et ailleurs.",
         "body": [
           {
             "type": "p",
-            "text": "Le PPWR est entré en vigueur en février 2025. Sa date d’application générale est le 12 août 2026. À partir de cette date, chaque type d’emballage mis sur le marché de l’UE doit disposer d’une déclaration de conformité (DoC) signée, appuyée par une documentation technique présentable aux autorités sur demande."
+            "text": "Le PPWR (règlement (UE) 2025/40) est entré en vigueur en février 2025 et s’applique depuis le 12 août 2026. Depuis cette date, le fabricant doit mener la procédure d’évaluation de la conformité et établir la documentation technique prévue à l’annexe VII avant de mettre un emballage sur le marché de l’UE, puis établir une déclaration UE de conformité signée une fois la conformité démontrée. Les deux documents doivent être conservés 5 ans pour un emballage à usage unique et 10 ans pour un emballage réutilisable."
           },
           {
             "type": "h2",
-            "text": "Ce qui change concrètement le 12 août 2026"
+            "text": "Ce qui a changé concrètement le 12 août 2026"
           },
           {
             "type": "ul",
             "items": [
-              "La déclaration de conformité devient obligatoire pour chaque type d’emballage mis sur le marché de l’UE.",
-              "Une documentation technique doit exister derrière chaque DoC : matériaux, substances, recyclabilité, contenu recyclé le cas échéant.",
-              "Les obligations suivent l’emballage, pas l’imprimeur : importateurs et distributeurs qui mettent l’emballage sur le marché de l’UE ont aussi des devoirs.",
-              "D’autres échéances suivent, dont les grades de recyclabilité et, selon les signaux actuels, un passeport produit numérique pour l’emballage plus tard dans la décennie."
+              "Documentation technique et déclaration UE de conformité sont désormais exigées avant la mise sur le marché de l’UE (articles 15 et 39).",
+              "La déclaration atteste que le respect des exigences des articles 5 à 12 a été démontré ; en l’établissant, le fabricant assume la responsabilité de la conformité.",
+              "Le fabricant est en général l’entreprise qui fait fabriquer l’emballage ou le produit emballé sous son propre nom ou sa propre marque : c’est pourquoi les marques demandent à leurs imprimeurs et converters les données qui alimentent le dossier.",
+              "Les règles sur les substances s’appliquent déjà : la somme des concentrations de plomb, cadmium, mercure et chrome hexavalent dans l’emballage ou ses composants ne doit pas dépasser 100 mg/kg, et des limites PFAS s’appliquent aux emballages au contact des denrées alimentaires (article 5).",
+              "Les obligations suivent l’emballage, pas l’imprimeur : importateurs et distributeurs ont aussi leurs propres obligations (articles 18 et 19)."
             ]
           },
           {
             "type": "p",
-            "text": "L’UE met aussi en place son infrastructure de passeport produit numérique : le registre DPP européen est attendu en ligne en juillet 2026, et un DPP emballage est évoqué à l’horizon 2028. Le périmètre exact sera fixé par actes délégués, mais la direction est claire : l’emballage portera un enregistrement de données, et cet enregistrement commence en production."
+            "text": "D’autres obligations arrivent plus tard, chacune avec sa date. L’étiquette harmonisée sur la composition des matériaux s’applique à partir du 12 août 2028, ou 24 mois après les actes d’exécution si cette date est plus tardive (article 12). L’emballage devra être recyclable dans les grades A, B ou C à partir du 1er janvier 2030, ou 24 mois après les actes délégués de l’article 6 si cette date est plus tardive, puis dans les grades A ou B à partir du 1er janvier 2038 (article 6). Les taux minimaux de contenu recyclé pour les parties plastiques s’appliquent à partir du 1er janvier 2030, ou 3 ans après l’acte d’exécution si cette date est plus tardive (article 7). Le PPWR ne crée pas de passeport produit numérique propre à l’emballage, mais lorsque le produit emballé en exige un au titre du règlement écoconception, le PPWR prévoit que ce passeport porte aussi les informations sur l’emballage."
           },
           {
             "type": "h2",
-            "text": "Une échéance mondiale, pas seulement européenne"
+            "text": "Une règle mondiale, pas seulement européenne"
           },
           {
             "type": "p",
-            "text": "Le PPWR s’applique à l’emballage mis sur le marché de l’UE, où qu’il ait été imprimé. Un étui imprimé aux États-Unis, une étiquette imprimée à Izmir ou un film souple imprimé à Canton tombent sous la même exigence dès que le produit emballé est vendu dans l’UE. C’est pourquoi les marques demandent déjà des données de production structurées à leurs converters du monde entier, et pourquoi les ateliers de tous les continents standardisent maintenant. Rutherford accompagne ce mouvement avec le closed loop déployé sur plus de 1 000 systèmes dans plus de 30 pays, des [sites nord-américains](/usa) aux groupes d’emballage européens."
+            "text": "Le PPWR s’applique à l’emballage mis sur le marché de l’UE, où qu’il ait été imprimé. Un étui imprimé aux États-Unis, une étiquette imprimée à Izmir ou un film souple imprimé à Canton tombent sous les mêmes exigences dès que le produit emballé est mis sur le marché de l’UE. C’est pourquoi les marques demandent des données de production structurées à leurs converters du monde entier, et pourquoi les ateliers de tous les continents standardisent. Rutherford accompagne ce mouvement avec le closed loop déployé sur plus de 1 000 systèmes dans plus de 30 pays, des [sites nord-américains](/usa) aux groupes d’emballage européens."
           },
           {
             "type": "h2",
@@ -3032,15 +3039,15 @@
           },
           {
             "type": "p",
-            "text": "Oui, indirectement mais fermement. Les obligations portent sur l’emballage mis sur le marché de l’UE. Tout imprimeur qui exporte de l’emballage, ou qui imprime pour une marque vendant dans l’UE, se verra demander des données de conformité. Les imprimeurs hors UE capables de fournir des enregistrements de production propres garderont ces contrats ; les autres créeront un risque pour leurs clients."
+            "text": "Oui, indirectement mais fermement. Les obligations portent sur l’emballage mis sur le marché de l’UE. Tout imprimeur qui exporte de l’emballage, ou qui imprime pour une marque vendant dans l’UE, doit s’attendre à des demandes de données de conformité. Les imprimeurs hors UE capables de fournir des enregistrements de production propres garderont ces contrats ; les autres créent un risque pour leurs clients."
           },
           {
             "type": "h3",
-            "text": "Que doit préparer un imprimeur avant le 12 août 2026 ?"
+            "text": "Que doit avoir en place un imprimeur maintenant que le PPWR s’applique ?"
           },
           {
             "type": "p",
-            "text": "Trois choses. Un : savoir quels travaux finissent sur le marché de l’UE. Deux : pouvoir documenter matériaux et production par travail : supports, encres, couleur mesurée, enregistrements de tirage. Trois : convenir avec vos donneurs d’ordres de qui signe la déclaration de conformité et des données attendues de votre part. Notre [checklist PPWR et DPP pour imprimeurs](/blog/ppwr-dpp-readiness-checklist-packaging-printers) détaille la liste complète."
+            "text": "Trois choses. Un : savoir quels travaux finissent sur le marché de l’UE. Deux : pouvoir documenter matériaux et production par travail : supports, encres, couleur mesurée, enregistrements de tirage. Trois : convenir avec chaque donneur d’ordres de l’entreprise qui agit en tant que fabricant et établit la déclaration UE de conformité, et des données attendues de votre part. Si ces échanges n’ont pas eu lieu avant le 12 août, ils sont désormais en retard. Notre [checklist PPWR et DPP pour imprimeurs](/blog/ppwr-dpp-readiness-checklist-packaging-printers) détaille la liste complète."
           },
           {
             "type": "h3",
@@ -3056,13 +3063,17 @@
           },
           {
             "type": "p",
-            "text": "Le 12 août 2026 est proche, et le DPP emballage se profile derrière. Les imprimeurs qui traitent le sujet comme un problème de données, pas comme un problème de paperasse, avanceront plus vite : standardiser la couleur, mesurer chaque tirage, conserver les enregistrements. Le dossier de conformité s’écrit alors tout seul, à partir de données déjà fiables."
+            "text": "Le 12 août 2026 est passé, et les échéances de 2028 et 2030 sont les suivantes. Les imprimeurs qui traitent le sujet comme un problème de données, pas comme un problème de paperasse, avancent plus vite : standardiser la couleur, mesurer chaque tirage, conserver les enregistrements. Le dossier de conformité s’écrit alors tout seul, à partir de données déjà fiables."
           }
         ]
       }
     },
     "originalUrl": "https://rutherford.fr/blog/ppwr-august-2026-deadline-offset-printers",
     "sources": [
+      {
+        "label": "Regulation (EU) 2025/40 on packaging and packaging waste (EUR-Lex)",
+        "href": "https://eur-lex.europa.eu/eli/reg/2025/40/oj"
+      },
       {
         "label": "PPWR 2026: August 12 deadline and DoC requirements (dpp-tool.com)",
         "href": "https://dpp-tool.com/en/guide/ppwr/"
@@ -3626,7 +3637,7 @@
       "The first win is at makeready. CIP3/CIP4 presetting opens the ink keys from prepress data instead of from a default, so the press starts close to target. Closed-loop then drives the press into tolerance in fewer pulls, which means fewer sheets and less ink burned before the first saleable copy.",
       "The second win is during the run. Color drifts as paper batches change, fountain solution shifts, temperature rises and plates wear. A closed-loop system measures and corrects continuously, so color stays inside your DeltaE tolerance from the first sheet to the last. That means fewer remakes and fewer customer rejections.",
       "The outcomes are measurable: lower makeready waste, shorter setup time, tighter DeltaE, and repeatability across shifts and sites. It also produces auditable color data for every job, which is increasingly valuable for brand owners and for packaging compliance.",
-      "Most printers already run X-Rite PANTONE measurement. Going closed-loop is the step of adding the decision and actuator layer, for example with Rutherford ColorLoop. A free console validation confirms whether your specific press console and ink-key system qualify, in about two minutes."
+      "Most printers already own spectral measurement, handheld or scanning. Going closed-loop is the step of adding the decision and actuator layer, for example with Rutherford ColorLoop. A free console validation confirms whether your specific press console and ink-key system qualify, in about two minutes."
     ],
     "originalUrl": "https://rutherford.fr/offset360",
     "sources": [
@@ -3707,7 +3718,7 @@
       },
       {
         "type": "p",
-        "text": "Most printers already run X-Rite PANTONE measurement. Going closed-loop is the step of adding the decision and actuator layer, for example with Rutherford ColorLoop. A free console validation confirms whether your specific press console and ink-key system qualify, in about two minutes."
+        "text": "Most printers already own spectral measurement, handheld or scanning. Going closed-loop is the step of adding the decision and actuator layer, for example with Rutherford ColorLoop. A free console validation confirms whether your specific press console and ink-key system qualify, in about two minutes."
       }
     ],
     "i18n": {
@@ -3779,7 +3790,7 @@
           },
           {
             "type": "p",
-            "text": "Viele Druckereien arbeiten bereits mit X-Rite PANTONE-Messtechnik. Der Schritt zu Closed-Loop bedeutet, die Entscheidungs- und Aktorebene hinzuzufügen, zum Beispiel mit Rutherford ColorLoop. Eine kostenlose Konsolenvalidierung bestätigt in etwa zwei Minuten, ob Ihr konkretes Druckpult und Farbzonensystem geeignet ist."
+            "text": "Viele Druckereien verfügen bereits über spektrale Messtechnik. Der Schritt zu Closed-Loop bedeutet, die Entscheidungs- und Aktorebene hinzuzufügen, zum Beispiel mit Rutherford ColorLoop. Eine kostenlose Konsolenvalidierung bestätigt in etwa zwei Minuten, ob Ihr konkretes Druckpult und Farbzonensystem geeignet ist."
           }
         ]
       },
@@ -3851,7 +3862,7 @@
           },
           {
             "type": "p",
-            "text": "La plupart des imprimeurs utilisent déjà la mesure X-Rite PANTONE. Passer au closed-loop, c'est ajouter la couche de décision et l'actionneur, par exemple avec Rutherford ColorLoop. Une validation console gratuite confirme en deux minutes environ si votre pupitre de presse et votre système de clés d'encrage sont éligibles."
+            "text": "La plupart des imprimeurs disposent déjà d'une mesure spectrale. Passer au closed-loop, c'est ajouter la couche de décision et l'actionneur, par exemple avec Rutherford ColorLoop. Une validation console gratuite confirme en deux minutes environ si votre pupitre de presse et votre système de clés d'encrage sont éligibles."
           }
         ]
       },
@@ -3923,7 +3934,7 @@
           },
           {
             "type": "p",
-            "text": "La maggior parte delle aziende usa già la misurazione X-Rite PANTONE. Passare al closed-loop significa aggiungere il livello decisionale e l'attuatore, per esempio con Rutherford ColorLoop. Una validazione console gratuita conferma in circa due minuti se il pulpito di stampa e il sistema di chiavi di inchiostro sono idonei."
+            "text": "La maggior parte delle aziende dispone già di una misurazione spettrale. Passare al closed-loop significa aggiungere il livello decisionale e l'attuatore, per esempio con Rutherford ColorLoop. Una validazione console gratuita conferma in circa due minuti se il pulpito di stampa e il sistema di chiavi di inchiostro sono idonei."
           }
         ]
       },
@@ -3995,7 +4006,7 @@
           },
           {
             "type": "p",
-            "text": "La mayoría de los impresores ya usa medición X-Rite PANTONE. Pasar a closed-loop consiste en añadir la capa de decisión y el actuador, por ejemplo con Rutherford ColorLoop. Una validación de consola gratuita confirma en unos dos minutos si su pupitre de prensa y su sistema de llaves de tinta son aptos."
+            "text": "La mayoría de los impresores ya dispone de medición espectral. Pasar a closed-loop consiste en añadir la capa de decisión y el actuador, por ejemplo con Rutherford ColorLoop. Una validación de consola gratuita confirma en unos dos minutos si su pupitre de prensa y su sistema de llaves de tinta son aptos."
           }
         ]
       }
@@ -5508,14 +5519,18 @@
     "image": "/images/ppwr-dpp-hero.png",
     "paragraphs": [
       "PPWR and Digital Product Passport requirements are becoming strategic topics for packaging printers and converters. Even when the detailed obligations vary by product category, the direction is clear: packaging and printed products sold into the European market will require stronger data, better traceability, and clearer evidence of compliance.",
-      "The Packaging and Packaging Waste Regulation (PPWR) entered into force in February 2025 and will generally apply from August 2026. According to the European Commission, the regulation is designed to reduce packaging waste, improve recyclability, increase recycled content where relevant, and harmonize packaging rules across the EU market.",
+      "The Packaging and Packaging Waste Regulation (PPWR) entered into force in February 2025 and has applied since 12 August 2026, with several obligations phased in later. According to the European Commission, the regulation is designed to reduce packaging waste, improve recyclability, increase recycled content where relevant, and harmonize packaging rules across the EU market.",
       "In parallel, the Ecodesign for Sustainable Products Regulation introduces the Digital Product Passport concept. The European Commission describes the DPP as a digital identity card for products, components, and materials, built to support sustainability, circularity, and legal compliance. GS1 also frames the DPP as a digital record that improves traceability and transparency throughout the value chain.",
-      "For offset printing companies, the operational implication is straightforward: product, substrate, job, and quality data will matter more. Printers that can connect production data, specifications, approvals, and traceability records in a structured way will be better positioned to answer customer requests and future compliance checks.",
+      "For offset printing companies, the operational implication is straightforward: product, substrate, job, and quality data matter more. Printers that can connect production data, specifications, approvals, and traceability records in a structured way will be better positioned to answer customer requests and future compliance checks.",
       "This does not mean every printer needs to rebuild its workflow overnight. It does mean that investments in standardization, connected quality systems, and better production visibility are becoming more strategic. The print businesses that prepare now will be in a stronger position to support brand owners, packaging buyers, and regulatory expectations over the next few years."
     ],
     "originalUrl": "https://environment.ec.europa.eu/topics/waste-and-recycling/packaging-waste_en",
     "category": "Rutherford Insights",
     "sources": [
+      {
+        "label": "Regulation (EU) 2025/40 on packaging and packaging waste (EUR-Lex)",
+        "href": "https://eur-lex.europa.eu/eli/reg/2025/40/oj"
+      },
       {
         "label": "European Commission – Packaging waste and PPWR overview",
         "href": "https://environment.ec.europa.eu/topics/waste-and-recycling/packaging-waste_en"
@@ -5554,7 +5569,7 @@
     "image": "/images/blog-legacy/1615818368518-1834.webp",
     "paragraphs": [
       "The Shelby Company is featured here as a practical example of how print businesses are modernizing sheetfed offset production. The story is not just about adding software or hardware: it is about reducing variation, reaching color faster, and making daily production easier for operators and managers alike.",
-      "The Shelby Company is highlighted with a workflow built around IntelliTrax2, X-Rite, and CIP3.",
+      "The Shelby Company is highlighted with a workflow built around IntelliTrax2 and CIP3.",
       "For offset printers, the real value of this type of deployment is operational stability. Better presets, faster measurements, and more reliable feedback loops help teams reach target color with less paper, fewer correction cycles, and a more controlled startup on every repeat job.",
       "This article also reflects a wider trend in industrial print: customers expect measurable consistency across shifts, presses, and production sites. Standardized workflows make it easier to onboard operators, scale quality procedures, and give brand owners more confidence in the result.",
       "Rutherford’s role in these projects is to connect the console, the measurement layer, and the reporting workflow into one usable process. The outcome is a production environment where quality becomes easier to repeat, easier to document, and easier to improve over time."
@@ -5570,7 +5585,7 @@
     "image": "/images/blog-legacy/1612787881683-1876.webp",
     "paragraphs": [
       "Obeikan Group is featured here as a practical example of how print businesses are modernizing sheetfed offset production. The story is not just about adding software or hardware: it is about reducing variation, reaching color faster, and making daily production easier for operators and managers alike.",
-      "Obeikan Group is highlighted with a workflow built around X-Rite, Pantone, CIP3, and closed-loop.",
+      "Obeikan Group is highlighted with a workflow built around CIP3 and closed-loop.",
       "For offset printers, the real value of this type of deployment is operational stability. Better presets, faster measurements, and more reliable feedback loops help teams reach target color with less paper, fewer correction cycles, and a more controlled startup on every repeat job.",
       "This article also reflects a wider trend in industrial print: customers expect measurable consistency across shifts, presses, and production sites. Standardized workflows make it easier to onboard operators, scale quality procedures, and give brand owners more confidence in the result.",
       "Rutherford’s role in these projects is to connect the console, the measurement layer, and the reporting workflow into one usable process. The outcome is a production environment where quality becomes easier to repeat, easier to document, and easier to improve over time."
@@ -5602,7 +5617,7 @@
     "image": "/images/blog-legacy/1610632125047-917.webp",
     "paragraphs": [
       "Yazawa Printing 矢沢印刷 is featured here as a practical example of how print businesses are modernizing sheetfed offset production. The story is not just about adding software or hardware: it is about reducing variation, reaching color faster, and making daily production easier for operators and managers alike.",
-      "Yazawa Printing 矢沢印刷 is highlighted with a workflow built around IntelliTrax2, X-Rite, Pantone, and CIP3.",
+      "Yazawa Printing 矢沢印刷 is highlighted with a workflow built around IntelliTrax2 and CIP3.",
       "For offset printers, the real value of this type of deployment is operational stability. Better presets, faster measurements, and more reliable feedback loops help teams reach target color with less paper, fewer correction cycles, and a more controlled startup on every repeat job.",
       "This article also reflects a wider trend in industrial print: customers expect measurable consistency across shifts, presses, and production sites. Standardized workflows make it easier to onboard operators, scale quality procedures, and give brand owners more confidence in the result.",
       "Rutherford’s role in these projects is to connect the console, the measurement layer, and the reporting workflow into one usable process. The outcome is a production environment where quality becomes easier to repeat, easier to document, and easier to improve over time."
@@ -5618,7 +5633,7 @@
     "image": "/images/lefrancq-extended-gamut.jpg",
     "paragraphs": [
       "Extended Gamut from LEFRANCQ is featured here as a practical example of how print businesses are modernizing packaging and label production. The story is not just about adding software or hardware: it is about reducing variation, reaching color faster, and making daily production easier for operators and managers alike.",
-      "Extended Gamut from LEFRANCQ is highlighted with a workflow built around IntelliTrax2, Colorware, Esko, Equinox, X-Rite, Pantone, CIP3, and Extended Gamut.",
+      "Extended Gamut from LEFRANCQ is highlighted with a workflow built around IntelliTrax2, Colorware, Esko, Equinox, CIP3, and Extended Gamut.",
       "For offset printers, the real value of this type of deployment is operational stability. Better presets, faster measurements, and more reliable feedback loops help teams reach target color with less paper, fewer correction cycles, and a more controlled startup on every repeat job.",
       "This article also reflects a wider trend in industrial print: customers expect measurable consistency across shifts, presses, and production sites. Standardized workflows make it easier to onboard operators, scale quality procedures, and give brand owners more confidence in the result.",
       "Rutherford’s role in these projects is to connect the console, the measurement layer, and the reporting workflow into one usable process. The outcome is a production environment where quality becomes easier to repeat, easier to document, and easier to improve over time."
@@ -5650,7 +5665,7 @@
     "image": "/images/lefrancq-packaging-testimonial.jpg",
     "paragraphs": [
       "LEFRANCQ PACKAGING is featured here as a practical example of how print businesses are modernizing packaging and label production. The story is not just about adding software or hardware: it is about reducing variation, reaching color faster, and making daily production easier for operators and managers alike.",
-      "LEFRANCQ PACKAGING is highlighted with a workflow built around IntelliPack, IntelliTrax2, MeasureColor, Colorware, Esko, Equinox, X-Rite, Pantone, and Extended Gamut.",
+      "LEFRANCQ PACKAGING is highlighted with a workflow built around IntelliPack, IntelliTrax2, MeasureColor, Colorware, Esko, Equinox, and Extended Gamut.",
       "For offset printers, the real value of this type of deployment is operational stability. Better presets, faster measurements, and more reliable feedback loops help teams reach target color with less paper, fewer correction cycles, and a more controlled startup on every repeat job.",
       "This article also reflects a wider trend in industrial print: customers expect measurable consistency across shifts, presses, and production sites. Standardized workflows make it easier to onboard operators, scale quality procedures, and give brand owners more confidence in the result.",
       "Rutherford’s role in these projects is to connect the console, the measurement layer, and the reporting workflow into one usable process. The outcome is a production environment where quality becomes easier to repeat, easier to document, and easier to improve over time."
@@ -5697,7 +5712,7 @@
     "image": "/images/blog-legacy/1606137638175-1838.webp",
     "paragraphs": [
       "LEFRANCQ PACKAGING is featured here as a practical example of how print businesses are modernizing packaging and label production. The story is not just about adding software or hardware: it is about reducing variation, reaching color faster, and making daily production easier for operators and managers alike.",
-      "LEFRANCQ PACKAGING is highlighted with a workflow built around IntelliPack, IntelliTrax2, MeasureColor, Colorware, Esko, Equinox, X-Rite, Pantone, and CIP3.",
+      "LEFRANCQ PACKAGING is highlighted with a workflow built around IntelliPack, IntelliTrax2, MeasureColor, Colorware, Esko, Equinox, and CIP3.",
       "For offset printers, the real value of this type of deployment is operational stability. Better presets, faster measurements, and more reliable feedback loops help teams reach target color with less paper, fewer correction cycles, and a more controlled startup on every repeat job.",
       "This article also reflects a wider trend in industrial print: customers expect measurable consistency across shifts, presses, and production sites. Standardized workflows make it easier to onboard operators, scale quality procedures, and give brand owners more confidence in the result.",
       "Rutherford’s role in these projects is to connect the console, the measurement layer, and the reporting workflow into one usable process. The outcome is a production environment where quality becomes easier to repeat, easier to document, and easier to improve over time."
@@ -5713,7 +5728,7 @@
     "image": "/images/blog-legacy/1605621658952-1880.webp",
     "paragraphs": [
       "WestRock Aguascalientes is featured here as a practical example of how print businesses are modernizing packaging and label production. The story is not just about adding software or hardware: it is about reducing variation, reaching color faster, and making daily production easier for operators and managers alike.",
-      "WestRock Aguascalientes is highlighted with a workflow built around X-Rite, Pantone, and CIP3.",
+      "WestRock Aguascalientes is highlighted with a workflow built around CIP3.",
       "For offset printers, the real value of this type of deployment is operational stability. Better presets, faster measurements, and more reliable feedback loops help teams reach target color with less paper, fewer correction cycles, and a more controlled startup on every repeat job.",
       "This article also reflects a wider trend in industrial print: customers expect measurable consistency across shifts, presses, and production sites. Standardized workflows make it easier to onboard operators, scale quality procedures, and give brand owners more confidence in the result.",
       "Rutherford’s role in these projects is to connect the console, the measurement layer, and the reporting workflow into one usable process. The outcome is a production environment where quality becomes easier to repeat, easier to document, and easier to improve over time."
@@ -5729,7 +5744,7 @@
     "image": "/images/wauters-bpack.jpg",
     "paragraphs": [
       "Wauters - Bpack is featured here as a practical example of how print businesses are modernizing packaging and label production. The story is not just about adding software or hardware: it is about reducing variation, reaching color faster, and making daily production easier for operators and managers alike.",
-      "Wauters - Bpack is highlighted with a workflow built around MeasureColor, Colorware, X-Rite, and Pantone.",
+      "Wauters - Bpack is highlighted with a workflow built around MeasureColor and Colorware.",
       "For offset printers, the real value of this type of deployment is operational stability. Better presets, faster measurements, and more reliable feedback loops help teams reach target color with less paper, fewer correction cycles, and a more controlled startup on every repeat job.",
       "This article also reflects a wider trend in industrial print: customers expect measurable consistency across shifts, presses, and production sites. Standardized workflows make it easier to onboard operators, scale quality procedures, and give brand owners more confidence in the result.",
       "Rutherford’s role in these projects is to connect the console, the measurement layer, and the reporting workflow into one usable process. The outcome is a production environment where quality becomes easier to repeat, easier to document, and easier to improve over time."
@@ -5760,7 +5775,7 @@
     "image": "/images/blog-legacy/1604490287273-1852.webp",
     "paragraphs": [
       "ASK ADVERTISING is featured here as a practical example of how print businesses are modernizing sheetfed offset production. The story is not just about adding software or hardware: it is about reducing variation, reaching color faster, and making daily production easier for operators and managers alike.",
-      "ASK ADVERTISING is highlighted with a workflow built around MeasureColor, Pantone, CIP3, and closed-loop.",
+      "ASK ADVERTISING is highlighted with a workflow built around MeasureColor, CIP3, and closed-loop.",
       "For offset printers, the real value of this type of deployment is operational stability. Better presets, faster measurements, and more reliable feedback loops help teams reach target color with less paper, fewer correction cycles, and a more controlled startup on every repeat job.",
       "This article also reflects a wider trend in industrial print: customers expect measurable consistency across shifts, presses, and production sites. Standardized workflows make it easier to onboard operators, scale quality procedures, and give brand owners more confidence in the result.",
       "Rutherford’s role in these projects is to connect the console, the measurement layer, and the reporting workflow into one usable process. The outcome is a production environment where quality becomes easier to repeat, easier to document, and easier to improve over time."
@@ -5791,7 +5806,7 @@
     "image": "/images/blog-legacy/image-collee-1834.webp",
     "paragraphs": [
       "GS MONACO is featured here as a practical example of how print businesses are modernizing sheetfed offset production. The story is not just about adding software or hardware: it is about reducing variation, reaching color faster, and making daily production easier for operators and managers alike.",
-      "GS MONACO is highlighted with a workflow built around IntelliPack, IntelliTrax2, X-Rite, and Pantone.",
+      "GS MONACO is highlighted with a workflow built around IntelliPack and IntelliTrax2.",
       "For offset printers, the real value of this type of deployment is operational stability. Better presets, faster measurements, and more reliable feedback loops help teams reach target color with less paper, fewer correction cycles, and a more controlled startup on every repeat job.",
       "This article also reflects a wider trend in industrial print: customers expect measurable consistency across shifts, presses, and production sites. Standardized workflows make it easier to onboard operators, scale quality procedures, and give brand owners more confidence in the result.",
       "Rutherford’s role in these projects is to connect the console, the measurement layer, and the reporting workflow into one usable process. The outcome is a production environment where quality becomes easier to repeat, easier to document, and easier to improve over time."
@@ -5822,7 +5837,7 @@
     "image": "/images/blog-legacy/image-collee-1146.webp",
     "paragraphs": [
       "Seb. Wolf GmbH is featured here as a practical example of how print businesses are modernizing packaging and label production. The story is not just about adding software or hardware: it is about reducing variation, reaching color faster, and making daily production easier for operators and managers alike.",
-      "Seb. Wolf GmbH is highlighted with a workflow built around Colorware, X-Rite, and Pantone.",
+      "Seb. Wolf GmbH is highlighted with a workflow built around Colorware.",
       "For offset printers, the real value of this type of deployment is operational stability. Better presets, faster measurements, and more reliable feedback loops help teams reach target color with less paper, fewer correction cycles, and a more controlled startup on every repeat job.",
       "This article also reflects a wider trend in industrial print: customers expect measurable consistency across shifts, presses, and production sites. Standardized workflows make it easier to onboard operators, scale quality procedures, and give brand owners more confidence in the result.",
       "Rutherford’s role in these projects is to connect the console, the measurement layer, and the reporting workflow into one usable process. The outcome is a production environment where quality becomes easier to repeat, easier to document, and easier to improve over time."
@@ -5838,7 +5853,7 @@
     "image": "/images/blog-legacy/image-collee-1828.webp",
     "paragraphs": [
       "Colorconsulting is featured here as a practical example of how print businesses are modernizing sheetfed offset production. The story is not just about adding software or hardware: it is about reducing variation, reaching color faster, and making daily production easier for operators and managers alike.",
-      "Colorconsulting is highlighted with a workflow built around IntelliTrax2 and X-Rite.",
+      "Colorconsulting is highlighted with a workflow built around IntelliTrax2.",
       "For offset printers, the real value of this type of deployment is operational stability. Better presets, faster measurements, and more reliable feedback loops help teams reach target color with less paper, fewer correction cycles, and a more controlled startup on every repeat job.",
       "This article also reflects a wider trend in industrial print: customers expect measurable consistency across shifts, presses, and production sites. Standardized workflows make it easier to onboard operators, scale quality procedures, and give brand owners more confidence in the result.",
       "Rutherford’s role in these projects is to connect the console, the measurement layer, and the reporting workflow into one usable process. The outcome is a production environment where quality becomes easier to repeat, easier to document, and easier to improve over time."
@@ -5854,7 +5869,7 @@
     "image": "/images/blog-legacy/image-collee-320-25.webp",
     "paragraphs": [
       "LA GALIOTE PRENANT is featured here as a practical example of how print businesses are modernizing sheetfed offset production. The story is not just about adding software or hardware: it is about reducing variation, reaching color faster, and making daily production easier for operators and managers alike.",
-      "LA GALIOTE PRENANT is highlighted with a workflow built around IntelliPack, IntelliTrax2, X-Rite, Pantone, CIP3, CIP4, and closed-loop.",
+      "LA GALIOTE PRENANT is highlighted with a workflow built around IntelliPack, IntelliTrax2, CIP3, CIP4, and closed-loop.",
       "For offset printers, the real value of this type of deployment is operational stability. Better presets, faster measurements, and more reliable feedback loops help teams reach target color with less paper, fewer correction cycles, and a more controlled startup on every repeat job.",
       "This article also reflects a wider trend in industrial print: customers expect measurable consistency across shifts, presses, and production sites. Standardized workflows make it easier to onboard operators, scale quality procedures, and give brand owners more confidence in the result.",
       "Rutherford’s role in these projects is to connect the console, the measurement layer, and the reporting workflow into one usable process. The outcome is a production environment where quality becomes easier to repeat, easier to document, and easier to improve over time."
@@ -5870,7 +5885,7 @@
     "image": "/images/blog-legacy/image-collee-1918.webp",
     "paragraphs": [
       "Wauters BPack is featured here as a practical example of how print businesses are modernizing packaging and label production. The story is not just about adding software or hardware: it is about reducing variation, reaching color faster, and making daily production easier for operators and managers alike.",
-      "Wauters BPack is highlighted with a workflow built around IntelliPack, X-Rite, and Pantone.",
+      "Wauters BPack is highlighted with a workflow built around IntelliPack.",
       "For offset printers, the real value of this type of deployment is operational stability. Better presets, faster measurements, and more reliable feedback loops help teams reach target color with less paper, fewer correction cycles, and a more controlled startup on every repeat job.",
       "This article also reflects a wider trend in industrial print: customers expect measurable consistency across shifts, presses, and production sites. Standardized workflows make it easier to onboard operators, scale quality procedures, and give brand owners more confidence in the result.",
       "Rutherford’s role in these projects is to connect the console, the measurement layer, and the reporting workflow into one usable process. The outcome is a production environment where quality becomes easier to repeat, easier to document, and easier to improve over time."
@@ -5886,7 +5901,7 @@
     "image": "/images/blog-legacy/image-collee-1482.webp",
     "paragraphs": [
       "AR PACKAGING Majujaya is featured here as a practical example of how print businesses are modernizing packaging and label production. The story is not just about adding software or hardware: it is about reducing variation, reaching color faster, and making daily production easier for operators and managers alike.",
-      "AR PACKAGING Majujaya is highlighted with a workflow built around IntelliPack, IntelliTrax2, X-Rite, Pantone, and closed-loop.",
+      "AR PACKAGING Majujaya is highlighted with a workflow built around IntelliPack, IntelliTrax2, and closed-loop.",
       "For offset printers, the real value of this type of deployment is operational stability. Better presets, faster measurements, and more reliable feedback loops help teams reach target color with less paper, fewer correction cycles, and a more controlled startup on every repeat job.",
       "This article also reflects a wider trend in industrial print: customers expect measurable consistency across shifts, presses, and production sites. Standardized workflows make it easier to onboard operators, scale quality procedures, and give brand owners more confidence in the result.",
       "Rutherford’s role in these projects is to connect the console, the measurement layer, and the reporting workflow into one usable process. The outcome is a production environment where quality becomes easier to repeat, easier to document, and easier to improve over time."
@@ -5902,7 +5917,7 @@
     "image": "/images/blog-legacy/image-collee-320-29.webp",
     "paragraphs": [
       "YAMADA PHOTO PROCESS CO.LTD is featured here as a practical example of how print businesses are modernizing sheetfed offset production. The story is not just about adding software or hardware: it is about reducing variation, reaching color faster, and making daily production easier for operators and managers alike.",
-      "YAMADA PHOTO PROCESS CO.LTD is highlighted with a workflow built around IntelliPack, IntelliTrax2, X-Rite, Pantone, and closed-loop.",
+      "YAMADA PHOTO PROCESS CO.LTD is highlighted with a workflow built around IntelliPack, IntelliTrax2, and closed-loop.",
       "For offset printers, the real value of this type of deployment is operational stability. Better presets, faster measurements, and more reliable feedback loops help teams reach target color with less paper, fewer correction cycles, and a more controlled startup on every repeat job.",
       "This article also reflects a wider trend in industrial print: customers expect measurable consistency across shifts, presses, and production sites. Standardized workflows make it easier to onboard operators, scale quality procedures, and give brand owners more confidence in the result.",
       "Rutherford’s role in these projects is to connect the console, the measurement layer, and the reporting workflow into one usable process. The outcome is a production environment where quality becomes easier to repeat, easier to document, and easier to improve over time."
@@ -5933,7 +5948,7 @@
     "image": "/images/blog-legacy/image-collee-834.webp",
     "paragraphs": [
       "GRUPO LAPPÍ ETIQUETAS is featured here as a practical example of how print businesses are modernizing sheetfed offset production. The story is not just about adding software or hardware: it is about reducing variation, reaching color faster, and making daily production easier for operators and managers alike.",
-      "GRUPO LAPPÍ ETIQUETAS is highlighted with a workflow built around IntelliTrax2, X-Rite, Pantone, and closed-loop.",
+      "GRUPO LAPPÍ ETIQUETAS is highlighted with a workflow built around IntelliTrax2 and closed-loop.",
       "For offset printers, the real value of this type of deployment is operational stability. Better presets, faster measurements, and more reliable feedback loops help teams reach target color with less paper, fewer correction cycles, and a more controlled startup on every repeat job.",
       "This article also reflects a wider trend in industrial print: customers expect measurable consistency across shifts, presses, and production sites. Standardized workflows make it easier to onboard operators, scale quality procedures, and give brand owners more confidence in the result.",
       "Rutherford’s role in these projects is to connect the console, the measurement layer, and the reporting workflow into one usable process. The outcome is a production environment where quality becomes easier to repeat, easier to document, and easier to improve over time."
@@ -5949,7 +5964,7 @@
     "image": "/images/blog-legacy/image-collee-1526.webp",
     "paragraphs": [
       "YUTO is featured here as a practical example of how print businesses are modernizing packaging and label production. The story is not just about adding software or hardware: it is about reducing variation, reaching color faster, and making daily production easier for operators and managers alike.",
-      "YUTO is highlighted with a workflow built around IntelliTrax2, X-Rite, Pantone, and closed-loop.",
+      "YUTO is highlighted with a workflow built around IntelliTrax2 and closed-loop.",
       "For offset printers, the real value of this type of deployment is operational stability. Better presets, faster measurements, and more reliable feedback loops help teams reach target color with less paper, fewer correction cycles, and a more controlled startup on every repeat job.",
       "This article also reflects a wider trend in industrial print: customers expect measurable consistency across shifts, presses, and production sites. Standardized workflows make it easier to onboard operators, scale quality procedures, and give brand owners more confidence in the result.",
       "Rutherford’s role in these projects is to connect the console, the measurement layer, and the reporting workflow into one usable process. The outcome is a production environment where quality becomes easier to repeat, easier to document, and easier to improve over time."
@@ -5980,7 +5995,7 @@
     "image": "/images/blog-legacy/image-collee-320-32.webp",
     "paragraphs": [
       "WestRock MPS is featured here as a practical example of how print businesses are modernizing packaging and label production. The story is not just about adding software or hardware: it is about reducing variation, reaching color faster, and making daily production easier for operators and managers alike.",
-      "WestRock MPS is highlighted with a workflow built around IntelliTrax2, X-Rite, and Pantone.",
+      "WestRock MPS is highlighted with a workflow built around IntelliTrax2.",
       "For offset printers, the real value of this type of deployment is operational stability. Better presets, faster measurements, and more reliable feedback loops help teams reach target color with less paper, fewer correction cycles, and a more controlled startup on every repeat job.",
       "This article also reflects a wider trend in industrial print: customers expect measurable consistency across shifts, presses, and production sites. Standardized workflows make it easier to onboard operators, scale quality procedures, and give brand owners more confidence in the result.",
       "Rutherford’s role in these projects is to connect the console, the measurement layer, and the reporting workflow into one usable process. The outcome is a production environment where quality becomes easier to repeat, easier to document, and easier to improve over time."
@@ -5996,7 +6011,7 @@
     "image": "/images/blog-legacy/image-collee-320-33.webp",
     "paragraphs": [
       "Moderna Printing is featured here as a practical example of how print businesses are modernizing sheetfed offset production. The story is not just about adding software or hardware: it is about reducing variation, reaching color faster, and making daily production easier for operators and managers alike.",
-      "Moderna Printing is highlighted with a workflow built around IntelliTrax2 and Pantone.",
+      "Moderna Printing is highlighted with a workflow built around IntelliTrax2.",
       "For offset printers, the real value of this type of deployment is operational stability. Better presets, faster measurements, and more reliable feedback loops help teams reach target color with less paper, fewer correction cycles, and a more controlled startup on every repeat job.",
       "This article also reflects a wider trend in industrial print: customers expect measurable consistency across shifts, presses, and production sites. Standardized workflows make it easier to onboard operators, scale quality procedures, and give brand owners more confidence in the result.",
       "Rutherford’s role in these projects is to connect the console, the measurement layer, and the reporting workflow into one usable process. The outcome is a production environment where quality becomes easier to repeat, easier to document, and easier to improve over time."
@@ -6027,7 +6042,7 @@
     "image": "/images/blog-legacy/image-collee-907.webp",
     "paragraphs": [
       "Glossop Cartons is featured here as a practical example of how print businesses are modernizing sheetfed offset production. The story is not just about adding software or hardware: it is about reducing variation, reaching color faster, and making daily production easier for operators and managers alike.",
-      "Glossop Cartons is highlighted with a workflow built around IntelliTrax2, X-Rite, Pantone, CIP3, and closed-loop.",
+      "Glossop Cartons is highlighted with a workflow built around IntelliTrax2, CIP3, and closed-loop.",
       "For offset printers, the real value of this type of deployment is operational stability. Better presets, faster measurements, and more reliable feedback loops help teams reach target color with less paper, fewer correction cycles, and a more controlled startup on every repeat job.",
       "This article also reflects a wider trend in industrial print: customers expect measurable consistency across shifts, presses, and production sites. Standardized workflows make it easier to onboard operators, scale quality procedures, and give brand owners more confidence in the result.",
       "Rutherford’s role in these projects is to connect the console, the measurement layer, and the reporting workflow into one usable process. The outcome is a production environment where quality becomes easier to repeat, easier to document, and easier to improve over time."
@@ -6043,7 +6058,7 @@
     "image": "/images/blog-legacy/image-collee-1590.webp",
     "paragraphs": [
       "Heidelberg XL 75 is featured here as a practical example of how print businesses are modernizing packaging and label production. The story is not just about adding software or hardware: it is about reducing variation, reaching color faster, and making daily production easier for operators and managers alike.",
-      "Heidelberg XL 75 is highlighted with a workflow built around IntelliPack, IntelliTrax2, MeasureColor, Colorware, X-Rite, Pantone, and CIP3.",
+      "Heidelberg XL 75 is highlighted with a workflow built around IntelliPack, IntelliTrax2, MeasureColor, Colorware, and CIP3.",
       "For offset printers, the real value of this type of deployment is operational stability. Better presets, faster measurements, and more reliable feedback loops help teams reach target color with less paper, fewer correction cycles, and a more controlled startup on every repeat job.",
       "This article also reflects a wider trend in industrial print: customers expect measurable consistency across shifts, presses, and production sites. Standardized workflows make it easier to onboard operators, scale quality procedures, and give brand owners more confidence in the result.",
       "Rutherford’s role in these projects is to connect the console, the measurement layer, and the reporting workflow into one usable process. The outcome is a production environment where quality becomes easier to repeat, easier to document, and easier to improve over time."
@@ -6059,7 +6074,7 @@
     "image": "/images/blog-legacy/image-collee-320-37.webp",
     "paragraphs": [
       "Printwell Inc. is featured here as a practical example of how print businesses are modernizing sheetfed offset production. The story is not just about adding software or hardware: it is about reducing variation, reaching color faster, and making daily production easier for operators and managers alike.",
-      "Printwell Inc. is highlighted with a workflow built around MeasureColor, X-Rite, Pantone, CIP3, and closed-loop.",
+      "Printwell Inc. is highlighted with a workflow built around MeasureColor, CIP3, and closed-loop.",
       "For offset printers, the real value of this type of deployment is operational stability. Better presets, faster measurements, and more reliable feedback loops help teams reach target color with less paper, fewer correction cycles, and a more controlled startup on every repeat job.",
       "This article also reflects a wider trend in industrial print: customers expect measurable consistency across shifts, presses, and production sites. Standardized workflows make it easier to onboard operators, scale quality procedures, and give brand owners more confidence in the result.",
       "Rutherford’s role in these projects is to connect the console, the measurement layer, and the reporting workflow into one usable process. The outcome is a production environment where quality becomes easier to repeat, easier to document, and easier to improve over time."
@@ -6075,7 +6090,7 @@
     "image": "/images/blog-legacy/1603379105417-2-1834.webp",
     "paragraphs": [
       "Koenig & Bauer is featured here as a practical example of how print businesses are modernizing packaging and label production. The story is not just about adding software or hardware: it is about reducing variation, reaching color faster, and making daily production easier for operators and managers alike.",
-      "Koenig & Bauer is highlighted with a workflow built around IntelliPack, IntelliTrax2, MeasureColor, Colorware, X-Rite, Pantone, and CIP3.",
+      "Koenig & Bauer is highlighted with a workflow built around IntelliPack, IntelliTrax2, MeasureColor, Colorware, and CIP3.",
       "For offset printers, the real value of this type of deployment is operational stability. Better presets, faster measurements, and more reliable feedback loops help teams reach target color with less paper, fewer correction cycles, and a more controlled startup on every repeat job.",
       "This article also reflects a wider trend in industrial print: customers expect measurable consistency across shifts, presses, and production sites. Standardized workflows make it easier to onboard operators, scale quality procedures, and give brand owners more confidence in the result.",
       "Rutherford’s role in these projects is to connect the console, the measurement layer, and the reporting workflow into one usable process. The outcome is a production environment where quality becomes easier to repeat, easier to document, and easier to improve over time."

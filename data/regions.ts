@@ -28,10 +28,10 @@ export const REGIONS: Record<string, Region> = {
     name: 'the United States',
     inName: 'in the United States',
     forWhom: 'commercial and packaging offset printers in the United States',
-    angle: 'G7-anchored closed-loop color, on the presses and X-Rite measurement US pressrooms already run.',
+    angle: 'G7-anchored closed-loop color, on the presses and spectral measurement US pressrooms already run.',
     metaTitle: 'Closed-loop color control in the USA | Rutherford',
     metaDescription:
-      'G7-anchored closed-loop color control and CIP3/CIP4 ink presetting for US commercial and packaging printers, on the X-Rite measurement you already own. Proven on 1,000+ systems in 30+ countries. Free press check, figures in USD.',
+      'G7-anchored closed-loop color control and CIP3/CIP4 ink presetting for US commercial and packaging printers, on the spectral measurement you already own. Proven on 1,000+ systems in 30+ countries. Free press check, figures in USD.',
     keywords: ['closed-loop color control USA', 'G7 color control offset', 'ink key presetting CIP3', 'offset color management United States', 'makeready waste reduction', 'console validation'],
   },
   canada: {
@@ -42,7 +42,7 @@ export const REGIONS: Record<string, Region> = {
     angle: 'G7-anchored closed-loop color for Canadian pressrooms, English and French support included.',
     metaTitle: 'Closed-loop color control in Canada | Rutherford',
     metaDescription:
-      'Closed-loop color control and CIP3/CIP4 ink presetting for Canadian commercial and packaging printers: G7-anchored, on the X-Rite measurement you already own, with support in English and French. Request a free press check.',
+      'Closed-loop color control and CIP3/CIP4 ink presetting for Canadian commercial and packaging printers: G7-anchored, on the spectral measurement you already own, with support in English and French. Request a free press check.',
     keywords: ['closed-loop color control Canada', 'G7 color control offset', 'ink key presetting CIP3', 'offset color management Canada', 'makeready waste reduction', 'console validation'],
   },
   china: {
@@ -53,8 +53,8 @@ export const REGIONS: Record<string, Region> = {
     angle: 'Standardize color across high-volume offset and packaging production.',
     metaTitle: 'Closed-loop color control in China | Rutherford',
     metaDescription:
-      'Rutherford brings closed-loop color control to offset and flexo printers in China: cut makeready waste, hold color shift after shift, on the X-Rite PANTONE measurement you already trust. Request a free console validation.',
-    keywords: ['closed-loop color control China', 'offset color management China', 'makeready waste', 'console validation', 'X-Rite PANTONE'],
+      'Rutherford brings closed-loop color control to offset and flexo printers in China: cut makeready waste, hold color shift after shift, on the spectral measurement you already use. Request a free console validation.',
+    keywords: ['closed-loop color control China', 'offset color management China', 'makeready waste', 'console validation'],
   },
   japan: {
     slug: 'japan',
@@ -64,7 +64,7 @@ export const REGIONS: Record<string, Region> = {
     angle: 'Repeatable, precise color that meets the most demanding quality standards.',
     metaTitle: 'Closed-loop color control in Japan | Rutherford',
     metaDescription:
-      'Closed-loop color control for offset and flexo printers in Japan: tighter DeltaE, less makeready waste, repeatable color shift after shift, on X-Rite PANTONE measurement. Request a free console validation.',
+      'Closed-loop color control for offset and flexo printers in Japan: tighter DeltaE, less makeready waste, repeatable color shift after shift, on the spectral measurement you already use. Request a free console validation.',
     keywords: ['closed-loop color control Japan', 'offset color management Japan', 'DeltaE tolerance', 'console validation'],
   },
   korea: {
@@ -75,7 +75,7 @@ export const REGIONS: Record<string, Region> = {
     angle: 'Stable color across high-mix, fast-turnaround production.',
     metaTitle: 'Closed-loop color control in Korea | Rutherford',
     metaDescription:
-      'Closed-loop color control for offset and flexo printers in South Korea: cut makeready waste, hold color across shifts and sites, on X-Rite PANTONE measurement. Request a free console validation.',
+      'Closed-loop color control for offset and flexo printers in South Korea: cut makeready waste, hold color across shifts and sites, on the spectral measurement you already use. Request a free console validation.',
     keywords: ['closed-loop color control Korea', 'offset color management Korea', 'makeready waste', 'console validation'],
   },
   'latin-america': {
@@ -86,7 +86,7 @@ export const REGIONS: Record<string, Region> = {
     angle: 'From commercial to packaging: less waste and steadier color, on the presses you already run.',
     metaTitle: 'Closed-loop color control in Latin America | Rutherford',
     metaDescription:
-      'Closed-loop color control for offset and flexo printers across Latin America (Brazil, Mexico and beyond): cut makeready waste and hold color shift after shift, on X-Rite PANTONE measurement. Request a free console validation.',
+      'Closed-loop color control for offset and flexo printers across Latin America (Brazil, Mexico and beyond): cut makeready waste and hold color shift after shift, on the spectral measurement you already use. Request a free console validation.',
     keywords: ['closed-loop color control Latin America', 'control de color offset', 'makeready waste', 'console validation'],
   },
   uae: {
@@ -97,7 +97,7 @@ export const REGIONS: Record<string, Region> = {
     angle: 'Brand-ready packaging color for the Gulf print and packaging hub.',
     metaTitle: 'Closed-loop color control in the UAE | Rutherford',
     metaDescription:
-      'Closed-loop color control for packaging and commercial printers in the UAE and the Gulf: cut makeready waste, hold brand color shift after shift, on X-Rite PANTONE measurement. Request a free console validation.',
+      'Closed-loop color control for packaging and commercial printers in the UAE and the Gulf: cut makeready waste, hold brand color shift after shift, on the spectral measurement you already use. Request a free console validation.',
     keywords: ['closed-loop color control UAE', 'packaging color management Dubai', 'makeready waste', 'console validation'],
   },
 };

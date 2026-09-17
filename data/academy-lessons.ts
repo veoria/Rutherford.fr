@@ -388,7 +388,7 @@ export const COURSE_LESSONS: CourseLessons = {
         'IntelliTrax2 Pro (model 2900PRO) was introduced in March 2021. It targets pressrooms with higher throughput requirements or tighter quality demands. The Pro variant typically ships with enhancements around uptime, single-pass condition flexibility, and integration depth with quality software like MeasureColor Production.',
         'Choice criteria: if you run a single-shift packaging line with moderate volume and consistent substrate, the standard 2900 is sufficient. If you run multi-shift commercial work with frequent substrate changes, brand owners demanding M1 plus M3 in the same job, or 24 by 5 operation, the Pro is the better fit.',
         'Total cost of ownership matters more than capital cost. Both models have the same maintenance cadence; the Pro\'s incremental cost amortizes over its higher utilization. A press that runs the scanner 2 000 hours per year will recover a Pro premium quickly; a press at 500 hours per year may not.',
-        'X-Rite\'s authorized service partners can advise on the model-fit conversation. Both models share the same software stack, so migrating from 2900 to 2900PRO later is not a software-replatform event.',
+        'Your instrument supplier can advise on the model-fit conversation. Both models share the same software stack, so migrating from 2900 to 2900PRO later is not a software-replatform event.',
       ],
     },
     {
@@ -432,14 +432,14 @@ export const COURSE_LESSONS: CourseLessons = {
         'UV LED life is the dominant aging factor. The UV light source ages with operating hours; output gradually decreases, M1 readings drift, and inter-instrument agreement degrades. Annual recertification through X-Rite or a certified service partner restores the calibration and resets the drift clock.',
         'Certification cycles are also a contractual reality. Some brand owners require evidence of recent instrument certification before accepting supplier reports. The certification paperwork should travel with the data trail; keep it in MeasureColor metadata, not in a separate filing system.',
         'Routine maintenance is light: wipe the white reference tile daily with a lint-free cloth, check the track for debris weekly, verify alignment quarterly. The non-contact design means there are no rollers, no platens, no consumables in the data path.',
-        'Service partners are the operational reality of running IntelliTrax2 in production. X-Rite has 40+ certified partners globally; the partner ecosystem is mature enough that most pressrooms can get a technician on-site within 24 hours when needed. Negotiate the service contract terms upfront; reactive service is more expensive than proactive maintenance.',
+        'Service partners are the operational reality of running IntelliTrax2 in production. Plan recertification and a service contract with your instrument supplier before the scanner becomes critical to production. Negotiate the service contract terms upfront; reactive service is more expensive than proactive maintenance.',
       ],
     },
     {
       title: 'Migrating from legacy IntelliTrax (model 2246): what to expect',
       summary: 'The discontinued generation, the upgrade path, the operator transition.',
       body: [
-        'The original IntelliTrax (model 2246) is explicitly discontinued by X-Rite. The official support page directs users to upgrade to IntelliTrax2. New parts are increasingly scarce; the service partner network is winding down dedicated 2246 expertise. If you still run 2246 in production, plan the migration before it becomes urgent.',
+        'The original IntelliTrax (model 2246) is discontinued; plan the migration to a current model. New parts are increasingly scarce; the service partner network is winding down dedicated 2246 expertise. If you still run 2246 in production, plan the migration before it becomes urgent.',
         'The good news: software-level workflows carry over. If you run MeasureColor Production with a 2246, the same Production install supports a 2900 or 2900PRO after the hardware swap. Job templates, color bars, and tolerance libraries do not need to be rebuilt; they are device-agnostic above the hardware abstraction layer.',
         'What changes: faster scans (under 10 seconds versus 15-20 on 2246), tighter minimum patch size (2 mm versus 4 mm), single-pass dual-condition measurement (M0/M1, M0/M3, M1/M3 versus single condition on 2246), and broader inter-instrument agreement specifications.',
         'What the operator notices on day one: faster cycle time, cleaner data display, tighter measurement tolerances. The training delta is small; a 2246 operator picks up 2900 operation within a shift.',

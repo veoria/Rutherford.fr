@@ -127,7 +127,7 @@ export const PREMIUM_COURSES: AcademyCourse[] = [
     duration: '90 min',
     modules: 6,
     price: '€129',
-    description: 'Get every advantage out of X-Rite’s flagship scanning hardware.',
+    description: 'Automated scanning with IntelliTrax2 and IntelliTrax2 Pro, from setup to daily production.',
     videoSrc: '/videos/academy/intellitrax2.mp4',
     syllabus: [
       'IntelliTrax2 (model 2900) vs IntelliTrax2 Pro (model 2900PRO): when to pick which',

@@ -47,7 +47,7 @@ export function HomeStudio() {
         <div className="st-wrap">
           <span className="st-hero-kicker">🌱 Closed-loop color for offset &amp; flexo</span>
           <h1>Color on target.<br /><span className="accent">Every press. Every shift.</span></h1>
-          <p className="st-hero-sub">Rutherford automates color control so printers cut makeready waste, hold color, and prove it, run after run. Powered by X-Rite PANTONE and MeasureColor.</p>
+          <p className="st-hero-sub">Rutherford automates color control so printers cut makeready waste, hold color, and prove it, run after run. Works with IntelliTrax2 and MeasureColor.</p>
           <div className="st-actions">
             <a className="st-btn st-btn-blue" href="/console-validation">Check your press</a>
             <a className="st-btn st-btn-ghost" href="#colorloop">See ColorLoop</a>

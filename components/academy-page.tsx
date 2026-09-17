@@ -9,7 +9,7 @@ const WHY_POINTS = [
   { value: '25+', label: 'years of pressroom experience' },
   { value: '1 000+', label: 'deployed systems' },
   { value: '30+', label: 'countries' },
-  { value: 'X-Rite', label: 'PANTONE partner' },
+  { value: '25+', label: 'years in the pressroom' },
 ];
 
 function CourseCard({ course }: { course: AcademyCourse }) {
@@ -121,7 +121,7 @@ export function AcademyPage() {
           <header className="academy-section-head">
             <p className="section-kicker">Premium masterclasses</p>
             <h2>Deep dives, certificates, real production wins</h2>
-            <p>Six masterclasses covering the Rutherford / X-Rite / MeasureColor stack end to end.</p>
+            <p>Six masterclasses covering the closed-loop color stack end to end.</p>
           </header>
           <div className="academy-grid academy-grid-premium">
             {PREMIUM_COURSES.map((course) => (

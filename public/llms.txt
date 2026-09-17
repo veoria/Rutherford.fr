@@ -1,6 +1,6 @@
 # Rutherford.fr
 
-> Rutherford.fr is a European specialist in closed-loop color management for offset and flexo printing, operating for 25+ years across 30+ countries with 1,000+ deployed systems. Long-time X-Rite PANTONE partner. Sister company: Veoria (inline color control for label printing).
+> Rutherford.fr is a European specialist in closed-loop color management for offset and flexo printing, operating for 25+ years across 30+ countries with 1,000+ deployed systems. ColorLoop works with the spectral measurement printers already own, including IntelliTrax2 scanning tables and MeasureColor. Sister company: Veoria (inline color control for label printing).
 
 ## What Rutherford does
 
@@ -10,7 +10,7 @@ ColorLoop is press-agnostic. Compatible console families include Heidelberg (Pri
 
 ## Offset360
 
-**Offset360** is the official X-Rite solution bundle for sheetfed offset that packages three components into one workflow: X-Rite IntelliTrax2 (automated press-side scanning, full color bar in under 10 seconds, M0/M1/M3), X-Rite MeasureColor (process control and reporting, real-time ΔE, PQX/CXF/CGATS exports) and Rutherford ColorLoop (closed-loop ink-key correction). X-Rite states up to 60% lower initial cost versus a new measurement setup, with expert deployment and an included annual audit.
+**Offset360** combines press-side scanning (IntelliTrax2), process control and reporting (MeasureColor) and Rutherford ColorLoop closed-loop ink-key correction into one sheetfed offset workflow, deployed by Rutherford.
 
 ## Console validation (eligibility check)
 
@@ -20,7 +20,7 @@ The entry point for any printer is the free **console validation**: submit a few
 
 - [Home](https://rutherford.fr/): closed-loop color control for offset printing
 - [Console validation](https://rutherford.fr/console-validation): free press eligibility check
-- [Offset360](https://rutherford.fr/offset360): the X-Rite + Rutherford bundle
+- [Offset360](https://rutherford.fr/offset360): closed-loop workflow for sheetfed offset
 - [Closed-loop color control guide](https://rutherford.fr/closed-loop-color-control): the complete pillar guide (how the loop works, waste and makeready numbers, ISO 12647-2 / G7, retrofit)
 - [Rutherford Academy](https://rutherford.fr/academy): online courses on offset color management (ΔE, M0/M1/M3, makeready, CIP3/CIP4, MeasureColor, IntelliTrax2, ColorLoop)
 - [Blog](https://rutherford.fr/blog): industry articles and case studies
@@ -37,7 +37,7 @@ The entry point for any printer is the free **console validation**: submit a few
 - [Closed loop at Cartonajes Pans](https://rutherford.fr/blog/cartonajes-pans-closed-loop-manroland): five IntelliTrax2 and Rutherford systems with MeasureColor, on Manroland Sheetfed presses of different generations.
 - [When extended gamut pays off](https://rutherford.fr/blog/extended-gamut-ecg-when-7-color-pays-off): extended gamut (CMYK plus orange, green and violet) reproduces about 90 percent of PANTONE tones and removes the ink change between jobs, but the break-even depends on the job mix, and a seven-ink build only holds inside tolerance on a press under closed loop control
 - [New press, same color bottleneck](https://rutherford.fr/blog/new-press-investment-color-approval-gap): three July 2026 sheetfed offset investments promise 35 to 40 percent more capacity at running speed, but the color approval loop is what a new press does not shorten, and closed loop is what does
-- [Three things printers get wrong about PPWR recyclability](https://rutherford.fr/blog/ppwr-recyclability-grades-what-printers-get-wrong): recyclability applies from 12 August 2026 not 2030, the grades are A, B and C only, and EN 18120 is not cited in the Official Journal so it carries no presumption of conformity
+- [Three things printers get wrong about PPWR recyclability](https://rutherford.fr/blog/ppwr-recyclability-grades-what-printers-get-wrong): the PPWR has applied since 12 August 2026, but the design for recycling criteria only bite from 2030 at the earliest, the grades are A, B and C with thresholds set in Annex II, and a harmonized standard only gives a presumption of conformity once cited in the Official Journal
 
 ## Contact
 

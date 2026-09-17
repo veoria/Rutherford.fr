@@ -262,7 +262,6 @@ export function RegionHubPage({ region: _region }: { region?: Region }) {
         <div className="rl-container">
           <div className="rl-logos">
             <span>{t.withLabel}</span>
-            <img src="/images/xrite-logo-black.png" alt="X-Rite PANTONE" />
             <img className="mc" src="/images/measurecolor-logo-gray.png" alt="MeasureColor" />
           </div>
           <h1 className="rl-h1">
@@ -283,7 +282,7 @@ export function RegionHubPage({ region: _region }: { region?: Region }) {
               </div>
               <div className="hero-cursor hero-cursor-xrite" aria-hidden="true">
                 <svg viewBox="0 0 24 24" width="32" height="32"><path d="M5.5 3.5l13 8-5.4 1.6-2.6 5.4z" /></svg>
-                <span className="hero-cursor-label">X-Rite PANTONE</span>
+                <span className="hero-cursor-label">IntelliTrax2</span>
               </div>
               <div className="hero-cursor hero-cursor-measurecolor" aria-hidden="true">
                 <svg viewBox="0 0 24 24" width="32" height="32"><path d="M5.5 3.5l13 8-5.4 1.6-2.6 5.4z" /></svg>

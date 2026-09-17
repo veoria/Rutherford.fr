@@ -147,7 +147,7 @@ export default function HomePage() {
                 <svg viewBox="0 0 24 24" width="32" height="32">
                   <path d="M5.5 3.5l13 8-5.4 1.6-2.6 5.4z" />
                 </svg>
-                <span className="hero-cursor-label">X-Rite PANTONE</span>
+                <span className="hero-cursor-label">IntelliTrax2</span>
               </div>
               <div className="hero-cursor hero-cursor-measurecolor" aria-hidden="true">
                 <svg viewBox="0 0 24 24" width="32" height="32">
