@@ -291,20 +291,34 @@ export async function addTaskAttachment(
   }
 }
 
+// Extension for the attachment name, from the blob's own MIME type. Undefined
+// for anything unrecognised, so the caller's source extension can take over.
+const EXT_BY_MIME: Record<string, string> = {
+  'image/jpeg': 'jpg',
+  'image/jpg': 'jpg',
+  'image/png': 'png',
+  'image/webp': 'webp',
+  'image/avif': 'avif',
+  'image/gif': 'gif',
+  'image/heic': 'heic',
+  'image/heif': 'heif',
+};
+
 /** Attach lightweight machine previews to a console-validation task, each named
  * after its role (Console photo, Number of keys, …) so the team sees them
- * inline. Best-effort; returns how many attached. */
+ * inline. `ext` is the source extension, used when the blob carries no usable
+ * MIME type. Best-effort; returns how many attached. */
 export async function addConsoleValidationPreviews(
   taskGid: string,
-  previews: { field: string; file: Blob }[]
+  previews: { field: string; file: Blob; ext?: string }[]
 ): Promise<number> {
   if (!TOKEN || !taskGid) return 0;
   const labels = new Map(PHOTO_LABELS);
   let attached = 0;
-  for (const { field, file } of previews) {
+  for (const { field, file, ext } of previews) {
     const label = labels.get(field) || field;
-    const ext = file.type.includes('webp') ? 'webp' : file.type.includes('png') ? 'png' : 'jpg';
-    if (await addTaskAttachment(taskGid, `${label}.${ext}`, file)) attached += 1;
+    const suffix = EXT_BY_MIME[file.type.toLowerCase()] || ext || 'jpg';
+    if (await addTaskAttachment(taskGid, `${label}.${suffix}`, file)) attached += 1;
   }
   return attached;
 }
