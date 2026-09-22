@@ -1,5 +1,1351 @@
 [
   {
+    "slug": "color-bar-design-closed-loop",
+    "title": "Designing the color bar",
+    "excerpt": "How to design a color bar for closed loop control: which patches it needs, where it goes on the sheet, and the mistakes that leave ink zones unmeasured.",
+    "lead": "Closed loop color control can only correct what it measures, and everything it measures comes from the color bar. A bar that misses a zone, an ink or a spot color leaves the system blind at exactly that point. Here is what the bar has to contain, where it goes on the sheet, and the mistakes that undo it.",
+    "image": "/images/blog/photo-reduce-makeready-waste-offset-press.jpg",
+    "publishedAt": "2026-10-29",
+    "category": "Production",
+    "paragraphs": [
+      "Closed loop color control reads a strip of patches at the edge of the sheet and draws every correction from it. A closed loop color bar needs a solid of every ink in every ink zone, tints for tone value increase, overprints for trapping, gray balance patches, a paper white patch and a solid for every spot color on the job.",
+      "The bar runs across the full sheet width, outside the trim, in the same position on every job. It is built into the imposition templates, and its patch sequence repeats at the ink zone width of the press, so each set of patches lands in the zone it describes. Patch size depends on the instrument: check the minimum patch size it requires.",
+      "The common mistakes are zones without patches, a bar placed across a die line or a fold, missing spot color patches, and a different bar on every job. Each one leaves zones that closed loop control cannot see.",
+      "ColorLoop compares the color bar measurements with the target zone by zone and sends ink key corrections to the press console, which the operator validates. The approach runs on more than 1,000 systems in 30+ countries."
+    ],
+    "body": [
+      {
+        "type": "p",
+        "text": "Closed loop color control is only as good as what it can measure. The software never looks at the image: it reads a strip of patches at the edge of the sheet and draws every correction from it. If that strip leaves out a zone, an ink or a spot color, the system is blind at that point, however good the instrument. Designing the color bar is therefore not a prepress detail. It decides what the press can correct."
+      },
+      {
+        "type": "h2",
+        "text": "What a closed loop color bar has to contain"
+      },
+      {
+        "type": "p",
+        "text": "A [color bar](/glossary#color-bar) does two jobs. It gives the ink keys something to steer by, and it shows whether plates, dot gain and ink transfer are behaving. Its patches match the parameters ISO 12647-2 sets for offset: solids, overprints, tone values and paper."
+      },
+      {
+        "type": "ul",
+        "items": [
+          "Solids of every ink in every ink zone. The ink key acts most directly on the solid, so each zone needs a solid of each process color to be corrected on its own.",
+          "Tints of each process color. Halftone patches at the tone values your standard specifies show tone value increase (dot gain).",
+          "Overprints. Two color solid overprints (red, green, blue) and a CMY solid reveal trapping problems, when an ink does not lay down properly on the one printed before it.",
+          "Gray balance patches. A near neutral patch built from cyan, magenta and yellow, such as the 50/40/40 midtone patch used for G7, shows a color cast before it becomes visible in the image.",
+          "Paper white. An unprinted patch gives the reference for density and the actual color of the substrate, which can change from one paper lot to the next.",
+          "Spot color solids. Every spot color on the job needs its own solid patch, repeated across the width like the process colors, or its printing unit has nothing to be steered by."
+        ]
+      },
+      {
+        "type": "p",
+        "text": "Read with a scanning spectrophotometer, each patch gives CIELAB values and density at once, so one bar serves steering and approval, as explained in [from density to spectral measurement](/blog/density-to-spectral-measurement-offset)."
+      },
+      {
+        "type": "h3",
+        "text": "Does every ink zone need a solid of every ink?"
+      },
+      {
+        "type": "p",
+        "text": "Yes, for zone by zone correction. An ink key controls only its own zone, so its correction can only be calculated from a patch printed inside that zone. Diagnostic patches can be spread more thinly when space is short, but the solids must cover every zone the job prints."
+      },
+      {
+        "type": "h2",
+        "text": "Where the bar goes on the sheet"
+      },
+      {
+        "type": "p",
+        "text": "Placement matters as much as content. These rules hold in practice:"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "Across the full sheet width. The bar runs parallel to the ink fountain, across the direction of sheet travel, and covers every printed zone, edge zones included.",
+          "Outside the trim. It sits in the waste area, usually along the gripper or tail edge, and is cut off in finishing.",
+          "In the same position, job after job. The measuring device and its software expect the bar in a defined place. Moving it means a new setup, or readings taken in the wrong place.",
+          "Built into the imposition templates. When the bar is part of each press template, prepress cannot forget it, shorten it or swap it on a busy day.",
+          "Aligned with the ink zones. The patch sequence repeats at the ink zone width of the press and is positioned against the plate, not the artwork, so each set of patches lands inside the zone it describes."
+        ]
+      },
+      {
+        "type": "p",
+        "text": "The [ink zone](/glossary#ink-zone) width differs between manufacturers and press formats, so plants with mixed pressrooms keep one bar per press type."
+      },
+      {
+        "type": "h3",
+        "text": "How large should color bar patches be?"
+      },
+      {
+        "type": "p",
+        "text": "That depends on the measuring instrument, its aperture and whether it reads in scan mode or patch by patch. Check the minimum patch size and bar height your instrument requires, with a margin for register. The ECI documentation warns that compact strips can fall below what some instruments need in scan mode, causing measurement errors, especially on uncoated papers."
+      },
+      {
+        "type": "h2",
+        "text": "Common mistakes that blind the system"
+      },
+      {
+        "type": "p",
+        "text": "Most color bar problems come from drift, not design: a template is adapted for one job and the adaptation stays. Four faults come up again and again:"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "Missing zones. The bar is shortened to fit a narrow layout or interrupted by other marks, and the zones at the ends lose their patches. Those zones are then corrected by eye, or not at all.",
+          "A bar that cannot be read. On packaging layouts nested tight to the die, the bar ends up across a die line, a fold or other marks, and some patches can no longer be measured cleanly.",
+          "Spot color patches missing. The process colors are in the template, the spot colors are not, so the unit printing the brand color, the one the customer checks first, runs unmeasured.",
+          "A different bar on every job. The operator has to select the right bar definition each time, errors creep in, and results from one job cannot be compared with the next."
+        ]
+      },
+      {
+        "type": "h2",
+        "text": "Why the bar is what makes zone by zone correction possible"
+      },
+      {
+        "type": "p",
+        "text": "Closed loop correction is local. ColorLoop compares the measurements from the color bar with the target zone by zone and sends ink key corrections to the press console, which the operator validates. Each of those corrections comes from the patches of one zone. A complete, stable bar turns every pull into a map of the whole sheet width. An incomplete one leaves gaps no software can fill, and the operator is back to judging those zones by eye."
+      },
+      {
+        "type": "p",
+        "text": "A stable bar also makes data comparable: a reading today can be set against the OK sheet, the same job last month or another press. Groups running plants in Europe, North America, Asia and [Latin America](/latin-america) gain the most, because one bar standard per press type makes measurements from every site mean the same thing."
+      },
+      {
+        "type": "h3",
+        "text": "Can an existing color bar be reused for closed loop?"
+      },
+      {
+        "type": "p",
+        "text": "Often, yes. Measurement software such as MeasureColor can work with a plant's own color bar once its layout is described patch by patch. The bar still has to meet the checklist above: every ink in every zone, spot colors included, at a size the instrument reads reliably. The press side is a separate check, see [what makes a press console closed loop ready](/blog/press-console-closed-loop-compatibility)."
+      },
+      {
+        "type": "p",
+        "text": "A color bar costs a strip of paper that is trimmed off anyway. Designed once and built into every template, it lets the system see the whole sheet on every pull. The same approach runs on more than 1,000 systems in 30+ countries. The [complete guide to closed loop color control](/closed-loop-color-control) explains how measurement, comparison and correction work together on an existing press."
+      }
+    ],
+    "i18n": {
+      "fr": {
+        "title": "Concevoir la barre de contrôle",
+        "excerpt": "Concevoir une barre de contrôle pour le closed loop : les plages utiles, leur place sur la feuille et les erreurs qui laissent des zones d'encrage sans mesure.",
+        "lead": "Un système closed loop ne corrige que ce qu'il mesure, et tout ce qu'il mesure vient de la barre de contrôle. Une barre qui oublie une zone, une encre ou un ton direct laisse le système aveugle précisément à cet endroit. Voici ce que la barre doit contenir, où la placer sur la feuille, et les erreurs qui la rendent inutile.",
+        "body": [
+          {
+            "type": "p",
+            "text": "Un système closed loop ne vaut que par ce qu'il mesure. Le logiciel ne regarde jamais l'image : il lit une bande de plages au bord de la feuille et en tire chaque correction. Si cette bande oublie une zone, une encre ou un ton direct, le système est aveugle à cet endroit, quelle que soit la qualité de l'instrument. Concevoir la barre de contrôle n'est donc pas un détail de prépresse. C'est elle qui décide de ce que la presse peut corriger."
+          },
+          {
+            "type": "h2",
+            "text": "Ce que doit contenir une barre de contrôle closed loop"
+          },
+          {
+            "type": "p",
+            "text": "Une [barre de contrôle](/glossary#color-bar) remplit deux rôles. Elle donne aux vis d'encrier une référence sur laquelle se régler, et elle montre si plaques, engraissement et transfert d'encre se comportent bien. Ses plages correspondent aux paramètres que l'ISO 12647-2 fixe pour l'offset : aplats, superpositions, valeurs tonales et papier."
+          },
+          {
+            "type": "ul",
+            "items": [
+              "Un aplat de chaque encre dans chaque zone d'encrage. La vis d'encrier agit le plus directement sur l'aplat : chaque zone a besoin d'un aplat de chaque couleur primaire pour être corrigée individuellement.",
+              "Des tramés de chaque couleur primaire. Des plages tramées aux valeurs tonales prévues par votre standard montrent l'engraissement (augmentation de valeur tonale).",
+              "Des superpositions. Les superpositions d'aplats en deux couleurs (rouge, vert, bleu) et un aplat CMY révèlent les défauts d'acceptance (trapping), quand une encre ne se dépose pas correctement sur celle imprimée avant elle.",
+              "Des plages d'équilibre des gris. Une plage quasi neutre composée de cyan, magenta et jaune, comme la plage de ton moyen 50/40/40 utilisée pour G7, révèle une dominante avant qu'elle ne devienne visible dans l'image.",
+              "Le blanc du papier. Une plage non imprimée donne la référence de densité et la couleur réelle du support, qui peut varier d'un lot de papier à l'autre.",
+              "Des aplats de tons directs. Chaque ton direct du travail a besoin de son propre aplat, répété sur toute la largeur comme les couleurs primaires, faute de quoi son groupe d'impression n'a rien sur quoi se régler."
+            ]
+          },
+          {
+            "type": "p",
+            "text": "Lue par un spectrophotomètre à balayage, chaque plage donne à la fois les valeurs CIELAB et la densité : une seule barre sert au pilotage et à la validation, comme l'explique [de la densité à la mesure spectrale](/blog/density-to-spectral-measurement-offset)."
+          },
+          {
+            "type": "h3",
+            "text": "Chaque zone d'encrage a-t-elle besoin d'un aplat de chaque encre ?"
+          },
+          {
+            "type": "p",
+            "text": "Oui, pour corriger zone par zone. Une vis d'encrier ne commande que sa propre zone : sa correction ne peut être calculée qu'à partir d'une plage imprimée dans cette zone. Les plages de diagnostic peuvent être plus espacées quand la place manque, mais les aplats doivent couvrir toutes les zones qu'imprime le travail."
+          },
+          {
+            "type": "h2",
+            "text": "Où placer la barre sur la feuille"
+          },
+          {
+            "type": "p",
+            "text": "L'emplacement compte autant que le contenu. Voici les règles qui tiennent en production :"
+          },
+          {
+            "type": "ul",
+            "items": [
+              "Sur toute la largeur de la feuille. La barre court parallèlement à l'encrier, perpendiculairement au sens de marche de la feuille, et couvre toutes les zones imprimées, zones de bord comprises.",
+              "Hors du format rogné. Elle se place dans la zone de chute, le plus souvent côté pinces ou côté queue, et disparaît au façonnage.",
+              "Au même endroit, d'un travail à l'autre. Le dispositif de mesure et son logiciel attendent la barre à une position définie. La déplacer impose un nouveau paramétrage, ou des mesures prises au mauvais endroit.",
+              "Intégrée aux gabarits d'imposition. Quand la barre fait partie du gabarit de chaque presse, la prépresse ne peut ni l'oublier, ni la raccourcir, ni la remplacer un jour de forte charge.",
+              "Calée sur les zones d'encrage. La séquence de plages se répète au pas de la zone d'encrage de la presse et se positionne par rapport à la plaque, pas au visuel, pour que chaque jeu de plages tombe dans la zone qu'il décrit."
+            ]
+          },
+          {
+            "type": "p",
+            "text": "La largeur de [zone d'encrage](/glossary#ink-zone) varie selon les constructeurs et les formats de presse : les ateliers au parc mixte gardent donc une barre par type de presse."
+          },
+          {
+            "type": "h3",
+            "text": "Quelle taille pour les plages de la barre de contrôle ?"
+          },
+          {
+            "type": "p",
+            "text": "Cela dépend de l'instrument de mesure, de son ouverture et de sa lecture en mode balayage ou plage par plage. Vérifiez la taille de plage minimale et la hauteur de barre qu'exige votre instrument, avec une marge pour le repérage. La documentation de l'ECI prévient que des barres compactes peuvent passer sous ce que certains instruments exigent en mode balayage, avec des erreurs de mesure à la clé, en particulier sur papiers non couchés."
+          },
+          {
+            "type": "h2",
+            "text": "Les erreurs qui rendent le système aveugle"
+          },
+          {
+            "type": "p",
+            "text": "La plupart des problèmes de barre de contrôle viennent de la dérive, pas de la conception : un gabarit est adapté pour un travail et l'adaptation reste. Quatre défauts reviennent sans cesse :"
+          },
+          {
+            "type": "ul",
+            "items": [
+              "Des zones manquantes. La barre est raccourcie pour tenir dans une mise en page étroite ou interrompue par d'autres repères, et les zones des extrémités perdent leurs plages. Ces zones sont alors corrigées à l'œil, ou pas du tout.",
+              "Une barre illisible. Sur les impositions packaging serrées au plus près de la découpe, la barre se retrouve sur un tracé de découpe, un pli ou d'autres repères, et certaines plages ne se mesurent plus proprement.",
+              "Des tons directs absents. Les couleurs primaires sont dans le gabarit, pas les tons directs : le groupe qui imprime la couleur de marque, celle que le client vérifie en premier, tourne sans mesure.",
+              "Une barre différente à chaque travail. Le conducteur doit sélectionner la bonne définition de barre à chaque fois, les erreurs s'installent, et les résultats d'un travail ne se comparent plus au suivant."
+            ]
+          },
+          {
+            "type": "h2",
+            "text": "Pourquoi la barre rend possible la correction zone par zone"
+          },
+          {
+            "type": "p",
+            "text": "La correction closed loop est locale. ColorLoop compare les mesures de la barre de contrôle à la cible zone par zone et envoie les corrections de vis d'encrier au pupitre, que le conducteur valide. Chacune de ces corrections provient des plages d'une seule zone. Une barre complète et stable fait de chaque feuille prélevée une carte de toute la largeur de la feuille. Une barre incomplète laisse des trous qu'aucun logiciel ne peut combler, et le conducteur revient à juger ces zones à l'œil."
+          },
+          {
+            "type": "p",
+            "text": "Une barre stable rend aussi les données comparables : une mesure d'aujourd'hui se confronte au bon à rouler, au même travail le mois dernier ou à une autre presse. Les groupes qui exploitent des usines en Europe, en Amérique du Nord, en Asie et en [Amérique latine](/latin-america) en profitent le plus, car un standard de barre par type de presse donne le même sens aux mesures de tous les sites."
+          },
+          {
+            "type": "h3",
+            "text": "Peut-on réutiliser une barre de contrôle existante en closed loop ?"
+          },
+          {
+            "type": "p",
+            "text": "Souvent, oui. Un logiciel de mesure comme MeasureColor peut travailler avec la barre propre à l'atelier, une fois sa disposition décrite plage par plage. La barre doit tout de même respecter la liste ci-dessus : chaque encre dans chaque zone, tons directs compris, à une taille que l'instrument lit de façon fiable. Le côté presse se vérifie à part, voir [ce qui rend un pupitre compatible closed loop](/blog/press-console-closed-loop-compatibility)."
+          },
+          {
+            "type": "p",
+            "text": "Une barre de contrôle coûte une bande de papier qui part de toute façon à la chute. Conçue une fois et intégrée à chaque gabarit, elle permet au système de voir toute la feuille à chaque prélèvement. La même approche fonctionne sur plus de 1 000 systèmes dans plus de 30 pays. Le [guide complet du closed loop](/closed-loop-color-control) explique comment mesure, comparaison et correction fonctionnent ensemble sur une presse existante."
+          }
+        ]
+      },
+      "de": {
+        "title": "Den Farbkontrollstreifen richtig gestalten",
+        "excerpt": "Wie Sie einen Farbkontrollstreifen für Closed-Loop gestalten: welche Messfelder er braucht, wo er auf dem Bogen sitzt und welche Fehler Farbzonen blind lassen.",
+        "lead": "Eine Closed-Loop-Farbsteuerung kann nur korrigieren, was sie misst, und alles, was sie misst, stammt aus dem Farbkontrollstreifen. Fehlt darin eine Zone, eine Farbe oder eine Sonderfarbe, bleibt die Regelung genau an dieser Stelle blind. Hier lesen Sie, was der Streifen enthalten muss, wo er auf den Bogen gehört und welche Fehler ihn wertlos machen."
+      },
+      "it": {
+        "title": "Progettare la barra di controllo",
+        "excerpt": "Come progettare la barra di controllo per il closed loop: quali tacche servono, dove va sul foglio e quali errori lasciano zone di inchiostro senza misura.",
+        "lead": "Un controllo colore closed loop può correggere solo ciò che misura, e tutto ciò che misura proviene dalla barra di controllo. Una barra che dimentica una zona, un inchiostro o una tinta piatta lascia il sistema cieco proprio in quel punto. Ecco cosa deve contenere la barra, dove va collocata sul foglio e quali errori la rendono inutile."
+      },
+      "es": {
+        "title": "Diseñar la barra de control",
+        "excerpt": "Cómo diseñar la barra de control para el closed loop: qué parches necesita, dónde colocarla en el pliego y qué errores dejan zonas de tinta sin medición.",
+        "lead": "Un control del color closed loop solo puede corregir lo que mide, y todo lo que mide procede de la barra de control. Una barra a la que le falta una zona, una tinta o una tinta directa deja al sistema ciego justo en ese punto. Aquí verá qué debe contener la barra, dónde colocarla en el pliego y qué errores la vuelven inútil."
+      },
+      "pt": {
+        "title": "Conceber a barra de controlo",
+        "excerpt": "Como conceber a barra de controlo para o closed loop: que manchas precisa, onde colocá-la na folha e que erros deixam zonas de tinta sem qualquer medição.",
+        "lead": "Um controlo de cor closed loop só consegue corrigir o que mede, e tudo o que mede vem da barra de controlo. Uma barra que omite uma zona, uma tinta ou uma cor direta deixa o sistema cego precisamente nesse ponto. Veja aqui o que a barra deve conter, onde colocá-la na folha e que erros a tornam inútil."
+      }
+    },
+    "originalUrl": "https://rutherford.fr/blog/color-bar-design-closed-loop",
+    "sources": [
+      {
+        "label": "ECI/bvdm: Gray Balance Control in Offset Printing with the ECI/bvdm Gray Control Strip",
+        "href": "https://eci.org/lib/exe/eci_bvdm_graycon_doc_eng_v4.pdf"
+      },
+      {
+        "label": "Idealliance: G7 Press Control System Application Data Sheet, MeasureColor",
+        "href": "https://idealliance.org/wp-content/uploads/2023/06/G7_PressControl_ADS_ColorwareMeasureColor-v1.04-04.2018.pdf"
+      },
+      {
+        "label": "ISO 12647-2:2013: Process control, offset lithographic processes",
+        "href": "https://www.iso.org/standard/57833.html"
+      }
+    ],
+    "review": true
+  },
+  {
+    "slug": "paper-change-color-requalification",
+    "title": "New paper, same color",
+    "excerpt": "A paper change moves paper white, OBAs, gloss and dot gain. How to requalify a new paper or board, adjust color targets and keep closed loop on reference.",
+    "lead": "A new paper supplier, a lighter grammage or a board with more recycled fiber can look equivalent on the purchase order and still move every color on the sheet. The paper is the lightest color in the job and the surface every ink film sits on. Requalifying it with measurement, before the first live job, is what keeps the customer reference intact.",
+    "image": "/images/colorloop/dsc7237.jpg",
+    "publishedAt": "2026-10-22",
+    "category": "Production",
+    "paragraphs": [
+      "Changing paper or board, for a new supplier, a lower price, a lighter grammage or more recycled fiber, changes color even when the files, inks and OK sheet stay the same. Paper white, optical brightening agents, gloss, absorbency and opacity all move, and tints and grays shift before solids.",
+      "ISO 12647-2:2013 defines eight print substrates, PS1 to PS8, each tied to its own printing condition with CIELAB aims for the solids and overprints and a tone value increase curve. A production paper is compared with these types and matched to the closest one, or described with dedicated characterization data when its color differs.",
+      "Requalification: measure the new paper white under M1, print a test form, compare with the reference printing condition, correct the aims for the new paper white where the customer accepts it (substrate corrected colorimetric aims, based on the tristimulus correction of ISO 13655 Annex A), and agree the DeltaE tolerance.",
+      "Closed loop targets must follow the paper: ColorLoop compares each color bar measurement with the target zone by zone and sends ink key corrections to the press console for the operator to validate, so each paper needs its own target set. Rutherford runs closed loop on more than 1,000 systems in 30+ countries."
+    ],
+    "body": [
+      {
+        "type": "p",
+        "text": "Paper changes more often than it used to. A mill drops a grade, a buyer finds a cheaper equivalent, a pack moves to a lighter board or to more recycled fiber, and the job returns to the press with the same files, inks and OK sheet as before. The purchase order says equivalent. The measurement often says otherwise, and the difference shows where customers look first: highlights, grays and brand colors. With [paper price increases](/blog/paper-price-increases-2026-makeready-waste-cost) squeezing margins, these substitutions are hard to avoid."
+      },
+      {
+        "type": "h2",
+        "text": "What a paper change does to printed color"
+      },
+      {
+        "type": "p",
+        "text": "The [substrate](/glossary#substrate) is not a neutral carrier. It is the lightest color in every job and the surface every ink film sits on, so a paper or board change acts on color in several ways at once:"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "Paper white. The unprinted sheet is measured in CIELAB like any ink. A bluer, warmer, darker or lighter white shows through every tint, so highlights, pastels and neutral grays move first and solids move less. Recycled fiber often means a darker, less blue white and more variation between lots.",
+          "Optical brightening agents. OBAs absorb ultraviolet light and re-emit it as visible blue, which makes paper look whiter. Their effect depends on the UV content of the light, so the same sheet reads differently under M0, M1 and M2. M1 specifies illumination matching D50, the light of ISO 3664 viewing booths, and is the condition to use when comparing papers, as explained in [M0, M1, M2, M3 explained](/blog/m0-m1-m2-m3-measurement-conditions-print).",
+          "Gloss and surface. The same ink film looks deeper and more saturated on a glossy coating than on a matte or uncoated sheet, where light scatters more and the achievable gamut is smaller.",
+          "Absorbency and ink holdout. On a closed coated surface the ink stays on top. On an absorbent sheet part of the vehicle penetrates, solids dry back duller and dots spread more, so tone value increase rises. The same ink key opening no longer gives the same color.",
+          "Grammage and opacity. A lighter sheet is usually less opaque, so what lies behind it, including the print on the reverse, affects the reading. ISO 12647-2 lists paper color over white and over black backing, so the backing has to be stated and kept the same."
+        ]
+      },
+      {
+        "type": "h2",
+        "text": "Paper types in ISO 12647-2"
+      },
+      {
+        "type": "p",
+        "text": "ISO 12647-2 treats paper as part of the printing condition, not as a detail. Its 2013 edition defines eight print substrates, PS1 to PS8, from premium coated to standard uncoated, and ties each one to its own printing condition: CIELAB aims for the solids and overprints, a tone value increase curve and a screening range. Premium coated PS1 and wood-free uncoated PS5 share neither the same solid aims nor the same TVI curve."
+      },
+      {
+        "type": "p",
+        "text": "The paper characteristics listed in the standard are for information. The method is to compare the production paper with the reference types and keep the closest match. When a paper differs in color from those types, existing characterization data may not describe it, and the standard recommends a dedicated substrate description with its own characterization data. A coated paper from another mill often stays in the same type, while coated to uncoated, or virgin fiber to recycled board, is a different printing condition."
+      },
+      {
+        "type": "h3",
+        "text": "Does a new paper need new color targets?"
+      },
+      {
+        "type": "p",
+        "text": "Not always. If the new paper white is close to the reference and the paper stays in the same type, the existing aims usually hold. The ISO 15339 method gives a rule based on the CIEDE2000 difference between paper whites: below 2, the reference data is used as is; between 2 and 5, the aims are corrected for the new paper; above 5, a dedicated characterization may be needed."
+      },
+      {
+        "type": "h2",
+        "text": "How to requalify a new paper, step by step"
+      },
+      {
+        "type": "p",
+        "text": "Requalification is a short, planned test, not something discovered on a live job. The sequence that works in practice:"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "Measure the new paper white. Read several sheets from the delivery under M1, on the same backing as your reference, and compare with the reference paper white in DeltaE. Ask the mill for its data sheet too: ISO 15397 lists the paper properties mills and printers should exchange, fluorescence included.",
+          "Print a test form. Run the new paper on a press in its standard state, with the usual inks, plates and curves, printing the color bar with a characterization chart. Bring the solids to their aims before judging anything else.",
+          "Compare with the reference printing condition. Check paper white, solids, overprints, tone value increase and gray balance against the condition you print to today. If only the tints moved, look at the paper white; if solids and TVI moved, look at the surface and absorbency.",
+          "Adjust the targets if the customer accepts it. For a moderate difference in paper white, substrate corrected colorimetric aims (SCCA) recalculate the whole target set from the new paper white, using the tristimulus correction described in ISO 13655 Annex A. For a larger change, characterize the new paper and update the ICC profile used in prepress. Review the ink presetting curves as well.",
+          "Agree the tolerance with the customer. Record the new paper white, the target set and the DeltaE tolerance, and sign a new reference sheet printed on the new paper. ISO 15339 also asks for any substrate correction, and the CIELAB values of the substrate, to be communicated to everyone involved."
+        ]
+      },
+      {
+        "type": "h3",
+        "text": "Why do tints move more than solids on a new paper?"
+      },
+      {
+        "type": "p",
+        "text": "Because the paper white fills the space between the halftone dots. In a light tint most of the area is bare paper, so a change of shade or brightener level shifts the tint almost as much as the paper itself. A solid covers the paper with ink, and its color depends mainly on the ink film and the surface it dries on."
+      },
+      {
+        "type": "h2",
+        "text": "Update the closed loop targets per paper"
+      },
+      {
+        "type": "p",
+        "text": "Closed loop control is only as right as its target. ColorLoop compares every color bar measurement with the target, zone by zone, and sends ink key corrections to the press console, which the operator validates. If the target still describes the old paper, the loop steers the new paper toward a color it cannot give, precisely and on every sheet. Store the new aims as their own target set, named after the paper, keep the old set for jobs still on existing stock, and make the paper part of job setup."
+      },
+      {
+        "type": "h3",
+        "text": "What happens if the closed loop keeps the old targets?"
+      },
+      {
+        "type": "p",
+        "text": "The press chases a color the new paper cannot reach. Ink keys only change the ink film, so the loop adds or removes ink to reduce the difference: solids end up overinked or underinked, tone value increase moves with them, and the DeltaE report no longer agrees with what the customer sees next to the reference. Makeready takes longer as well."
+      },
+      {
+        "type": "p",
+        "text": "The same question comes up in plants in Europe, North America, Asia and [Latin America](/latin-america). When a group buys paper and board locally, one brand is printed on different substrates from country to country, and only measured targets per paper keep the packs consistent on the shelf."
+      },
+      {
+        "type": "p",
+        "text": "A paper change does not have to become a color change. Measure the new paper under M1, test it before the live job, agree the targets and the tolerance with the customer, then load them as a separate set in the loop. Rutherford runs closed loop color control on more than 1,000 systems in 30+ countries. The [complete guide to closed loop color control](/closed-loop-color-control) explains how measurement, comparison and correction work together on an existing press."
+      }
+    ],
+    "i18n": {
+      "fr": {
+        "title": "Nouveau papier, même couleur",
+        "excerpt": "Un changement de papier modifie blanc papier, azurants, brillance et engraissement. Comment requalifier le papier et ajuster les cibles du closed loop.",
+        "lead": "Un nouveau fournisseur de papier, un grammage plus léger ou un carton plus riche en fibres recyclées peuvent sembler équivalents sur le bon de commande et pourtant déplacer toutes les couleurs de la feuille. Le papier est la couleur la plus claire du travail et la surface sur laquelle se pose chaque film d'encre. Le requalifier par la mesure, avant le premier travail client, préserve la référence du client.",
+        "body": [
+          {
+            "type": "p",
+            "text": "Le papier change plus souvent qu'avant. Un papetier arrête une référence, un acheteur trouve un équivalent moins cher, un emballage passe à un carton plus léger ou plus riche en fibres recyclées, et le travail revient en machine avec les mêmes fichiers, les mêmes encres et le même bon à rouler qu'avant. Le bon de commande dit « équivalent ». La mesure dit souvent autre chose, et l'écart apparaît là où le client regarde en premier : hautes lumières, gris et couleurs de marque. Avec les [hausses du prix du papier](/blog/paper-price-increases-2026-makeready-waste-cost) qui pèsent sur les marges, ces substitutions sont difficiles à éviter."
+          },
+          {
+            "type": "h2",
+            "text": "Ce qu'un changement de papier fait à la couleur imprimée"
+          },
+          {
+            "type": "p",
+            "text": "Le [substrat](/glossary#substrate) n'est pas un support neutre. C'est la couleur la plus claire de chaque travail et la surface sur laquelle se pose chaque film d'encre. Un changement de papier ou de carton agit donc sur la couleur de plusieurs façons à la fois :"
+          },
+          {
+            "type": "ul",
+            "items": [
+              "Le blanc papier. Le papier non imprimé se mesure en CIELAB comme une encre. Un blanc plus bleuté, plus chaud, plus sombre ou plus clair transparaît dans chaque teinte tramée : les hautes lumières, les tons pastel et les gris neutres bougent en premier, les aplats moins. Les fibres recyclées donnent souvent un blanc plus sombre et moins bleuté, avec plus de variation d'un lot à l'autre.",
+              "Les azurants optiques. Ils absorbent le rayonnement ultraviolet et le réémettent en lumière bleue visible, ce qui fait paraître le papier plus blanc. Leur effet dépend de la part d'UV dans la lumière : la même feuille se mesure différemment en M0, M1 et M2. M1 impose un éclairage conforme au D50, la lumière des cabines d'observation ISO 3664, et c'est la condition à utiliser pour comparer des papiers, comme l'explique notre [article sur les conditions M0 à M3](/blog/m0-m1-m2-m3-measurement-conditions-print).",
+              "La brillance et la surface. Le même film d'encre paraît plus profond et plus saturé sur un couché brillant que sur un papier mat ou non couché, où la lumière se diffuse davantage et où le gamut accessible est plus réduit.",
+              "L'absorption et la tenue de l'encre en surface. Sur un couché fermé, l'encre reste en surface. Sur un papier absorbant, une partie du véhicule pénètre, les aplats perdent en éclat au séchage et les points s'étalent davantage : l'engraissement augmente. La même ouverture de vis d'encrier ne donne plus la même couleur.",
+              "Le grammage et l'opacité. Une feuille plus légère est en général moins opaque : ce qui se trouve derrière, y compris l'impression du verso, influence la mesure. L'ISO 12647-2 indique la couleur du papier sur fond blanc et sur fond noir, le fond de mesure doit donc être précisé et rester le même."
+            ]
+          },
+          {
+            "type": "h2",
+            "text": "Les types de papier dans l'ISO 12647-2"
+          },
+          {
+            "type": "p",
+            "text": "L'ISO 12647-2 traite le papier comme une partie de la condition d'impression, pas comme un détail. Son édition 2013 définit huit supports d'impression, de PS1 à PS8, du couché premium au non couché standard, et associe à chacun sa propre condition d'impression : des cibles CIELAB pour les aplats et les superpositions, une courbe d'engraissement et une plage de linéature. Le couché premium PS1 et le non couché sans bois PS5 n'ont ni les mêmes cibles d'aplats ni la même courbe d'engraissement."
+          },
+          {
+            "type": "p",
+            "text": "Les caractéristiques de papier données par la norme sont informatives. La méthode consiste à comparer le papier de production aux types de référence et à retenir le plus proche. Quand la couleur d'un papier s'écarte de ces types, les données de caractérisation existantes peuvent ne pas le décrire, et la norme recommande une description dédiée du support avec ses propres données de caractérisation. Un papier couché d'un autre papetier reste souvent dans le même type, alors que passer du couché au non couché, ou de la fibre vierge au carton recyclé, revient à changer de condition d'impression."
+          },
+          {
+            "type": "h3",
+            "text": "Un nouveau papier impose-t-il de nouvelles cibles couleur ?"
+          },
+          {
+            "type": "p",
+            "text": "Pas toujours. Si le nouveau blanc papier est proche de la référence et que le papier reste dans le même type, les cibles existantes tiennent en général. La méthode de l'ISO 15339 donne une règle fondée sur l'écart CIEDE2000 entre les blancs papier : en dessous de 2, les données de référence s'utilisent telles quelles ; entre 2 et 5, les cibles sont corrigées pour le nouveau papier ; au-delà de 5, une caractérisation dédiée peut être nécessaire."
+          },
+          {
+            "type": "h2",
+            "text": "Requalifier un nouveau papier, étape par étape"
+          },
+          {
+            "type": "p",
+            "text": "La requalification est un essai court et planifié, pas une découverte faite sur un travail client. La séquence qui fonctionne en pratique :"
+          },
+          {
+            "type": "ul",
+            "items": [
+              "Mesurer le nouveau blanc papier. Mesurer plusieurs feuilles de la livraison en M1, sur le même fond que la référence, et comparer au blanc papier de référence en DeltaE. Demander aussi la fiche technique au papetier : l'ISO 15397 liste les propriétés du papier que papetiers et imprimeurs doivent échanger, fluorescence comprise.",
+              "Imprimer une forme test. Passer le nouveau papier sur une presse dans son état standard, avec les encres, plaques et courbes habituelles, en imprimant la barre de contrôle avec une mire de caractérisation. Amener les aplats à leurs cibles avant de juger quoi que ce soit d'autre.",
+              "Comparer à la condition d'impression de référence. Vérifier blanc papier, aplats, superpositions, engraissement et équilibre des gris par rapport à la condition sur laquelle vous imprimez aujourd'hui. Si seules les teintes claires ont bougé, regarder le blanc papier ; si les aplats et l'engraissement ont bougé, regarder la surface et l'absorption.",
+              "Ajuster les cibles si le client l'accepte. Pour un écart modéré de blanc papier, les cibles colorimétriques corrigées du support (substrate corrected colorimetric aims, SCCA) recalculent tout le jeu de cibles à partir du nouveau blanc papier, avec la correction trichromatique décrite à l'annexe A de l'ISO 13655. Pour un changement plus important, caractériser le nouveau papier et mettre à jour le profil ICC utilisé en prépresse. Revoir aussi les courbes de préréglage de l'encrage.",
+              "Convenir de la tolérance avec le client. Consigner le nouveau blanc papier, le jeu de cibles et la tolérance en DeltaE, et signer une nouvelle feuille de référence imprimée sur le nouveau papier. L'ISO 15339 demande aussi que toute correction liée au support, ainsi que les valeurs CIELAB du support, soient communiquées à toutes les parties."
+            ]
+          },
+          {
+            "type": "h3",
+            "text": "Pourquoi les teintes claires bougent-elles plus que les aplats sur un nouveau papier ?"
+          },
+          {
+            "type": "p",
+            "text": "Parce que le blanc papier occupe l'espace entre les points de trame. Dans une teinte claire, la plus grande partie de la surface est du papier nu : un changement de nuance ou de taux d'azurants décale la teinte presque autant que le papier lui-même. Un aplat recouvre le papier d'encre, et sa couleur dépend surtout du film d'encre et de la surface sur laquelle il sèche."
+          },
+          {
+            "type": "h2",
+            "text": "Mettre à jour les cibles du closed loop par papier"
+          },
+          {
+            "type": "p",
+            "text": "Un closed loop n'est jamais plus juste que sa cible. ColorLoop compare chaque mesure de la barre de contrôle à la cible, zone par zone, et envoie les corrections de vis d'encrier au pupitre, que le conducteur valide. Si la cible décrit encore l'ancien papier, le système pousse le nouveau papier vers une couleur qu'il ne peut pas donner, avec précision et sur chaque feuille. Enregistrer les nouvelles cibles comme un jeu distinct, au nom du papier, conserver l'ancien jeu pour les travaux encore sur le stock existant, et intégrer le papier à la préparation du travail."
+          },
+          {
+            "type": "h3",
+            "text": "Que se passe-t-il si le closed loop garde les cibles de l'ancien papier ?"
+          },
+          {
+            "type": "p",
+            "text": "La presse poursuit une couleur que le nouveau papier ne peut pas atteindre. Les vis d'encrier ne modifient que le film d'encre : le système ajoute ou retire de l'encre pour réduire l'écart, les aplats finissent surencrés ou sous-encrés, l'engraissement bouge avec eux, et le rapport DeltaE ne correspond plus à ce que le client voit à côté de la référence. Le calage s'allonge lui aussi."
+          },
+          {
+            "type": "p",
+            "text": "La même question se pose dans les usines en Europe, en Amérique du Nord, en Asie et en [Amérique latine](/latin-america). Quand un groupe achète son papier et son carton localement, une même marque est imprimée sur des supports différents selon les pays, et seules des cibles mesurées par papier gardent les emballages cohérents en rayon."
+          },
+          {
+            "type": "p",
+            "text": "Un changement de papier n'a pas à devenir un changement de couleur. Mesurer le nouveau papier en M1, faire un essai avant le travail client, convenir des cibles et de la tolérance avec le client, puis les charger comme un jeu distinct dans le closed loop. Rutherford pilote la couleur en closed loop sur plus de 1 000 systèmes dans plus de 30 pays. Le [guide complet du closed loop](/closed-loop-color-control) explique comment mesure, comparaison et correction fonctionnent ensemble sur une presse existante."
+          }
+        ]
+      },
+      "de": {
+        "title": "Neues Papier, gleiche Farbe",
+        "excerpt": "Ein Papierwechsel verändert Papierweiß, Aufheller, Glanz und Tonwertzunahme. So qualifizieren Sie neues Papier und passen die Zielwerte im Closed-Loop an.",
+        "lead": "Ein neuer Papierlieferant, eine geringere Grammatur oder ein Karton mit mehr Recyclingfasern kann auf der Bestellung gleichwertig aussehen und trotzdem jede Farbe auf dem Bogen verschieben. Das Papier ist die hellste Farbe im Auftrag und die Oberfläche, auf der jeder Farbfilm liegt. Wer es vor dem ersten Kundenauftrag messtechnisch neu qualifiziert, bewahrt die Farbreferenz des Kunden."
+      },
+      "it": {
+        "title": "Nuova carta, stesso colore",
+        "excerpt": "Un cambio di carta modifica punto di bianco, sbiancanti ottici, gloss e crescita del punto. Come riqualificare la carta e aggiornare i target closed-loop.",
+        "lead": "Un nuovo fornitore di carta, una grammatura più leggera o un cartone con più fibra riciclata possono sembrare equivalenti sull'ordine d'acquisto e spostare comunque ogni colore del foglio. La carta è il colore più chiaro del lavoro e la superficie su cui si deposita ogni film d'inchiostro. Riqualificarla con la misura, prima del primo lavoro di produzione, mantiene intatto il riferimento del cliente."
+      },
+      "es": {
+        "title": "Papel nuevo, mismo color",
+        "excerpt": "Un cambio de papel altera el blanco del papel, los abrillantadores, el brillo y la ganancia de punto. Cómo recualificar el papel y ajustar los objetivos.",
+        "lead": "Un nuevo proveedor de papel, un gramaje más ligero o un cartón con más fibra reciclada pueden parecer equivalentes en la orden de compra y aun así desplazar todos los colores del pliego. El papel es el color más claro del trabajo y la superficie sobre la que se asienta cada película de tinta. Recualificarlo con medición, antes del primer trabajo de producción, mantiene intacta la referencia del cliente."
+      },
+      "pt": {
+        "title": "Papel novo, mesma cor",
+        "excerpt": "Uma mudança de papel altera o branco do papel, os branqueadores óticos, o brilho e o ganho de ponto. Como requalificar o papel e ajustar os alvos de cor.",
+        "lead": "Um novo fornecedor de papel, uma gramagem mais leve ou um cartão com mais fibra reciclada podem parecer equivalentes na nota de encomenda e, ainda assim, deslocar todas as cores da folha. O papel é a cor mais clara do trabalho e a superfície sobre a qual assenta cada película de tinta. Requalificá-lo com medição, antes do primeiro trabalho de produção, mantém intacta a referência do cliente."
+      }
+    },
+    "originalUrl": "https://rutherford.fr/blog/paper-change-color-requalification",
+    "sources": [
+      {
+        "label": "ISO 12647-2:2013: Process control, offset lithographic processes",
+        "href": "https://www.iso.org/standard/57833.html"
+      },
+      {
+        "label": "ISO 13655:2017: Spectral measurement and colorimetric computation for graphic arts images",
+        "href": "https://www.iso.org/standard/65430.html"
+      },
+      {
+        "label": "Idealliance: Substrate Corrected Color Aim (SCCA) calculator",
+        "href": "https://idealliance.org/idealliance-releases-new-scca-calculator/"
+      }
+    ],
+    "review": true
+  },
+  {
+    "slug": "dot-gain-tvi-offset-explained",
+    "title": "Dot gain, explained",
+    "excerpt": "Dot gain, or tone value increase (TVI), explained for offset printers: mechanical and optical causes, ISO 12647-2 curves, plate curves and closed loop.",
+    "lead": "Every offset press prints a 50% tint darker than 50%. That dot gain, called tone value increase (TVI) in the standards, is expected and specified: the problem is not the gain itself but a gain that drifts away from the curve the job was separated for. Here is where it comes from, how it is measured, and what keeps it stable in production.",
+    "image": "/images/colorloop/dsc7179.jpg",
+    "publishedAt": "2026-10-15",
+    "category": "Standards",
+    "paragraphs": [
+      "Dot gain, called tone value increase (TVI) in the standards, is the difference between the tone value in the file and the value measured on the printed sheet. It combines mechanical gain, ink spreading under pressure at each transfer, and optical gain, light scattering inside the paper, and it peaks in the midtones, where dot edges are longest.",
+      "For process inks, TVI is computed from density with the Murray-Davies formula, using paper, solid and tint patches, while ISO 20654:2017 defines spot color tone value (SCTV) for spot inks. ISO 12647-2:2013 assigns a TVI curve to each print substrate: curve A, 16% at 50%, for premium coated paper, curve B for other coated papers, and curve C, 22% at 50%, for wood-free uncoated paper.",
+      "Plate compensation curves, built on a stable press with solids on target, make the press land on the target curve. In production, TVI moves with paper, ink film, blanket, pressure and speed, and chasing midtones with the ink keys moves the solids too.",
+      "Closed loop color control such as ColorLoop holds solids and ink film stable zone by zone, which keeps TVI predictable, but it does not fix a wrong plate curve. More than 1,000 closed loop systems run in 30+ countries."
+    ],
+    "body": [
+      {
+        "type": "p",
+        "text": "A 50% tint in the file does not print as 50%. It prints darker on coated paper, darker still on uncoated, and every midtone moves with it. This is [dot gain](/glossary#dot-gain), called tone value increase, or TVI, in the standards. Every press has it; what matters is that it stays at the value the separations and the proof were built for."
+      },
+      {
+        "type": "h2",
+        "text": "What dot gain is, and where it comes from"
+      },
+      {
+        "type": "p",
+        "text": "Dot gain is the difference between the tone value in the file and the value measured on the sheet: a 50% patch that measures 66% has a TVI of 16. Two effects add up to that number, and no measurement separates them."
+      },
+      {
+        "type": "p",
+        "text": "Mechanical gain is physical. At each transfer, plate to blanket and blanket to paper, the ink on each dot is squeezed and spreads beyond its edge. More ink and more squeeze mean a larger printed dot. Slur and doubling, when dots smear or print twice slightly offset, add to it."
+      },
+      {
+        "type": "p",
+        "text": "Optical gain happens inside the paper. Light entering the bare paper between the dots scatters sideways and partly exits under a neighboring dot, where the ink absorbs it, so the paper around each dot looks darker and the dot looks larger than it is. This effect, known as Yule-Nielsen, is stronger on uncoated papers."
+      },
+      {
+        "type": "h3",
+        "text": "Why do midtones print darker than the file?"
+      },
+      {
+        "type": "p",
+        "text": "Because gain happens at the edge of every dot, and in a conventional AM screen the total length of dot edges peaks in the midtones, where dots come close to touching. Highlight dots and shadow holes are small and isolated, so they gain less. A TVI curve is therefore zero at paper white and at the solid, and highest in between."
+      },
+      {
+        "type": "h2",
+        "text": "How TVI is measured"
+      },
+      {
+        "type": "p",
+        "text": "For process inks, TVI is computed from density. The instrument reads the bare paper, the solid and the tint, and the Murray-Davies formula turns those densities into an apparent tone value. TVI is that value minus the nominal value in the file, mechanical and optical gain included. Because each tint is referenced to its solid, TVI readings are only comparable when the solids are on target. A spectrophotometer derives the same densities from its spectral reading, as explained in [From density to spectral measurement](/blog/density-to-spectral-measurement-offset)."
+      },
+      {
+        "type": "p",
+        "text": "Spot colors need another method: density filters are made for cyan, magenta and yellow, and give an uneven tone scale for many spot inks. ISO 20654:2017 defines spot color tone value (SCTV), computed from spectral or CIELAB measurements of substrate, solid and tint, and scaled from 0 for the paper to 100 for the solid with roughly even visual steps. Packaging gradients in a brand color can then be checked like a process tint."
+      },
+      {
+        "type": "h2",
+        "text": "The target curves in ISO 12647-2"
+      },
+      {
+        "type": "p",
+        "text": "ISO 12647-2 does not ask for zero dot gain. It specifies the gain to expect, as a TVI curve per printing condition, and separations, ICC profiles and proofs are built on it. In the 2013 edition, premium coated paper (PS1) uses curve A, which aims at 16% TVI on the 50% patch for all four process inks. Improved and standard coated papers (PS2 to PS4) use curve B, wood-free uncoated paper (PS5) uses curve C, aimed at 22%, and FM screens have their own curve. The [ISO 12647-2 guide for press operators](/blog/iso-12647-2-explained-press-operators) covers the rest."
+      },
+      {
+        "type": "p",
+        "text": "The logic holds in plants across Europe, North America, Asia and Latin America. Many printers in the [United States](/usa) calibrate to G7, which targets gray balance and a neutral print density curve rather than a TVI per ink, and they get there the same way: through the plate curves."
+      },
+      {
+        "type": "h2",
+        "text": "Plate curves: making the press land on target"
+      },
+      {
+        "type": "p",
+        "text": "The press gains whatever the file says, so the correction is made when the plate is imaged. The platesetter is linearized first, so that 50% in the file gives a 50% dot on the plate. A test form is then printed with solids on target, and TVI is measured for each ink. Where the press gains more than the target curve, the compensation curve applied in prepress makes the plate dot smaller; where it gains less, larger. The plate is deliberately not linear, so that the sheet is on target."
+      },
+      {
+        "type": "p",
+        "text": "A plate curve is only as good as the print it came from: built on an overinked test form or a worn blanket, it carries that error into every plate that follows."
+      },
+      {
+        "type": "h2",
+        "text": "What moves TVI in production"
+      },
+      {
+        "type": "p",
+        "text": "Once the curve is right, TVI still moves with conditions on press:"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "Paper. Uncoated and absorbent grades gain more than coated ones, so a new grade or supplier shifts TVI with nothing changed on press.",
+          "Ink film. More ink means more spread: inking up a zone to rescue a weak solid raises TVI in that zone too.",
+          "Blanket. Type, compressibility, packing and wear change how the dot is squeezed.",
+          "Pressure. Too much squeeze between plate, blanket and impression cylinder spreads the dot, too little gives incomplete transfer.",
+          "Speed. Ink transfer changes with press speed, so TVI during a slow makeready can differ from TVI at production speed."
+        ]
+      },
+      {
+        "type": "h3",
+        "text": "Can the ink keys correct dot gain?"
+      },
+      {
+        "type": "p",
+        "text": "Only by trading one error for another. An ink key sets the ink film for a whole zone, solids and tints together. Opening it to darken a weak midtone overinks the solid and fills in the shadows; closing it to lighten heavy midtones leaves the solid short. When midtones are off and the solids are on target, look at the plate curve, the blanket or the pressure."
+      },
+      {
+        "type": "h2",
+        "text": "Where closed loop fits"
+      },
+      {
+        "type": "p",
+        "text": "Closed loop color control acts on what the ink keys actually control: the ink film in each zone. ColorLoop compares measurements from the color bar with the target zone by zone and sends ink key corrections to the press console, which the operator validates. With solids held on target through the run, the ink film stops drifting, and so does the part of TVI that depends on it. Prepress also gets a stable press to build its plate curves on."
+      },
+      {
+        "type": "h3",
+        "text": "Does closed loop color control fix dot gain?"
+      },
+      {
+        "type": "p",
+        "text": "It keeps dot gain predictable; it does not correct it. With stable solids and ink film, a correct plate curve delivers the midtones it was built for, on every shift. A wrong curve, a worn blanket or excessive pressure will still print wrong midtones with perfect solids, and that fix belongs in prepress or on the press."
+      },
+      {
+        "type": "p",
+        "text": "Dot gain is part of offset printing. Printing it right takes a known target curve, a plate curve built on a stable press, and ink films held on target through the run. Closed loop handles the third, on more than 1,000 systems in 30+ countries. The [complete guide to closed loop color control](/closed-loop-color-control) explains how measurement, comparison and correction work together on an existing press."
+      }
+    ],
+    "i18n": {
+      "fr": {
+        "title": "L'engraissement, expliqué",
+        "excerpt": "L'engraissement (TVI) en offset expliqué : causes mécaniques et optiques, courbes cibles ISO 12647-2, courbes de plaque et rôle du closed loop en production.",
+        "lead": "Toute presse offset imprime une teinte à 50 % plus foncée que 50 %. Cet engraissement, appelé augmentation de la valeur tonale (TVI) dans les normes, est attendu et spécifié : le problème n'est pas l'engraissement lui-même, mais un engraissement qui s'écarte de la courbe pour laquelle le travail a été séparé. Voici d'où il vient, comment il se mesure et ce qui le tient stable en production.",
+        "body": [
+          {
+            "type": "p",
+            "text": "Une teinte à 50 % dans le fichier ne s'imprime pas à 50 %. Elle s'imprime plus foncé sur papier couché, plus foncé encore sur non couché, et tous les demi-tons suivent. C'est l'[engraissement](/glossary#dot-gain), appelé augmentation de la valeur tonale, ou TVI, dans les normes. Toutes les presses en ont ; ce qui compte, c'est qu'il reste à la valeur pour laquelle les sélections et l'épreuve ont été faites."
+          },
+          {
+            "type": "h2",
+            "text": "L'engraissement : ce qu'il est et d'où il vient"
+          },
+          {
+            "type": "p",
+            "text": "L'engraissement est l'écart entre la valeur tonale du fichier et la valeur mesurée sur la feuille : une plage à 50 % qui mesure 66 % présente un TVI de 16. Deux effets s'additionnent dans ce chiffre, et aucune mesure ne les sépare."
+          },
+          {
+            "type": "p",
+            "text": "L'engraissement mécanique est physique. À chaque transfert, de la plaque au blanchet puis du blanchet au papier, l'encre de chaque point est écrasée et s'étale au-delà de son bord. Plus d'encre et plus de pression donnent un point imprimé plus gros. Le glissement et le doublage, quand les points s'étirent ou s'impriment deux fois avec un léger décalage, s'y ajoutent."
+          },
+          {
+            "type": "p",
+            "text": "L'engraissement optique se produit dans le papier. La lumière qui pénètre dans le papier nu entre les points se diffuse latéralement et ressort en partie sous un point voisin, où l'encre l'absorbe : le papier autour de chaque point paraît plus sombre et le point paraît plus gros qu'il ne l'est. Cet effet, appelé Yule-Nielsen, est plus fort sur les papiers non couchés."
+          },
+          {
+            "type": "h3",
+            "text": "Pourquoi les demi-tons s'impriment-ils plus foncés que le fichier ?"
+          },
+          {
+            "type": "p",
+            "text": "Parce que l'engraissement se produit au bord de chaque point, et qu'avec une trame AM classique la longueur totale des bords de points est maximale dans les demi-tons, là où les points sont près de se toucher. Les points des hautes lumières et les trous des ombres sont petits et isolés : ils engraissent moins. Une courbe de TVI vaut donc zéro au blanc du papier et à l'aplat, et atteint son maximum entre les deux."
+          },
+          {
+            "type": "h2",
+            "text": "Comment se mesure le TVI"
+          },
+          {
+            "type": "p",
+            "text": "Pour les encres de quadrichromie, le TVI se calcule à partir de la densité. L'instrument lit le papier nu, l'aplat et la teinte tramée, et la formule de Murray-Davies transforme ces densités en valeur tonale apparente. Le TVI est cette valeur moins la valeur nominale du fichier, engraissement mécanique et optique compris. Comme chaque teinte est rapportée à son aplat, les mesures de TVI ne sont comparables que si les aplats sont à la cible. Un spectrophotomètre calcule les mêmes densités à partir de sa mesure spectrale, comme l'explique [De la densité à la mesure spectrale](/blog/density-to-spectral-measurement-offset)."
+          },
+          {
+            "type": "p",
+            "text": "Les tons directs demandent une autre méthode : les filtres de densité sont conçus pour le cyan, le magenta et le jaune, et donnent une échelle de tons irrégulière pour beaucoup d'encres d'accompagnement. L'ISO 20654:2017 définit la valeur tonale des tons directs (SCTV), calculée à partir de mesures spectrales ou CIELAB du support, de l'aplat et de la teinte, et graduée de 0 pour le papier à 100 pour l'aplat, avec des pas visuels à peu près réguliers. Les dégradés d'une couleur de marque en emballage se contrôlent alors comme une teinte de quadrichromie."
+          },
+          {
+            "type": "h2",
+            "text": "Les courbes cibles de l'ISO 12647-2"
+          },
+          {
+            "type": "p",
+            "text": "L'ISO 12647-2 ne demande pas un engraissement nul. Elle précise l'engraissement attendu, sous forme d'une courbe de TVI par condition d'impression, et les sélections, les profils ICC et les épreuves sont construits sur elle. Dans l'édition 2013, le papier couché premium (PS1) suit la courbe A, qui vise 16 % de TVI sur la plage à 50 % pour les quatre encres de quadrichromie. Les papiers couchés améliorés et standard (PS2 à PS4) suivent la courbe B, le papier offset non couché sans bois (PS5) la courbe C, qui vise 22 %, et les trames FM ont leur propre courbe. Le [guide de l'ISO 12647-2 pour les conducteurs](/blog/iso-12647-2-explained-press-operators) présente le reste."
+          },
+          {
+            "type": "p",
+            "text": "La logique vaut pour les ateliers d'Europe, d'Amérique du Nord, d'Asie et d'Amérique latine. Beaucoup d'imprimeurs aux [États-Unis](/usa) calibrent selon G7, qui vise l'équilibre des gris et une courbe de densité neutre plutôt qu'un TVI par encre, et ils l'atteignent de la même façon : par les courbes de plaque."
+          },
+          {
+            "type": "h2",
+            "text": "Courbes de plaque : amener la presse sur la cible"
+          },
+          {
+            "type": "p",
+            "text": "La presse engraisse quoi que dise le fichier, la correction se fait donc à l'insolation de la plaque. Le CTP est d'abord linéarisé, pour que 50 % dans le fichier donne un point de 50 % sur la plaque. On imprime ensuite une forme test, aplats à la cible, et on mesure le TVI de chaque encre. Là où la presse engraisse plus que la courbe cible, la courbe de compensation appliquée en prépresse réduit le point sur la plaque ; là où elle engraisse moins, elle l'agrandit. La plaque n'est volontairement pas linéaire, pour que la feuille soit à la cible."
+          },
+          {
+            "type": "p",
+            "text": "Une courbe de plaque ne vaut que ce que vaut l'impression dont elle vient : construite sur une forme test surencrée ou sur un blanchet usé, elle reporte ce défaut sur toutes les plaques suivantes."
+          },
+          {
+            "type": "h2",
+            "text": "Ce qui fait varier le TVI en production"
+          },
+          {
+            "type": "p",
+            "text": "Une fois la courbe juste, le TVI varie encore avec les conditions sur la presse :"
+          },
+          {
+            "type": "ul",
+            "items": [
+              "Le papier. Les papiers non couchés et absorbants engraissent plus que les couchés : une nouvelle qualité ou un nouveau fournisseur décale le TVI sans rien changer sur la presse.",
+              "Le film d'encre. Plus d'encre, c'est plus d'étalement : monter l'encrage d'une zone pour rattraper un aplat faible augmente aussi le TVI dans cette zone.",
+              "Le blanchet. Type, compressibilité, habillage et usure changent la façon dont le point est écrasé.",
+              "La pression. Trop de pression entre plaque, blanchet et cylindre d'impression étale le point, trop peu donne un transfert incomplet.",
+              "La vitesse. Le transfert d'encre varie avec la vitesse de la presse : le TVI mesuré pendant un calage lent peut différer du TVI à la vitesse de production."
+            ]
+          },
+          {
+            "type": "h3",
+            "text": "Les vis d'encrier peuvent-elles corriger l'engraissement ?"
+          },
+          {
+            "type": "p",
+            "text": "Seulement en échangeant une erreur contre une autre. Une vis d'encrier règle le film d'encre de toute une zone, aplats et tramés ensemble. L'ouvrir pour foncer un demi-ton trop clair surencre l'aplat et bouche les ombres ; la fermer pour éclaircir des demi-tons trop lourds laisse l'aplat sous la cible. Quand les demi-tons sont hors cible alors que les aplats sont justes, il faut regarder la courbe de plaque, le blanchet ou la pression."
+          },
+          {
+            "type": "h2",
+            "text": "La place du closed loop"
+          },
+          {
+            "type": "p",
+            "text": "Le contrôle couleur en closed loop agit sur ce que les vis d'encrier maîtrisent vraiment : le film d'encre de chaque zone. ColorLoop compare les mesures de la barre de contrôle à la cible, zone par zone, et envoie les corrections de vis d'encrier au pupitre, que le conducteur valide. Avec des aplats tenus à la cible pendant tout le tirage, le film d'encre cesse de dériver, et la part du TVI qui en dépend aussi. Le prépresse dispose en outre d'une presse stable pour construire ses courbes de plaque."
+          },
+          {
+            "type": "h3",
+            "text": "Le closed loop corrige-t-il l'engraissement ?"
+          },
+          {
+            "type": "p",
+            "text": "Il rend l'engraissement prévisible, il ne le corrige pas. Avec des aplats et un film d'encre stables, une courbe de plaque juste livre les demi-tons pour lesquels elle a été construite, à chaque équipe. Une courbe fausse, un blanchet usé ou une pression excessive donneront toujours des demi-tons faux avec des aplats parfaits, et cette correction se fait en prépresse ou sur la presse."
+          },
+          {
+            "type": "p",
+            "text": "L'engraissement fait partie de l'offset. Bien l'imprimer demande une courbe cible connue, une courbe de plaque construite sur une presse stable, et des films d'encre tenus à la cible pendant tout le tirage. Le closed loop prend en charge le troisième point, comme il le fait sur plus de 1 000 systèmes dans plus de 30 pays. Le [guide complet du closed loop](/closed-loop-color-control) explique comment mesure, comparaison et correction fonctionnent ensemble sur une presse existante."
+          }
+        ]
+      },
+      "de": {
+        "title": "Tonwertzunahme einfach erklärt",
+        "excerpt": "Tonwertzunahme (TVI) im Offsetdruck erklärt: mechanische und optische Ursachen, Sollkurven nach ISO 12647-2, Plattenkurven und die Rolle von Closed-Loop.",
+        "lead": "Jede Offsetdruckmaschine druckt einen Rasterton von 50 % dunkler, als er in der Datei angelegt ist. Diese Tonwertzunahme (TVI) ist erwartet und genormt: Das Problem ist nicht die Zunahme selbst, sondern eine Abweichung von der Kurve, für die der Auftrag separiert wurde. Hier lesen Sie, woher sie kommt, wie sie gemessen wird und was sie in der Produktion stabil hält."
+      },
+      "it": {
+        "title": "Ingrossamento del punto, spiegato",
+        "excerpt": "L'ingrossamento del punto (TVI) nella stampa offset: cause meccaniche e ottiche, curve obiettivo ISO 12647-2, curve lastra e ruolo del closed loop.",
+        "lead": "Ogni macchina offset stampa un retino al 50% più scuro del 50%. Questo ingrossamento del punto, chiamato aumento del valore tonale (TVI) nelle norme, è previsto e specificato: il problema non è l'ingrossamento in sé, ma uno scostamento dalla curva per cui il lavoro è stato separato. Ecco da dove nasce, come si misura e che cosa lo mantiene stabile in produzione."
+      },
+      "es": {
+        "title": "La ganancia de punto, explicada",
+        "excerpt": "La ganancia de punto (TVI) en offset explicada: causas mecánicas y ópticas, curvas objetivo de ISO 12647-2, curvas de placa y el papel del closed loop.",
+        "lead": "Toda prensa offset imprime una trama al 50 % más oscura que el 50 %. Esta ganancia de punto, llamada aumento del valor tonal (TVI) en las normas, es esperada y está especificada: el problema no es la ganancia en sí, sino una ganancia que se aparta de la curva para la que se separó el trabajo. Aquí verá de dónde viene, cómo se mide y qué la mantiene estable en producción."
+      },
+      "pt": {
+        "title": "Ganho de ponto, explicado",
+        "excerpt": "O ganho de ponto (TVI) em offset explicado: causas mecânicas e óticas, curvas alvo da ISO 12647-2, curvas de chapa e o papel do closed loop na produção.",
+        "lead": "Todas as máquinas offset imprimem um meio-tom a 50% mais escuro do que 50%. Este ganho de ponto, chamado aumento do valor tonal (TVI) nas normas, é esperado e especificado: o problema não é o ganho em si, mas um ganho que se afasta da curva para a qual o trabalho foi separado. Veja de onde vem, como se mede e o que o mantém estável na produção."
+      }
+    },
+    "originalUrl": "https://rutherford.fr/blog/dot-gain-tvi-offset-explained",
+    "sources": [
+      {
+        "label": "ISO 12647-2:2013: Process control, offset lithographic processes",
+        "href": "https://www.iso.org/standard/57833.html"
+      },
+      {
+        "label": "ISO 20654:2017: Measurement and calculation of spot colour tone value",
+        "href": "https://www.iso.org/standard/68668.html"
+      },
+      {
+        "label": "Heidelberg, Further development of ISO 12647-2:2013 (Prinect User Days 2015)",
+        "href": "https://prinect-anwendertage.org/wp-content/uploads/2023/06/IPUD_2015_WS33_Further_Development_of_ISO_12647-2-1.pdf"
+      }
+    ],
+    "review": true
+  },
+  {
+    "slug": "color-drift-during-print-run",
+    "title": "Why color drifts mid-run",
+    "excerpt": "Why color drift appears in an offset run after a good OK sheet, how it builds zone by zone, and how closed loop measurement corrects it before it becomes waste.",
+    "lead": "A good OK sheet is a snapshot, not a setting. During the run, ink and water balance, temperature, paper and blankets keep moving, and color drifts with them, slowly and zone by zone. Here is where drift comes from, why spot checks miss it, and what closed loop can and cannot correct.",
+    "image": "/images/rutherford-hero.jpeg",
+    "publishedAt": "2026-10-08",
+    "category": "Production",
+    "paragraphs": [
+      "Color drift is color that moves during an offset run while the ink keys stay where they were. The OK sheet records one moment of a balance between ink, water, temperature, paper and blankets, and all of them keep evolving once production starts.",
+      "The usual causes: ink and water balance and emulsification, fountain solution chemistry and temperature, rollers and ink warming through the shift, the ink level in the fountain, paper that changes between pallets or lots, and blankets that pile. Drift builds slowly and zone by zone, and ISO 12647-2 sets a variation tolerance for production sheets against the OK sheet.",
+      "Spot checks every few hundred sheets miss slow drift: the eye adapts, a few handheld patches do not show which zones move, and corrections come late and large. Closed loop measures the full color bar regularly, ColorLoop compares each zone with the target and sends small ink key corrections to the console for the operator to validate.",
+      "Closed loop does not fix mechanical faults such as doubling, slur or ghosting, wrong fountain solution chemistry, or a plate imaged wrong. The same approach runs on more than 1,000 systems in 30+ countries."
+    ],
+    "body": [
+      {
+        "type": "p",
+        "text": "The OK sheet is signed, the numbers are in tolerance and the press goes up to speed. An hour later the cyan looks slightly heavier, or a brand color has lost some strength, and nobody touched the console. This is [color drift](/glossary#color-drift): color that moves during the run while the ink keys stay put, because the conditions behind the OK sheet keep changing."
+      },
+      {
+        "type": "h2",
+        "text": "What causes color drift in an offset run"
+      },
+      {
+        "type": "p",
+        "text": "At the OK sheet, the press has reached a balance, not a fixed state. Once the run starts, ink, water, temperature, paper and blankets keep evolving. The usual causes:"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "Ink and water balance. Offset ink always takes up some [fountain solution](/glossary#fountain-solution), and a stable emulsion is normal. When the dampening rate changes or the ink takes up too much water, the ink film weakens and solids look washed out.",
+          "Fountain solution. Alcohol evaporates during the run, and alcohol substitutes behave differently with each ink. Conductivity moves as the solution picks up coating and ink, and its temperature changes how the water film behaves.",
+          "Roller and ink temperature. Friction heats the inking rollers through the shift. Warmer ink is thinner and less tacky, so it transfers differently and dot gain tends to rise. Inking unit temperature control, where fitted, reduces this effect without removing it.",
+          "Ink level in the fountain. When the level drops, or a stiff ink hangs back from the fountain roller, feed falls in the zones affected. Topping up with cold fresh ink shifts it again.",
+          "Paper. A new pallet, and even more a new lot, can differ in absorbency, surface and moisture, so the same ink film gives a different color.",
+          "Blankets. Blankets pick up paper dust, coating and ink, and piling reduces transfer where it builds. After a blanket wash, the first sheets differ again."
+        ]
+      },
+      {
+        "type": "h3",
+        "text": "Why does color drift when nothing is touched at the console?"
+      },
+      {
+        "type": "p",
+        "text": "Because the ink keys only set how much ink is fed into each zone. What reaches the sheet also depends on water, temperature, paper and blankets, which all move during the run. The OK sheet records one moment of that balance, not a setting the press holds on its own."
+      },
+      {
+        "type": "h2",
+        "text": "How drift shows up on the sheet"
+      },
+      {
+        "type": "p",
+        "text": "Drift is rarely sudden. It builds over hundreds or thousands of sheets and seldom affects the whole sheet evenly. Each [ink zone](/glossary#ink-zone) has its own coverage and its own response to water, so one zone can drift while its neighbors hold. Zones with light coverage, where ink stays longer on the rollers and takes up more water, are often the most sensitive. On a packaging job, that can mean one brand color going out of tolerance on one side of the sheet."
+      },
+      {
+        "type": "p",
+        "text": "ISO 12647-2 reflects this. Besides the deviation allowed on the OK sheet, it sets a variation tolerance: the color difference allowed between production sheets and the OK sheet during the run. A signed OK sheet says where the run started, not where it will be at sheet 20,000."
+      },
+      {
+        "type": "h2",
+        "text": "Why spot checks every few hundred sheets miss it"
+      },
+      {
+        "type": "p",
+        "text": "Most pressrooms control the run by pulling a sheet at intervals, comparing it with the OK sheet in the viewing booth and measuring a few patches. At sheetfed production speed, a few hundred sheets pass in a minute or two, while the operator also watches feeder and delivery. Three things work against the spot check:"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "The eye adapts. A sudden change is obvious next to the OK sheet. A slow one, spread over an hour, is not.",
+          "Coverage is partial. A few handheld patches do not show which zones across the sheet are moving.",
+          "Corrections come late. Once drift is visible it is already large, and the big ink key move it needs takes more sheets to settle."
+        ]
+      },
+      {
+        "type": "p",
+        "text": "Everything printed between the last good check and the correction is at risk. This waste rarely appears in makeready figures, yet it deserves the same attention as the [ten levers to reduce makeready waste](/blog/reduce-makeready-waste-offset-press)."
+      },
+      {
+        "type": "h3",
+        "text": "How often should a run be measured?"
+      },
+      {
+        "type": "p",
+        "text": "Often enough to catch drift while it is small, across the full sheet width. There is no universal interval: it depends on press speed, run length and process stability. What matters is that every check reads all the zones and leads to a correction, not just a visual verdict."
+      },
+      {
+        "type": "h2",
+        "text": "How closed loop absorbs drift"
+      },
+      {
+        "type": "p",
+        "text": "Closed loop replaces the occasional visual check with regular measurement of the full color bar. A scanning spectrophotometer reads every zone of a pulled sheet in seconds. ColorLoop compares each zone with the target and sends ink key corrections to the press console, which the operator validates. Because drift is caught early, the corrections stay small: a few steps in the zones that moved, instead of a large move once the problem shows."
+      },
+      {
+        "type": "p",
+        "text": "The operator keeps control and stops chasing the color. Reading the sheet zone by zone also reveals patterns: a drift that always starts on the same side, or right after a pallet change, points to its cause."
+      },
+      {
+        "type": "h3",
+        "text": "What does closed loop not fix?"
+      },
+      {
+        "type": "p",
+        "text": "Anything that is not an ink film problem. Closed loop moves ink keys, so it corrects only what more or less ink in a zone can correct. Three common problems fall outside that reach:"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "Mechanical faults. Doubling, slur and ghosting change how the dots print. They may show in the measurement, but ink keys will not remove them.",
+          "Wrong fountain solution chemistry. If the dosage or the water quality is wrong, the plate scums, the ink emulsifies or dries badly, and more ink only hides the symptom for a while.",
+          "A plate imaged wrong. A wrong curve, a damaged plate or an imaging fault prints faithfully. The fix is a new plate, not a correction at the console."
+        ]
+      },
+      {
+        "type": "p",
+        "text": "Watch one more signal. When the loop keeps correcting the same zones in the same direction, it is compensating for a moving process: fountain solution going off, a blanket building up, an inking unit running hot. Color stays in tolerance, and the trend tells maintenance where to look."
+      },
+      {
+        "type": "p",
+        "text": "These mechanisms are the same in plants in Europe, North America, Asia and [Latin America](/latin-america), though pressrooms without full climate control feel the seasons more, and long runs expose more sheets."
+      },
+      {
+        "type": "p",
+        "text": "Drift is not the sign of a bad operator or a bad press. It is what offset does over a long run, and the answer is to measure and correct it early, as closed loop does on more than 1,000 systems in 30+ countries. The [complete guide to closed loop color control](/closed-loop-color-control) explains how measurement, comparison and correction work together on an existing press."
+      }
+    ],
+    "i18n": {
+      "fr": {
+        "title": "La dérive couleur en tirage",
+        "excerpt": "Pourquoi la dérive couleur apparaît en tirage offset après un bon à rouler validé, comment elle avance zone par zone et comment le closed loop la corrige.",
+        "lead": "Un bon à rouler est un instantané, pas un réglage. Pendant le tirage, l'équilibre eau-encre, la température, le papier et les blanchets continuent d'évoluer, et la couleur dérive avec eux, lentement et zone par zone. Voici d'où vient la dérive, pourquoi les contrôles ponctuels la manquent, et ce que le closed loop corrige ou ne corrige pas.",
+        "body": [
+          {
+            "type": "p",
+            "text": "Le bon à rouler est signé, les valeurs sont dans les tolérances et la presse monte en vitesse. Une heure plus tard, le cyan paraît un peu plus chargé, ou une couleur de marque a perdu de sa force, et personne n'a touché au pupitre. C'est la [dérive couleur](/glossary#color-drift) : la couleur bouge pendant le tirage alors que les vis d'encrier restent en place, parce que les conditions qui ont produit le bon à rouler continuent d'évoluer."
+          },
+          {
+            "type": "h2",
+            "text": "Les causes de la dérive couleur en tirage offset"
+          },
+          {
+            "type": "p",
+            "text": "Au bon à rouler, la presse a atteint un équilibre, pas un état figé. Une fois le tirage lancé, encre, eau, température, papier et blanchets continuent d'évoluer. Les causes habituelles :"
+          },
+          {
+            "type": "ul",
+            "items": [
+              "L'équilibre eau-encre. L'encre offset absorbe toujours une part de [solution de mouillage](/glossary#fountain-solution), et une émulsion stable est normale. Quand le débit de mouillage change ou que l'encre prend trop d'eau, le film d'encre s'affaiblit et les aplats paraissent délavés.",
+              "La solution de mouillage. L'alcool s'évapore pendant le tirage, et les substituts d'alcool se comportent différemment avec chaque encre. La conductivité évolue à mesure que la solution se charge de couchage et d'encre, et sa température change le comportement du film d'eau.",
+              "La température des rouleaux et de l'encre. Le frottement échauffe les rouleaux encreurs au fil de l'équipe. Une encre plus chaude est plus fluide et a moins de tirant : elle se transfère autrement et l'engraissement tend à augmenter. La régulation de température du groupe d'encrage, quand elle existe, réduit cet effet sans le supprimer.",
+              "Le niveau d'encre dans l'encrier. Quand le niveau baisse, ou qu'une encre ferme recule et ne suit plus le rouleau encrier, l'alimentation chute dans les zones concernées. Un complément d'encre froide décale à nouveau l'alimentation.",
+              "Le papier. Une nouvelle palette, et plus encore un nouveau lot, peut différer en absorption, en surface et en humidité : le même film d'encre donne alors une autre couleur.",
+              "Les blanchets. Les blanchets se chargent de poussière de papier, de couchage et d'encre, et l'empâtement réduit le transfert là où il se forme. Après un lavage blanchet, les premières feuilles diffèrent à nouveau."
+            ]
+          },
+          {
+            "type": "h3",
+            "text": "Pourquoi la couleur dérive-t-elle sans aucune action au pupitre ?"
+          },
+          {
+            "type": "p",
+            "text": "Parce que les vis d'encrier ne règlent que la quantité d'encre envoyée dans chaque zone. Ce qui arrive sur la feuille dépend aussi de l'eau, de la température, du papier et des blanchets, qui évoluent tous pendant le tirage. Le bon à rouler fixe un instant de cet équilibre, pas un réglage que la presse tiendra d'elle-même."
+          },
+          {
+            "type": "h2",
+            "text": "Comment la dérive apparaît sur la feuille"
+          },
+          {
+            "type": "p",
+            "text": "La dérive est rarement brutale. Elle s'installe sur des centaines ou des milliers de feuilles et touche rarement toute la feuille de la même façon. Chaque [zone d'encrage](/glossary#ink-zone) a son propre taux de couverture et sa propre réaction à l'eau : une zone peut donc dériver pendant que ses voisines tiennent. Les zones à faible couverture, où l'encre reste plus longtemps sur les rouleaux et prend plus d'eau, sont souvent les plus sensibles. Sur un travail d'emballage, cela peut vouloir dire qu'un ton direct sort des tolérances d'un seul côté de la feuille."
+          },
+          {
+            "type": "p",
+            "text": "L'ISO 12647-2 en tient compte. En plus de l'écart admis sur le bon à rouler, elle fixe une tolérance de variation : l'écart couleur admis entre les feuilles de production et le bon à rouler pendant le tirage. Un bon à rouler signé dit où le tirage a commencé, pas où il en sera à la feuille 20 000."
+          },
+          {
+            "type": "h2",
+            "text": "Pourquoi les contrôles espacés laissent passer la dérive"
+          },
+          {
+            "type": "p",
+            "text": "La plupart des ateliers pilotent le tirage en prélevant une feuille à intervalles, en la comparant au bon à rouler sous la cabine de lumière et en mesurant quelques plages. En offset feuille à feuille à vitesse de production, quelques centaines de feuilles passent en une minute ou deux, pendant que le conducteur surveille aussi le margeur et la réception. Trois facteurs jouent contre le contrôle ponctuel :"
+          },
+          {
+            "type": "ul",
+            "items": [
+              "L'œil s'adapte. À côté du bon à rouler, un changement brutal saute aux yeux. Un changement lent, étalé sur une heure, beaucoup moins.",
+              "La mesure est partielle. Quelques plages lues à la main ne montrent pas quelles zones bougent sur la largeur de la feuille.",
+              "Les corrections arrivent tard. Quand la dérive devient visible, elle est déjà importante, et le grand mouvement de vis d'encrier qu'elle exige met plus de feuilles à se stabiliser."
+            ]
+          },
+          {
+            "type": "p",
+            "text": "Tout ce qui est imprimé entre le dernier bon contrôle et la correction est à risque. Cette gâche apparaît rarement dans les chiffres de calage, et pourtant elle mérite la même attention que les [dix leviers pour réduire la gâche au calage](/blog/reduce-makeready-waste-offset-press)."
+          },
+          {
+            "type": "h3",
+            "text": "À quelle fréquence faut-il mesurer un tirage ?"
+          },
+          {
+            "type": "p",
+            "text": "Assez souvent pour attraper la dérive tant qu'elle est faible, sur toute la largeur de la feuille. Il n'existe pas d'intervalle universel : il dépend de la vitesse de la presse, de la longueur du tirage et de la stabilité du procédé. L'essentiel est que chaque contrôle lise toutes les zones et débouche sur une correction, pas seulement sur un avis visuel."
+          },
+          {
+            "type": "h2",
+            "text": "Comment le closed loop absorbe la dérive"
+          },
+          {
+            "type": "p",
+            "text": "Le closed loop remplace le contrôle visuel ponctuel par une mesure régulière de toute la barre de contrôle. Un spectrophotomètre à balayage lit chaque zone d'une feuille prélevée en quelques secondes. ColorLoop compare chaque zone à la cible et envoie des corrections de vis d'encrier au pupitre, que le conducteur valide. Comme la dérive est détectée tôt, les corrections restent faibles : quelques pas dans les zones qui ont bougé, plutôt qu'un grand mouvement une fois le problème visible."
+          },
+          {
+            "type": "p",
+            "text": "Le conducteur garde la main et cesse de courir après la couleur. La lecture zone par zone fait aussi apparaître des tendances : une dérive qui part toujours du même côté, ou juste après un changement de palette, désigne sa cause."
+          },
+          {
+            "type": "h3",
+            "text": "Qu'est-ce que le closed loop ne corrige pas ?"
+          },
+          {
+            "type": "p",
+            "text": "Tout ce qui n'est pas un problème de film d'encre. Le closed loop agit sur les vis d'encrier : il ne corrige que ce que plus ou moins d'encre dans une zone peut corriger. Trois problèmes fréquents échappent à ce champ :"
+          },
+          {
+            "type": "ul",
+            "items": [
+              "Les défauts mécaniques. Le doublage, le papillotage et les fantômes modifient la façon dont les points s'impriment. Ils peuvent apparaître dans la mesure, mais les vis d'encrier ne les supprimeront pas.",
+              "Une chimie de mouillage inadaptée. Si le dosage ou la qualité de l'eau ne conviennent pas, la plaque graisse, l'encre s'émulsionne ou sèche mal, et ajouter de l'encre ne fait que masquer le symptôme un temps.",
+              "Une plaque mal insolée. Une mauvaise courbe, une plaque abîmée ou un défaut d'insolation s'impriment fidèlement. La solution est une nouvelle plaque, pas une correction au pupitre."
+            ]
+          },
+          {
+            "type": "p",
+            "text": "Un dernier signal mérite l'attention. Quand le closed loop corrige sans cesse les mêmes zones dans le même sens, elle compense un procédé qui bouge : solution de mouillage qui se dégrade, blanchet qui s'empâte, groupe d'encrage qui chauffe. La couleur reste dans les tolérances, et la tendance indique à la maintenance où chercher."
+          },
+          {
+            "type": "p",
+            "text": "Ces mécanismes sont les mêmes dans les usines d'Europe, d'Amérique du Nord, d'Asie et d'[Amérique latine](/latin-america), même si les ateliers sans climatisation complète ressentent davantage les saisons et si les longs tirages exposent plus de feuilles."
+          },
+          {
+            "type": "p",
+            "text": "La dérive n'est le signe ni d'un mauvais conducteur ni d'une mauvaise presse. C'est ce que fait l'offset sur un long tirage, et la réponse consiste à la mesurer et à la corriger tôt, comme le fait le closed loop sur plus de 1 000 systèmes dans plus de 30 pays. Le [guide complet du closed loop](/closed-loop-color-control) explique comment mesure, comparaison et correction fonctionnent ensemble sur une presse existante."
+          }
+        ]
+      },
+      "de": {
+        "title": "Farbabweichung im Fortdruck",
+        "excerpt": "Warum Farbabweichung im Offset-Fortdruck trotz eines guten OK-Bogens entsteht, wie sie sich Zone für Zone aufbaut und wie ein Closed Loop sie früh korrigiert.",
+        "lead": "Ein OK-Bogen ist eine Momentaufnahme, keine Einstellung. Während des Fortdrucks verändern sich Farb-Wasser-Balance, Temperatur, Papier und Gummitücher weiter, und die Farbe wandert mit, langsam und Zone für Zone. Hier erfahren Sie, woher die Abweichung kommt, warum Stichproben sie übersehen und was ein Closed Loop korrigieren kann und was nicht."
+      },
+      "it": {
+        "title": "La deriva colore in tiratura",
+        "excerpt": "Perché la deriva colore compare in tiratura offset dopo un buon foglio OK, come si sviluppa zona per zona e come il closed loop la corregge prima dello scarto.",
+        "lead": "Un foglio OK è un'istantanea, non una regolazione. Durante la tiratura l'equilibrio acqua-inchiostro, la temperatura, la carta e i caucciù continuano a cambiare, e il colore deriva con loro, lentamente e zona per zona. Ecco da dove nasce la deriva, perché i controlli a campione non la vedono e che cosa il closed loop può correggere e che cosa no."
+      },
+      "es": {
+        "title": "Deriva del color en tirada",
+        "excerpt": "Por qué aparece la deriva del color en una tirada offset tras un buen pliego OK, cómo avanza zona por zona y cómo el closed loop la corrige a tiempo.",
+        "lead": "Un pliego OK es una instantánea, no un ajuste. Durante la tirada, el equilibrio agua-tinta, la temperatura, el papel y las mantillas siguen cambiando, y el color deriva con ellos, lentamente y zona por zona. Aquí verá de dónde viene la deriva, por qué los controles puntuales no la detectan y qué puede corregir el closed loop y qué no."
+      },
+      "pt": {
+        "title": "Deriva da cor na tiragem",
+        "excerpt": "Porque é que a deriva da cor surge numa tiragem offset após uma boa folha OK, como avança zona a zona e como o closed loop a corrige antes do desperdício.",
+        "lead": "Uma folha OK é um instantâneo, não uma afinação. Durante a tiragem, o equilíbrio água-tinta, a temperatura, o papel e as blanquetas continuam a mudar, e a cor deriva com eles, lentamente e zona a zona. Veja de onde vem a deriva, porque é que os controlos pontuais não a detetam e o que o closed loop consegue ou não corrigir."
+      }
+    },
+    "originalUrl": "https://rutherford.fr/blog/color-drift-during-print-run",
+    "sources": [
+      {
+        "label": "ISO 12647-2:2013: Process control, offset lithographic processes",
+        "href": "https://www.iso.org/standard/57833.html"
+      },
+      {
+        "label": "PRINTING United Alliance: Should I measure the pH or conductivity of my fountain solution?",
+        "href": "https://www.printing.org/content/2018/03/28/should-i-measure-the-ph-or-conductivity-of-my-fountain-solution"
+      },
+      {
+        "label": "Fujifilm: Troubleshooting weak ink color in offset pressrooms",
+        "href": "https://print-us.fujifilm.com/news-updates/troubleshooting-weak-ink-color-in-offset-pressrooms/"
+      }
+    ],
+    "review": true
+  },
+  {
+    "slug": "proving-color-in-print-audits",
+    "title": "Proving color in an audit",
+    "excerpt": "What a color audit asks a printer to show: the OK sheet, target and DeltaE tolerance, run measurement records, instrument checks and traceability.",
+    "lead": "For years, a signed OK sheet was enough to settle any question about color. Brand owners and auditors now ask for more: the target, the tolerance, the measurement condition and measured data for the whole run. Here is what a color audit looks for, and how closed loop control builds that record while the press runs.",
+    "image": "/images/colorloop/dsc6999.jpg",
+    "publishedAt": "2026-10-01",
+    "category": "Standards",
+    "paragraphs": [
+      "A color audit asks a printer for more than a signature: the OK sheet with its measured values, CIELAB targets with a DeltaE tolerance and its formula stated, the measurement condition (M0, M1 or M2 per ISO 13655), color bar readings per job and per run, instrument calibration and verification records, and traceability from job ticket to delivered pallet.",
+      "A signed OK sheet records one decision at one moment. It says nothing about the rest of the run, the sheet itself ages, and a visual judgment cannot be compared between plants. ISO 12647-2 treats the OK print and production printing as separate stages: approving the reference and holding the run to it.",
+      "Instrument records back up every number: routine calibration on the white reference, periodic recertification, verification readings on certified reference materials as described in ISO 15790, and agreement checks where several instruments measure the same work.",
+      "With closed loop control, ColorLoop compares the color bar of each pull with the target zone by zone and sends ink key corrections to the press console for the operator to validate. Every correction starts from a measurement, so the record builds while the press runs. More than 1,000 systems run in 30+ countries."
+    ],
+    "body": [
+      {
+        "type": "p",
+        "text": "A brand owner raises a complaint about a delivery, or an auditor arrives for a supplier review, and the question is the same: can you show that this job was printed to the agreed color? For a long time, the answer was a signed OK sheet in a drawer. Today it is only the start of the answer. Buyers who source the same packaging from several printers want numbers they can check, measured the same way everywhere, covering the whole run."
+      },
+      {
+        "type": "h2",
+        "text": "What a color audit asks a printer to show"
+      },
+      {
+        "type": "p",
+        "text": "The list varies by customer, but the core is stable. An auditor who knows print asks for six things:"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "The signed OK sheet. The [OK sheet](/glossary#ok-sheet) approved at the end of makeready, with who approved it, when, and its measured values, not only a signature.",
+          "The agreed target and tolerance. CIELAB aim values for each process color and each spot color, and a [DeltaE](/glossary#delta-e) tolerance with its formula stated, because the same tolerance value means something different in DeltaE 2000 and in DeltaE 76.",
+          "The measurement condition. M0, M1 or M2 as defined in ISO 13655, with 0:45 or 45:0 geometry and CIELAB values computed for illuminant D50 and the 2 degree observer.",
+          "Measurement records per job and per run. Color bar readings from makeready to the last sheet pulled, zone by zone and color by color, not three spot checks noted on the job ticket.",
+          "Instrument records. Calibration logs, the last recertification of each spectrophotometer, and verification readings on a reference.",
+          "Traceability. A chain that leads from the job ticket to the OK sheet, from the OK sheet to the run data, and from the run data to the pallets delivered."
+        ]
+      },
+      {
+        "type": "h2",
+        "text": "Why a signed OK sheet alone no longer convinces"
+      },
+      {
+        "type": "p",
+        "text": "The OK sheet records one decision at one moment. It shows that the sheet approved at the end of makeready was acceptable to the person who signed it, under the light at the console. It says nothing about sheet 20,000, about the night shift, or about the pallet that reached the brand owner's warehouse. ISO 12647-2 already treats the OK print and production printing as separate process stages: approving the reference is one step, holding the run to it is another."
+      },
+      {
+        "type": "p",
+        "text": "The sheet itself changes too. Paper ages, printed ink fades under light, and a sheet kept for a year is no longer quite the sheet that was signed. A visual judgment in one plant cannot be compared with a visual judgment in another. And when a dispute comes up months after delivery, a signature without numbers leaves the printer arguing from memory."
+      },
+      {
+        "type": "h3",
+        "text": "Is a signed OK sheet still needed?"
+      },
+      {
+        "type": "p",
+        "text": "Yes. It remains the moment when the customer, or the shift leader, accepts the color. What changes is what goes with it: the measured values of that sheet, stored with the job, so the approval can be checked against the target and every later sheet against the approval."
+      },
+      {
+        "type": "h2",
+        "text": "Target, tolerance and instruments: the records behind the numbers"
+      },
+      {
+        "type": "p",
+        "text": "A measured value only proves something if the auditor can see what it was compared with, and what it was measured with. The target should come from the customer specification, a standard such as ISO 12647-2 or G7, or the brand's spot color library, and it should be written down per paper type. The tolerance should name its formula, DeltaE 2000 or DeltaE 76 for example, and state which colors and which patches it applies to. Our guide to [DeltaE tolerances in print](/blog/delta-e-tolerance-print-guide) explains how to set realistic values."
+      },
+      {
+        "type": "h3",
+        "text": "What proves the measurement instrument was right?"
+      },
+      {
+        "type": "p",
+        "text": "Three kinds of record. The routine calibration on the instrument's white reference, logged as the manufacturer specifies; the periodic recertification of the device; and verification readings on reference samples, the approach ISO 15790 describes for certified reference materials. Where several instruments measure the same work, a check that they agree with each other closes the last gap."
+      },
+      {
+        "type": "h2",
+        "text": "From job ticket to delivered pallet"
+      },
+      {
+        "type": "p",
+        "text": "The job number on the ticket should appear on the OK sheet, in the measurement data and on the pallet labels, so that a complaint about one pallet leads back to the run it came from and to the readings taken during that run."
+      },
+      {
+        "type": "p",
+        "text": "Groups that print the same brand in plants across Europe, North America, Asia and [Latin America](/latin-america) need that chain to work the same way everywhere, because the brand owner will compare the plants against one another."
+      },
+      {
+        "type": "h2",
+        "text": "How closed loop control turns measurement into a record"
+      },
+      {
+        "type": "p",
+        "text": "In a manual workflow, the record depends on discipline: someone has to measure, save the reading and file it with the job. On a busy shift, it is the first task to slip. Closed loop control reverses the logic. ColorLoop compares the color bar measurement of each pull with the target, zone by zone, and sends ink key corrections to the press console, where the operator validates them. Every correction starts from a measurement, so readings exist for every pull from makeready to the end of the run."
+      },
+      {
+        "type": "p",
+        "text": "Stored with the job number, those readings become the audit file: the values of the OK sheet, each pull compared with the target, and the corrections sent to the console. The record is continuous because it is a by-product of steering the press, not a task added on top of it. The conversation with the brand owner changes as well: the printer shows a run that stayed inside tolerance, not a single sheet that looked right."
+      },
+      {
+        "type": "h3",
+        "text": "Does closed loop data satisfy a brand owner audit?"
+      },
+      {
+        "type": "p",
+        "text": "It covers the core of the color question: the target, the readings for every pull and the corrections made. The auditor will still check the OK sheet approval, the instrument records and the link to the delivered pallets, which remain plant procedures. What closed loop removes is the gap in the middle, the hours of production that a signed sheet and a few spot checks never covered."
+      },
+      {
+        "type": "p",
+        "text": "Many presses in service can take this step on the console they already have, and a [console validation](/console-validation) confirms it from a few photographs. Packaging regulation brings its own documentation, and [ppwrconnect.com](https://ppwrconnect.com) is the platform built for PPWR and DPP files."
+      },
+      {
+        "type": "p",
+        "text": "An audit rewards the plant that can show its color, not only describe it. The same measurement and correction loop runs on more than 1,000 systems in 30+ countries, and the [complete guide to closed loop color control](/closed-loop-color-control) explains how it works on an existing press."
+      }
+    ],
+    "i18n": {
+      "fr": {
+        "title": "Prouver la couleur en audit",
+        "excerpt": "Ce qu'un audit couleur demande à l'imprimeur : bon à rouler, cible et tolérance DeltaE, relevés de mesure par tirage, instruments vérifiés et traçabilité.",
+        "lead": "Pendant des années, un bon à rouler signé suffisait à clore toute question sur la couleur. Les marques et les auditeurs demandent désormais davantage : la cible, la tolérance, la condition de mesure et les données mesurées sur tout le tirage. Voici ce que recherche un audit couleur, et comment le closed loop construit cet historique pendant que la presse tourne.",
+        "body": [
+          {
+            "type": "p",
+            "text": "Une marque ouvre une réclamation sur une livraison, ou un auditeur vient pour une revue fournisseur, et la question est la même : pouvez-vous montrer que ce travail a été imprimé dans la couleur convenue ? Longtemps, la réponse tenait dans un bon à rouler signé, rangé dans un tiroir. Aujourd'hui, ce n'est que le début de la réponse. Les acheteurs qui confient le même emballage à plusieurs imprimeurs veulent des chiffres vérifiables, mesurés de la même façon partout, couvrant tout le tirage."
+          },
+          {
+            "type": "h2",
+            "text": "Ce qu'un audit couleur demande à l'imprimeur"
+          },
+          {
+            "type": "p",
+            "text": "La liste varie selon le client, mais le fond reste stable. Un auditeur qui connaît l'impression demande six choses :"
+          },
+          {
+            "type": "ul",
+            "items": [
+              "Le bon à rouler signé. Le [bon à rouler](/glossary#ok-sheet) approuvé en fin de calage, avec le nom de la personne qui l'a validé, la date, et ses valeurs mesurées, pas seulement une signature.",
+              "La cible et la tolérance convenues. Des valeurs CIELAB pour chaque couleur de la quadrichromie et chaque ton direct, et une tolérance en [DeltaE](/glossary#delta-e) dont la formule est précisée, car une même valeur de tolérance ne signifie pas la même chose en DeltaE 2000 et en DeltaE 76.",
+              "La condition de mesure. M0, M1 ou M2 selon la norme ISO 13655, avec une géométrie 0:45 ou 45:0 et des valeurs CIELAB calculées pour l'illuminant D50 et l'observateur 2 degrés.",
+              "Les relevés de mesure par travail et par tirage. Les mesures de la barre de contrôle, du calage à la dernière feuille prélevée, zone par zone et couleur par couleur, et non trois contrôles ponctuels notés sur la fiche de travail.",
+              "Les enregistrements des instruments. Les journaux de calibration, la dernière recertification de chaque spectrophotomètre et les mesures de vérification sur une référence.",
+              "La traçabilité. Une chaîne qui relie la fiche de travail au bon à rouler, le bon à rouler aux données du tirage, et ces données aux palettes livrées."
+            ]
+          },
+          {
+            "type": "h2",
+            "text": "Pourquoi un bon à rouler signé ne suffit plus"
+          },
+          {
+            "type": "p",
+            "text": "Le bon à rouler enregistre une décision à un instant donné. Il montre que la feuille approuvée en fin de calage convenait à la personne qui l'a signée, sous l'éclairage du pupitre. Il ne dit rien de la feuille 20 000, de l'équipe de nuit, ni de la palette arrivée dans l'entrepôt de la marque. La norme ISO 12647-2 traite d'ailleurs le bon à rouler et l'impression de production comme deux étapes distinctes : approuver la référence est une chose, y tenir le tirage en est une autre."
+          },
+          {
+            "type": "p",
+            "text": "La feuille elle-même évolue. Le papier vieillit, l'encre imprimée pâlit à la lumière, et une feuille conservée un an n'est plus tout à fait celle qui a été signée. Un jugement visuel dans une usine ne se compare pas à un jugement visuel dans une autre. Et quand un litige survient des mois après la livraison, une signature sans chiffres laisse l'imprimeur plaider de mémoire."
+          },
+          {
+            "type": "h3",
+            "text": "Le bon à rouler signé reste-t-il nécessaire ?"
+          },
+          {
+            "type": "p",
+            "text": "Oui. Il reste le moment où le client, ou le chef d'équipe, accepte la couleur. Ce qui change, c'est ce qui l'accompagne : les valeurs mesurées de cette feuille, enregistrées avec le travail, pour que l'approbation puisse être vérifiée par rapport à la cible, et chaque feuille suivante par rapport à l'approbation."
+          },
+          {
+            "type": "h2",
+            "text": "Cible, tolérance et instruments : les preuves derrière les chiffres"
+          },
+          {
+            "type": "p",
+            "text": "Une valeur mesurée ne prouve quelque chose que si l'auditeur voit à quoi elle a été comparée, et avec quoi elle a été mesurée. La cible doit venir du cahier des charges du client, d'un standard comme ISO 12647-2 ou G7, ou de la bibliothèque de tons directs de la marque, et être écrite par type de papier. La tolérance doit nommer sa formule, DeltaE 2000 ou DeltaE 76 par exemple, et préciser à quelles couleurs et à quelles plages elle s'applique. Notre guide des [tolérances DeltaE en impression](/blog/delta-e-tolerance-print-guide) explique comment fixer des valeurs réalistes."
+          },
+          {
+            "type": "h3",
+            "text": "Qu'est-ce qui prouve que l'instrument de mesure était juste ?"
+          },
+          {
+            "type": "p",
+            "text": "Trois types d'enregistrements. La calibration courante sur la référence blanche de l'instrument, consignée selon les prescriptions du fabricant ; la recertification périodique de l'appareil ; et des mesures de vérification sur des échantillons de référence, l'approche que la norme ISO 15790 décrit pour les matériaux de référence certifiés. Quand plusieurs instruments mesurent le même travail, un contrôle de leur concordance ferme le dernier écart."
+          },
+          {
+            "type": "h2",
+            "text": "De la fiche de travail à la palette livrée"
+          },
+          {
+            "type": "p",
+            "text": "Le numéro de travail de la fiche doit figurer sur le bon à rouler, dans les données de mesure et sur les étiquettes de palette, pour qu'une réclamation sur une palette remonte au tirage dont elle vient et aux mesures prises pendant ce tirage."
+          },
+          {
+            "type": "p",
+            "text": "Les groupes qui impriment la même marque dans des usines en Europe, en Amérique du Nord, en Asie et en [Amérique latine](/latin-america) ont besoin que cette chaîne fonctionne partout de la même façon, car la marque comparera les usines entre elles."
+          },
+          {
+            "type": "h2",
+            "text": "Comment le closed loop transforme la mesure en historique"
+          },
+          {
+            "type": "p",
+            "text": "Dans un workflow manuel, l'historique dépend de la discipline : quelqu'un doit mesurer, enregistrer la valeur et la classer avec le travail. Quand la production presse, c'est la première tâche qui saute. Le closed loop inverse la logique. ColorLoop compare la mesure de la barre de contrôle de chaque feuille prélevée avec la cible, zone par zone, et envoie les corrections de vis d'encrier au pupitre de la presse, où le conducteur les valide. Chaque correction part d'une mesure, si bien que les relevés existent pour chaque prélèvement, du calage à la fin du tirage."
+          },
+          {
+            "type": "p",
+            "text": "Enregistrés avec le numéro de travail, ces relevés deviennent le dossier d'audit : les valeurs du bon à rouler, chaque prélèvement comparé à la cible, et les corrections envoyées au pupitre. L'historique est continu parce qu'il découle du pilotage de la presse, et non d'une tâche ajoutée par-dessus. La conversation avec la marque change aussi : l'imprimeur montre un tirage resté dans la tolérance, et non une seule feuille qui paraissait juste."
+          },
+          {
+            "type": "h3",
+            "text": "Les données du closed loop suffisent-elles pour un audit de marque ?"
+          },
+          {
+            "type": "p",
+            "text": "Elles couvrent le cœur de la question couleur : la cible, les relevés de chaque prélèvement et les corrections effectuées. L'auditeur vérifiera toujours la validation du bon à rouler, les enregistrements des instruments et le lien avec les palettes livrées, qui restent des procédures de l'usine. Ce que le closed loop supprime, c'est le trou du milieu : les heures de production qu'un bon à rouler signé et quelques contrôles ponctuels n'ont jamais couvertes."
+          },
+          {
+            "type": "p",
+            "text": "Beaucoup de presses en service peuvent franchir cette étape avec le pupitre dont elles disposent déjà, et une [validation console](/console-validation) le confirme à partir de quelques photos. La réglementation sur les emballages apporte sa propre documentation, et [ppwrconnect.com](https://ppwrconnect.com) est la plateforme conçue pour les dossiers PPWR et DPP."
+          },
+          {
+            "type": "p",
+            "text": "Un audit récompense l'usine qui peut montrer sa couleur, pas seulement la décrire. Le même principe de mesure et de correction fonctionne sur plus de 1 000 systèmes dans plus de 30 pays, et le [guide complet du closed loop](/closed-loop-color-control) explique comment il s'applique à une presse existante."
+          }
+        ]
+      },
+      "de": {
+        "title": "Farbe im Audit nachweisen",
+        "excerpt": "Was ein Farbaudit von der Druckerei verlangt: OK-Bogen, Zielwerte und DeltaE-Toleranz, Messdaten je Auflage, geprüfte Messgeräte und Rückverfolgbarkeit.",
+        "lead": "Jahrelang genügte ein unterschriebener OK-Bogen, um jede Frage zur Farbe zu klären. Markeninhaber und Auditoren verlangen heute mehr: Zielwerte, Toleranz, Messbedingung und Messdaten für die gesamte Auflage. Dieser Beitrag zeigt, was ein Farbaudit prüft und wie die Closed-Loop-Regelung diesen Nachweis erzeugt, während die Druckmaschine läuft."
+      },
+      "it": {
+        "title": "Dimostrare il colore in audit",
+        "excerpt": "Cosa chiede un audit colore allo stampatore: foglio OK, target e tolleranza DeltaE, misure per ogni tiratura, strumenti verificati e tracciabilità completa.",
+        "lead": "Per anni un foglio OK firmato bastava a chiudere ogni questione sul colore. Brand e auditor oggi chiedono di più: target, tolleranza, condizione di misura e dati misurati sull'intera tiratura. Ecco cosa verifica un audit colore e come il controllo closed-loop costruisce questa documentazione mentre la macchina stampa."
+      },
+      "es": {
+        "title": "Demostrar el color en auditoría",
+        "excerpt": "Qué pide una auditoría de color al impresor: pliego OK, objetivo y tolerancia DeltaE, mediciones por tirada, instrumentos verificados y trazabilidad.",
+        "lead": "Durante años, un pliego OK firmado bastaba para cerrar cualquier duda sobre el color. Las marcas y los auditores piden hoy más: el objetivo, la tolerancia, la condición de medición y los datos medidos de toda la tirada. Esto es lo que revisa una auditoría de color, y así es como el control closed-loop genera ese registro mientras la prensa imprime."
+      },
+      "pt": {
+        "title": "Provar a cor numa auditoria",
+        "excerpt": "O que uma auditoria de cor pede ao impressor: folha OK, alvo e tolerância DeltaE, medições por tiragem, instrumentos verificados e rastreabilidade total.",
+        "lead": "Durante anos, uma folha OK assinada bastava para encerrar qualquer questão sobre a cor. As marcas e os auditores pedem hoje mais: o alvo, a tolerância, a condição de medição e os dados medidos de toda a tiragem. Eis o que uma auditoria de cor verifica e como o controlo closed-loop constrói esse registo enquanto a máquina imprime."
+      }
+    },
+    "originalUrl": "https://rutherford.fr/blog/proving-color-in-print-audits",
+    "sources": [
+      {
+        "label": "ISO 12647-2:2013: Process control, offset lithographic processes",
+        "href": "https://www.iso.org/standard/57833.html"
+      },
+      {
+        "label": "ISO/CIE 11664-6:2022: Colorimetry, CIEDE2000 color difference formula",
+        "href": "https://www.iso.org/standard/82662.html"
+      },
+      {
+        "label": "ISO 15790:2004: Certified reference materials for reflection and transmission metrology",
+        "href": "https://www.iso.org/standard/28312.html"
+      }
+    ],
+    "review": true
+  },
+  {
     "slug": "density-to-spectral-measurement-offset",
     "title": "From density to spectral measurement",
     "excerpt": "Why offset printers move from densitometers to spectral measurement, what changes at the press console, and how to upgrade without losing density.",

@@ -17,9 +17,12 @@ La routine du jeudi coche la case du sujet publié (commit du fichier avec l'art
 - [x] **S4 (13/08)** : Le G7 pour les imprimeurs européens qui exportent vers l'Amérique du Nord. Liens : pilier, /usa, /canada, article g7-vs-iso. → publié le 16/09 : `g7-calibration-european-printers-north-america`.
 - [x] **S5 (20/08)** : Console de presse et retrofit : qu'est-ce qui rend une console compatible closed loop (Heidelberg, Komori, Koenig & Bauer, Manroland…). Liens : pilier, pages marques /console-validation/<brand>, Rutherford Check. **Doublon : déjà couvert le 29/07 par `press-console-closed-loop-compatibility` (routine du lundi). Sujet sauté ; le jeudi 20/08 prendra le sujet suivant non coché.**
 - [x] **S6 (24/09)** : Du densitomètre au spectrophotomètre à balayage : le chemin de mise à niveau de la mesure. Liens : pilier, glossaire (densité, spectrophotomètre), /colorloop. → rédigé le 22/09 pour le jeudi 24/09 : `density-to-spectral-measurement-offset`.
-- [ ] **S7 (01/10)** : Prouver la couleur aux audits : bon à rouler, relevés de mesure et traçabilité (angle donneurs d'ordres / conformité, sans empiéter sur le territoire PPWR de ppwrconnect.com : pointer vers ppwrconnect.com comme plateforme). Liens : pilier, /console-validation.
-- [ ] **S8 (08/10)** : Équilibre eau-encre et dérive couleur : pourquoi la couleur bouge pendant le tirage et comment la boucle l'absorbe. Liens : pilier, glossaire (dérive couleur, solution de mouillage).
+- [x] **S7 (01/10)** : Prouver la couleur aux audits : bon à rouler, relevés de mesure et traçabilité (angle donneurs d'ordres / conformité, sans empiéter sur le territoire PPWR de ppwrconnect.com : pointer vers ppwrconnect.com comme plateforme). Liens : pilier, /console-validation. → rédigé le 22/09, en validation : `proving-color-in-print-audits`.
+- [x] **S8 (08/10)** : Équilibre eau-encre et dérive couleur : pourquoi la couleur bouge pendant le tirage et comment la boucle l'absorbe. Liens : pilier, glossaire (dérive couleur, solution de mouillage). → rédigé le 22/09, en validation : `color-drift-during-print-run`.
+- [x] **S9 (15/10)** : L'engraissement (TVI) expliqué : courbes ISO 12647-2, courbes de plaque, ce que le closed loop stabilise. Appuie le carrousel LinkedIn du 14/10. → rédigé le 22/09, en validation : `dot-gain-tvi-offset-explained`.
+- [x] **S10 (22/10)** : Changer de papier sans perdre la couleur : blanc papier, azurants et M1, absorption, requalification et cibles par papier. → rédigé le 22/09, en validation : `paper-change-color-requalification`.
+- [x] **S11 (29/10)** : Concevoir la barre de contrôle : quelles plages, où, et pourquoi elle conditionne la correction zone par zone. → rédigé le 22/09, en validation : `color-bar-design-closed-loop`.
 
-## Après la semaine 8
+## Après la semaine 11
 
 Générer la liste suivante lors du point mensuel Search Console (`monthly-gsc-review`) : les sujets sortent de la donnée GSC (requêtes à impressions sans clics, pays/langues émergents), pas de l'intuition. Règle du playbook FX : un site = un thème; rester sur le territoire couleur/offset/closed loop.
