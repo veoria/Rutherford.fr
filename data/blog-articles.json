@@ -1,5 +1,248 @@
 [
   {
+    "slug": "density-to-spectral-measurement-offset",
+    "title": "From density to spectral measurement",
+    "excerpt": "Why offset printers move from densitometers to spectral measurement, what changes at the press console, and how to upgrade without losing density.",
+    "lead": "Most offset pressrooms still steer color by density, and it has worked for decades. But brand owners now approve color in CIELAB and DeltaE, and a density reading cannot tell you whether a solid is the right color, only whether it carries more or less ink. Moving to spectral measurement is less about a new instrument than a new way of deciding when a sheet is good.",
+    "image": "/images/blog/cartonajes-pans-measurecolor-console.jpg",
+    "publishedAt": "2026-09-24",
+    "category": "Production",
+    "paragraphs": [
+      "Most offset pressrooms steer color by density, but brand owners, print buyers and ISO 12647-2 express color targets as CIELAB values with a DeltaE tolerance. A density reading follows ink film thickness but cannot tell whether a solid has the right hue, whether a spot color matches its brand reference, or how a new paper lot changes appearance.",
+      "A spectrophotometer measures the full reflectance spectrum and derives CIELAB, DeltaE and density from a single reading, so operators keep density as a control signal while approval moves to colorimetric values. Density also depends on the spectral response used, Status E in Europe and Status T in North America, which makes numbers hard to compare between plants.",
+      "The upgrade path: approve the OK sheet on color under the right measurement condition (M1 for papers with optical brighteners), load CIELAB targets per paper type and spot color, check the color bar, measure every pull with a scanning spectrophotometer at the console, then close the loop so software sends ink key corrections to the console.",
+      "ColorLoop works with IntelliTrax2 scanning spectrophotometers and MeasureColor software, so plants can build on the instrument they already own. More than 1,000 closed loop systems run in 30+ countries."
+    ],
+    "body": [
+      {
+        "type": "p",
+        "text": "Most offset pressrooms still steer color by density. The operator pulls a sheet, reads the solids with a densitometer, and moves the ink keys until the numbers match the ones on the job ticket. It is fast, it is repeatable, and it has served the trade for decades. What has changed is the way color is approved. Brand owners, print buyers and the ISO standards now express the target as CIELAB values with a DeltaE tolerance, and a density reading cannot be checked against either."
+      },
+      {
+        "type": "h2",
+        "text": "What spectral measurement adds to a density reading"
+      },
+      {
+        "type": "p",
+        "text": "A densitometer measures how much light a printed solid absorbs through a filter matched to the ink. That number follows the ink film thickness closely, which is why it works so well for steering the ink keys. A spectrophotometer reads the full reflectance spectrum of the same patch across the visible range. From that single reading, software computes CIELAB values, the DeltaE against the target, and the density as well. Moving to spectral measurement does not take density away. It adds the information density was never designed to give."
+      },
+      {
+        "type": "p",
+        "text": "In daily production, that missing information shows up in four places:"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "Hue. A solid can hit its density and still be the wrong color, when the ink batch, the paper shade or a trace of another ink in the fountain shifts the hue. Density sees the quantity of ink, not the color it produces.",
+          "Brand colors. Spot colors are specified as CIELAB values with a tolerance. Density can follow the ink film of a spot color, but only a colorimetric value tells you whether it matches the brand reference.",
+          "Paper. Density is read relative to the paper. A new paper lot with a different shade or more optical brighteners changes what the customer sees without changing the density.",
+          "Comparability. A density value depends on the spectral response used: Status E is common in Europe, Status T in North America, and the two give different numbers for the same yellow. CIELAB values measured under a stated condition mean the same thing in every plant."
+        ]
+      },
+      {
+        "type": "h2",
+        "text": "Why buyers and standards moved to CIELAB"
+      },
+      {
+        "type": "p",
+        "text": "ISO 12647-2, the reference for offset print production, gives its targets for the process color solids and their overprints as CIELAB values for each paper type. G7 calibration, widely specified by North American buyers, judges gray balance colorimetrically. Brand guidelines give their spot colors in CIELAB with a DeltaE tolerance. And more buyers now ask for measured data with the delivery, not a signed sheet alone."
+      },
+      {
+        "type": "p",
+        "text": "The consequence is practical. A plant that controls on density and approves on CIELAB works in two languages and translates between them by experience. That translation holds on a familiar paper with a familiar ink set. It breaks when either one changes, which is exactly when a customer is watching. For groups running plants in Europe, the [United States](/usa) and Asia, it also means comparing density numbers read on different scales."
+      },
+      {
+        "type": "h3",
+        "text": "Do you still need density once you measure spectrally?"
+      },
+      {
+        "type": "p",
+        "text": "Yes, as a control signal. Density remains the most direct indicator of ink film thickness, and ink film is what the ink keys control. A spectral instrument reports density alongside CIELAB and DeltaE, so operators keep the numbers they know while the approval decision moves to colorimetric values."
+      },
+      {
+        "type": "h2",
+        "text": "The upgrade path, step by step"
+      },
+      {
+        "type": "p",
+        "text": "Plants rarely make the move in one go. The steps that work in practice build on each other:"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "Approve the OK sheet on color. Measure it with a spectrophotometer and approve it against CIELAB targets and a DeltaE tolerance, with density shown alongside. Choose the measurement condition first: M1 when the papers contain optical brighteners, as explained in [M0, M1, M2, M3 explained](/blog/m0-m1-m2-m3-measurement-conditions-print).",
+          "Load the targets. Reference values per paper type (ISO 12647-2, or G7 with GRACoL, depending on the customer), plus each brand's spot colors and their tolerance.",
+          "Check the color bar. Every ink zone and every spot color needs its patch on the plate, or the instrument has nothing to read. See [color bar](/glossary#color-bar) in the glossary.",
+          "Measure every pull at the console. A [scanning spectrophotometer](/glossary#scanning-spectrophotometer) reads the whole color bar of a sheet in seconds, zone by zone, so each sheet the operator pulls is measured completely instead of a few patches by hand.",
+          "Close the loop. Software compares each zone with the target and sends the ink key corrections to the console, and the operator validates them."
+        ]
+      },
+      {
+        "type": "h3",
+        "text": "Is a scanning spectrophotometer worth it without closed loop?"
+      },
+      {
+        "type": "p",
+        "text": "It already makes measurement systematic: every pull is read across the full sheet width, in seconds, the same way on every shift. But the operator still has to turn the deviations into ink key moves, zone by zone. Closed loop does that translation, and that is where the real gain on makeready time and waste comes from."
+      },
+      {
+        "type": "h2",
+        "text": "What changes for the operator"
+      },
+      {
+        "type": "p",
+        "text": "Less than most plants fear. The console screen shows, for each ink zone, how far the sheet is from the target and in which direction, and the density values are still there for anyone who wants them. The goal changes from hitting a number to staying inside a tolerance, and the conversation with the customer changes with it: the question is no longer whether the sheet looks right to the operator, but whether it measures inside the DeltaE agreed for the job."
+      },
+      {
+        "type": "h3",
+        "text": "Which measurement devices work with ColorLoop?"
+      },
+      {
+        "type": "p",
+        "text": "[ColorLoop](/colorloop) works with measurement tools already found in many pressrooms, including IntelliTrax2 scanning spectrophotometers and MeasureColor software. An upgrade can therefore start from the instrument you already own, add colorimetric targets, and close the loop on the press console already in place."
+      },
+      {
+        "type": "p",
+        "text": "Density got the trade this far, and it stays on the screen. Spectral measurement is what lets a pressroom speak the same language as its customers, and closed loop is what keeps the press inside that language for the whole run. The same path has been followed on more than 1,000 systems in 30+ countries. The [complete guide to closed loop color control](/closed-loop-color-control) explains how measurement, comparison and correction work together on an existing press."
+      }
+    ],
+    "i18n": {
+      "fr": {
+        "title": "De la densité à la mesure spectrale",
+        "excerpt": "Pourquoi les imprimeurs offset passent du densitomètre à la mesure spectrale, ce qui change au pupitre, et comment évoluer sans perdre la densité.",
+        "lead": "La plupart des ateliers offset pilotent encore la couleur à la densité, et cela fonctionne depuis des décennies. Mais les marques valident désormais la couleur en CIELAB et en DeltaE, et une densité ne dit pas si un aplat a la bonne couleur, seulement s'il porte plus ou moins d'encre. Passer à la mesure spectrale, c'est moins changer d'instrument que changer la façon de décider qu'une feuille est bonne.",
+        "body": [
+          {
+            "type": "p",
+            "text": "La plupart des ateliers offset pilotent encore la couleur à la densité. Le conducteur tire une feuille, mesure les aplats au densitomètre et agit sur les vis d'encrier jusqu'à retrouver les valeurs de la fiche de travail. C'est rapide, répétable, et cela sert le métier depuis des décennies. Ce qui a changé, c'est la façon dont la couleur est validée. Les marques, les acheteurs d'impression et les normes ISO expriment désormais la cible en valeurs CIELAB avec une tolérance en DeltaE, et une densité ne se compare ni à l'une ni à l'autre."
+          },
+          {
+            "type": "h2",
+            "text": "Ce que la mesure spectrale ajoute à la densité"
+          },
+          {
+            "type": "p",
+            "text": "Un densitomètre mesure la quantité de lumière absorbée par un aplat à travers un filtre adapté à l'encre. Cette valeur suit de près l'épaisseur du film d'encre, c'est pourquoi elle convient si bien au réglage des vis d'encrier. Un spectrophotomètre lit le spectre de réflectance complet de la même plage sur tout le visible. De cette seule mesure, le logiciel calcule les valeurs CIELAB, le DeltaE par rapport à la cible, et aussi la densité. Passer à la mesure spectrale ne supprime pas la densité : cela ajoute l'information pour laquelle la densité n'a jamais été conçue."
+          },
+          {
+            "type": "p",
+            "text": "En production, cette information manque à quatre endroits :"
+          },
+          {
+            "type": "ul",
+            "items": [
+              "La teinte. Un aplat peut atteindre sa densité et avoir pourtant la mauvaise couleur, quand le lot d'encre, la nuance du papier ou une trace d'une autre encre dans l'encrier décale la teinte. La densité voit la quantité d'encre, pas la couleur obtenue.",
+              "Les couleurs de marque. Les tons directs sont spécifiés en valeurs CIELAB avec une tolérance. La densité peut suivre le film d'encre d'un ton direct, mais seule une valeur colorimétrique dit s'il correspond à la référence de la marque.",
+              "Le papier. La densité se lit par rapport au papier. Un nouveau lot de papier, d'une autre nuance ou plus chargé en azurants optiques, change ce que voit le client sans changer la densité.",
+              "La comparabilité. Une densité dépend de la réponse spectrale utilisée : le Status E est courant en Europe, le Status T en Amérique du Nord, et les deux donnent des valeurs différentes pour le même jaune. Des valeurs CIELAB mesurées dans une condition déclarée ont le même sens dans toutes les usines."
+            ]
+          },
+          {
+            "type": "h2",
+            "text": "Pourquoi acheteurs et normes sont passés au CIELAB"
+          },
+          {
+            "type": "p",
+            "text": "L'ISO 12647-2, référence de la production offset, donne ses cibles pour les aplats des couleurs primaires et leurs superpositions en valeurs CIELAB, pour chaque type de papier. La méthode G7, très demandée par les acheteurs nord-américains, juge l'équilibre des gris de façon colorimétrique. Les chartes de marque donnent leurs tons directs en CIELAB avec une tolérance en DeltaE. Et de plus en plus d'acheteurs demandent des données de mesure avec la livraison, pas seulement une feuille signée."
+          },
+          {
+            "type": "p",
+            "text": "La conséquence est concrète. Un atelier qui pilote à la densité et valide en CIELAB travaille dans deux langues et traduit de l'une à l'autre par l'expérience. Cette traduction tient sur un papier et un jeu d'encres connus. Elle cède quand l'un des deux change, c'est-à-dire précisément quand le client regarde. Pour les groupes qui exploitent des usines en Europe, aux [États-Unis](/usa) et en Asie, cela revient aussi à comparer des densités lues sur des échelles différentes."
+          },
+          {
+            "type": "h3",
+            "text": "Faut-il garder la densité quand on mesure en spectral ?"
+          },
+          {
+            "type": "p",
+            "text": "Oui, comme signal de pilotage. La densité reste l'indicateur le plus direct de l'épaisseur du film d'encre, et c'est le film d'encre que règlent les vis d'encrier. Un instrument spectral affiche la densité à côté des valeurs CIELAB et du DeltaE : les conducteurs gardent les chiffres qu'ils connaissent, tandis que la décision de validation passe aux valeurs colorimétriques."
+          },
+          {
+            "type": "h2",
+            "text": "Le chemin de mise à niveau, étape par étape"
+          },
+          {
+            "type": "p",
+            "text": "Les ateliers font rarement le pas en une fois. Les étapes qui fonctionnent en pratique s'enchaînent ainsi :"
+          },
+          {
+            "type": "ul",
+            "items": [
+              "Valider le bon à rouler sur la couleur. Le mesurer au spectrophotomètre et le valider sur des cibles CIELAB et une tolérance en DeltaE, avec la densité affichée à côté. Choisir d'abord la condition de mesure : M1 quand les papiers contiennent des azurants optiques, comme l'explique notre [article sur les conditions M0 à M3](/blog/m0-m1-m2-m3-measurement-conditions-print).",
+              "Charger les cibles. Les valeurs de référence par type de papier (ISO 12647-2, ou G7 avec GRACoL selon le client), plus les tons directs de chaque marque et leur tolérance.",
+              "Vérifier la barre de contrôle. Chaque zone d'encrage et chaque ton direct doivent avoir leur plage sur la plaque, sinon l'instrument n'a rien à lire. Voir [barre de contrôle](/glossary#color-bar) dans le glossaire.",
+              "Mesurer chaque feuille tirée au pupitre. Un [spectrophotomètre à balayage](/glossary#scanning-spectrophotometer) lit toute la barre de contrôle d'une feuille en quelques secondes, zone par zone : chaque feuille tirée est mesurée en entier, au lieu de quelques plages à la main.",
+              "Passer en closed loop. Le logiciel compare chaque zone à la cible et envoie les corrections de vis d'encrier au pupitre, que le conducteur valide."
+            ]
+          },
+          {
+            "type": "h3",
+            "text": "Un spectrophotomètre à balayage vaut-il le coup sans closed loop ?"
+          },
+          {
+            "type": "p",
+            "text": "Il rend déjà la mesure systématique : chaque feuille tirée est lue sur toute sa largeur, en quelques secondes, de la même façon à chaque équipe. Mais le conducteur doit encore traduire les écarts en réglages de vis d'encrier, zone par zone. Le closed loop fait cette traduction, et c'est là que se joue vraiment le gain en temps de calage et en gâche."
+          },
+          {
+            "type": "h2",
+            "text": "Ce qui change pour le conducteur"
+          },
+          {
+            "type": "p",
+            "text": "Moins que ce que craignent la plupart des ateliers. L'écran du pupitre montre, pour chaque zone d'encrage, l'écart à la cible et son sens, et les densités restent affichées pour qui veut les voir. L'objectif passe d'atteindre un chiffre à rester dans une tolérance, et la discussion avec le client change avec lui : la question n'est plus de savoir si la feuille paraît juste au conducteur, mais si elle mesure dans le DeltaE convenu pour le travail."
+          },
+          {
+            "type": "h3",
+            "text": "Quels dispositifs de mesure fonctionnent avec ColorLoop ?"
+          },
+          {
+            "type": "p",
+            "text": "[ColorLoop](/colorloop) fonctionne avec des outils de mesure déjà présents dans de nombreux ateliers, dont les spectrophotomètres à balayage IntelliTrax2 et le logiciel MeasureColor. Une mise à niveau peut donc partir de l'instrument que vous possédez déjà, ajouter des cibles colorimétriques et passer en closed loop sur le pupitre en place."
+          },
+          {
+            "type": "p",
+            "text": "La densité a mené le métier jusqu'ici, et elle reste à l'écran. La mesure spectrale permet à l'atelier de parler la même langue que ses clients, et le closed loop garde la presse dans cette langue pendant tout le tirage. Ce chemin a été suivi sur plus de 1 000 systèmes dans plus de 30 pays. Le [guide complet du closed loop](/closed-loop-color-control) explique comment mesure, comparaison et correction fonctionnent ensemble sur une presse existante."
+          }
+        ]
+      },
+      "de": {
+        "title": "Von der Dichte zur Spektralmessung",
+        "excerpt": "Warum Offsetdruckereien vom Densitometer zur Spektralmessung wechseln, was sich am Druckpult ändert und wie der Umstieg ohne Verlust der Dichte gelingt.",
+        "lead": "Die meisten Offsetdruckereien steuern die Farbe noch über die Dichte, und das funktioniert seit Jahrzehnten. Markeninhaber geben Farbe heute aber in CIELAB und DeltaE frei, und ein Dichtewert sagt nicht, ob ein Vollton den richtigen Farbton hat, sondern nur, ob mehr oder weniger Farbe darauf liegt. Der Wechsel zur Spektralmessung ist weniger ein neues Messgerät als eine neue Art zu entscheiden, wann ein Bogen gut ist."
+      },
+      "it": {
+        "title": "Dalla densità alla misura spettrale",
+        "excerpt": "Perché gli stampatori offset passano dal densitometro alla misura spettrale, cosa cambia al pulpito di stampa e come aggiornarsi senza perdere la densità.",
+        "lead": "La maggior parte delle sale stampa offset governa ancora il colore con la densità, e funziona da decenni. Ma i brand approvano ormai il colore in CIELAB e DeltaE, e una lettura di densità non dice se un pieno ha il colore giusto, solo se porta più o meno inchiostro. Passare alla misura spettrale significa meno cambiare strumento che cambiare il modo di decidere quando un foglio è buono."
+      },
+      "es": {
+        "title": "De la densidad a la medición espectral",
+        "excerpt": "Por qué los impresores offset pasan del densitómetro a la medición espectral, qué cambia en la consola de prensa y cómo actualizarse sin perder la densidad.",
+        "lead": "La mayoría de las salas de prensa offset siguen controlando el color por densidad, y funciona desde hace décadas. Pero las marcas aprueban ya el color en CIELAB y DeltaE, y una lectura de densidad no dice si un sólido tiene el color correcto, solo si lleva más o menos tinta. Pasar a la medición espectral es menos cambiar de instrumento que cambiar la forma de decidir cuándo un pliego es bueno."
+      },
+      "pt": {
+        "title": "Da densidade à medição espetral",
+        "excerpt": "Porque é que os impressores offset passam do densitómetro à medição espetral, o que muda na consola da máquina e como evoluir sem perder a densidade.",
+        "lead": "A maioria das oficinas offset ainda controla a cor pela densidade, e isso funciona há décadas. Mas as marcas aprovam hoje a cor em CIELAB e DeltaE, e uma leitura de densidade não diz se um sólido tem a cor certa, apenas se leva mais ou menos tinta. Passar à medição espetral é menos mudar de instrumento do que mudar a forma de decidir quando uma folha está boa."
+      }
+    },
+    "originalUrl": "https://rutherford.fr/blog/density-to-spectral-measurement-offset",
+    "sources": [
+      {
+        "label": "ISO 13655:2017: Spectral measurement and colorimetric computation for graphic arts images",
+        "href": "https://www.iso.org/standard/65430.html"
+      },
+      {
+        "label": "ISO 5-3:2009: Density measurements, spectral conditions",
+        "href": "https://www.iso.org/standard/52915.html"
+      },
+      {
+        "label": "ISO 12647-2:2013: Process control, offset lithographic processes",
+        "href": "https://www.iso.org/standard/57833.html"
+      }
+    ]
+  },
+  {
     "slug": "g7-calibration-european-printers-north-america",
     "title": "G7 for European exporters",
     "excerpt": "North American buyers ask for G7 calibration. How European printers already on ISO 12647-2 add G7 and hold it on press through every production run.",
