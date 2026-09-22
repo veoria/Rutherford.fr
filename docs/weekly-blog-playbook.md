@@ -67,7 +67,8 @@ Ajouter UNE entrée au début du tableau dans `data/blog-articles.json`, schéma
     "fr": { "title": "…", "excerpt": "…", "lead": "…", "body": [ /* même structure */ ] }
   },
   "originalUrl": "https://rutherford.fr/blog/<slug>",
-  "sources": [ { "label": "Nom de la source", "href": "https://…" } ]   // 2-3 vraies sources issues de la veille
+  "sources": [ { "label": "Nom de la source", "href": "https://…" } ],  // 2-3 vraies sources issues de la veille
+  "review": true   // OBLIGATOIRE : l'article attend la validation de FX, voir §9
 }
 ```
 
@@ -91,7 +92,7 @@ Relier le sujet au déploiement international : au moins une phrase reliant l'ac
 - Liens internes : 2 à 4 parmi `/console-validation` (Rutherford Check), `/roi`, `/offset360`, un article de blog connexe, une page marché.
 - **Maillage pilier (obligatoire)** : tout article du cluster closed loop / couleur / calage / standards inclut un lien vers la page pilier `/closed-loop-color-control` (ancre du type « guide complet du closed loop »). Le glossaire `/glossary` peut aussi être lié quand un terme technique est central dans l'article.
 - Sources externes réelles (issues de la veille) dans `sources`.
-- GEO : ajouter l'article dans `public/llms.txt` sous une section `## Recent articles` (la créer sous « Key pages » si absente ; garder les 8 plus récents, format `- [Titre](https://rutherford.fr/blog/<slug>): résumé en 1 ligne`).
+- GEO : NE PAS toucher `public/llms.txt` à la création. L'article y entre au moment de la validation (§9).
 
 ## 5. Image
 
@@ -123,7 +124,7 @@ grep -c '—' data/blog-articles.json   # ne doit pas avoir augmenté
 ## 7. Publication (staging seulement)
 
 ```bash
-git add data/blog-articles.json public/llms.txt
+git add data/blog-articles.json docs/blog-editorial-calendar.md
 git commit -m "Blog: <titre court> (weekly auto article)"
 git push origin HEAD:redesign
 ```
@@ -132,4 +133,12 @@ git push origin HEAD:redesign
 
 ## 8. Compte rendu final
 
-Terminer par un résumé pour Hugues : sujet choisi et pourquoi (lien actu), slug, langues livrées, liens internes posés, et le rappel : « L'article est sur la branche redesign (staging). Dis "push" dans une session Claude pour le mettre en ligne sur rutherford.fr et go.colorloop.ai. »
+Terminer par un résumé pour Hugues : sujet choisi et pourquoi (lien actu), slug, langues livrées, liens internes posés, le lien d'aperçu `https://rutherford-fr-git-redesign-veoria.vercel.app/blog/<slug>` et le rappel : « L'article est sur le staging, en attente de validation par FX (liste : https://rutherford-fr-git-redesign-veoria.vercel.app/blog/review). Il n'apparaîtra pas sur rutherford.fr tant qu'il n'est pas validé. »
+
+## 9. Validation par FX (depuis le 22/09/2026)
+
+Tout nouvel article porte `"review": true`. Effet, codé dans `lib/blog.ts` :
+- staging (branche redesign) et dev local : l'article est visible, avec un bandeau « Aperçu, article à valider », et listé sur `/blog/review` ;
+- production (rutherford.fr, go.colorloop.ai) : l'article n'existe nulle part (index, page, sitemap, accueil), même après un « push ».
+
+FX valide dans Asana (projet « Rutherford.fr - New website », section Content Creation, une tâche par article). Quand Hugues dit qu'un article est validé : retirer `"review": true`, ajouter l'article en tête de `## Recent articles` dans `public/llms.txt` (8 entrées max), committer sur redesign. La mise en ligne reste décidée par Hugues (« push »).

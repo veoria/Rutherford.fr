@@ -43,16 +43,38 @@ export type BlogArticle = {
     label: string;
     href: string;
   }>;
+  /**
+   * Waiting for validation (FX, through Asana). Shown on staging with a
+   * preview banner and listed at /blog/review; left out of production
+   * everywhere until the flag is removed and the change is pushed.
+   */
+  review?: boolean;
 };
 
 // Articles carried over from the previous site have no known publication date:
 // they keep publishedAt undefined rather than an invented one, so the sitemap,
 // the BlogPosting schema and the index only show real dates. The JSON order
 // (newest first) drives the listing.
-const blogArticles = articles as BlogArticle[];
+const allArticles = articles as BlogArticle[];
+
+// Only the redesign branch (staging) and local dev show articles under review.
+// Keyed on the branch rather than VERCEL_ENV so a preview build of any other
+// project or branch can never expose an unvalidated article.
+export const SHOW_REVIEW_ARTICLES =
+  process.env.NODE_ENV === 'development' || process.env.VERCEL_GIT_COMMIT_REF === 'redesign';
+
+const blogArticles = SHOW_REVIEW_ARTICLES ? allArticles : allArticles.filter((article) => !article.review);
 
 export function getAllArticles(): BlogArticle[] {
   return blogArticles;
+}
+
+/** Articles waiting for validation, oldest planned date first. Empty outside staging. */
+export function getReviewArticles(): BlogArticle[] {
+  if (!SHOW_REVIEW_ARTICLES) return [];
+  return allArticles
+    .filter((article) => article.review)
+    .sort((a, b) => (a.publishedAt ?? '').localeCompare(b.publishedAt ?? ''));
 }
 
 export function getArticleBySlug(slug: string): BlogArticle | undefined {

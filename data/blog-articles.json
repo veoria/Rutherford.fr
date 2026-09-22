@@ -240,7 +240,8 @@
         "label": "ISO 12647-2:2013: Process control, offset lithographic processes",
         "href": "https://www.iso.org/standard/57833.html"
       }
-    ]
+    ],
+    "review": true
   },
   {
     "slug": "g7-calibration-european-printers-north-america",
