@@ -12214,6 +12214,9 @@ a.blog-card-image:hover img {
   border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 14px;
   background: #ffffff;
+  /* Repère de largeur pour le panneau de détail : 100cqi = la largeur visible
+     du tableau, pas celle (bien plus grande) de la table qui défile dedans. */
+  container-type: inline-size;
 }
 
 .admin-table {
@@ -12278,6 +12281,18 @@ a.blog-card-image:hover img {
 .admin-detail-row > td {
   white-space: normal;
   background: #fafafa;
+  padding: 0;
+}
+
+/* La cellule s'étend sur toute la largeur de la table — souvent plus large que
+   l'écran. Sans contrainte, la fin du panneau est hors champ. On le cale donc
+   sur la largeur visible et on l'épingle à gauche : il reste lisible, même en
+   défilant horizontalement. */
+.admin-detail {
+  position: sticky;
+  left: 0;
+  width: 100cqi;
+  box-sizing: border-box;
   padding: 16px 18px;
 }
 
