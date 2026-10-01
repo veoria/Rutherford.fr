@@ -535,8 +535,9 @@ export function AdminOrgDetail({
                             {p.equipment ? (
                               <span className="admin-status admin-status-green">Équipée ({p.equipment})</span>
                             ) : (
-                              <span className="admin-status admin-status-review">Non équipée</span>
+                              <span className="admin-status admin-status-review">Aucun système lié</span>
                             )}
+                            {p.declared.length ? <span className="admin-cv-sub">Déclaré : {p.declared.join(' · ')}</span> : null}
                           </td>
                         </tr>
                       ))}

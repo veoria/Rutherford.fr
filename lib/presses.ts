@@ -32,6 +32,10 @@ export type PressRecord = {
   year: number | null;
   notes: string | null;
   anydeskId: string | null;
+  /** Color equipment declared by the client (free text, see DECLARED_EQUIPMENT). */
+  measurementDevice: string | null;
+  measurementSoftware: string | null;
+  colorSoftware: string | null;
   createdAt: string;
 };
 
@@ -88,11 +92,14 @@ type Row = {
   year: number | null;
   notes: string | null;
   anydesk_id: string | null;
+  measurement_device: string | null;
+  measurement_software: string | null;
+  color_software: string | null;
   created_at: string;
 };
 
 const SELECT =
-  'id, site_id, name, manufacturer, model, sheet_format, colors, coater, perfecting, production_profile, console, year, notes, anydesk_id, created_at';
+  'id, site_id, name, manufacturer, model, sheet_format, colors, coater, perfecting, production_profile, console, year, notes, anydesk_id, measurement_device, measurement_software, color_software, created_at';
 
 function toRecord(r: Row): PressRecord {
   return {
@@ -110,6 +117,9 @@ function toRecord(r: Row): PressRecord {
     year: r.year,
     notes: r.notes,
     anydeskId: r.anydesk_id ?? null,
+    measurementDevice: r.measurement_device ?? null,
+    measurementSoftware: r.measurement_software ?? null,
+    colorSoftware: r.color_software ?? null,
     createdAt: r.created_at,
   };
 }
@@ -147,6 +157,9 @@ export type PressInput = {
   year: number | null;
   notes: string | null;
   anydeskId: string | null;
+  measurementDevice: string | null;
+  measurementSoftware: string | null;
+  colorSoftware: string | null;
 };
 
 const text = (v: unknown, max: number): string | null => {
@@ -185,6 +198,9 @@ export function parsePressInput(body: Record<string, unknown>): { ok: true; inpu
       year,
       notes: text(body.notes, 1000),
       anydeskId: text(body.anydeskId, 40),
+      measurementDevice: text(body.measurementDevice, 80),
+      measurementSoftware: text(body.measurementSoftware, 80),
+      colorSoftware: text(body.colorSoftware, 80),
     },
   };
 }
@@ -204,6 +220,9 @@ function toRow(input: PressInput) {
     year: input.year,
     notes: input.notes,
     anydesk_id: input.anydeskId,
+    measurement_device: input.measurementDevice,
+    measurement_software: input.measurementSoftware,
+    color_software: input.colorSoftware,
   };
 }
 
@@ -443,6 +462,7 @@ export async function getPressSupportContext(userId: string, pressId: string): P
       .filter(Boolean)
       .join(' · ');
     const anydesk = press.anydeskId || s?.anydesk_id || sys.find((x) => x.anydesk_id)?.anydesk_id || null;
+    const declared = [press.measurementDevice, press.measurementSoftware, press.colorSoftware].filter((v): v is string => Boolean(v));
     const equipment = sys.map((x) =>
       [
         x.product,
@@ -459,6 +479,9 @@ export async function getPressSupportContext(userId: string, pressId: string): P
       siteLine ? `Site : ${siteLine}` : null,
       press.console ? `Console : ${press.console}` : null,
       press.year ? `Année : ${press.year}` : null,
+      press.measurementDevice ? `Appareil de mesure (déclaré) : ${press.measurementDevice}` : null,
+      press.measurementSoftware ? `Logiciel de mesure (déclaré) : ${press.measurementSoftware}` : null,
+      press.colorSoftware ? `Logiciel de contrôle couleur (déclaré) : ${press.colorSoftware}` : null,
       press.anydeskId
         ? `AnyDesk presse : ${press.anydeskId}`
         : s?.anydesk_id
@@ -484,7 +507,8 @@ export async function getPressSupportContext(userId: string, pressId: string): P
       siteName: s?.name ?? null,
       company: ((org as { name?: string } | null)?.name ?? null) || null,
       anydesk,
-      equipment,
+      // Rutherford-maintained systems first, then what the client declared.
+      equipment: [...equipment, ...declared.filter((d) => !sys.some((x) => x.product === d))],
       teamLines,
     };
   } catch {
