@@ -17349,6 +17349,7 @@ textarea.ws-input { resize: vertical; }
 .ws-stepper button:disabled { opacity: 0.4; cursor: default; }
 .ws-stepper span { min-width: 40px; text-align: center; font-weight: 700; font-variant-numeric: tabular-nums; }
 .ws-hint { color: #8a8a88; font-size: 0.8rem; }
+.ws-step-hint { margin: 0; }
 .ws-toggles { display: flex; gap: 10px; flex-wrap: wrap; }
 .ws-toggle { display: inline-flex; align-items: center; gap: 8px; padding: 9px 13px; border: 1.5px solid rgba(0, 0, 0, 0.12); border-radius: 10px; font-size: 0.88rem; font-weight: 600; cursor: pointer; }
 .ws-toggle input { accent-color: var(--accent); width: 16px; height: 16px; }

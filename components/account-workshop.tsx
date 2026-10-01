@@ -14,6 +14,9 @@ import { PRESS_BRANDS_PAGES } from '@/data/press-brands';
 import {
   COLOR_PRESETS,
   CONSOLE_HINTS,
+  DECLARED_EQUIPMENT,
+  DECLARED_EQUIPMENT_FIELDS,
+  DECLARED_EQUIPMENT_LABELS,
   MAX_COLORS,
   MIN_COLORS,
   MODEL_HINTS,
@@ -23,6 +26,7 @@ import {
   SHEET_FORMATS,
   formatCopy,
   pressTitle,
+  type DeclaredEquipmentField,
   type ProductionProfile,
   type SheetFormat,
 } from '@/data/press-config';
@@ -49,7 +53,11 @@ export type WorkshopPress = {
   notes: string | null;
   /** AnyDesk support number of the press PC (entered by the client). */
   anydeskId?: string | null;
-  /** Rutherford systems/devices linked to this press (0 = not equipped). */
+  /** Color equipment declared by the client (free text). */
+  measurementDevice?: string | null;
+  measurementSoftware?: string | null;
+  colorSoftware?: string | null;
+  /** Rutherford systems/devices linked to this press by our team (0 = none). */
   equipment?: number;
 };
 
@@ -105,6 +113,10 @@ type Copy = {
     stepMachine: string;
     stepConfig: string;
     stepPlace: string;
+    stepEquipment: string;
+    equipmentHint: string;
+    otherProduct: string;
+    otherProductPh: string;
     manufacturer: string;
     other: string;
     otherPh: string;
@@ -173,13 +185,17 @@ const COPY: Record<Locale, Copy> = {
     siteEmpty: 'No press in this plant yet.',
     membersNote: 'Plants are managed by your account admins.',
     sharedWith: (n) => `Your Rutherford partner ${n} sees these presses (read only) to follow your equipment.`,
-    card: { edit: 'Edit', remove: 'Delete', check: 'Check console compatibility', coater: 'Coater', perfecting: 'Perfecting', units: (n) => plural(n, 'color', 'colors'), open: 'Open press sheet', support: 'Support', equipped: 'Rutherford equipped', notEquipped: 'Not equipped' },
+    card: { edit: 'Edit', remove: 'Delete', check: 'Check console compatibility', coater: 'Coater', perfecting: 'Perfecting', units: (n) => plural(n, 'color', 'colors'), open: 'Open press sheet', support: 'Support', equipped: 'Rutherford equipped', notEquipped: 'Equipment not specified' },
     editor: {
       titleNew: 'Add a press',
       titleEdit: 'Edit press',
       stepMachine: 'Machine',
       stepConfig: 'Configuration',
       stepPlace: 'Location & details',
+      stepEquipment: 'Color equipment',
+      equipmentHint: 'What is installed on this press today. Our team links the Rutherford licenses and versions.',
+      otherProduct: 'Other',
+      otherProductPh: 'Product name',
       manufacturer: 'Manufacturer',
       other: 'Other',
       otherPh: 'Manufacturer name',
@@ -244,13 +260,17 @@ const COPY: Record<Locale, Copy> = {
     siteEmpty: 'Aucune presse sur ce site pour l’instant.',
     membersNote: 'Les sites sont gérés par les administrateurs du compte.',
     sharedWith: (n) => `Votre partenaire Rutherford ${n} voit ces presses (lecture seule) pour suivre votre équipement.`,
-    card: { edit: 'Modifier', remove: 'Supprimer', check: 'Vérifier la compatibilité console', coater: 'Vernis', perfecting: 'Retiration', units: (n) => plural(n, 'couleur', 'couleurs'), open: 'Ouvrir la fiche', support: 'Support', equipped: 'Équipée Rutherford', notEquipped: 'Non équipée' },
+    card: { edit: 'Modifier', remove: 'Supprimer', check: 'Vérifier la compatibilité console', coater: 'Vernis', perfecting: 'Retiration', units: (n) => plural(n, 'couleur', 'couleurs'), open: 'Ouvrir la fiche', support: 'Support', equipped: 'Équipée Rutherford', notEquipped: 'Équipement non renseigné' },
     editor: {
       titleNew: 'Ajouter une presse',
       titleEdit: 'Modifier la presse',
       stepMachine: 'Machine',
       stepConfig: 'Configuration',
       stepPlace: 'Emplacement et détails',
+      stepEquipment: 'Équipement couleur',
+      equipmentHint: 'Ce qui est installé aujourd’hui sur cette presse. Notre équipe y rattache les licences et versions Rutherford.',
+      otherProduct: 'Autre',
+      otherProductPh: 'Nom du produit',
       manufacturer: 'Constructeur',
       other: 'Autre',
       otherPh: 'Nom du constructeur',
@@ -315,13 +335,17 @@ const COPY: Record<Locale, Copy> = {
     siteEmpty: 'Noch keine Druckmaschine in diesem Werk.',
     membersNote: 'Werke werden von den Administratoren des Kontos verwaltet.',
     sharedWith: (n) => `Ihr Rutherford-Partner ${n} sieht diese Druckmaschinen (nur Lesezugriff), um Ihre Ausstattung zu betreuen.`,
-    card: { edit: 'Bearbeiten', remove: 'Löschen', check: 'Konsolenkompatibilität prüfen', coater: 'Lackwerk', perfecting: 'Wendung', units: (n) => plural(n, 'Farbe', 'Farben'), open: 'Maschinenblatt öffnen', support: 'Support', equipped: 'Mit Rutherford ausgestattet', notEquipped: 'Nicht ausgestattet' },
+    card: { edit: 'Bearbeiten', remove: 'Löschen', check: 'Konsolenkompatibilität prüfen', coater: 'Lackwerk', perfecting: 'Wendung', units: (n) => plural(n, 'Farbe', 'Farben'), open: 'Maschinenblatt öffnen', support: 'Support', equipped: 'Mit Rutherford ausgestattet', notEquipped: 'Ausstattung nicht angegeben' },
     editor: {
       titleNew: 'Druckmaschine hinzufügen',
       titleEdit: 'Druckmaschine bearbeiten',
       stepMachine: 'Maschine',
       stepConfig: 'Konfiguration',
       stepPlace: 'Standort und Details',
+      stepEquipment: 'Farbausstattung',
+      equipmentHint: 'Was heute an dieser Maschine installiert ist. Unser Team ordnet die Rutherford-Lizenzen und -Versionen zu.',
+      otherProduct: 'Andere',
+      otherProductPh: 'Produktname',
       manufacturer: 'Hersteller',
       other: 'Andere',
       otherPh: 'Name des Herstellers',
@@ -386,13 +410,17 @@ const COPY: Record<Locale, Copy> = {
     siteEmpty: 'Ancora nessuna macchina in questo stabilimento.',
     membersNote: 'Gli stabilimenti sono gestiti dagli amministratori dell’account.',
     sharedWith: (n) => `Il Suo partner Rutherford ${n} vede queste macchine (sola lettura) per seguire il Suo equipaggiamento.`,
-    card: { edit: 'Modifica', remove: 'Elimina', check: 'Verifica compatibilità console', coater: 'Gruppo vernice', perfecting: 'Bianca-volta', units: (n) => plural(n, 'colore', 'colori'), open: 'Apri la scheda', support: 'Supporto', equipped: 'Equipaggiata Rutherford', notEquipped: 'Non equipaggiata' },
+    card: { edit: 'Modifica', remove: 'Elimina', check: 'Verifica compatibilità console', coater: 'Gruppo vernice', perfecting: 'Bianca-volta', units: (n) => plural(n, 'colore', 'colori'), open: 'Apri la scheda', support: 'Supporto', equipped: 'Equipaggiata Rutherford', notEquipped: 'Equipaggiamento non indicato' },
     editor: {
       titleNew: 'Aggiungi una macchina',
       titleEdit: 'Modifica la macchina',
       stepMachine: 'Macchina',
       stepConfig: 'Configurazione',
       stepPlace: 'Posizione e dettagli',
+      stepEquipment: 'Equipaggiamento colore',
+      equipmentHint: 'Ciò che è installato oggi su questa macchina. Il nostro team collega le licenze e le versioni Rutherford.',
+      otherProduct: 'Altro',
+      otherProductPh: 'Nome del prodotto',
       manufacturer: 'Costruttore',
       other: 'Altro',
       otherPh: 'Nome del costruttore',
@@ -457,13 +485,17 @@ const COPY: Record<Locale, Copy> = {
     siteEmpty: 'Todavía no hay prensas en esta planta.',
     membersNote: 'Las plantas las gestionan los administradores de la cuenta.',
     sharedWith: (n) => `Su socio Rutherford ${n} ve estas prensas (solo lectura) para hacer el seguimiento de su equipamiento.`,
-    card: { edit: 'Editar', remove: 'Eliminar', check: 'Verificar compatibilidad de consola', coater: 'Barniz', perfecting: 'Retiración', units: (n) => plural(n, 'color', 'colores'), open: 'Abrir la ficha', support: 'Soporte', equipped: 'Equipada Rutherford', notEquipped: 'No equipada' },
+    card: { edit: 'Editar', remove: 'Eliminar', check: 'Verificar compatibilidad de consola', coater: 'Barniz', perfecting: 'Retiración', units: (n) => plural(n, 'color', 'colores'), open: 'Abrir la ficha', support: 'Soporte', equipped: 'Equipada Rutherford', notEquipped: 'Equipamiento no indicado' },
     editor: {
       titleNew: 'Añadir una prensa',
       titleEdit: 'Editar la prensa',
       stepMachine: 'Máquina',
       stepConfig: 'Configuración',
       stepPlace: 'Ubicación y detalles',
+      stepEquipment: 'Equipamiento de color',
+      equipmentHint: 'Lo que está instalado hoy en esta prensa. Nuestro equipo vincula las licencias y versiones de Rutherford.',
+      otherProduct: 'Otro',
+      otherProductPh: 'Nombre del producto',
       manufacturer: 'Fabricante',
       other: 'Otro',
       otherPh: 'Nombre del fabricante',
@@ -528,13 +560,17 @@ const COPY: Record<Locale, Copy> = {
     siteEmpty: 'Ainda não há máquinas nesta fábrica.',
     membersNote: 'As fábricas são geridas pelos administradores da conta.',
     sharedWith: (n) => `O seu parceiro Rutherford ${n} vê estas máquinas (apenas leitura) para acompanhar o seu equipamento.`,
-    card: { edit: 'Editar', remove: 'Eliminar', check: 'Verificar compatibilidade da consola', coater: 'Verniz', perfecting: 'Retiração', units: (n) => plural(n, 'cor', 'cores'), open: 'Abrir a ficha', support: 'Suporte', equipped: 'Equipada Rutherford', notEquipped: 'Não equipada' },
+    card: { edit: 'Editar', remove: 'Eliminar', check: 'Verificar compatibilidade da consola', coater: 'Verniz', perfecting: 'Retiração', units: (n) => plural(n, 'cor', 'cores'), open: 'Abrir a ficha', support: 'Suporte', equipped: 'Equipada Rutherford', notEquipped: 'Equipamento não indicado' },
     editor: {
       titleNew: 'Adicionar uma máquina',
       titleEdit: 'Editar a máquina',
       stepMachine: 'Máquina',
       stepConfig: 'Configuração',
       stepPlace: 'Localização e detalhes',
+      stepEquipment: 'Equipamento de cor',
+      equipmentHint: 'O que está instalado hoje nesta máquina. A nossa equipa associa as licenças e versões Rutherford.',
+      otherProduct: 'Outro',
+      otherProductPh: 'Nome do produto',
       manufacturer: 'Fabricante',
       other: 'Outro',
       otherPh: 'Nome do fabricante',
@@ -959,6 +995,16 @@ export function AccountWorkshop({
   );
 }
 
+/** The color equipment the client declared on a press, in display order. */
+export function declaredEquipment(
+  p: Pick<WorkshopPress, DeclaredEquipmentField>
+): { field: DeclaredEquipmentField; value: string }[] {
+  return DECLARED_EQUIPMENT_FIELDS.flatMap((field) => {
+    const value = (p[field] ?? '').trim();
+    return value ? [{ field, value }] : [];
+  });
+}
+
 // ── Press card ──
 
 export function PressCard({
@@ -986,6 +1032,7 @@ export function PressCard({
   const machine = [p.manufacturer, p.model].filter(Boolean).join(' ');
   const title = pressTitle(p);
   const equipped = (p.equipment ?? 0) > 0;
+  const declared = declaredEquipment(p);
   return (
     <article className={`ws-card${compact ? ' is-compact' : ''}${href ? ' is-linked' : ''}`}>
       <div className="ws-card-art" aria-hidden="true">
@@ -1012,8 +1059,14 @@ export function PressCard({
           ) : null}
         </div>
         <div className="ws-chips">
-          {p.equipment !== undefined ? (
-            <span className={`ws-chip ${equipped ? 'is-ok' : 'is-muted'}`}>{equipped ? t.card.equipped : t.card.notEquipped}</span>
+          {equipped ? <span className="ws-chip is-ok">{t.card.equipped}</span> : null}
+          {declared.map((d) => (
+            <span key={d.field} className="ws-chip is-soft" title={DECLARED_EQUIPMENT_LABELS[locale][d.field]}>
+              {d.value}
+            </span>
+          ))}
+          {p.equipment !== undefined && !equipped && !declared.length ? (
+            <span className="ws-chip is-muted">{t.card.notEquipped}</span>
           ) : null}
           <span className="ws-chip">
             {fmt.label} · {fmt.dims}
@@ -1095,6 +1148,9 @@ type Draft = {
   year: string;
   notes: string;
   anydeskId: string;
+  measurementDevice: string;
+  measurementSoftware: string;
+  colorSoftware: string;
   quantity: number;
 };
 
@@ -1115,6 +1171,9 @@ function toDraft(p: WorkshopPress | null, defaultSiteId: string | null): Draft {
       year: '',
       notes: '',
       anydeskId: '',
+      measurementDevice: '',
+      measurementSoftware: '',
+      colorSoftware: '',
       quantity: 1,
     };
   }
@@ -1134,6 +1193,9 @@ function toDraft(p: WorkshopPress | null, defaultSiteId: string | null): Draft {
     year: p.year ? String(p.year) : '',
     notes: p.notes ?? '',
     anydeskId: p.anydeskId ?? '',
+    measurementDevice: p.measurementDevice ?? '',
+    measurementSoftware: p.measurementSoftware ?? '',
+    colorSoftware: p.colorSoftware ?? '',
     quantity: 1,
   };
 }
@@ -1190,6 +1252,9 @@ export function PressEditor({
       year: d.year ? Number(d.year) : null,
       notes: d.notes,
       anydeskId: d.anydeskId,
+      measurementDevice: d.measurementDevice,
+      measurementSoftware: d.measurementSoftware,
+      colorSoftware: d.colorSoftware,
       quantity: d.quantity,
     };
     try {
@@ -1329,7 +1394,23 @@ export function PressEditor({
           </fieldset>
 
           <fieldset className="ws-step">
-            <legend>3 · {e.stepPlace}</legend>
+            <legend>3 · {e.stepEquipment}</legend>
+            <p className="ws-hint ws-step-hint">{e.equipmentHint}</p>
+            {DECLARED_EQUIPMENT_FIELDS.map((field) => (
+              <ProductPicker
+                key={field}
+                label={DECLARED_EQUIPMENT_LABELS[locale][field]}
+                options={DECLARED_EQUIPMENT[field]}
+                value={d[field]}
+                otherLabel={e.otherProduct}
+                otherPh={e.otherProductPh}
+                onChange={(v) => set(field, v)}
+              />
+            ))}
+          </fieldset>
+
+          <fieldset className="ws-step">
+            <legend>4 · {e.stepPlace}</legend>
             <div className="ws-row">
               <label className="ws-field">
                 <span className="ws-label">{e.site}</span>
@@ -1418,6 +1499,60 @@ export function PressEditor({
           </div>
         </footer>
       </div>
+    </div>
+  );
+}
+
+/** Quick picks for one declared product, plus « Autre » with free text.
+ *  Clicking the active pick clears it (the field is optional). */
+function ProductPicker({
+  label,
+  options,
+  value,
+  otherLabel,
+  otherPh,
+  onChange,
+}: {
+  label: string;
+  options: readonly string[];
+  value: string;
+  otherLabel: string;
+  otherPh: string;
+  onChange: (v: string) => void;
+}) {
+  const known = options.includes(value);
+  const [other, setOther] = useState(() => Boolean(value) && !known);
+  return (
+    <div className="ws-field">
+      <span className="ws-label">{label}</span>
+      <div className="ws-seg ws-seg-wrap" role="group" aria-label={label}>
+        {options.map((o) => (
+          <button
+            key={o}
+            type="button"
+            className={!other && value === o ? 'is-active' : ''}
+            onClick={() => {
+              setOther(false);
+              onChange(!other && value === o ? '' : o);
+            }}
+          >
+            {o}
+          </button>
+        ))}
+        <button
+          type="button"
+          className={other ? 'is-active' : ''}
+          onClick={() => {
+            onChange('');
+            setOther(!other);
+          }}
+        >
+          {otherLabel}
+        </button>
+      </div>
+      {other ? (
+        <input className="ws-input" value={value} placeholder={otherPh} maxLength={80} onChange={(ev) => onChange(ev.target.value)} />
+      ) : null}
     </div>
   );
 }

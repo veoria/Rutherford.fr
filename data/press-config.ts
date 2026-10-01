@@ -95,3 +95,23 @@ export const SYSTEM_KIND_LABELS: Record<Locale, Record<SystemKind, string>> = {
   es: { software: 'Software', measurement_device: 'Dispositivo de medición', pc: 'PC / servidor ColorLoop', console_interface: 'Interfaz de consola' },
   pt: { software: 'Software', measurement_device: 'Dispositivo de medição', pc: 'PC / servidor ColorLoop', console_interface: 'Interface de consola' },
 };
+
+// ── Color equipment declared by the client (presses.measurement_device, …) ──
+// Quick picks in the press editor; any other product is typed under « Autre »
+// and stored verbatim. Product names are brand names: never translated.
+export const DECLARED_EQUIPMENT = {
+  measurementDevice: ['IntelliTrax2', 'IntelliTrax'],
+  measurementSoftware: ['IntelliTrax2 v2', 'IntelliTrax2 v3', 'MeasureColor'],
+  colorSoftware: ['EasySet', 'EasyLoop', 'IntelliLoop', 'IntelliSet', 'ColorLoop'],
+} as const;
+export type DeclaredEquipmentField = keyof typeof DECLARED_EQUIPMENT;
+export const DECLARED_EQUIPMENT_FIELDS = Object.keys(DECLARED_EQUIPMENT) as DeclaredEquipmentField[];
+
+export const DECLARED_EQUIPMENT_LABELS: Record<Locale, Record<DeclaredEquipmentField, string>> = {
+  en: { measurementDevice: 'Measurement device', measurementSoftware: 'Measurement software', colorSoftware: 'Color control software' },
+  fr: { measurementDevice: 'Appareil de mesure', measurementSoftware: 'Logiciel de mesure', colorSoftware: 'Logiciel de contrôle couleur' },
+  de: { measurementDevice: 'Messgerät', measurementSoftware: 'Messsoftware', colorSoftware: 'Farbsteuerungssoftware' },
+  it: { measurementDevice: 'Dispositivo di misura', measurementSoftware: 'Software di misura', colorSoftware: 'Software di controllo colore' },
+  es: { measurementDevice: 'Dispositivo de medición', measurementSoftware: 'Software de medición', colorSoftware: 'Software de control del color' },
+  pt: { measurementDevice: 'Dispositivo de medição', measurementSoftware: 'Software de medição', colorSoftware: 'Software de controlo de cor' },
+};

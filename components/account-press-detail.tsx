@@ -9,9 +9,10 @@ import { PreviewBar, previewHref, type PreviewContext } from '@/components/accou
 import { PressSchematic } from '@/components/press-schematic';
 import { type Locale, useLanguage } from '@/components/language-provider';
 import { localizedCountryName } from '@/lib/countries';
-import { PROFILE_LABELS, SYSTEM_KIND_LABELS, formatCopy, pressTitle, type SystemKind } from '@/data/press-config';
+import { DECLARED_EQUIPMENT_LABELS, PROFILE_LABELS, SYSTEM_KIND_LABELS, formatCopy, pressTitle, type SystemKind } from '@/data/press-config';
 import {
   PressEditor,
+  declaredEquipment,
   compatibilityHref,
   schematicFormat,
   supportHref,
@@ -322,6 +323,7 @@ export function AccountPressDetail({
   const fmt = formatCopy(locale)[press.sheetFormat];
   const software = equipment.filter((e) => e.kind === 'software');
   const hardware = equipment.filter((e) => e.kind !== 'software');
+  const declared = declaredEquipment(press);
   // Support prefill: the press's own AnyDesk, else the plant's, else the one on
   // the installed Rutherford software.
   const anydesk =
@@ -345,9 +347,8 @@ export function AccountPressDetail({
               <h1 className="ws-title">{title}</h1>
               {title !== machine ? <p className="ws-sub">{machine}</p> : null}
               <div className="ws-chips pd-chips">
-                <span className={`ws-chip ${equipment.length ? 'is-ok' : 'is-muted'}`}>
-                  {equipment.length ? wt.card.equipped : wt.card.notEquipped}
-                </span>
+                {equipment.length ? <span className="ws-chip is-ok">{wt.card.equipped}</span> : null}
+                {!equipment.length && !declared.length ? <span className="ws-chip is-muted">{wt.card.notEquipped}</span> : null}
                 <span className="ws-chip">
                   {fmt.label} · {fmt.dims}
                 </span>
@@ -375,6 +376,12 @@ export function AccountPressDetail({
                     <dd>{press.console}</dd>
                   </div>
                 ) : null}
+                {declared.map((d) => (
+                  <div key={d.field}>
+                    <dt>{DECLARED_EQUIPMENT_LABELS[locale][d.field]}</dt>
+                    <dd>{d.value}</dd>
+                  </div>
+                ))}
                 {press.year ? (
                   <div>
                     <dt>{t.year}</dt>

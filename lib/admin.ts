@@ -744,6 +744,8 @@ export type AdminOrgPressRow = {
   siteId: string | null;
   siteName: string | null;
   year: number | null;
+  /** Équipement couleur déclaré par le client (appareil, logiciel de mesure, logiciel couleur). */
+  declared: string[];
   /** Nombre de systèmes / matériels Rutherford liés à cette presse. */
   equipment: number;
 };
@@ -863,7 +865,7 @@ export async function getAdminOrgDetail(orgId: string): Promise<AdminOrgDetail |
       : Promise.resolve({ data: [] as Record<string, unknown>[] }),
     admin
       .from('presses')
-      .select('id, name, manufacturer, model, sheet_format, colors, coater, perfecting, site_id, year')
+      .select('id, name, manufacturer, model, sheet_format, colors, coater, perfecting, site_id, year, measurement_device, measurement_software, color_software')
       .eq('org_id', orgId)
       .order('position', { ascending: true })
       .order('created_at', { ascending: true }),
@@ -907,6 +909,9 @@ export async function getAdminOrgDetail(orgId: string): Promise<AdminOrgDetail |
     perfecting: boolean;
     site_id: string | null;
     year: number | null;
+    measurement_device: string | null;
+    measurement_software: string | null;
+    color_software: string | null;
   }[];
   const pressLabel = (p: { name: string | null; manufacturer: string; model: string | null }) =>
     (p.name ?? '').trim() || [p.manufacturer, p.model].filter(Boolean).join(' ');
@@ -1106,6 +1111,7 @@ export async function getAdminOrgDetail(orgId: string): Promise<AdminOrgDetail |
       siteId: p.site_id,
       siteName: p.site_id ? siteNameById.get(p.site_id) ?? null : null,
       year: p.year,
+      declared: [p.measurement_device, p.measurement_software, p.color_software].filter((v): v is string => Boolean(v)),
       equipment: equipmentByPress.get(p.id) ?? 0,
     })),
     attributedOrgs: attribRows.map((a) => ({
