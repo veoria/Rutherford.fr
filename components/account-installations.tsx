@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { type Locale, useLanguage } from '@/components/language-provider';
 import { getCourseBySlug } from '@/data/academy-courses';
+import { ACADEMY_ENABLED } from '@/lib/features';
 
 // One card per installed system (set by the Rutherford team in the org
 // back-office): license, AnyDesk id, installed vs latest version, plus
@@ -262,16 +263,18 @@ function SystemCard({ s, t, locale, preview = false }: { s: AccountInstallation;
         </div>
       )}
 
-      <div className="ah-sys-group">
-        <div className="ah-sys-glabel">{t.gTraining}</div>
-        <div className="ah-sys-links">
-          {courses.map((c) => (
-            <a className="ah-sys-link" href={`/academy/${c.slug}`} key={c.slug}>
-              {c.title}
-            </a>
-          ))}
+      {ACADEMY_ENABLED && courses.length ? (
+        <div className="ah-sys-group">
+          <div className="ah-sys-glabel">{t.gTraining}</div>
+          <div className="ah-sys-links">
+            {courses.map((c) => (
+              <a className="ah-sys-link" href={`/academy/${c.slug}`} key={c.slug}>
+                {c.title}
+              </a>
+            ))}
+          </div>
         </div>
-      </div>
+      ) : null}
     </div>
   );
 }

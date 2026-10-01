@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import { ACCOUNT_ENABLED } from '@/lib/features';
 import { Suspense } from 'react';
 import { SignInPage } from '@/components/sign-in-page';
 
@@ -26,7 +27,7 @@ export const metadata: Metadata = {
 export const dynamic = 'force-dynamic';
 
 export default function SignInRoute() {
-  if (process.env.NEXT_PUBLIC_ACADEMY_ENABLED !== 'true') notFound();
+  if (!ACCOUNT_ENABLED) notFound();
   return (
     <Suspense>
       <SignInPage />

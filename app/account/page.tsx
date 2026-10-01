@@ -3,14 +3,11 @@ import { redirect } from 'next/navigation';
 import { AccountHub, type ResellerClient } from '@/components/account-hub';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { isOnboarded } from '@/lib/profile';
-import { ALL_COURSES } from '@/data/academy-courses';
-import { courseHasQuiz } from '@/data/academy-quizzes';
-import { getLessonsForCourse } from '@/data/academy-lessons';
-import { overallStats, type CourseStat } from '@/lib/gamification';
 import { getDistributorResellers, getTeamForUser } from '@/lib/organizations';
 import { getResellerClientsView, OPEN_CV } from '@/lib/reseller-clients';
 import { getSystemsForUser, toAccountInstallation } from '@/lib/client-systems';
 import { getVisibleSitesForUser, toAccountSite } from '@/lib/sites';
+import { getPressesForOrg } from '@/lib/presses';
 import type { AccountType } from '@/data/account-types';
 import type { ClientSystem } from '@/components/account-systems';
 
@@ -46,15 +43,13 @@ export default async function AccountHubRoute() {
     redirect('/account/sign-in?next=/account');
   }
 
-  const [{ data: profile }, { data: progressRows }, { data: quizAttempts }, { data: ownCv }] =
+  const [{ data: profile }, { data: ownCv }] =
     await Promise.all([
       supabase
         .from('profiles')
         .select('full_name, avatar_url, country, company, job_title, job_roles, onboarded_at, account_type, is_admin')
         .eq('id', user.id)
         .maybeSingle(),
-      supabase.from('course_progress').select('course_slug, lesson_index').eq('user_id', user.id),
-      supabase.from('quiz_attempts').select('course_slug, passed').eq('user_id', user.id),
       supabase
         .from('console_validations')
         .select('machine, country, company, status, created_at, pipedrive_deal_id')
@@ -69,43 +64,6 @@ export default async function AccountHubRoute() {
   }
 
   const accountType = ((profile?.account_type as AccountType) ?? 'client') as AccountType;
-
-  // ── Academy progress (shown for every role) ──
-  const progress = (progressRows ?? []) as { course_slug: string; lesson_index: number }[];
-  const passedSlugs = new Set(
-    ((quizAttempts ?? []) as { course_slug: string; passed: boolean }[])
-      .filter((q) => q.passed)
-      .map((q) => q.course_slug)
-  );
-  const doneByCourse = new Map<string, Set<number>>();
-  for (const r of progress) {
-    const set = doneByCourse.get(r.course_slug) ?? new Set<number>();
-    set.add(r.lesson_index);
-    doneByCourse.set(r.course_slug, set);
-  }
-  const courseStats: CourseStat[] = ALL_COURSES.map((c) => {
-    const done = [...(doneByCourse.get(c.id) ?? [])].filter((i) => i >= 0 && i < c.modules).length;
-    const certified = courseHasQuiz(c.id) ? passedSlugs.has(c.id) : c.modules > 0 && done >= c.modules;
-    return { completedCount: done, total: c.modules, certified };
-  });
-  const stats = overallStats(courseStats);
-
-  // "Continue where you left off" — first started-but-unfinished course.
-  let resume: { slug: string; title: string; moduleIndex: number; moduleTitle: string } | null = null;
-  for (const c of ALL_COURSES) {
-    const done = doneByCourse.get(c.id);
-    if (!done || done.size === 0 || done.size >= c.modules) continue;
-    let next = 0;
-    while (next < c.modules && done.has(next)) next += 1;
-    const lessons = getLessonsForCourse(c.id);
-    resume = {
-      slug: c.id,
-      title: c.title,
-      moduleIndex: next,
-      moduleTitle: lessons?.[next]?.title ?? `Module ${next + 1}`,
-    };
-    break;
-  }
 
   // Own console validations — the Console Validation tile stat + "My presses".
   const ownRows = (ownCv ?? []) as {
@@ -204,10 +162,19 @@ export default async function AccountHubRoute() {
   // client-only "Mon système" section, so skip the read for other types.
   const orgId = team.org?.id ?? null;
   const canManageOrg = team.myRole === 'owner' || team.myRole === 'admin';
-  const sites =
+  const [sites, pressRecords] =
     accountType === 'client' && orgId
-      ? (await getVisibleSitesForUser(user.id, orgId, canManageOrg)).map(toAccountSite)
-      : [];
+      ? await Promise.all([
+          getVisibleSitesForUser(user.id, orgId, canManageOrg).then((rows) => rows.map(toAccountSite)),
+          getPressesForOrg(orgId),
+        ])
+      : [[], []];
+  // "Mon atelier" preview — same visibility rule as /account/atelier: presses
+  // on the plants this user may see, plus the unassigned ones.
+  const visibleSiteIds = new Set(sites.map((s) => s.id));
+  const presses = pressRecords
+    .filter((p) => !p.siteId || visibleSiteIds.has(p.siteId))
+    .map(({ createdAt: _createdAt, ...p }) => p);
 
   return (
     <AccountHub
@@ -224,23 +191,13 @@ export default async function AccountHubRoute() {
         company: profile?.company ?? null,
         jobTitle: (profile?.job_title as string | null) ?? null,
       }}
-      academy={{
-        level: stats.level.level,
-        percentIntoLevel: stats.level.percentIntoLevel,
-        xp: stats.xp,
-        xpToNext: stats.level.xpToNext,
-        isMax: stats.level.isMax,
-        completedModules: stats.completedModules,
-        totalModules: stats.totalModules,
-        certificates: stats.certifiedCount,
-      }}
       consoleStat={{ eligible: cvEligible, open: cvOpen }}
       supportStat={{ status: supportStatus, newMessage: supportNewMessage }}
-      resume={resume}
       resellerClients={resellerClients}
       systems={systems}
       installations={installations}
       sites={sites}
+      presses={presses}
     />
   );
 }

@@ -1,12 +1,13 @@
 import type { Metadata } from 'next';
 import { notFound, redirect } from 'next/navigation';
+import { ACCOUNT_ENABLED } from '@/lib/features';
 import { OnboardingForm } from '@/components/onboarding-form';
 import { TeamOnboardingForm } from '@/components/team-onboarding-form';
 import { getCurrentUserAndProfile, isOnboarded } from '@/lib/profile';
 import { deriveAccountTypeWithSource } from '@/lib/account-classification';
 
 export const metadata: Metadata = {
-  title: 'Complete your profile — Rutherford Academy',
+  title: 'Complete your profile — Rutherford',
 };
 
 export const dynamic = 'force-dynamic';
@@ -24,7 +25,7 @@ export default async function OnboardingRoute({
 }: {
   searchParams: { next?: string | string[] };
 }) {
-  if (process.env.NEXT_PUBLIC_ACADEMY_ENABLED !== 'true') notFound();
+  if (!ACCOUNT_ENABLED) notFound();
 
   const next = safeNext(searchParams.next);
   const { user, profile } = await getCurrentUserAndProfile();

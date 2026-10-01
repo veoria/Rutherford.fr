@@ -155,9 +155,12 @@ type Props = {
   format: PressFormat;
   colors: number;
   label?: string;
+  // Tighter framing for small renders (account press cards): the default frame
+  // leaves room for the ROI controls overlay.
+  viewBox?: string;
 };
 
-export function PressSchematic({ format, colors, label }: Props) {
+export function PressSchematic({ format, colors, label, viewBox = '0 0 1140 560' }: Props) {
   const gRef = useRef<SVGGElement | null>(null);
   const uRef = useRef(BASE_U * PRESS_FMT[format].s);
   const wbRef = useRef(BASE_WB * PRESS_FMT[format].w);
@@ -227,7 +230,7 @@ export function PressSchematic({ format, colors, label }: Props) {
   }, [format]);
 
   return (
-    <svg className="roi-press-svg" viewBox="0 0 1140 560" role="img" aria-label={label ?? 'Offset press'}>
+    <svg className="roi-press-svg" viewBox={viewBox} role="img" aria-label={label ?? 'Offset press'}>
       <g ref={gRef} />
     </svg>
   );

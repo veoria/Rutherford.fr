@@ -295,7 +295,6 @@ const INCLUDED = [
   'CIP3 / CIP4 ink key presetting',
   'Works with IntelliTrax2 and MeasureColor',
   'Professional installation and operator training',
-  'Rutherford Academy courses, open to everyone',
   'Annual performance audit, included',
 ];
 

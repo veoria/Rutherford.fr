@@ -5,6 +5,7 @@ import { isOnboarded } from '@/lib/profile';
 import { getCourseBySlug } from '@/data/academy-courses';
 import { certReference, resolveCertification } from '@/lib/certificate';
 import { RUTHERFORD_LOGO_PNG_BASE64 } from '@/lib/certificate-logo';
+import { ACCOUNT_ENABLED } from '@/lib/features';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -131,7 +132,7 @@ function wrap(font: PDFFont, text: string, size: number, maxWidth: number): stri
 }
 
 export async function GET(request: NextRequest, { params }: { params: { slug: string } }) {
-  if (process.env.NEXT_PUBLIC_ACADEMY_ENABLED !== 'true') {
+  if (!ACCOUNT_ENABLED) {
     return new NextResponse('Not found', { status: 404 });
   }
   const course = getCourseBySlug(params.slug);

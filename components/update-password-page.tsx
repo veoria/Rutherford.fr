@@ -186,7 +186,7 @@ export function UpdatePasswordPage() {
       <section className="signin-section section">
         <div className="container signin-shell">
           <header className="signin-head">
-            <p className="section-kicker">Rutherford Academy</p>
+            <p className="section-kicker">Rutherford</p>
             <h1>{ready && !signedIn ? t.expiredTitle : t.title}</h1>
             <p>{ready && !signedIn ? t.expiredText : t.subtitle}</p>
           </header>
