@@ -7,7 +7,7 @@ import { supportAckEmail } from '@/lib/support-emails';
 import { insertSupportTicket } from '@/lib/support-tickets';
 import { getNotificationEmail } from '@/lib/console-validations';
 import { SUPPORT_COUNTRIES } from '@/lib/support-countries';
-import { getWorkshopAccess } from '@/lib/presses';
+import { getPressSupportContext } from '@/lib/presses';
 
 export const dynamic = 'force-dynamic';
 
@@ -56,19 +56,16 @@ export async function POST(request: NextRequest) {
   }
 
   // Ticket about one press of the user's pressroom: keep the link only when the
-  // press belongs to the signed-in user's organization.
+  // press belongs to the signed-in user's organization, and hand the press
+  // context (machine, plant, equipment versions) to the team's Asana task.
   let pressId: string | null = null;
+  let pressContext: string[] | undefined;
   const pressRaw = typeof body.pressId === 'string' ? body.pressId : '';
   if (userId && pressRaw && process.env.SUPABASE_SERVICE_ROLE_KEY) {
-    const access = await getWorkshopAccess(userId);
-    if (access) {
-      const { data: press } = await createSupabaseAdminClient()
-        .from('presses')
-        .select('id')
-        .eq('id', pressRaw)
-        .eq('org_id', access.orgId)
-        .maybeSingle();
-      pressId = press ? pressRaw : null;
+    const ctx = await getPressSupportContext(userId, pressRaw);
+    if (ctx) {
+      pressId = ctx.pressId;
+      pressContext = ctx.teamLines;
     }
   }
 
@@ -98,6 +95,7 @@ export async function POST(request: NextRequest) {
     company: company ?? undefined,
     subject: subject ?? undefined,
     country: country ?? undefined,
+    context: pressContext,
   });
 
   // Attach the real image files to the Asana task (downloaded server-side, so

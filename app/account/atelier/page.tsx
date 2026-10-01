@@ -66,6 +66,7 @@ export default async function AccountWorkshopRoute() {
     country: s.country,
     address: s.address,
     postalCode: s.postalCode,
+    anydeskId: s.anydeskId,
   }));
   // A member restricted to some plants only sees those plants' presses (plus
   // the unassigned ones, which belong to nobody yet).

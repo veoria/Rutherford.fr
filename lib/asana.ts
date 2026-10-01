@@ -206,6 +206,8 @@ export type SupportTask = {
   subject?: string;
   // Must match a SUPPORT_COUNTRY_OPTIONS key to set the Asana Country field.
   country?: string;
+  /** Press context (Mon atelier) — machine, plant, equipment versions — for the team. */
+  context?: string[];
 };
 
 /** Create a support ticket task in the Asana Support project. Returns its gid.
@@ -216,6 +218,7 @@ export async function createSupportTask(task: SupportTask): Promise<string | nul
     const lines = [`e-mail : ${task.email}`];
     if (task.anydesk) lines.push(`AnyDesk : ${task.anydesk}`);
     if (task.description) lines.push('', task.description);
+    if (task.context?.length) lines.push('', '— Presse concernée —', ...task.context);
     lines.push('', 'Source : rutherford.fr/support');
 
     // Task name: "[Company] – short summary" (subject if given, else 1st line).

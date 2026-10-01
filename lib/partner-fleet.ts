@@ -124,6 +124,7 @@ export async function getPartnerFleet(userId: string): Promise<PartnerFleet> {
         .from('presses')
         .select('id, org_id, site_id, name, manufacturer, model, sheet_format, colors, coater, perfecting')
         .in('org_id', orgIds)
+        .order('position')
         .order('created_at'),
       db
         .from('client_systems')

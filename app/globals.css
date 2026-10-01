@@ -17508,3 +17508,36 @@ textarea.ws-input { resize: vertical; }
 @media (max-width: 520px) { .fl-press { grid-template-columns: 1fr; } }
 .fl-press-art { align-self: start; padding: 4px 2px; }
 .fl-press-top .ws-chip { white-space: nowrap; flex: 0 0 auto; }
+
+/* Mon atelier — « Réorganiser » mode */
+.ws-arrange-hint { margin: 0 0 12px; }
+.ws-arrange { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.ws-arrange-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  background: #fff;
+  border: 1px solid var(--ws-line);
+  border-radius: 14px;
+  cursor: grab;
+  user-select: none;
+  transition: box-shadow 120ms ease, opacity 120ms ease;
+}
+.ws-arrange-row:hover { box-shadow: 0 10px 24px -18px rgba(17, 17, 17, 0.4); }
+.ws-arrange-row.is-dragging { opacity: 0.45; }
+.ws-arrange-handle { color: #b5b5b0; font-size: 1rem; letter-spacing: -2px; }
+.ws-arrange-n { width: 26px; height: 26px; border-radius: 50%; background: #f2f2ef; display: inline-flex; align-items: center; justify-content: center; font-size: 0.78rem; font-weight: 700; color: var(--ws-ink); flex: 0 0 auto; }
+.ws-arrange-main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.ws-arrange-main strong { font-size: 0.95rem; color: var(--ws-ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ws-arrange-main small { font-size: 0.8rem; color: var(--ws-body); }
+.ws-arrange-btns { display: inline-flex; gap: 6px; }
+.ws-arrange-btns button { appearance: none; width: 36px; height: 36px; border-radius: 10px; border: 1.5px solid rgba(0, 0, 0, 0.12); background: #fff; font-size: 1rem; cursor: pointer; }
+.ws-arrange-btns button:disabled { opacity: 0.35; cursor: default; }
+.ws-arrange-btns button:not(:disabled):hover { border-color: var(--accent); color: var(--accent); }
+
+/* Support form opened from a press (Mon atelier) */
+.sp-press { display: flex; flex-direction: column; gap: 3px; margin: 0 0 16px; padding: 12px 14px; border-radius: 12px; background: #f3f6fa; border: 1px solid #dfe7f2; font-size: 0.86rem; color: #5f5f5c; }
+.sp-press strong { font-size: 0.98rem; color: #16130f; }
+.sp-press-k { font-size: 0.7rem; font-weight: 750; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
+.sp-press small { margin-top: 4px; font-size: 0.78rem; color: #8a8a88; }

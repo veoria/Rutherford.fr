@@ -865,6 +865,7 @@ export async function getAdminOrgDetail(orgId: string): Promise<AdminOrgDetail |
       .from('presses')
       .select('id, name, manufacturer, model, sheet_format, colors, coater, perfecting, site_id, year')
       .eq('org_id', orgId)
+      .order('position', { ascending: true })
       .order('created_at', { ascending: true }),
   ]);
 

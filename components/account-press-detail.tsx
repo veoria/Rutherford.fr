@@ -317,7 +317,10 @@ export function AccountPressDetail({
   const fmt = formatCopy(locale)[press.sheetFormat];
   const software = equipment.filter((e) => e.kind === 'software');
   const hardware = equipment.filter((e) => e.kind !== 'software');
-  const anydesk = software.find((e) => e.anydeskId)?.anydeskId ?? null;
+  // Support prefill: the press's own AnyDesk, else the plant's, else the one on
+  // the installed Rutherford software.
+  const anydesk =
+    press.anydeskId || site?.anydeskId || software.find((e) => e.anydeskId)?.anydeskId || null;
 
   return (
     <main className="page-shell" id="top">
@@ -371,6 +374,16 @@ export function AccountPressDetail({
                   <div>
                     <dt>{t.year}</dt>
                     <dd>{press.year}</dd>
+                  </div>
+                ) : null}
+                {anydesk ? (
+                  <div>
+                    <dt>AnyDesk</dt>
+                    <dd>
+                      <a className="ws-link" href={`anydesk:${anydesk.replace(/\s+/g, '')}`}>
+                        {anydesk}
+                      </a>
+                    </dd>
                   </div>
                 ) : null}
                 {press.productionProfile ? (
@@ -537,7 +550,7 @@ function EquipmentRow({
       {(e.updateAvailable && e.latestVersion) || e.anydeskId ? (
         <div className="pd-eq-actions">
           {e.updateAvailable && e.latestVersion ? (
-            <a className="ws-link" href={`/support?${new URLSearchParams({ subject: updateSubject, press: press.id }).toString()}`}>
+            <a className="ws-link" href={`/support?${new URLSearchParams({ subject: updateSubject, press: press.id }).toString()}#support-form`}>
               {t.requestUpdate}
             </a>
           ) : null}

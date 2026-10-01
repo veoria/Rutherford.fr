@@ -59,6 +59,7 @@ export default async function AccountPressRoute({ params }: { params: { id: stri
     country: s.country,
     address: s.address,
     postalCode: s.postalCode,
+    anydeskId: s.anydeskId,
   }));
   const equipment: PressEquipment[] = systems
     .filter((s) => s.pressId === press.id)

@@ -266,7 +266,7 @@ function SystemCard({ s, t, locale, preview = false }: { s: AccountInstallation;
         <div className="ah-sys-group">
           <div className="ah-sys-glabel">{t.gSupport}</div>
           <div className="ah-sys-links">
-            <a className="ah-sys-link primary" href={`/support?${q}`}>{t.supportCta}</a>
+            <a className="ah-sys-link primary" href={`/support?${q}#support-form`}>{t.supportCta}</a>
             {s.updateAvailable && s.latestVersion ? (
               <a
                 className="ah-sys-link"

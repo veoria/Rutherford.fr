@@ -6,9 +6,9 @@ import { isKnownCountry } from '@/data/onboarding-options';
 
 export const dynamic = 'force-dynamic';
 
-// "Mon atelier" — a client org's owners/admins manage their own sites (plants).
-// Only the location fields are editable here: the site AnyDesk id and notes
-// stay with the Rutherford team (admin org page).
+// "Mon atelier" — a client org's owners/admins manage their own sites (plants):
+// location and the plant's AnyDesk support number. Internal notes stay with
+// the Rutherford team (admin org page).
 
 const clip = (v: unknown, max: number) => (typeof v === 'string' ? v.trim().slice(0, max) : '');
 
@@ -36,6 +36,7 @@ function readFields(body: Record<string, unknown>) {
     city: clip(body.city, 120) || null,
     address: clip(body.address, 300) || null,
     postalCode: clip(body.postalCode, 40) || null,
+    anydeskId: clip(body.anydeskId, 40) || null,
   };
 }
 
@@ -80,6 +81,7 @@ export async function PATCH(request: NextRequest) {
     city: fields.city,
     address: fields.address,
     postal_code: fields.postalCode,
+    anydesk_id: fields.anydeskId,
   });
   return ok ? NextResponse.json({ ok: true }) : NextResponse.json({ error: 'failed' }, { status: 500 });
 }

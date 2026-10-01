@@ -15,6 +15,7 @@ import {
   type SheetFormat,
 } from '@/data/press-config';
 import type { MemberRole } from '@/lib/organizations';
+import { pressTitle, SYSTEM_KIND_LABELS, isSystemKind } from '@/data/press-config';
 
 export type PressRecord = {
   id: string;
@@ -30,6 +31,7 @@ export type PressRecord = {
   console: string | null;
   year: number | null;
   notes: string | null;
+  anydeskId: string | null;
   createdAt: string;
 };
 
@@ -85,11 +87,12 @@ type Row = {
   console: string | null;
   year: number | null;
   notes: string | null;
+  anydesk_id: string | null;
   created_at: string;
 };
 
 const SELECT =
-  'id, site_id, name, manufacturer, model, sheet_format, colors, coater, perfecting, production_profile, console, year, notes, created_at';
+  'id, site_id, name, manufacturer, model, sheet_format, colors, coater, perfecting, production_profile, console, year, notes, anydesk_id, created_at';
 
 function toRecord(r: Row): PressRecord {
   return {
@@ -106,16 +109,22 @@ function toRecord(r: Row): PressRecord {
     console: r.console,
     year: r.year,
     notes: r.notes,
+    anydeskId: r.anydesk_id ?? null,
     createdAt: r.created_at,
   };
 }
 
-/** All presses of one org, oldest first (the order they were declared). */
+/** All presses of one org, in the order the client arranged them. */
 export async function getPressesForOrg(orgId: string): Promise<PressRecord[]> {
   const supabase = admin();
   if (!supabase || !orgId) return [];
   try {
-    const { data } = await supabase.from('presses').select(SELECT).eq('org_id', orgId).order('created_at');
+    const { data } = await supabase
+      .from('presses')
+      .select(SELECT)
+      .eq('org_id', orgId)
+      .order('position')
+      .order('created_at');
     return ((data ?? []) as Row[]).map(toRecord);
   } catch {
     return [];
@@ -137,6 +146,7 @@ export type PressInput = {
   console: string | null;
   year: number | null;
   notes: string | null;
+  anydeskId: string | null;
 };
 
 const text = (v: unknown, max: number): string | null => {
@@ -174,6 +184,7 @@ export function parsePressInput(body: Record<string, unknown>): { ok: true; inpu
       console: text(body.console, 120),
       year,
       notes: text(body.notes, 1000),
+      anydeskId: text(body.anydeskId, 40),
     },
   };
 }
@@ -192,6 +203,7 @@ function toRow(input: PressInput) {
     console: input.console,
     year: input.year,
     notes: input.notes,
+    anydesk_id: input.anydeskId,
   };
 }
 
@@ -217,8 +229,18 @@ export async function createPresses(
   try {
     const siteId = await siteInOrg(orgId, input.siteId);
     const base = { ...toRow({ ...input, siteId }), org_id: orgId, created_by: userId };
+    // New presses go last in the client's arrangement.
+    const { data: last } = await supabase
+      .from('presses')
+      .select('position')
+      .eq('org_id', orgId)
+      .order('position', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    const start = ((last?.position as number | undefined) ?? 0) + 1;
     const rows = Array.from({ length: n }, (_, i) => ({
       ...base,
+      position: start + i,
       // Twins get a numbered label so they stay distinguishable in the list.
       name: n > 1 ? `${input.name ?? [input.manufacturer, input.model].filter(Boolean).join(' ')} #${i + 1}`.slice(0, 80) : base.name,
     }));
@@ -339,5 +361,126 @@ export async function getAttributedPartnerNames(orgId: string): Promise<string[]
     return ((data ?? []) as { name: string }[]).map((o) => o.name);
   } catch {
     return [];
+  }
+}
+
+/**
+ * Save the client's arrangement: `ids` is the full press order of the org (ids
+ * of other orgs are ignored). Presses missing from the list keep their place
+ * after the listed ones.
+ */
+export async function reorderPresses(orgId: string, ids: string[]): Promise<boolean> {
+  const supabase = admin();
+  if (!supabase || !orgId) return false;
+  try {
+    const { data } = await supabase.from('presses').select('id').eq('org_id', orgId).order('position').order('created_at');
+    const current = ((data ?? []) as { id: string }[]).map((r) => r.id);
+    const known = new Set(current);
+    const wanted = [...new Set(ids.filter((id) => known.has(id)))];
+    const listed = new Set(wanted);
+    const order = [...wanted, ...current.filter((id) => !listed.has(id))];
+    const results = await Promise.all(
+      order.map((id, i) => supabase.from('presses').update({ position: i + 1 }).eq('id', id).eq('org_id', orgId))
+    );
+    return results.every((r) => !r.error);
+  } catch {
+    return false;
+  }
+}
+
+/** Everything the support form needs about one press, so nothing is retyped. */
+export type PressSupportContext = {
+  pressId: string;
+  title: string;
+  machine: string;
+  config: string;
+  siteName: string | null;
+  company: string | null;
+  anydesk: string | null;
+  equipment: string[];
+  /** French lines appended to the Asana task (team-facing). */
+  teamLines: string[];
+};
+
+const FORMAT_FR: Record<string, string> = { b3: 'B3', b2: 'B2', b1: 'B1', vlf: 'Grand format' };
+
+/** Support context of a press of the user's org (null if not theirs). */
+export async function getPressSupportContext(userId: string, pressId: string): Promise<PressSupportContext | null> {
+  const supabase = admin();
+  if (!supabase || !userId || !pressId) return null;
+  const access = await getWorkshopAccess(userId);
+  if (!access) return null;
+  const press = await getPressForOrg(access.orgId, pressId);
+  if (!press) return null;
+  try {
+    const [{ data: site }, { data: org }, { data: systems }] = await Promise.all([
+      press.siteId
+        ? supabase.from('sites').select('name, city, country, anydesk_id').eq('id', press.siteId).maybeSingle()
+        : Promise.resolve({ data: null }),
+      supabase.from('organizations').select('name').eq('id', access.orgId).maybeSingle(),
+      supabase
+        .from('client_systems')
+        .select('kind, product, serial_number, installed_version, latest_version, license_status, anydesk_id')
+        .eq('press_id', press.id),
+    ]);
+    const s = site as { name: string; city: string | null; country: string | null; anydesk_id: string | null } | null;
+    const sys = (systems ?? []) as {
+      kind: string;
+      product: string;
+      serial_number: string | null;
+      installed_version: string | null;
+      latest_version: string | null;
+      license_status: string;
+      anydesk_id: string | null;
+    }[];
+    const machine = [press.manufacturer, press.model].filter(Boolean).join(' ');
+    const config = [
+      FORMAT_FR[press.sheetFormat] ?? press.sheetFormat,
+      `${press.colors} couleurs`,
+      press.coater ? 'vernis' : null,
+      press.perfecting ? 'retiration' : null,
+    ]
+      .filter(Boolean)
+      .join(' · ');
+    const anydesk = press.anydeskId || s?.anydesk_id || sys.find((x) => x.anydesk_id)?.anydesk_id || null;
+    const equipment = sys.map((x) =>
+      [
+        x.product,
+        x.installed_version ? `v${x.installed_version.replace(/^v/i, '')}` : null,
+        x.serial_number ? `S/N ${x.serial_number}` : null,
+      ]
+        .filter(Boolean)
+        .join(' · ')
+    );
+    const siteLine = s ? [s.name, s.city, s.country].filter(Boolean).join(', ') : null;
+    const teamLines = [
+      `Presse : ${pressTitle(press)}${pressTitle(press) !== machine ? ` (${machine})` : ''}`,
+      `Configuration : ${config}`,
+      siteLine ? `Site : ${siteLine}` : null,
+      press.console ? `Console : ${press.console}` : null,
+      press.year ? `Année : ${press.year}` : null,
+      anydesk ? `AnyDesk presse : ${anydesk}` : null,
+      ...sys.map((x) => {
+        const kind = isSystemKind(x.kind) ? SYSTEM_KIND_LABELS.fr[x.kind] : x.kind;
+        const version = x.installed_version
+          ? ` · version ${x.installed_version}${x.latest_version && x.latest_version !== x.installed_version ? ` (dernière ${x.latest_version})` : ''}`
+          : '';
+        return `${kind} : ${x.product}${version}${x.serial_number ? ` · S/N ${x.serial_number}` : ''}${x.kind === 'software' ? ` · licence ${x.license_status}` : ''}`;
+      }),
+      !sys.length ? 'Équipement Rutherford : aucun' : null,
+    ].filter((l): l is string => Boolean(l));
+    return {
+      pressId: press.id,
+      title: pressTitle(press),
+      machine,
+      config,
+      siteName: s?.name ?? null,
+      company: ((org as { name?: string } | null)?.name ?? null) || null,
+      anydesk,
+      equipment,
+      teamLines,
+    };
+  } catch {
+    return null;
   }
 }

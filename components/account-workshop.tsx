@@ -46,6 +46,8 @@ export type WorkshopPress = {
   console: string | null;
   year: number | null;
   notes: string | null;
+  /** AnyDesk support number of the press PC (entered by the client). */
+  anydeskId?: string | null;
   /** Rutherford systems/devices linked to this press (0 = not equipped). */
   equipment?: number;
 };
@@ -57,6 +59,8 @@ export type WorkshopSite = {
   country: string | null;
   address: string | null;
   postalCode: string | null;
+  /** Plant-level AnyDesk number (shared support connection). */
+  anydeskId?: string | null;
 };
 
 type Copy = {
@@ -67,6 +71,13 @@ type Copy = {
   statUnits: (n: number) => string;
   addPress: string;
   addSite: string;
+  arrange: string;
+  arrangeDone: string;
+  arrangeCancel: string;
+  arrangeHint: string;
+  moveUp: string;
+  moveDown: string;
+  arrangeError: string;
   editSite: string;
   allSites: string;
   unplaced: string;
@@ -112,6 +123,8 @@ type Copy = {
     consolePh: (hint: string) => string;
     year: string;
     notes: string;
+    anydesk: string;
+    anydeskHint: string;
     quantity: string;
     quantityHint: string;
     save: string;
@@ -131,6 +144,8 @@ type Copy = {
     address: string;
     country: string;
     countryNone: string;
+    anydesk: string;
+    anydeskHint: string;
     save: string;
     remove: string;
     confirmRemove: string;
@@ -148,6 +163,7 @@ const COPY: Record<Locale, Copy> = {
     statUnits: (n) => plural(n, 'printing unit', 'printing units'),
     addPress: 'Add a press',
     addSite: 'Add a plant',
+    arrange: 'Reorder', arrangeDone: 'Done', arrangeCancel: 'Cancel', arrangeHint: 'Drag the presses or use the arrows. The order is shared with your whole team.', moveUp: 'Move up', moveDown: 'Move down', arrangeError: 'Could not save the order. Try again.',
     editSite: 'Edit plant',
     allSites: 'All plants',
     unplaced: 'Unassigned',
@@ -182,6 +198,8 @@ const COPY: Record<Locale, Copy> = {
       consolePh: (h) => `e.g. ${h}`,
       year: 'Year',
       notes: 'Notes',
+      anydesk: 'AnyDesk number',
+      anydeskHint: 'Remote support on this press — prefilled when you request support.',
       quantity: 'Identical presses',
       quantityHint: 'Same configuration, numbered automatically.',
       save: 'Save',
@@ -201,6 +219,8 @@ const COPY: Record<Locale, Copy> = {
       address: 'Address',
       country: 'Country',
       countryNone: 'Select a country',
+      anydesk: 'Plant AnyDesk number',
+      anydeskHint: 'Shared remote-support connection for the plant (used when a press has none).',
       save: 'Save',
       remove: 'Delete this plant',
       confirmRemove: 'Delete this plant? Its presses stay in your pressroom, unassigned.',
@@ -214,6 +234,7 @@ const COPY: Record<Locale, Copy> = {
     statUnits: (n) => plural(n, 'groupe imprimant', 'groupes imprimants'),
     addPress: 'Ajouter une presse',
     addSite: 'Ajouter un site',
+    arrange: 'Réorganiser', arrangeDone: 'Terminer', arrangeCancel: 'Annuler', arrangeHint: 'Glissez les presses ou utilisez les flèches. L’ordre est partagé avec toute votre équipe.', moveUp: 'Monter', moveDown: 'Descendre', arrangeError: 'Impossible d’enregistrer l’ordre. Réessayez.',
     editSite: 'Modifier le site',
     allSites: 'Tous les sites',
     unplaced: 'Non affecté',
@@ -248,6 +269,8 @@ const COPY: Record<Locale, Copy> = {
       consolePh: (h) => `ex. ${h}`,
       year: 'Année',
       notes: 'Notes',
+      anydesk: 'N° AnyDesk',
+      anydeskHint: 'Assistance à distance sur cette presse — prérempli quand vous demandez du support.',
       quantity: 'Presses identiques',
       quantityHint: 'Même configuration, numérotées automatiquement.',
       save: 'Enregistrer',
@@ -267,6 +290,8 @@ const COPY: Record<Locale, Copy> = {
       address: 'Adresse',
       country: 'Pays',
       countryNone: 'Choisir un pays',
+      anydesk: 'N° AnyDesk du site',
+      anydeskHint: 'Connexion d’assistance à distance commune au site (utilisée si la presse n’en a pas).',
       save: 'Enregistrer',
       remove: 'Supprimer ce site',
       confirmRemove: 'Supprimer ce site ? Ses presses restent dans votre atelier, non affectées.',
@@ -280,6 +305,7 @@ const COPY: Record<Locale, Copy> = {
     statUnits: (n) => plural(n, 'Druckwerk', 'Druckwerke'),
     addPress: 'Druckmaschine hinzufügen',
     addSite: 'Werk hinzufügen',
+    arrange: 'Neu anordnen', arrangeDone: 'Fertig', arrangeCancel: 'Abbrechen', arrangeHint: 'Ziehen Sie die Maschinen oder nutzen Sie die Pfeile. Die Reihenfolge gilt für Ihr ganzes Team.', moveUp: 'Nach oben', moveDown: 'Nach unten', arrangeError: 'Reihenfolge konnte nicht gespeichert werden. Bitte erneut versuchen.',
     editSite: 'Werk bearbeiten',
     allSites: 'Alle Werke',
     unplaced: 'Nicht zugeordnet',
@@ -314,6 +340,8 @@ const COPY: Record<Locale, Copy> = {
       consolePh: (h) => `z. B. ${h}`,
       year: 'Baujahr',
       notes: 'Notizen',
+      anydesk: 'AnyDesk-Nummer',
+      anydeskHint: 'Fernwartung an dieser Maschine — wird bei einer Support-Anfrage vorausgefüllt.',
       quantity: 'Identische Maschinen',
       quantityHint: 'Gleiche Konfiguration, automatisch nummeriert.',
       save: 'Speichern',
@@ -333,6 +361,8 @@ const COPY: Record<Locale, Copy> = {
       address: 'Adresse',
       country: 'Land',
       countryNone: 'Land wählen',
+      anydesk: 'AnyDesk-Nummer des Werks',
+      anydeskHint: 'Gemeinsame Fernwartungsverbindung des Werks (wenn die Maschine keine eigene hat).',
       save: 'Speichern',
       remove: 'Dieses Werk löschen',
       confirmRemove: 'Dieses Werk löschen? Seine Druckmaschinen bleiben in Ihrer Druckerei, ohne Zuordnung.',
@@ -346,6 +376,7 @@ const COPY: Record<Locale, Copy> = {
     statUnits: (n) => plural(n, 'gruppo stampa', 'gruppi stampa'),
     addPress: 'Aggiungi una macchina',
     addSite: 'Aggiungi uno stabilimento',
+    arrange: 'Riordina', arrangeDone: 'Fatto', arrangeCancel: 'Annulla', arrangeHint: 'Trascini le macchine o usi le frecce. L’ordine è condiviso con tutto il Suo team.', moveUp: 'Sposta su', moveDown: 'Sposta giù', arrangeError: 'Impossibile salvare l’ordine. Riprovi.',
     editSite: 'Modifica lo stabilimento',
     allSites: 'Tutti gli stabilimenti',
     unplaced: 'Non assegnato',
@@ -380,6 +411,8 @@ const COPY: Record<Locale, Copy> = {
       consolePh: (h) => `es. ${h}`,
       year: 'Anno',
       notes: 'Note',
+      anydesk: 'Numero AnyDesk',
+      anydeskHint: 'Assistenza remota su questa macchina — precompilato quando richiede assistenza.',
       quantity: 'Macchine identiche',
       quantityHint: 'Stessa configurazione, numerate automaticamente.',
       save: 'Salva',
@@ -399,6 +432,8 @@ const COPY: Record<Locale, Copy> = {
       address: 'Indirizzo',
       country: 'Paese',
       countryNone: 'Scelga un paese',
+      anydesk: 'Numero AnyDesk dello stabilimento',
+      anydeskHint: 'Connessione di assistenza remota comune allo stabilimento (usata se la macchina non ne ha).',
       save: 'Salva',
       remove: 'Elimina questo stabilimento',
       confirmRemove: 'Eliminare questo stabilimento? Le sue macchine restano nella sala stampa, non assegnate.',
@@ -412,6 +447,7 @@ const COPY: Record<Locale, Copy> = {
     statUnits: (n) => plural(n, 'cuerpo impresor', 'cuerpos impresores'),
     addPress: 'Añadir una prensa',
     addSite: 'Añadir una planta',
+    arrange: 'Reordenar', arrangeDone: 'Listo', arrangeCancel: 'Cancelar', arrangeHint: 'Arrastre las prensas o use las flechas. El orden se comparte con todo su equipo.', moveUp: 'Subir', moveDown: 'Bajar', arrangeError: 'No se pudo guardar el orden. Inténtelo de nuevo.',
     editSite: 'Editar la planta',
     allSites: 'Todas las plantas',
     unplaced: 'Sin asignar',
@@ -446,6 +482,8 @@ const COPY: Record<Locale, Copy> = {
       consolePh: (h) => `p. ej. ${h}`,
       year: 'Año',
       notes: 'Notas',
+      anydesk: 'Número AnyDesk',
+      anydeskHint: 'Asistencia remota en esta prensa — se rellena al solicitar soporte.',
       quantity: 'Prensas idénticas',
       quantityHint: 'Misma configuración, numeradas automáticamente.',
       save: 'Guardar',
@@ -465,6 +503,8 @@ const COPY: Record<Locale, Copy> = {
       address: 'Dirección',
       country: 'País',
       countryNone: 'Elija un país',
+      anydesk: 'Número AnyDesk de la planta',
+      anydeskHint: 'Conexión de asistencia remota común a la planta (se usa si la prensa no tiene).',
       save: 'Guardar',
       remove: 'Eliminar esta planta',
       confirmRemove: '¿Eliminar esta planta? Sus prensas siguen en su sala de prensa, sin asignar.',
@@ -478,6 +518,7 @@ const COPY: Record<Locale, Copy> = {
     statUnits: (n) => plural(n, 'corpo de impressão', 'corpos de impressão'),
     addPress: 'Adicionar uma máquina',
     addSite: 'Adicionar uma fábrica',
+    arrange: 'Reordenar', arrangeDone: 'Concluir', arrangeCancel: 'Cancelar', arrangeHint: 'Arraste as máquinas ou use as setas. A ordem é partilhada com toda a sua equipa.', moveUp: 'Subir', moveDown: 'Descer', arrangeError: 'Não foi possível guardar a ordem. Tente novamente.',
     editSite: 'Editar a fábrica',
     allSites: 'Todas as fábricas',
     unplaced: 'Não atribuído',
@@ -512,6 +553,8 @@ const COPY: Record<Locale, Copy> = {
       consolePh: (h) => `p. ex. ${h}`,
       year: 'Ano',
       notes: 'Notas',
+      anydesk: 'Número AnyDesk',
+      anydeskHint: 'Assistência remota nesta máquina — preenchido ao pedir suporte.',
       quantity: 'Máquinas idênticas',
       quantityHint: 'Mesma configuração, numeradas automaticamente.',
       save: 'Guardar',
@@ -531,6 +574,8 @@ const COPY: Record<Locale, Copy> = {
       address: 'Morada',
       country: 'País',
       countryNone: 'Escolha um país',
+      anydesk: 'Número AnyDesk da fábrica',
+      anydeskHint: 'Ligação de assistência remota comum à fábrica (usada se a máquina não tiver).',
       save: 'Guardar',
       remove: 'Eliminar esta fábrica',
       confirmRemove: 'Eliminar esta fábrica? As suas máquinas continuam na sala de impressão, sem atribuição.',
@@ -562,7 +607,7 @@ export function compatibilityHref(p: Pick<WorkshopPress, 'manufacturer' | 'model
 /** Support request about one press: subject prefilled, ticket filed in its history. */
 export function supportHref(p: Pick<WorkshopPress, 'id'>, title: string, anydesk?: string | null): string {
   const q = new URLSearchParams({ subject: title, press: p.id, ...(anydesk ? { anydesk } : {}) });
-  return `/support?${q.toString()}`;
+  return `/support?${q.toString()}#support-form`;
 }
 
 type Filter = 'all' | 'none' | string;
@@ -588,6 +633,13 @@ export function AccountWorkshop({
   const [filter, setFilter] = useState<Filter>('all');
   const [editing, setEditing] = useState<WorkshopPress | 'new' | null>(null);
   const [siteEditing, setSiteEditing] = useState<WorkshopSite | 'new' | null>(null);
+  // « Réorganiser » mode: a list the client reorders (drag and drop, or arrows
+  // on touch screens), saved in one go on « Terminer ».
+  const [arranging, setArranging] = useState(false);
+  const [arrangeSnapshot, setArrangeSnapshot] = useState<WorkshopPress[] | null>(null);
+  const [arrangeBusy, setArrangeBusy] = useState(false);
+  const [arrangeError, setArrangeError] = useState(false);
+  const [dragId, setDragId] = useState<string | null>(null);
 
   const siteById = useMemo(() => new Map(sites.map((s) => [s.id, s])), [sites]);
   const unplacedCount = presses.filter((p) => !p.siteId || !siteById.has(p.siteId)).length;
@@ -597,6 +649,60 @@ export function AccountWorkshop({
   const units = presses.reduce((sum, p) => sum + p.colors + (p.coater ? 1 : 0), 0);
   const currentSite = filter !== 'all' && filter !== 'none' ? siteById.get(filter) ?? null : null;
   const canEdit = !preview;
+
+  // Move within the filtered view: swap with the visible neighbour, so a plant
+  // tab reorders that plant's presses without disturbing the others.
+  const move = (id: string, dir: -1 | 1) => {
+    const i = visible.findIndex((p) => p.id === id);
+    const other = visible[i + dir];
+    if (i < 0 || !other) return;
+    setPresses((list) => {
+      const a = list.findIndex((p) => p.id === id);
+      const b = list.findIndex((p) => p.id === other.id);
+      const next = [...list];
+      [next[a], next[b]] = [next[b], next[a]];
+      return next;
+    });
+  };
+  // Drop `dragId` on `targetId`: take it out and put it where the target is.
+  const dropOn = (targetId: string) => {
+    if (!dragId || dragId === targetId) return;
+    setPresses((list) => {
+      const from = list.findIndex((p) => p.id === dragId);
+      const to = list.findIndex((p) => p.id === targetId);
+      if (from < 0 || to < 0) return list;
+      const next = [...list];
+      const [item] = next.splice(from, 1);
+      next.splice(to, 0, item);
+      return next;
+    });
+  };
+  const startArranging = () => {
+    setArrangeSnapshot(presses);
+    setArrangeError(false);
+    setArranging(true);
+  };
+  const cancelArranging = () => {
+    if (arrangeSnapshot) setPresses(arrangeSnapshot);
+    setArranging(false);
+  };
+  const saveArrangement = async () => {
+    setArrangeBusy(true);
+    setArrangeError(false);
+    try {
+      const res = await fetch('/api/account/presses/order', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ids: presses.map((p) => p.id) }),
+      });
+      if (!res.ok) throw new Error('order');
+      setArranging(false);
+      router.refresh();
+    } catch {
+      setArrangeError(true);
+    }
+    setArrangeBusy(false);
+  };
 
   return (
     <main className="page-shell" id="top">
@@ -615,8 +721,22 @@ export function AccountWorkshop({
                 {presses.length ? <span className="ws-stat">{t.statUnits(units)}</span> : null}
               </div>
             </div>
-            {canEdit ? (
+            {canEdit && arranging ? (
               <div className="ws-head-actions">
+                <button type="button" className="button button-light" onClick={cancelArranging} disabled={arrangeBusy}>
+                  {t.arrangeCancel}
+                </button>
+                <button type="button" className="button button-accent" onClick={saveArrangement} disabled={arrangeBusy}>
+                  {arrangeBusy ? t.editor.saving : t.arrangeDone}
+                </button>
+              </div>
+            ) : canEdit ? (
+              <div className="ws-head-actions">
+                {presses.length > 1 ? (
+                  <button type="button" className="button button-light" onClick={startArranging}>
+                    {t.arrange}
+                  </button>
+                ) : null}
                 {canManageSites ? (
                   <button type="button" className="button button-light" onClick={() => setSiteEditing('new')}>
                     {t.addSite}
@@ -685,6 +805,52 @@ export function AccountWorkshop({
                 {canEdit && !canManageSites ? <p className="ws-note">{t.membersNote}</p> : null}
               </div>
             </div>
+          ) : arranging ? (
+            <>
+              <p className="ws-hint ws-arrange-hint">{t.arrangeHint}</p>
+              {arrangeError ? <p className="ws-error">{t.arrangeError}</p> : null}
+              <ol className="ws-arrange">
+                {visible.map((p, i) => {
+                  const site = p.siteId ? siteById.get(p.siteId) ?? null : null;
+                  const fmt = formatCopy(locale)[p.sheetFormat];
+                  return (
+                    <li
+                      key={p.id}
+                      className={`ws-arrange-row${dragId === p.id ? ' is-dragging' : ''}`}
+                      draggable
+                      onDragStart={(ev) => {
+                        setDragId(p.id);
+                        ev.dataTransfer.effectAllowed = 'move';
+                      }}
+                      onDragOver={(ev) => {
+                        ev.preventDefault();
+                        dropOn(p.id);
+                      }}
+                      onDragEnd={() => setDragId(null)}
+                    >
+                      <span className="ws-arrange-handle" aria-hidden="true">
+                        ⋮⋮
+                      </span>
+                      <span className="ws-arrange-n">{i + 1}</span>
+                      <span className="ws-arrange-main">
+                        <strong>{pressTitle(p)}</strong>
+                        <small>
+                          {[fmt.label, t.card.units(p.colors), site?.name].filter(Boolean).join(' · ')}
+                        </small>
+                      </span>
+                      <span className="ws-arrange-btns">
+                        <button type="button" aria-label={t.moveUp} disabled={i === 0} onClick={() => move(p.id, -1)}>
+                          ↑
+                        </button>
+                        <button type="button" aria-label={t.moveDown} disabled={i === visible.length - 1} onClick={() => move(p.id, 1)}>
+                          ↓
+                        </button>
+                      </span>
+                    </li>
+                  );
+                })}
+              </ol>
+            </>
           ) : visible.length ? (
             <div className="ws-grid">
               {visible.map((p) => (
@@ -830,13 +996,19 @@ export function PressCard({
                 <dd>{p.year}</dd>
               </div>
             ) : null}
+            {p.anydeskId ? (
+              <div>
+                <dt>AnyDesk</dt>
+                <dd>{p.anydeskId}</dd>
+              </div>
+            ) : null}
           </dl>
         ) : site ? (
           <p className="ws-card-site">{site.name}</p>
         ) : null}
         {!compact ? (
           <div className="ws-card-foot">
-            <a className="ws-card-support" href={supportHref(p, title)}>
+            <a className="ws-card-support" href={supportHref(p, title, p.anydeskId ?? site?.anydeskId)}>
               {t.card.support}
             </a>
             {href ? (
@@ -871,6 +1043,7 @@ type Draft = {
   console: string;
   year: string;
   notes: string;
+  anydeskId: string;
   quantity: number;
 };
 
@@ -890,6 +1063,7 @@ function toDraft(p: WorkshopPress | null, defaultSiteId: string | null): Draft {
       console: '',
       year: '',
       notes: '',
+      anydeskId: '',
       quantity: 1,
     };
   }
@@ -908,6 +1082,7 @@ function toDraft(p: WorkshopPress | null, defaultSiteId: string | null): Draft {
     console: p.console ?? '',
     year: p.year ? String(p.year) : '',
     notes: p.notes ?? '',
+    anydeskId: p.anydeskId ?? '',
     quantity: 1,
   };
 }
@@ -960,6 +1135,7 @@ export function PressEditor({
       console: d.console,
       year: d.year ? Number(d.year) : null,
       notes: d.notes,
+      anydeskId: d.anydeskId,
       quantity: d.quantity,
     };
     try {
@@ -1133,6 +1309,18 @@ export function PressEditor({
               </label>
             </div>
             <label className="ws-field">
+              <span className="ws-label">{e.anydesk}</span>
+              <input
+                className="ws-input"
+                value={d.anydeskId}
+                maxLength={40}
+                inputMode="numeric"
+                placeholder="123 456 789"
+                onChange={(ev) => set('anydeskId', ev.target.value)}
+              />
+              <small className="ws-hint">{e.anydeskHint}</small>
+            </label>
+            <label className="ws-field">
               <span className="ws-label">{e.notes}</span>
               <textarea className="ws-input" rows={2} value={d.notes} maxLength={1000} onChange={(ev) => set('notes', ev.target.value)} />
             </label>
@@ -1201,6 +1389,7 @@ function SiteEditor({
     postalCode: initial?.postalCode ?? '',
     address: initial?.address ?? '',
     country: initial?.country ?? '',
+    anydeskId: initial?.anydeskId ?? '',
   });
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(false);
@@ -1266,6 +1455,18 @@ function SiteEditor({
                 </option>
               ))}
             </select>
+          </label>
+          <label className="ws-field">
+            <span className="ws-label">{s.anydesk}</span>
+            <input
+              className="ws-input"
+              value={f.anydeskId}
+              maxLength={40}
+              inputMode="numeric"
+              placeholder="123 456 789"
+              onChange={(ev) => setF({ ...f, anydeskId: ev.target.value })}
+            />
+            <small className="ws-hint">{s.anydeskHint}</small>
           </label>
         </div>
         <footer className="ws-modal-foot">
