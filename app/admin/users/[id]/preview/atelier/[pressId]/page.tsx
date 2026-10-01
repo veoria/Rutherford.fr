@@ -22,7 +22,7 @@ export default async function PreviewPressRoute({
   params: { id: string; pressId: string };
   searchParams: { back?: string };
 }) {
-  await requirePreviewAccess(`/admin/users/${params.id}/preview/atelier/${params.pressId}`);
+  const { canManage } = await requirePreviewAccess(`/admin/users/${params.id}/preview/atelier/${params.pressId}`);
   const target = await getPreviewTarget(params.id);
   if (!target || target.accountType !== 'client' || !target.orgId) notFound();
   const press = await getPressForOrg(target.orgId, params.pressId);
@@ -70,6 +70,7 @@ export default async function PreviewPressRoute({
         accountType: target.accountType,
         back: safePreviewBack(searchParams.back),
         name: target.fullName,
+        editOrgId: canManage ? target.orgId : undefined,
       }}
     />
   );

@@ -78,7 +78,9 @@ export async function PATCH(request: NextRequest) {
     address: fields.address ?? null,
     postal_code: fields.postalCode ?? null,
     anydesk_id: fields.anydeskId ?? null,
-    notes: fields.notes ?? null,
+    // Notes internes : seulement si le formulaire les envoie (l'éditeur de
+    // site de l'aperçu client n'en a pas — il ne doit pas les effacer).
+    ...('notes' in body ? { notes: fields.notes ?? null } : {}),
   });
   return ok ? NextResponse.json({ ok: true }) : NextResponse.json({ error: 'failed' }, { status: 500 });
 }
