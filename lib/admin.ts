@@ -725,6 +725,27 @@ export type AdminOrgSystemRow = {
   anydeskId: string | null;
   /** Org qui a porté la COMMANDE (§ 2.6.2) — null = vente directe Rutherford. */
   soldByOrgName: string | null;
+  kind: string;
+  serialNumber: string | null;
+  /** Presse de l'atelier du client sur laquelle le système est installé. */
+  pressLabel: string | null;
+};
+
+/** Une presse déclarée par le client dans « Mon atelier » (lecture seule admin). */
+export type AdminOrgPressRow = {
+  id: string;
+  label: string;
+  manufacturer: string;
+  model: string | null;
+  sheetFormat: string;
+  colors: number;
+  coater: boolean;
+  perfecting: boolean;
+  siteId: string | null;
+  siteName: string | null;
+  year: number | null;
+  /** Nombre de systèmes / matériels Rutherford liés à cette presse. */
+  equipment: number;
 };
 
 export type AdminOrgAttributedRow = {
@@ -775,6 +796,7 @@ export type AdminOrgDetail = {
   pendingInvites: AdminOrgInviteRow[];
   sites: AdminOrgSiteRow[];
   systems: AdminOrgSystemRow[];
+  presses: AdminOrgPressRow[];
   /** Orgs revendeur/distributeur : les organisations qui leur sont attribuées
    * (reseller_org_id resp. distributor_org_id = cette org). */
   attributedOrgs: AdminOrgAttributedRow[];
@@ -821,7 +843,7 @@ export async function getAdminOrgDetail(orgId: string): Promise<AdminOrgDetail |
   const attributionColumn =
     o.type === 'reseller' ? 'reseller_org_id' : o.type === 'distributor' ? 'distributor_org_id' : null;
 
-  const [memRes, invRes, sitesRes, sysRes, attribRes] = await Promise.all([
+  const [memRes, invRes, sitesRes, sysRes, attribRes, pressRes] = await Promise.all([
     admin.from('organization_members').select('user_id, role, status').eq('org_id', orgId),
     admin.from('invitations').select('id, email, role, created_at').eq('org_id', orgId).eq('status', 'pending'),
     admin
@@ -832,13 +854,18 @@ export async function getAdminOrgDetail(orgId: string): Promise<AdminOrgDetail |
     admin
       .from('client_systems')
       .select(
-        'id, product, machine, site_id, license_key, license_status, license_expires_at, installed_version, latest_version, anydesk_id, sold_by_org_id, created_at'
+        'id, product, machine, site_id, press_id, kind, serial_number, license_key, license_status, license_expires_at, installed_version, latest_version, anydesk_id, sold_by_org_id, created_at'
       )
       .eq('org_id', orgId)
       .order('created_at', { ascending: true }),
     attributionColumn
       ? admin.from('organizations').select('id, name, type').eq(attributionColumn, orgId).order('name')
       : Promise.resolve({ data: [] as Record<string, unknown>[] }),
+    admin
+      .from('presses')
+      .select('id, name, manufacturer, model, sheet_format, colors, coater, perfecting, site_id, year')
+      .eq('org_id', orgId)
+      .order('created_at', { ascending: true }),
   ]);
 
   const memberRows = (memRes.data ?? []) as { user_id: string; role: string; status: string }[];
@@ -856,6 +883,9 @@ export async function getAdminOrgDetail(orgId: string): Promise<AdminOrgDetail |
     product: string;
     machine: string | null;
     site_id: string | null;
+    press_id: string | null;
+    kind: string | null;
+    serial_number: string | null;
     license_key: string | null;
     license_status: string;
     license_expires_at: string | null;
@@ -865,6 +895,25 @@ export async function getAdminOrgDetail(orgId: string): Promise<AdminOrgDetail |
     sold_by_org_id: string | null;
     created_at: string | null;
   }[];
+  const pressRows = (pressRes.data ?? []) as {
+    id: string;
+    name: string | null;
+    manufacturer: string;
+    model: string | null;
+    sheet_format: string;
+    colors: number;
+    coater: boolean;
+    perfecting: boolean;
+    site_id: string | null;
+    year: number | null;
+  }[];
+  const pressLabel = (p: { name: string | null; manufacturer: string; model: string | null }) =>
+    (p.name ?? '').trim() || [p.manufacturer, p.model].filter(Boolean).join(' ');
+  const pressLabelById = new Map(pressRows.map((p) => [p.id, pressLabel(p)] as const));
+  const equipmentByPress = new Map<string, number>();
+  for (const s of sysRows) {
+    if (s.press_id) equipmentByPress.set(s.press_id, (equipmentByPress.get(s.press_id) ?? 0) + 1);
+  }
   const attribRows = (attribRes.data ?? []) as { id: string; name: string; type: string }[];
 
   // Noms (profiles) + e-mails (auth listUsers) des membres.
@@ -1040,6 +1089,23 @@ export async function getAdminOrgDetail(orgId: string): Promise<AdminOrgDetail |
       latestVersion: s.latest_version,
       anydeskId: s.anydesk_id,
       soldByOrgName: s.sold_by_org_id ? relatedNameById.get(s.sold_by_org_id) ?? null : null,
+      kind: s.kind ?? 'software',
+      serialNumber: s.serial_number,
+      pressLabel: s.press_id ? pressLabelById.get(s.press_id) ?? null : null,
+    })),
+    presses: pressRows.map((p) => ({
+      id: p.id,
+      label: pressLabel(p),
+      manufacturer: p.manufacturer,
+      model: p.model,
+      sheetFormat: p.sheet_format,
+      colors: p.colors,
+      coater: p.coater,
+      perfecting: p.perfecting,
+      siteId: p.site_id,
+      siteName: p.site_id ? siteNameById.get(p.site_id) ?? null : null,
+      year: p.year,
+      equipment: equipmentByPress.get(p.id) ?? 0,
     })),
     attributedOrgs: attribRows.map((a) => ({
       id: a.id,

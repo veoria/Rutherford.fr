@@ -265,3 +265,79 @@ export async function deletePress(orgId: string, id: string): Promise<boolean> {
     return false;
   }
 }
+
+/** One press of the org (null when it doesn't exist or belongs elsewhere). */
+export async function getPressForOrg(orgId: string, id: string): Promise<PressRecord | null> {
+  const supabase = admin();
+  if (!supabase || !orgId || !id) return null;
+  try {
+    const { data } = await supabase.from('presses').select(SELECT).eq('id', id).eq('org_id', orgId).maybeSingle();
+    return data ? toRecord(data as Row) : null;
+  } catch {
+    return null;
+  }
+}
+
+export type PressTicket = {
+  id: string;
+  reference: string;
+  subject: string | null;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+  /** True when the signed-in user filed it (their /account/support shows it). */
+  mine: boolean;
+};
+
+/** Support history of one press — every ticket filed on it by the org's members. */
+export async function getPressSupportHistory(pressId: string, viewerId: string): Promise<PressTicket[]> {
+  const supabase = admin();
+  if (!supabase || !pressId) return [];
+  try {
+    const { data } = await supabase
+      .from('support_tickets')
+      .select('id, subject, status, created_at, updated_at, user_id')
+      .eq('press_id', pressId)
+      .order('created_at', { ascending: false });
+    return (
+      (data ?? []) as {
+        id: string;
+        subject: string | null;
+        status: string;
+        created_at: string;
+        updated_at: string;
+        user_id: string | null;
+      }[]
+    ).map((t) => ({
+      id: t.id,
+      reference: t.id.slice(0, 8),
+      subject: t.subject,
+      status: t.status,
+      createdAt: t.created_at,
+      updatedAt: t.updated_at,
+      mine: t.user_id === viewerId,
+    }));
+  } catch {
+    return [];
+  }
+}
+
+/** Names of the reseller / distributor attributed to a client org — they see
+ *  its declared presses in their « Parc clients » (lib/partner-fleet.ts). */
+export async function getAttributedPartnerNames(orgId: string): Promise<string[]> {
+  const supabase = admin();
+  if (!supabase || !orgId) return [];
+  try {
+    const { data: org } = await supabase
+      .from('organizations')
+      .select('reseller_org_id, distributor_org_id')
+      .eq('id', orgId)
+      .maybeSingle();
+    const ids = [org?.reseller_org_id, org?.distributor_org_id].filter((v): v is string => typeof v === 'string');
+    if (!ids.length) return [];
+    const { data } = await supabase.from('organizations').select('name').in('id', ids);
+    return ((data ?? []) as { name: string }[]).map((o) => o.name);
+  } catch {
+    return [];
+  }
+}

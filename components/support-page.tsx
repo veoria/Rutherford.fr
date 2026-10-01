@@ -680,14 +680,21 @@ export function SupportPage() {
   );
 
   // Prefill from the URL — the per-press "Support" button in the account passes
-  // ?subject=<machine>&company=<company>. Never clobbers a value already typed.
+  // ?subject=<machine>&company=<company>, plus ?press=<id> (Mon atelier: files
+  // the ticket in that press's support history) and ?anydesk=<id>. Never
+  // clobbers a value already typed.
+  const [pressId, setPressId] = useState<string | null>(null);
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const params = new URLSearchParams(window.location.search);
     const s = params.get('subject');
     const c = params.get('company');
+    const p = params.get('press');
+    const a = params.get('anydesk');
     if (s) setSubject((v) => v || s.slice(0, 200));
     if (c) setCompany((v) => v || c.slice(0, 200));
+    if (p && /^[0-9a-f-]{36}$/i.test(p)) setPressId(p);
+    if (a) setAnydesk((v) => v || a.slice(0, 60));
   }, []);
 
   // Prefill from the signed-in profile, then fall back to IP geo for the country.
@@ -807,6 +814,7 @@ export function SupportPage() {
           subject: subject.trim(),
           description: problem.trim(),
           photos,
+          pressId,
         }),
       });
       if (!res.ok) {

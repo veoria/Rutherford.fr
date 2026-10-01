@@ -11,6 +11,7 @@ import { SiteFooter } from '@/components/site-footer';
 import { SiteNav } from '@/components/site-nav';
 import type { AdminOrgDetail as Detail } from '@/lib/admin';
 import type { AuditEntry } from '@/lib/admin-audit';
+import { SYSTEM_KIND_LABELS, isSystemKind } from '@/data/press-config';
 import {
   OrgIdentityEditor,
   OrgMembersEditor,
@@ -207,6 +208,15 @@ export function AdminOrgDetail({
   const funnelMax = Math.max(1, ...funnel.map((f) => f.count));
 
   const previewLabel = PREVIEW_LABELS[org.type] ?? 'Voir l’espace du client';
+  // Sélecteurs de l'éditeur de systèmes : presses de l'atelier du client et
+  // partenaires possibles pour « Vendu par ».
+  const pressOptions = org.presses.map((p) => ({
+    id: p.id,
+    label: p.siteName ? `${p.label} — ${p.siteName}` : p.label,
+    siteId: p.siteId,
+  }));
+  const partnerOptions = orgOptions.filter((o) => o.type === 'reseller' || o.type === 'distributor');
+  const kindLabel = (k: string) => (isSystemKind(k) ? SYSTEM_KIND_LABELS.fr[k] : k);
 
   return (
     <main className="page-shell" id="top">
@@ -486,6 +496,59 @@ export function AdminOrgDetail({
             </div>
           ) : null}
 
+          {/* Presses déclarées par le client dans « Mon atelier » (lecture seule :
+              c'est le client qui les tient à jour). */}
+          {isClient ? (
+            <div className="admin-block">
+              <div className="admin-block-head">
+                <h2>Presses de l&apos;atelier ({org.presses.length})</h2>
+              </div>
+              {org.presses.length ? (
+                <div className="admin-table-wrap">
+                  <table className="admin-table">
+                    <thead>
+                      <tr>
+                        <th>Presse</th>
+                        <th>Configuration</th>
+                        <th>Usine</th>
+                        <th>Année</th>
+                        <th>Équipement</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {org.presses.map((p) => (
+                        <tr key={p.id}>
+                          <td>
+                            {p.label}
+                            {p.label !== [p.manufacturer, p.model].filter(Boolean).join(' ') ? (
+                              <span className="admin-cv-sub">{[p.manufacturer, p.model].filter(Boolean).join(' ')}</span>
+                            ) : null}
+                          </td>
+                          <td>
+                            {p.sheetFormat === 'vlf' ? 'Grand format' : p.sheetFormat.toUpperCase()} · {p.colors} coul.
+                            {p.coater ? ' · vernis' : ''}
+                            {p.perfecting ? ' · retiration' : ''}
+                          </td>
+                          <td>{p.siteName ?? '—'}</td>
+                          <td>{p.year ?? '—'}</td>
+                          <td>
+                            {p.equipment ? (
+                              <span className="admin-status admin-status-green">Équipée ({p.equipment})</span>
+                            ) : (
+                              <span className="admin-status admin-status-review">Non équipée</span>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <p className="admin-modal-section-status">Aucune presse déclarée par le client.</p>
+              )}
+            </div>
+          ) : null}
+
           {isClient ? (
             <div className="admin-block">
               <div className="admin-block-head">
@@ -497,6 +560,7 @@ export function AdminOrgDetail({
                     <thead>
                       <tr>
                         <th>Produit</th>
+                        <th>Type</th>
                         <th>Presse / machine</th>
                         <th>Usine</th>
                         <th>Licence</th>
@@ -507,8 +571,12 @@ export function AdminOrgDetail({
                     <tbody>
                       {org.systems.map((s) => (
                         <tr key={s.id}>
-                          <td>{s.product}</td>
-                          <td>{s.machine ?? '—'}</td>
+                          <td>
+                            {s.product}
+                            {s.serialNumber ? <span className="admin-cv-sub">S/N {s.serialNumber}</span> : null}
+                          </td>
+                          <td>{kindLabel(s.kind)}</td>
+                          <td>{s.pressLabel ?? s.machine ?? '—'}</td>
                           <td>{s.siteName ?? '—'}</td>
                           <td>{s.licenseKey ?? '—'}</td>
                           <td>
@@ -531,7 +599,9 @@ export function AdminOrgDetail({
               ) : (
                 <p className="admin-modal-section-status">Aucun système installé.</p>
               )}
-              {canManage ? <OrgSystemsEditor orgId={org.id} sites={sites} /> : null}
+              {canManage ? (
+                <OrgSystemsEditor orgId={org.id} sites={sites} presses={pressOptions} partners={partnerOptions} />
+              ) : null}
             </div>
           ) : null}
 

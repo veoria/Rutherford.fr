@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { type Locale, useLanguage } from '@/components/language-provider';
 import { getCourseBySlug } from '@/data/academy-courses';
 import { ACADEMY_ENABLED } from '@/lib/features';
+import { SYSTEM_KIND_LABELS, type SystemKind } from '@/data/press-config';
 
 // One card per installed system (set by the Rutherford team in the org
 // back-office): license, AnyDesk id, installed vs latest version, plus
@@ -21,6 +22,11 @@ export type AccountInstallation = {
   installedVersion: string | null;
   latestVersion: string | null;
   updateAvailable: boolean;
+  // Software vs tracked hardware (measurement device, PC/server, console
+  // interface), its serial number, and the Mon atelier press it sits on.
+  kind?: SystemKind;
+  serialNumber?: string | null;
+  pressId?: string | null;
 };
 
 // A plant/site (usine) the user can see. Serializable subset of SiteRecord.
@@ -193,7 +199,12 @@ function SystemCard({ s, t, locale, preview = false }: { s: AccountInstallation;
     title: getCourseBySlug(slug)?.title ?? slug,
   }));
   const supportSubject = [s.product, s.machine].filter(Boolean).join(' — ');
-  const q = new URLSearchParams({ subject: supportSubject }).toString();
+  const q = new URLSearchParams({
+    subject: supportSubject,
+    ...(s.pressId ? { press: s.pressId } : {}),
+    ...(s.anydeskId ? { anydesk: s.anydeskId } : {}),
+  }).toString();
+  const hardware = s.kind && s.kind !== 'software';
   return (
     <div className="ah-sys">
       <div className="ah-sys-h">
@@ -201,10 +212,20 @@ function SystemCard({ s, t, locale, preview = false }: { s: AccountInstallation;
           <div className="ah-sys-name">{s.product}</div>
           {s.machine ? <div className="ah-sys-meta">{s.machine}</div> : null}
         </div>
-        <span className={`ah-sys-pill ${STATUS_PILL[s.licenseStatus]}`}>{t.status[s.licenseStatus]}</span>
+        {hardware && s.kind ? (
+          <span className="ah-sys-pill blue">{SYSTEM_KIND_LABELS[locale][s.kind]}</span>
+        ) : (
+          <span className={`ah-sys-pill ${STATUS_PILL[s.licenseStatus]}`}>{t.status[s.licenseStatus]}</span>
+        )}
       </div>
 
       <div className="ah-sys-kvs">
+        {s.serialNumber ? (
+          <div className="ah-sys-kv">
+            <span className="ah-sys-k">S/N</span>
+            <span className="ah-sys-v ah-mono">{s.serialNumber}</span>
+          </div>
+        ) : null}
         {s.licenseKey ? (
           <div className="ah-sys-kv">
             <span className="ah-sys-k">{t.license}</span>

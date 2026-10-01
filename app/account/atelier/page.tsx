@@ -4,8 +4,9 @@ import { ACCOUNT_ENABLED } from '@/lib/features';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { isOnboarded } from '@/lib/profile';
 import { ensurePersonalOrg } from '@/lib/organizations';
-import { getPressesForOrg, getWorkshopAccess } from '@/lib/presses';
+import { getAttributedPartnerNames, getPressesForOrg, getWorkshopAccess } from '@/lib/presses';
 import { getVisibleSitesForUser } from '@/lib/sites';
+import { getSystemsForOrg } from '@/lib/client-systems';
 import { AccountWorkshop, type WorkshopSite } from '@/components/account-workshop';
 
 export const metadata: Metadata = {
@@ -45,12 +46,18 @@ export default async function AccountWorkshopRoute() {
     access = await getWorkshopAccess(user.id);
   }
 
-  const [siteRecords, pressRecords] = access
+  const [siteRecords, pressRecords, systems, partnerNames] = access
     ? await Promise.all([
         getVisibleSitesForUser(user.id, access.orgId, access.canManageSites),
         getPressesForOrg(access.orgId),
+        getSystemsForOrg(access.orgId),
+        getAttributedPartnerNames(access.orgId),
       ])
-    : [[], []];
+    : [[], [], [], []];
+  const equipmentByPress = new Map<string, number>();
+  for (const sys of systems) {
+    if (sys.pressId) equipmentByPress.set(sys.pressId, (equipmentByPress.get(sys.pressId) ?? 0) + 1);
+  }
 
   const sites: WorkshopSite[] = siteRecords.map((s) => ({
     id: s.id,
@@ -65,7 +72,14 @@ export default async function AccountWorkshopRoute() {
   const visibleSiteIds = new Set(sites.map((s) => s.id));
   const presses = pressRecords
     .filter((p) => !p.siteId || visibleSiteIds.has(p.siteId))
-    .map(({ createdAt: _createdAt, ...p }) => p);
+    .map(({ createdAt: _createdAt, ...p }) => ({ ...p, equipment: equipmentByPress.get(p.id) ?? 0 }));
 
-  return <AccountWorkshop presses={presses} sites={sites} canManageSites={access?.canManageSites ?? false} />;
+  return (
+    <AccountWorkshop
+      presses={presses}
+      sites={sites}
+      canManageSites={access?.canManageSites ?? false}
+      partnerNames={partnerNames}
+    />
+  );
 }

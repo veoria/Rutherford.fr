@@ -75,3 +75,22 @@ export function pressTitle(p: { name?: string | null; manufacturer: string; mode
   const machine = [p.manufacturer, p.model].filter(Boolean).join(' ');
   return (p.name ?? '').trim() || machine;
 }
+
+// ── Equipment on a press (client_systems.kind) ──
+// The Rutherford software (license + version) and the hardware tracked per
+// press: measurement device, ColorLoop PC/server, console interface.
+export const SYSTEM_KINDS = ['software', 'measurement_device', 'pc', 'console_interface'] as const;
+export type SystemKind = (typeof SYSTEM_KINDS)[number];
+
+export function isSystemKind(v: unknown): v is SystemKind {
+  return typeof v === 'string' && (SYSTEM_KINDS as readonly string[]).includes(v);
+}
+
+export const SYSTEM_KIND_LABELS: Record<Locale, Record<SystemKind, string>> = {
+  en: { software: 'Software', measurement_device: 'Measurement device', pc: 'ColorLoop PC / server', console_interface: 'Console interface' },
+  fr: { software: 'Logiciel', measurement_device: 'Dispositif de mesure', pc: 'PC / serveur ColorLoop', console_interface: 'Interface console' },
+  de: { software: 'Software', measurement_device: 'Messgerät', pc: 'ColorLoop-PC / -Server', console_interface: 'Konsolenschnittstelle' },
+  it: { software: 'Software', measurement_device: 'Dispositivo di misura', pc: 'PC / server ColorLoop', console_interface: 'Interfaccia console' },
+  es: { software: 'Software', measurement_device: 'Dispositivo de medición', pc: 'PC / servidor ColorLoop', console_interface: 'Interfaz de consola' },
+  pt: { software: 'Software', measurement_device: 'Dispositivo de medição', pc: 'PC / servidor ColorLoop', console_interface: 'Interface de consola' },
+};

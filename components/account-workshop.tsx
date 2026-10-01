@@ -46,6 +46,8 @@ export type WorkshopPress = {
   console: string | null;
   year: number | null;
   notes: string | null;
+  /** Rutherford systems/devices linked to this press (0 = not equipped). */
+  equipment?: number;
 };
 
 export type WorkshopSite = {
@@ -72,7 +74,19 @@ type Copy = {
   emptySub: string;
   siteEmpty: string;
   membersNote: string;
-  card: { edit: string; remove: string; check: string; coater: string; perfecting: string; units: (n: number) => string };
+  sharedWith: (names: string) => string;
+  card: {
+    edit: string;
+    remove: string;
+    check: string;
+    coater: string;
+    perfecting: string;
+    units: (n: number) => string;
+    open: string;
+    support: string;
+    equipped: string;
+    notEquipped: string;
+  };
   editor: {
     titleNew: string;
     titleEdit: string;
@@ -141,7 +155,8 @@ const COPY: Record<Locale, Copy> = {
     emptySub: 'Add your presses one by one — brand, format, number of colors — and place them in your plants. Two minutes per machine.',
     siteEmpty: 'No press in this plant yet.',
     membersNote: 'Plants are managed by your account admins.',
-    card: { edit: 'Edit', remove: 'Delete', check: 'Check console compatibility', coater: 'Coater', perfecting: 'Perfecting', units: (n) => plural(n, 'color', 'colors') },
+    sharedWith: (n) => `Your Rutherford partner ${n} sees these presses (read only) to follow your equipment.`,
+    card: { edit: 'Edit', remove: 'Delete', check: 'Check console compatibility', coater: 'Coater', perfecting: 'Perfecting', units: (n) => plural(n, 'color', 'colors'), open: 'Open press sheet', support: 'Support', equipped: 'Rutherford equipped', notEquipped: 'Not equipped' },
     editor: {
       titleNew: 'Add a press',
       titleEdit: 'Edit press',
@@ -206,7 +221,8 @@ const COPY: Record<Locale, Copy> = {
     emptySub: 'Ajoutez vos presses une à une — constructeur, format, nombre de couleurs — et rangez-les par site. Deux minutes par machine.',
     siteEmpty: 'Aucune presse sur ce site pour l’instant.',
     membersNote: 'Les sites sont gérés par les administrateurs du compte.',
-    card: { edit: 'Modifier', remove: 'Supprimer', check: 'Vérifier la compatibilité console', coater: 'Vernis', perfecting: 'Retiration', units: (n) => plural(n, 'couleur', 'couleurs') },
+    sharedWith: (n) => `Votre partenaire Rutherford ${n} voit ces presses (lecture seule) pour suivre votre équipement.`,
+    card: { edit: 'Modifier', remove: 'Supprimer', check: 'Vérifier la compatibilité console', coater: 'Vernis', perfecting: 'Retiration', units: (n) => plural(n, 'couleur', 'couleurs'), open: 'Ouvrir la fiche', support: 'Support', equipped: 'Équipée Rutherford', notEquipped: 'Non équipée' },
     editor: {
       titleNew: 'Ajouter une presse',
       titleEdit: 'Modifier la presse',
@@ -271,7 +287,8 @@ const COPY: Record<Locale, Copy> = {
     emptySub: 'Erfassen Sie Ihre Druckmaschinen einzeln — Hersteller, Format, Farbenzahl — und ordnen Sie sie Ihren Werken zu. Zwei Minuten pro Maschine.',
     siteEmpty: 'Noch keine Druckmaschine in diesem Werk.',
     membersNote: 'Werke werden von den Administratoren des Kontos verwaltet.',
-    card: { edit: 'Bearbeiten', remove: 'Löschen', check: 'Konsolenkompatibilität prüfen', coater: 'Lackwerk', perfecting: 'Wendung', units: (n) => plural(n, 'Farbe', 'Farben') },
+    sharedWith: (n) => `Ihr Rutherford-Partner ${n} sieht diese Druckmaschinen (nur Lesezugriff), um Ihre Ausstattung zu betreuen.`,
+    card: { edit: 'Bearbeiten', remove: 'Löschen', check: 'Konsolenkompatibilität prüfen', coater: 'Lackwerk', perfecting: 'Wendung', units: (n) => plural(n, 'Farbe', 'Farben'), open: 'Maschinenblatt öffnen', support: 'Support', equipped: 'Mit Rutherford ausgestattet', notEquipped: 'Nicht ausgestattet' },
     editor: {
       titleNew: 'Druckmaschine hinzufügen',
       titleEdit: 'Druckmaschine bearbeiten',
@@ -336,7 +353,8 @@ const COPY: Record<Locale, Copy> = {
     emptySub: 'Aggiunga le macchine una per una — costruttore, formato, numero di colori — e le assegni ai Suoi stabilimenti. Due minuti per macchina.',
     siteEmpty: 'Ancora nessuna macchina in questo stabilimento.',
     membersNote: 'Gli stabilimenti sono gestiti dagli amministratori dell’account.',
-    card: { edit: 'Modifica', remove: 'Elimina', check: 'Verifica compatibilità console', coater: 'Gruppo vernice', perfecting: 'Bianca-volta', units: (n) => plural(n, 'colore', 'colori') },
+    sharedWith: (n) => `Il Suo partner Rutherford ${n} vede queste macchine (sola lettura) per seguire il Suo equipaggiamento.`,
+    card: { edit: 'Modifica', remove: 'Elimina', check: 'Verifica compatibilità console', coater: 'Gruppo vernice', perfecting: 'Bianca-volta', units: (n) => plural(n, 'colore', 'colori'), open: 'Apri la scheda', support: 'Supporto', equipped: 'Equipaggiata Rutherford', notEquipped: 'Non equipaggiata' },
     editor: {
       titleNew: 'Aggiungi una macchina',
       titleEdit: 'Modifica la macchina',
@@ -401,7 +419,8 @@ const COPY: Record<Locale, Copy> = {
     emptySub: 'Añada sus prensas una a una — fabricante, formato, número de colores — y asígnelas a sus plantas. Dos minutos por máquina.',
     siteEmpty: 'Todavía no hay prensas en esta planta.',
     membersNote: 'Las plantas las gestionan los administradores de la cuenta.',
-    card: { edit: 'Editar', remove: 'Eliminar', check: 'Verificar compatibilidad de consola', coater: 'Barniz', perfecting: 'Retiración', units: (n) => plural(n, 'color', 'colores') },
+    sharedWith: (n) => `Su socio Rutherford ${n} ve estas prensas (solo lectura) para hacer el seguimiento de su equipamiento.`,
+    card: { edit: 'Editar', remove: 'Eliminar', check: 'Verificar compatibilidad de consola', coater: 'Barniz', perfecting: 'Retiración', units: (n) => plural(n, 'color', 'colores'), open: 'Abrir la ficha', support: 'Soporte', equipped: 'Equipada Rutherford', notEquipped: 'No equipada' },
     editor: {
       titleNew: 'Añadir una prensa',
       titleEdit: 'Editar la prensa',
@@ -466,7 +485,8 @@ const COPY: Record<Locale, Copy> = {
     emptySub: 'Adicione as suas máquinas uma a uma — fabricante, formato, número de cores — e atribua-as às suas fábricas. Dois minutos por máquina.',
     siteEmpty: 'Ainda não há máquinas nesta fábrica.',
     membersNote: 'As fábricas são geridas pelos administradores da conta.',
-    card: { edit: 'Editar', remove: 'Eliminar', check: 'Verificar compatibilidade da consola', coater: 'Verniz', perfecting: 'Retiração', units: (n) => plural(n, 'cor', 'cores') },
+    sharedWith: (n) => `O seu parceiro Rutherford ${n} vê estas máquinas (apenas leitura) para acompanhar o seu equipamento.`,
+    card: { edit: 'Editar', remove: 'Eliminar', check: 'Verificar compatibilidade da consola', coater: 'Verniz', perfecting: 'Retiração', units: (n) => plural(n, 'cor', 'cores'), open: 'Abrir a ficha', support: 'Suporte', equipped: 'Equipada Rutherford', notEquipped: 'Não equipada' },
     editor: {
       titleNew: 'Adicionar uma máquina',
       titleEdit: 'Editar a máquina',
@@ -539,17 +559,26 @@ export function compatibilityHref(p: Pick<WorkshopPress, 'manufacturer' | 'model
   return `${slug ? `/console-validation/${slug}` : '/console-validation'}${q}#submit`;
 }
 
+/** Support request about one press: subject prefilled, ticket filed in its history. */
+export function supportHref(p: Pick<WorkshopPress, 'id'>, title: string, anydesk?: string | null): string {
+  const q = new URLSearchParams({ subject: title, press: p.id, ...(anydesk ? { anydesk } : {}) });
+  return `/support?${q.toString()}`;
+}
+
 type Filter = 'all' | 'none' | string;
 
 export function AccountWorkshop({
   presses: initialPresses,
   sites,
   canManageSites,
+  partnerNames = [],
   preview = false,
 }: {
   presses: WorkshopPress[];
   sites: WorkshopSite[];
   canManageSites: boolean;
+  /** Reseller / distributor attributed to the org — they see these presses. */
+  partnerNames?: string[];
   preview?: boolean;
 }) {
   const { locale } = useLanguage();
@@ -579,6 +608,7 @@ export function AccountWorkshop({
             <div>
               <h1 className="ws-title">{t.title}</h1>
               <p className="ws-sub">{t.sub}</p>
+              {partnerNames.length ? <p className="ws-shared">{t.sharedWith(partnerNames.join(', '))}</p> : null}
               <div className="ws-stats">
                 <span className="ws-stat">{t.statPresses(presses.length)}</span>
                 <span className="ws-stat">{t.statSites(sites.length)}</span>
@@ -665,6 +695,7 @@ export function AccountWorkshop({
                   t={t}
                   locale={locale}
                   onEdit={canEdit ? () => setEditing(p) : undefined}
+                  href={preview ? undefined : `/account/atelier/${p.id}`}
                 />
               ))}
             </div>
@@ -688,7 +719,8 @@ export function AccountWorkshop({
               let next = removedId ? list.filter((x) => x.id !== removedId) : list;
               for (const s of saved) {
                 const i = next.findIndex((x) => x.id === s.id);
-                next = i >= 0 ? next.map((x) => (x.id === s.id ? s : x)) : [...next, s];
+                // The API returns the press row only: keep the equipment count.
+                next = i >= 0 ? next.map((x) => (x.id === s.id ? { ...x, ...s } : x)) : [...next, { ...s, equipment: 0 }];
               }
               return next;
             });
@@ -725,6 +757,7 @@ export function PressCard({
   t,
   locale,
   onEdit,
+  href,
   compact = false,
 }: {
   press: WorkshopPress;
@@ -732,20 +765,31 @@ export function PressCard({
   t: Copy;
   locale: Locale;
   onEdit?: () => void;
+  /** Press sheet (/account/atelier/[id]); omitted in the admin preview. */
+  href?: string;
   compact?: boolean;
 }) {
   const fmt = formatCopy(locale)[p.sheetFormat];
   const machine = [p.manufacturer, p.model].filter(Boolean).join(' ');
   const title = pressTitle(p);
+  const equipped = (p.equipment ?? 0) > 0;
   return (
-    <article className={`ws-card${compact ? ' is-compact' : ''}`}>
+    <article className={`ws-card${compact ? ' is-compact' : ''}${href ? ' is-linked' : ''}`}>
       <div className="ws-card-art" aria-hidden="true">
         <PressSchematic format={schematicFormat(p.sheetFormat)} colors={p.colors} viewBox={CARD_VIEWBOX} />
       </div>
       <div className="ws-card-body">
         <div className="ws-card-top">
           <div>
-            <h3 className="ws-card-t">{title}</h3>
+            <h3 className="ws-card-t">
+              {href ? (
+                <a className="ws-card-link" href={href}>
+                  {title}
+                </a>
+              ) : (
+                title
+              )}
+            </h3>
             {title !== machine ? <p className="ws-card-m">{machine}</p> : null}
           </div>
           {onEdit ? (
@@ -755,6 +799,9 @@ export function PressCard({
           ) : null}
         </div>
         <div className="ws-chips">
+          {p.equipment !== undefined ? (
+            <span className={`ws-chip ${equipped ? 'is-ok' : 'is-muted'}`}>{equipped ? t.card.equipped : t.card.notEquipped}</span>
+          ) : null}
           <span className="ws-chip">
             {fmt.label} · {fmt.dims}
           </span>
@@ -788,9 +835,20 @@ export function PressCard({
           <p className="ws-card-site">{site.name}</p>
         ) : null}
         {!compact ? (
-          <a className="ws-card-cta" href={compatibilityHref(p)}>
-            {t.card.check} <span aria-hidden="true">→</span>
-          </a>
+          <div className="ws-card-foot">
+            <a className="ws-card-support" href={supportHref(p, title)}>
+              {t.card.support}
+            </a>
+            {href ? (
+              <a className="ws-card-cta" href={href}>
+                {t.card.open} <span aria-hidden="true">→</span>
+              </a>
+            ) : (
+              <a className="ws-card-cta" href={compatibilityHref(p)}>
+                {t.card.check} <span aria-hidden="true">→</span>
+              </a>
+            )}
+          </div>
         ) : null}
       </div>
     </article>
@@ -854,7 +912,7 @@ function toDraft(p: WorkshopPress | null, defaultSiteId: string | null): Draft {
   };
 }
 
-function PressEditor({
+export function PressEditor({
   t,
   locale,
   sites,

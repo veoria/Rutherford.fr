@@ -111,7 +111,10 @@ export async function getAccountHubPreview(userId: string): Promise<Omit<Account
     ]);
     installations = orgSystems.map(toAccountInstallation);
     sites = orgSites.map(toAccountSite);
-    presses = orgPresses.map(({ createdAt: _createdAt, ...press }) => press);
+    presses = orgPresses.map(({ createdAt: _createdAt, ...press }) => ({
+      ...press,
+      equipment: orgSystems.filter((sys) => sys.pressId === press.id).length,
+    }));
     if (o) {
       const oo = o as { id: string; name: string; type: string; logo_url: string | null };
       org = { id: oo.id, name: oo.name, type: oo.type, logoUrl: oo.logo_url ?? null };

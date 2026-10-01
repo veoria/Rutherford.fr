@@ -562,6 +562,16 @@ const ATELIER: Record<
   },
 };
 
+// Partner « Parc clients » tile (reseller / distributor).
+const PARC_TILE: Record<Locale, { t: string; s: string }> = {
+  en: { t: 'Client fleet', s: 'Presses equipped and to equip' },
+  fr: { t: 'Parc clients', s: 'Presses équipées et à équiper' },
+  de: { t: 'Kundenpark', s: 'Ausgestattete und auszustattende Maschinen' },
+  it: { t: 'Parco clienti', s: 'Macchine equipaggiate e da equipaggiare' },
+  es: { t: 'Parque de clientes', s: 'Prensas equipadas y por equipar' },
+  pt: { t: 'Parque de clientes', s: 'Máquinas equipadas e por equipar' },
+};
+
 // Tile label = the subnav tab label, so the two read the same.
 const ATELIER_T: Record<Locale, string> = {
   en: 'My pressroom',
@@ -673,9 +683,22 @@ export function AccountHub(props: Props) {
 
   // Console tile is hidden for the Rutherford team (per-role visibility
   // matrix): press validations are meaningless on a staff account.
+  const fleetSystems = resellerClients.reduce((n, c) => n + (c.systems ?? 0), 0);
+  const fleetUpdates = resellerClients.reduce((n, c) => n + (c.updates ?? 0), 0);
+  const parcTile: Tile = {
+    ic: 'atelier',
+    cls: 'blue',
+    t: PARC_TILE[locale].t,
+    s: PARC_TILE[locale].s,
+    href: '/account/parc',
+    adminHref: previewOrgHref,
+    statDot: fleetUpdates ? 'amber' : fleetSystems ? 'green' : undefined,
+    statV: t.manage.systemsShort(fleetSystems),
+    statM: fleetUpdates ? t.manage.updatesShort(fleetUpdates) : '',
+  };
   const tiles: Tile[] =
     accountType === 'reseller' || accountType === 'distributor'
-      ? [roleTile, consoleTile, supportTile]
+      ? [parcTile, roleTile, consoleTile, supportTile]
       : accountType === 'team'
         ? [roleTile, supportTile]
         : [atelierTile, consoleTile, roleTile, supportTile];
@@ -943,6 +966,7 @@ function WorkshopSection({
               site={site ? { id: site.id, name: site.name, city: site.city, country: site.country, address: null, postalCode: null } : null}
               t={wt}
               locale={locale}
+              href={preview ? undefined : `/account/atelier/${p.id}`}
               compact
             />
           );

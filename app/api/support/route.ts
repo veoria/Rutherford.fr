@@ -7,6 +7,7 @@ import { supportAckEmail } from '@/lib/support-emails';
 import { insertSupportTicket } from '@/lib/support-tickets';
 import { getNotificationEmail } from '@/lib/console-validations';
 import { SUPPORT_COUNTRIES } from '@/lib/support-countries';
+import { getWorkshopAccess } from '@/lib/presses';
 
 export const dynamic = 'force-dynamic';
 
@@ -52,6 +53,23 @@ export async function POST(request: NextRequest) {
     }
   } catch {
     // anonymous — fine
+  }
+
+  // Ticket about one press of the user's pressroom: keep the link only when the
+  // press belongs to the signed-in user's organization.
+  let pressId: string | null = null;
+  const pressRaw = typeof body.pressId === 'string' ? body.pressId : '';
+  if (userId && pressRaw && process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    const access = await getWorkshopAccess(userId);
+    if (access) {
+      const { data: press } = await createSupabaseAdminClient()
+        .from('presses')
+        .select('id')
+        .eq('id', pressRaw)
+        .eq('org_id', access.orgId)
+        .maybeSingle();
+      pressId = press ? pressRaw : null;
+    }
   }
 
   // Move the uploaded photos into a ticket folder and sign shareable links (for
@@ -102,6 +120,7 @@ export async function POST(request: NextRequest) {
     description,
     asanaTaskGid,
     photos: photoLinks,
+    pressId,
   });
 
   const ref = id ? id.slice(0, 8) : null;

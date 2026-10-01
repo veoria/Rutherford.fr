@@ -174,7 +174,10 @@ export default async function AccountHubRoute() {
   const visibleSiteIds = new Set(sites.map((s) => s.id));
   const presses = pressRecords
     .filter((p) => !p.siteId || visibleSiteIds.has(p.siteId))
-    .map(({ createdAt: _createdAt, ...p }) => p);
+    .map(({ createdAt: _createdAt, ...p }) => ({
+      ...p,
+      equipment: installations.filter((sys) => sys.pressId === p.id).length,
+    }));
 
   return (
     <AccountHub
