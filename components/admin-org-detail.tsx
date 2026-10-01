@@ -474,7 +474,7 @@ export function AdminOrgDetail({
                         <th>Nom</th>
                         <th>Ville</th>
                         <th>Pays</th>
-                        <th>N° AnyDesk</th>
+                        <th>AnyDesk serveur</th>
                       </tr>
                     </thead>
                     <tbody>

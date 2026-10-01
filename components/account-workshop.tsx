@@ -59,7 +59,7 @@ export type WorkshopSite = {
   country: string | null;
   address: string | null;
   postalCode: string | null;
-  /** Plant-level AnyDesk number (shared support connection). */
+  /** AnyDesk of the plant's ColorLoop server (sites.anydesk_id). */
   anydeskId?: string | null;
 };
 
@@ -219,8 +219,8 @@ const COPY: Record<Locale, Copy> = {
       address: 'Address',
       country: 'Country',
       countryNone: 'Select a country',
-      anydesk: 'Plant AnyDesk number',
-      anydeskHint: 'Shared remote-support connection for the plant (used when a press has none).',
+      anydesk: 'Server AnyDesk number',
+      anydeskHint: 'AnyDesk of the ColorLoop server at this plant — used for support when a press has no number of its own.',
       save: 'Save',
       remove: 'Delete this plant',
       confirmRemove: 'Delete this plant? Its presses stay in your pressroom, unassigned.',
@@ -290,8 +290,8 @@ const COPY: Record<Locale, Copy> = {
       address: 'Adresse',
       country: 'Pays',
       countryNone: 'Choisir un pays',
-      anydesk: 'N° AnyDesk du site',
-      anydeskHint: 'Connexion d’assistance à distance commune au site (utilisée si la presse n’en a pas).',
+      anydesk: 'N° AnyDesk du serveur',
+      anydeskHint: 'AnyDesk du serveur ColorLoop de ce site — utilisé pour le support quand une presse n’a pas son propre numéro.',
       save: 'Enregistrer',
       remove: 'Supprimer ce site',
       confirmRemove: 'Supprimer ce site ? Ses presses restent dans votre atelier, non affectées.',
@@ -361,8 +361,8 @@ const COPY: Record<Locale, Copy> = {
       address: 'Adresse',
       country: 'Land',
       countryNone: 'Land wählen',
-      anydesk: 'AnyDesk-Nummer des Werks',
-      anydeskHint: 'Gemeinsame Fernwartungsverbindung des Werks (wenn die Maschine keine eigene hat).',
+      anydesk: 'AnyDesk-Nummer des Servers',
+      anydeskHint: 'AnyDesk des ColorLoop-Servers in diesem Werk — für den Support genutzt, wenn eine Maschine keine eigene Nummer hat.',
       save: 'Speichern',
       remove: 'Dieses Werk löschen',
       confirmRemove: 'Dieses Werk löschen? Seine Druckmaschinen bleiben in Ihrer Druckerei, ohne Zuordnung.',
@@ -432,8 +432,8 @@ const COPY: Record<Locale, Copy> = {
       address: 'Indirizzo',
       country: 'Paese',
       countryNone: 'Scelga un paese',
-      anydesk: 'Numero AnyDesk dello stabilimento',
-      anydeskHint: 'Connessione di assistenza remota comune allo stabilimento (usata se la macchina non ne ha).',
+      anydesk: 'Numero AnyDesk del server',
+      anydeskHint: 'AnyDesk del server ColorLoop di questo stabilimento — usato per l’assistenza quando una macchina non ha un proprio numero.',
       save: 'Salva',
       remove: 'Elimina questo stabilimento',
       confirmRemove: 'Eliminare questo stabilimento? Le sue macchine restano nella sala stampa, non assegnate.',
@@ -503,8 +503,8 @@ const COPY: Record<Locale, Copy> = {
       address: 'Dirección',
       country: 'País',
       countryNone: 'Elija un país',
-      anydesk: 'Número AnyDesk de la planta',
-      anydeskHint: 'Conexión de asistencia remota común a la planta (se usa si la prensa no tiene).',
+      anydesk: 'Número AnyDesk del servidor',
+      anydeskHint: 'AnyDesk del servidor ColorLoop de esta planta — se usa para el soporte cuando una prensa no tiene número propio.',
       save: 'Guardar',
       remove: 'Eliminar esta planta',
       confirmRemove: '¿Eliminar esta planta? Sus prensas siguen en su sala de prensa, sin asignar.',
@@ -574,8 +574,8 @@ const COPY: Record<Locale, Copy> = {
       address: 'Morada',
       country: 'País',
       countryNone: 'Escolha um país',
-      anydesk: 'Número AnyDesk da fábrica',
-      anydeskHint: 'Ligação de assistência remota comum à fábrica (usada se a máquina não tiver).',
+      anydesk: 'Número AnyDesk do servidor',
+      anydeskHint: 'AnyDesk do servidor ColorLoop desta fábrica — usado para o suporte quando uma máquina não tem número próprio.',
       save: 'Guardar',
       remove: 'Eliminar esta fábrica',
       confirmRemove: 'Eliminar esta fábrica? As suas máquinas continuam na sala de impressão, sem atribuição.',

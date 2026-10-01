@@ -67,6 +67,7 @@ type Copy = {
   allSites: string;
   unplaced: string;
   siteRemote: string;
+  serverAnydesk: string;
   systemsCount: (n: number) => string;
 };
 
@@ -82,7 +83,7 @@ const COPY: Record<Locale, Copy> = {
     copy: 'Copy', copied: 'Copied', remote: 'Remote assistance',
     gSupport: 'Support', gTraining: 'Training',
     supportCta: 'Get support for this system',
-    allSites: 'All plants', unplaced: 'Unassigned', siteRemote: 'Remote assistance',
+    allSites: 'All plants', unplaced: 'Unassigned', siteRemote: 'Remote assistance', serverAnydesk: 'AnyDesk server',
     systemsCount: (n) => `${n} system${n === 1 ? '' : 's'}`,
   },
   fr: {
@@ -96,7 +97,7 @@ const COPY: Record<Locale, Copy> = {
     copy: 'Copier', copied: 'Copié', remote: 'Assistance à distance',
     gSupport: 'Support', gTraining: 'Formations',
     supportCta: 'Support sur ce système',
-    allSites: 'Toutes les usines', unplaced: 'Non affecté', siteRemote: 'Assistance à distance',
+    allSites: 'Toutes les usines', unplaced: 'Non affecté', siteRemote: 'Assistance à distance', serverAnydesk: 'AnyDesk serveur',
     systemsCount: (n) => `${n} système${n === 1 ? '' : 's'}`,
   },
   de: {
@@ -110,7 +111,7 @@ const COPY: Record<Locale, Copy> = {
     copy: 'Kopieren', copied: 'Kopiert', remote: 'Fernwartung',
     gSupport: 'Support', gTraining: 'Schulungen',
     supportCta: 'Support für dieses System',
-    allSites: 'Alle Werke', unplaced: 'Nicht zugeordnet', siteRemote: 'Fernwartung',
+    allSites: 'Alle Werke', unplaced: 'Nicht zugeordnet', siteRemote: 'Fernwartung', serverAnydesk: 'AnyDesk-Server',
     systemsCount: (n) => `${n} System${n === 1 ? '' : 'e'}`,
   },
   it: {
@@ -124,7 +125,7 @@ const COPY: Record<Locale, Copy> = {
     copy: 'Copia', copied: 'Copiato', remote: 'Assistenza remota',
     gSupport: 'Supporto', gTraining: 'Formazione',
     supportCta: 'Assistenza per questo sistema',
-    allSites: 'Tutti gli stabilimenti', unplaced: 'Non assegnato', siteRemote: 'Assistenza remota',
+    allSites: 'Tutti gli stabilimenti', unplaced: 'Non assegnato', siteRemote: 'Assistenza remota', serverAnydesk: 'AnyDesk server',
     systemsCount: (n) => `${n} sistem${n === 1 ? 'a' : 'i'}`,
   },
   es: {
@@ -138,7 +139,7 @@ const COPY: Record<Locale, Copy> = {
     copy: 'Copiar', copied: 'Copiado', remote: 'Asistencia remota',
     gSupport: 'Soporte', gTraining: 'Formación',
     supportCta: 'Soporte para este sistema',
-    allSites: 'Todas las plantas', unplaced: 'Sin asignar', siteRemote: 'Asistencia remota',
+    allSites: 'Todas las plantas', unplaced: 'Sin asignar', siteRemote: 'Asistencia remota', serverAnydesk: 'AnyDesk servidor',
     systemsCount: (n) => `${n} sistema${n === 1 ? '' : 's'}`,
   },
   pt: {
@@ -152,7 +153,7 @@ const COPY: Record<Locale, Copy> = {
     copy: 'Copiar', copied: 'Copiado', remote: 'Assistência remota',
     gSupport: 'Suporte', gTraining: 'Formação',
     supportCta: 'Suporte para este sistema',
-    allSites: 'Todas as fábricas', unplaced: 'Não atribuído', siteRemote: 'Assistência remota',
+    allSites: 'Todas as fábricas', unplaced: 'Não atribuído', siteRemote: 'Assistência remota', serverAnydesk: 'AnyDesk servidor',
     systemsCount: (n) => `${n} sistema${n === 1 ? '' : 's'}`,
   },
 };
@@ -394,7 +395,7 @@ export function AccountInstallations({
           {siteLocation(activeSite) ? <span className="ah-site-loc">{siteLocation(activeSite)}</span> : null}
           {activeSite.anydeskId ? (
             <span className="ah-site-remote">
-              <span className="ah-sys-k">AnyDesk {activeSite.name}</span>
+              <span className="ah-sys-k">{t.serverAnydesk} · {activeSite.name}</span>
               <span className="ah-mono">{activeSite.anydeskId}</span>
               <CopyButton value={activeSite.anydeskId} copy={t.copy} copied={t.copied} />
               <a className="ah-sys-link" href={`anydesk:${activeSite.anydeskId.replace(/\s+/g, '')}`}>

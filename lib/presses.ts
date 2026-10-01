@@ -459,7 +459,14 @@ export async function getPressSupportContext(userId: string, pressId: string): P
       siteLine ? `Site : ${siteLine}` : null,
       press.console ? `Console : ${press.console}` : null,
       press.year ? `Année : ${press.year}` : null,
-      anydesk ? `AnyDesk presse : ${anydesk}` : null,
+      press.anydeskId
+        ? `AnyDesk presse : ${press.anydeskId}`
+        : s?.anydesk_id
+          ? `AnyDesk serveur (site) : ${s.anydesk_id}`
+          : anydesk
+            ? `AnyDesk (logiciel) : ${anydesk}`
+            : null,
+      press.anydeskId && s?.anydesk_id ? `AnyDesk serveur (site) : ${s.anydesk_id}` : null,
       ...sys.map((x) => {
         const kind = isSystemKind(x.kind) ? SYSTEM_KIND_LABELS.fr[x.kind] : x.kind;
         const version = x.installed_version

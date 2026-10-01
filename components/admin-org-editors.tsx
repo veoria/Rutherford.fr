@@ -558,7 +558,7 @@ function SiteForm({
           <input className="admin-input" value={draft.postalCode ?? ''} onChange={(e) => set({ postalCode: text(e.target.value) })} disabled={busy} />
         </div>
         <div className="admin-field">
-          <label>N° AnyDesk du site</label>
+          <label>N° AnyDesk du serveur</label>
           <input className="admin-input" value={draft.anydeskId ?? ''} onChange={(e) => set({ anydeskId: text(e.target.value) })} disabled={busy} placeholder="123 456 789" />
         </div>
       </div>
