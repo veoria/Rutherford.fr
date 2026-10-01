@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { SiteFooter } from '@/components/site-footer';
 import { SiteNav } from '@/components/site-nav';
 import { AccountSubnav } from '@/components/account-subnav';
+import { PreviewBar, type PreviewContext } from '@/components/account-preview-bar';
 import { PressSchematic } from '@/components/press-schematic';
 import { type Locale, useLanguage } from '@/components/language-provider';
 import { localizedCountryName } from '@/lib/countries';
@@ -205,7 +206,7 @@ function fmtDate(iso: string, locale: Locale): string {
   }
 }
 
-export function AccountFleet({ fleet }: { fleet: PartnerFleet }) {
+export function AccountFleet({ fleet, previewCtx }: { fleet: PartnerFleet; previewCtx?: PreviewContext }) {
   const { locale } = useLanguage();
   const t = COPY[locale] ?? COPY.en;
   const [filter, setFilter] = useState<Filter>('all');
@@ -218,7 +219,7 @@ export function AccountFleet({ fleet }: { fleet: PartnerFleet }) {
   return (
     <main className="page-shell" id="top">
       <SiteNav current="account" />
-      <AccountSubnav current="parc" />
+      {previewCtx ? <PreviewBar ctx={previewCtx} current="parc" /> : <AccountSubnav current="parc" />}
       <section className="ws-section">
         <div className="container ws-wrap">
           <header className="ws-head">
@@ -255,7 +256,14 @@ export function AccountFleet({ fleet }: { fleet: PartnerFleet }) {
               <p className="ws-hint fl-ro">{t.readOnly}</p>
               <div className="fl-clients">
                 {visible.map((c) => (
-                  <ClientBlock key={c.orgId} c={c} t={t} locale={locale} showUnplaced={filter !== 'opportunity'} />
+                  <ClientBlock
+                    key={c.orgId}
+                    c={c}
+                    t={t}
+                    locale={locale}
+                    showUnplaced={filter !== 'opportunity'}
+                    readOnly={Boolean(previewCtx)}
+                  />
                 ))}
               </div>
             </>
@@ -278,7 +286,19 @@ function Kpi({ label, value, tone }: { label: string; value: number; tone?: 'blu
   );
 }
 
-function ClientBlock({ c, t, locale, showUnplaced }: { c: FleetClient; t: Copy; locale: Locale; showUnplaced: boolean }) {
+function ClientBlock({
+  c,
+  t,
+  locale,
+  showUnplaced,
+  readOnly,
+}: {
+  c: FleetClient;
+  t: Copy;
+  locale: Locale;
+  showUnplaced: boolean;
+  readOnly: boolean;
+}) {
   const wt = workshopCopy(locale);
   const formats = formatCopy(locale);
   return (
@@ -323,9 +343,11 @@ function ClientBlock({ c, t, locale, showUnplaced }: { c: FleetClient; t: Copy; 
                 ) : (
                   <p className="fl-opp">
                     {t.opportunityHint}{' '}
-                    <a className="ws-link" href="/console-validation#submit">
-                      {t.propose} →
-                    </a>
+                    {readOnly ? null : (
+                      <a className="ws-link" href="/console-validation#submit">
+                        {t.propose} →
+                      </a>
+                    )}
                   </p>
                 )}
               </div>

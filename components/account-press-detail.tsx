@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { SiteFooter } from '@/components/site-footer';
 import { SiteNav } from '@/components/site-nav';
 import { AccountSubnav } from '@/components/account-subnav';
+import { PreviewBar, previewHref, type PreviewContext } from '@/components/account-preview-bar';
 import { PressSchematic } from '@/components/press-schematic';
 import { type Locale, useLanguage } from '@/components/language-provider';
 import { localizedCountryName } from '@/lib/countries';
@@ -297,13 +298,17 @@ export function AccountPressDetail({
   equipment,
   history,
   canDelete,
+  previewCtx,
 }: {
   press: WorkshopPress;
   sites: WorkshopSite[];
   equipment: PressEquipment[];
   history: PressHistoryTicket[];
   canDelete: boolean;
+  /** Admin « view as client »: read only, links stay inside the preview. */
+  previewCtx?: PreviewContext;
 }) {
+  const readOnly = Boolean(previewCtx);
   const { locale } = useLanguage();
   const t = COPY[locale] ?? COPY.en;
   const wt = workshopCopy(locale);
@@ -325,10 +330,10 @@ export function AccountPressDetail({
   return (
     <main className="page-shell" id="top">
       <SiteNav current="account" />
-      <AccountSubnav current="atelier" />
+      {previewCtx ? <PreviewBar ctx={previewCtx} current="atelier" /> : <AccountSubnav current="atelier" />}
       <section className="ws-section">
         <div className="container ws-wrap">
-          <a className="ws-back" href="/account/atelier">
+          <a className="ws-back" href={previewCtx ? previewHref(previewCtx, 'atelier') : '/account/atelier'}>
             {t.back}
           </a>
 
@@ -394,15 +399,19 @@ export function AccountPressDetail({
                 ) : null}
               </dl>
               {press.notes ? <p className="pd-notes">{press.notes}</p> : null}
-              <div className="pd-actions">
-                <a className="button button-accent" href={supportHref(press, title, anydesk)}>
-                  {t.support}
-                </a>
-                <button type="button" className="button button-light" onClick={() => setEditing(true)}>
-                  {t.edit}
-                </button>
-              </div>
-              <p className="ws-hint">{t.supportSub}</p>
+              {readOnly ? null : (
+                <>
+                  <div className="pd-actions">
+                    <a className="button button-accent" href={supportHref(press, title, anydesk)}>
+                      {t.support}
+                    </a>
+                    <button type="button" className="button button-light" onClick={() => setEditing(true)}>
+                      {t.edit}
+                    </button>
+                  </div>
+                  <p className="ws-hint">{t.supportSub}</p>
+                </>
+              )}
             </div>
           </div>
 
@@ -423,11 +432,11 @@ export function AccountPressDetail({
                 <>
                   {software.length ? <h3 className="pd-kind">{t.software}</h3> : null}
                   {software.map((e) => (
-                    <EquipmentRow key={e.id} e={e} t={t} locale={locale} press={press} title={title} />
+                    <EquipmentRow key={e.id} e={e} t={t} locale={locale} press={press} title={title} readOnly={readOnly} />
                   ))}
                   {hardware.length ? <h3 className="pd-kind">{t.hardware}</h3> : null}
                   {hardware.map((e) => (
-                    <EquipmentRow key={e.id} e={e} t={t} locale={locale} press={press} title={title} />
+                    <EquipmentRow key={e.id} e={e} t={t} locale={locale} press={press} title={title} readOnly={readOnly} />
                   ))}
                 </>
               )}
@@ -448,7 +457,7 @@ export function AccountPressDetail({
                         </span>
                       </div>
                       <span className={`ws-chip ${TICKET_TONE[h.status] ?? 'is-muted'}`}>{t.ticketStatus[h.status] ?? h.status}</span>
-                      {h.mine ? (
+                      {h.mine && !readOnly ? (
                         <a className="ws-link" href="/account/support">
                           {t.historyMine}
                         </a>
@@ -496,12 +505,14 @@ function EquipmentRow({
   locale,
   press,
   title,
+  readOnly = false,
 }: {
   e: PressEquipment;
   t: Copy;
   locale: Locale;
   press: WorkshopPress;
   title: string;
+  readOnly?: boolean;
 }) {
   const isSoftware = e.kind === 'software';
   const updateSubject = e.latestVersion ? `${title} — ${e.product} — ${t.updateTo(e.latestVersion)}` : title;
@@ -549,7 +560,7 @@ function EquipmentRow({
       </dl>
       {(e.updateAvailable && e.latestVersion) || e.anydeskId ? (
         <div className="pd-eq-actions">
-          {e.updateAvailable && e.latestVersion ? (
+          {e.updateAvailable && e.latestVersion && !readOnly ? (
             <a className="ws-link" href={`/support?${new URLSearchParams({ subject: updateSubject, press: press.id }).toString()}#support-form`}>
               {t.requestUpdate}
             </a>

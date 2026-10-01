@@ -10,6 +10,7 @@ import type { AccountType } from '@/data/account-types';
 import { AccountSystems, type ClientSystem } from '@/components/account-systems';
 import { AccountInstallations, type AccountInstallation, type AccountSite } from '@/components/account-installations';
 import { AccountSubnav } from '@/components/account-subnav';
+import { PreviewBar, previewHref, type PreviewContext } from '@/components/account-preview-bar';
 import { PressCard, workshopCopy, type WorkshopPress } from '@/components/account-workshop';
 
 export type ResellerClient = {
@@ -84,46 +85,16 @@ const RESELLER_BADGE: Record<Locale, string> = {
   pt: 'Parceiro oficial Rutherford',
 };
 
-// Read-only admin preview ("view as client") — banner note + back link.
-const PREVIEW_NOTE: Record<Locale, string> = {
-  en: 'Client area preview — read only',
-  fr: 'Aperçu de l’espace client — lecture seule',
-  de: 'Vorschau des Kundenbereichs — nur Lesezugriff',
-  it: 'Anteprima dell’area cliente — sola lettura',
-  es: 'Vista previa del área de cliente — solo lectura',
-  pt: 'Pré-visualização da área do cliente — apenas leitura',
-};
-
-// Neutre : le retour peut viser la fiche utilisateur OU la page organisation
-// selon d'où l'aperçu a été ouvert (prop previewBack).
-const PREVIEW_BACK: Record<Locale, string> = {
-  en: '← Back to admin',
-  fr: '← Retour admin',
-  de: '← Zurück zum Admin',
-  it: '← Torna all’admin',
-  es: '← Volver al admin',
-  pt: '← Voltar ao admin',
-};
-
-const PREVIEW_DASHBOARD: Record<Locale, string> = {
-  en: 'Dashboard',
-  fr: 'Tableau de bord',
-  de: 'Dashboard',
-  it: 'Dashboard',
-  es: 'Panel',
-  pt: 'Painel',
-};
-
-// En aperçu, les tuiles ne peuvent pas ouvrir /account/* (ces routes rendent
-// l'espace de l'admin connecté, pas celui du client). Elles pointent donc vers
-// la vue admin des données de CE compte (fiche user / page org).
+// En aperçu, /account/* rendrait l'espace de l'admin connecté : l'atelier et
+// le parc ont leurs pages d'aperçu (/admin/users/[id]/preview/*) ; console,
+// équipe et support ouvrent la vue admin des données de CE compte.
 const PREVIEW_TILES_ADMIN: Record<Locale, string> = {
-  en: 'Tiles open the matching admin view of this account',
-  fr: 'Les tuiles ouvrent la vue admin correspondante de ce compte',
-  de: 'Kacheln öffnen die entsprechende Admin-Ansicht dieses Kontos',
-  it: 'I riquadri aprono la vista admin corrispondente di questo account',
-  es: 'Las tarjetas abren la vista de administración correspondiente de esta cuenta',
-  pt: 'Os cartões abrem a vista de administração correspondente desta conta',
+  en: 'Console, team and support open the matching admin view',
+  fr: 'Console, équipe et support ouvrent la vue admin correspondante',
+  de: 'Konsole, Team und Support öffnen die entsprechende Admin-Ansicht',
+  it: 'Console, team e supporto aprono la vista admin corrispondente',
+  es: 'Consola, equipo y soporte abren la vista de administración correspondiente',
+  pt: 'Consola, equipa e suporte abrem a vista de administração correspondente',
 };
 
 type Copy = {
@@ -622,7 +593,7 @@ type Tile = { ic: string; cls: string; t: string; s: string; href: string; admin
 
 export function AccountHub(props: Props) {
   const { accountType, team, selfId, networkResellers, email, memberSince, profile, consoleStat, supportStat, resellerClients, systems, installations = [], sites = [], presses = [], preview = false, previewBack } = props;
-  const previewBackHref = previewBack || `/admin/users/${selfId}`;
+  const previewCtx: PreviewContext = { userId: selfId, accountType, back: previewBack, name: profile.fullName };
   const { locale } = useLanguage();
   const t = COPY[locale];
   const accent = TONE[accountType];
@@ -647,7 +618,7 @@ export function AccountHub(props: Props) {
     t: ATELIER_T[locale],
     s: a.tileS,
     href: '/account/atelier',
-    adminHref: previewOrgHref,
+    adminHref: previewHref(previewCtx, 'atelier'),
     statDot: presses.length ? 'blue' : 'amber',
     statV: wt.statPresses(presses.length),
     statM: sites.length ? wt.statSites(sites.length) : '',
@@ -691,7 +662,7 @@ export function AccountHub(props: Props) {
     t: PARC_TILE[locale].t,
     s: PARC_TILE[locale].s,
     href: '/account/parc',
-    adminHref: previewOrgHref,
+    adminHref: previewHref(previewCtx, 'parc'),
     statDot: fleetUpdates ? 'amber' : fleetSystems ? 'green' : undefined,
     statV: t.manage.systemsShort(fleetSystems),
     statM: fleetUpdates ? t.manage.updatesShort(fleetUpdates) : '',
@@ -739,23 +710,7 @@ export function AccountHub(props: Props) {
     <main className="page-shell" id="top">
       <SiteNav current="account" />
       {preview ? (
-        <div style={{ background: '#fff7e6', borderBottom: '1px solid #f0e3c0' }}>
-          <div
-            className="container"
-            style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, padding: '10px 0' }}
-          >
-            <span style={{ fontSize: '0.88rem', fontWeight: 600, color: '#7a5b00' }}>
-              {PREVIEW_NOTE[locale]}{profile.fullName ? ` · ${profile.fullName}` : ''}
-            </span>
-            <span style={{ display: 'flex', gap: 8 }}>
-              <a className="button button-light" href={previewBackHref}>{PREVIEW_BACK[locale]}</a>
-              {/* Tableau de bord à un clic — le retour contextuel ne mène qu'à
-                  la fiche/org d'origine. */}
-              <a className="button button-light" href="/admin">{PREVIEW_DASHBOARD[locale]}</a>
-            </span>
-          </div>
-        </div>
-      ) : (
+        <PreviewBar ctx={previewCtx} current="dashboard" />      ) : (
         <AccountSubnav current="dashboard" />
       )}
       {accountType === 'distributor' ? (
@@ -891,7 +846,7 @@ export function AccountHub(props: Props) {
               and first-person presses make no sense for partners or team. */}
           {accountType === 'client' ? (
             <>
-              <WorkshopSection presses={presses} sites={sites} preview={preview} previewHref={previewOrgHref} />
+              <WorkshopSection presses={presses} sites={sites} preview={preview} previewCtx={previewCtx} />
 
               {/* My system — licenses, AnyDesk, updates (set in the org back-office;
                   renders nothing until the Rutherford team adds a system) */}
@@ -931,12 +886,12 @@ function WorkshopSection({
   presses,
   sites,
   preview,
-  previewHref,
+  previewCtx,
 }: {
   presses: WorkshopPress[];
   sites: AccountSite[];
   preview: boolean;
-  previewHref: string;
+  previewCtx: PreviewContext;
 }) {
   const { locale } = useLanguage();
   const a = ATELIER[locale];
@@ -945,7 +900,7 @@ function WorkshopSection({
   const siteById = new Map(sites.map((s) => [s.id, s]));
   const shown = presses.slice(0, 4);
   const rest = presses.length - shown.length;
-  const href = preview ? previewHref : '/account/atelier';
+  const href = preview ? previewHref(previewCtx, 'atelier') : '/account/atelier';
   return (
     <section className="ah-atelier" aria-labelledby="ah-atelier-t">
       <div className="ah-section-h">
@@ -966,7 +921,7 @@ function WorkshopSection({
               site={site ? { id: site.id, name: site.name, city: site.city, country: site.country, address: null, postalCode: null } : null}
               t={wt}
               locale={locale}
-              href={preview ? undefined : `/account/atelier/${p.id}`}
+              href={preview ? previewHref(previewCtx, `atelier/${p.id}`) : `/account/atelier/${p.id}`}
               compact
             />
           );

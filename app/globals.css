@@ -17541,3 +17541,10 @@ textarea.ws-input { resize: vertical; }
 .sp-press strong { font-size: 0.98rem; color: #16130f; }
 .sp-press-k { font-size: 0.7rem; font-weight: 750; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
 .sp-press small { margin-top: 4px; font-size: 0.78rem; color: #8a8a88; }
+
+/* Admin « view as client » banner (all preview pages) */
+.pv-bar { background: #fff7e6; border-bottom: 1px solid #f0e3c0; }
+.pv-bar-inner { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 10px 0; }
+.pv-note { font-size: 0.88rem; font-weight: 600; color: #7a5b00; }
+.pv-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.pv-actions .button { min-height: 40px; padding: 0 16px; font-size: 0.88rem; }
