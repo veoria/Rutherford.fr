@@ -284,8 +284,12 @@ export function ConsoleValidationPage({
   );
 
   useEffect(() => {
-    const ref = new URLSearchParams(window.location.search).get('ref');
+    const params = new URLSearchParams(window.location.search);
+    const ref = params.get('ref');
     if (ref) setRefCode(ref.slice(0, 100));
+    // "Check compatibility" from a press in Mon atelier: prefill the model.
+    const machine = params.get('model');
+    if (machine) setModel(machine.slice(0, 120));
     // Deep-link straight to the form (e.g. /console-validation#submit).
     if (window.location.hash === '#submit') setStarted(true);
   }, []);

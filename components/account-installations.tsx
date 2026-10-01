@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import { type Locale, useLanguage } from '@/components/language-provider';
 import { getCourseBySlug } from '@/data/academy-courses';
+import { ACADEMY_ENABLED } from '@/lib/features';
+import { SYSTEM_KIND_LABELS, type SystemKind } from '@/data/press-config';
 
 // One card per installed system (set by the Rutherford team in the org
 // back-office): license, AnyDesk id, installed vs latest version, plus
@@ -20,6 +22,11 @@ export type AccountInstallation = {
   installedVersion: string | null;
   latestVersion: string | null;
   updateAvailable: boolean;
+  // Software vs tracked hardware (measurement device, PC/server, console
+  // interface), its serial number, and the Mon atelier press it sits on.
+  kind?: SystemKind;
+  serialNumber?: string | null;
+  pressId?: string | null;
 };
 
 // A plant/site (usine) the user can see. Serializable subset of SiteRecord.
@@ -60,6 +67,7 @@ type Copy = {
   allSites: string;
   unplaced: string;
   siteRemote: string;
+  serverAnydesk: string;
   systemsCount: (n: number) => string;
 };
 
@@ -75,7 +83,7 @@ const COPY: Record<Locale, Copy> = {
     copy: 'Copy', copied: 'Copied', remote: 'Remote assistance',
     gSupport: 'Support', gTraining: 'Training',
     supportCta: 'Get support for this system',
-    allSites: 'All plants', unplaced: 'Unassigned', siteRemote: 'Remote assistance',
+    allSites: 'All plants', unplaced: 'Unassigned', siteRemote: 'Remote assistance', serverAnydesk: 'AnyDesk server',
     systemsCount: (n) => `${n} system${n === 1 ? '' : 's'}`,
   },
   fr: {
@@ -89,7 +97,7 @@ const COPY: Record<Locale, Copy> = {
     copy: 'Copier', copied: 'Copié', remote: 'Assistance à distance',
     gSupport: 'Support', gTraining: 'Formations',
     supportCta: 'Support sur ce système',
-    allSites: 'Toutes les usines', unplaced: 'Non affecté', siteRemote: 'Assistance à distance',
+    allSites: 'Toutes les usines', unplaced: 'Non affecté', siteRemote: 'Assistance à distance', serverAnydesk: 'AnyDesk serveur',
     systemsCount: (n) => `${n} système${n === 1 ? '' : 's'}`,
   },
   de: {
@@ -103,7 +111,7 @@ const COPY: Record<Locale, Copy> = {
     copy: 'Kopieren', copied: 'Kopiert', remote: 'Fernwartung',
     gSupport: 'Support', gTraining: 'Schulungen',
     supportCta: 'Support für dieses System',
-    allSites: 'Alle Werke', unplaced: 'Nicht zugeordnet', siteRemote: 'Fernwartung',
+    allSites: 'Alle Werke', unplaced: 'Nicht zugeordnet', siteRemote: 'Fernwartung', serverAnydesk: 'AnyDesk-Server',
     systemsCount: (n) => `${n} System${n === 1 ? '' : 'e'}`,
   },
   it: {
@@ -117,7 +125,7 @@ const COPY: Record<Locale, Copy> = {
     copy: 'Copia', copied: 'Copiato', remote: 'Assistenza remota',
     gSupport: 'Supporto', gTraining: 'Formazione',
     supportCta: 'Assistenza per questo sistema',
-    allSites: 'Tutti gli stabilimenti', unplaced: 'Non assegnato', siteRemote: 'Assistenza remota',
+    allSites: 'Tutti gli stabilimenti', unplaced: 'Non assegnato', siteRemote: 'Assistenza remota', serverAnydesk: 'AnyDesk server',
     systemsCount: (n) => `${n} sistem${n === 1 ? 'a' : 'i'}`,
   },
   es: {
@@ -131,7 +139,7 @@ const COPY: Record<Locale, Copy> = {
     copy: 'Copiar', copied: 'Copiado', remote: 'Asistencia remota',
     gSupport: 'Soporte', gTraining: 'Formación',
     supportCta: 'Soporte para este sistema',
-    allSites: 'Todas las plantas', unplaced: 'Sin asignar', siteRemote: 'Asistencia remota',
+    allSites: 'Todas las plantas', unplaced: 'Sin asignar', siteRemote: 'Asistencia remota', serverAnydesk: 'AnyDesk servidor',
     systemsCount: (n) => `${n} sistema${n === 1 ? '' : 's'}`,
   },
   pt: {
@@ -145,7 +153,7 @@ const COPY: Record<Locale, Copy> = {
     copy: 'Copiar', copied: 'Copiado', remote: 'Assistência remota',
     gSupport: 'Suporte', gTraining: 'Formação',
     supportCta: 'Suporte para este sistema',
-    allSites: 'Todas as fábricas', unplaced: 'Não atribuído', siteRemote: 'Assistência remota',
+    allSites: 'Todas as fábricas', unplaced: 'Não atribuído', siteRemote: 'Assistência remota', serverAnydesk: 'AnyDesk servidor',
     systemsCount: (n) => `${n} sistema${n === 1 ? '' : 's'}`,
   },
 };
@@ -192,7 +200,12 @@ function SystemCard({ s, t, locale, preview = false }: { s: AccountInstallation;
     title: getCourseBySlug(slug)?.title ?? slug,
   }));
   const supportSubject = [s.product, s.machine].filter(Boolean).join(' — ');
-  const q = new URLSearchParams({ subject: supportSubject }).toString();
+  const q = new URLSearchParams({
+    subject: supportSubject,
+    ...(s.pressId ? { press: s.pressId } : {}),
+    ...(s.anydeskId ? { anydesk: s.anydeskId } : {}),
+  }).toString();
+  const hardware = s.kind && s.kind !== 'software';
   return (
     <div className="ah-sys">
       <div className="ah-sys-h">
@@ -200,10 +213,20 @@ function SystemCard({ s, t, locale, preview = false }: { s: AccountInstallation;
           <div className="ah-sys-name">{s.product}</div>
           {s.machine ? <div className="ah-sys-meta">{s.machine}</div> : null}
         </div>
-        <span className={`ah-sys-pill ${STATUS_PILL[s.licenseStatus]}`}>{t.status[s.licenseStatus]}</span>
+        {hardware && s.kind ? (
+          <span className="ah-sys-pill blue">{SYSTEM_KIND_LABELS[locale][s.kind]}</span>
+        ) : (
+          <span className={`ah-sys-pill ${STATUS_PILL[s.licenseStatus]}`}>{t.status[s.licenseStatus]}</span>
+        )}
       </div>
 
       <div className="ah-sys-kvs">
+        {s.serialNumber ? (
+          <div className="ah-sys-kv">
+            <span className="ah-sys-k">S/N</span>
+            <span className="ah-sys-v ah-mono">{s.serialNumber}</span>
+          </div>
+        ) : null}
         {s.licenseKey ? (
           <div className="ah-sys-kv">
             <span className="ah-sys-k">{t.license}</span>
@@ -244,7 +267,7 @@ function SystemCard({ s, t, locale, preview = false }: { s: AccountInstallation;
         <div className="ah-sys-group">
           <div className="ah-sys-glabel">{t.gSupport}</div>
           <div className="ah-sys-links">
-            <a className="ah-sys-link primary" href={`/support?${q}`}>{t.supportCta}</a>
+            <a className="ah-sys-link primary" href={`/support?${q}#support-form`}>{t.supportCta}</a>
             {s.updateAvailable && s.latestVersion ? (
               <a
                 className="ah-sys-link"
@@ -262,16 +285,18 @@ function SystemCard({ s, t, locale, preview = false }: { s: AccountInstallation;
         </div>
       )}
 
-      <div className="ah-sys-group">
-        <div className="ah-sys-glabel">{t.gTraining}</div>
-        <div className="ah-sys-links">
-          {courses.map((c) => (
-            <a className="ah-sys-link" href={`/academy/${c.slug}`} key={c.slug}>
-              {c.title}
-            </a>
-          ))}
+      {ACADEMY_ENABLED && courses.length ? (
+        <div className="ah-sys-group">
+          <div className="ah-sys-glabel">{t.gTraining}</div>
+          <div className="ah-sys-links">
+            {courses.map((c) => (
+              <a className="ah-sys-link" href={`/academy/${c.slug}`} key={c.slug}>
+                {c.title}
+              </a>
+            ))}
+          </div>
         </div>
-      </div>
+      ) : null}
     </div>
   );
 }
@@ -370,7 +395,7 @@ export function AccountInstallations({
           {siteLocation(activeSite) ? <span className="ah-site-loc">{siteLocation(activeSite)}</span> : null}
           {activeSite.anydeskId ? (
             <span className="ah-site-remote">
-              <span className="ah-sys-k">AnyDesk {activeSite.name}</span>
+              <span className="ah-sys-k">{t.serverAnydesk} · {activeSite.name}</span>
               <span className="ah-mono">{activeSite.anydeskId}</span>
               <CopyButton value={activeSite.anydeskId} copy={t.copy} copied={t.copied} />
               <a className="ah-sys-link" href={`anydesk:${activeSite.anydeskId.replace(/\s+/g, '')}`}>

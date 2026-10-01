@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { headers } from 'next/headers';
 import { notFound, redirect } from 'next/navigation';
+import { ACADEMY_ENABLED } from '@/lib/features';
 import { AccountPage } from '@/components/account-page';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { isOnboarded } from '@/lib/profile';
@@ -29,7 +30,7 @@ const MODULE_WORD: Record<string, string> = {
 export const dynamic = 'force-dynamic';
 
 export default async function AccountAcademyRoute() {
-  if (process.env.NEXT_PUBLIC_ACADEMY_ENABLED !== 'true') notFound();
+  if (!ACADEMY_ENABLED) notFound();
   const supabase = createSupabaseServerClient();
   const {
     data: { user },

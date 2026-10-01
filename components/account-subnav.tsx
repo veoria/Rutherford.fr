@@ -4,27 +4,30 @@ import { useEffect, useState } from 'react';
 import { type Locale, useLanguage } from '@/components/language-provider';
 import { accountAreaLabel } from '@/data/account-eyebrow';
 import type { AccountType } from '@/data/account-types';
+import { ACADEMY_ENABLED } from '@/lib/features';
 
 // Shared account-area shell: pill-tab subnav + the partner/distributor co-brand
 // logo (top-right). Rendered right under <SiteNav> on every account page.
-export type AccountTab = 'dashboard' | 'console' | 'academy' | 'team' | 'support' | 'profile';
+export type AccountTab = 'dashboard' | 'atelier' | 'parc' | 'console' | 'academy' | 'team' | 'support' | 'profile';
 
 const TABS: { key: AccountTab; href: string }[] = [
   { key: 'dashboard', href: '/account' },
+  { key: 'atelier', href: '/account/atelier' },
+  { key: 'parc', href: '/account/parc' },
   { key: 'console', href: '/account/console-validations' },
   { key: 'academy', href: '/account/academy' },
   { key: 'team', href: '/account/team' },
   { key: 'support', href: '/account/support' },
   { key: 'profile', href: '/account/profile' },
-];
+].filter((tab) => tab.key !== 'academy' || ACADEMY_ENABLED) as { key: AccountTab; href: string }[];
 
 const LABELS: Record<Locale, Record<AccountTab, string>> = {
-  en: { dashboard: 'Dashboard', console: 'Console validation', academy: 'Academy', team: 'My team', support: 'Support', profile: 'Profile' },
-  fr: { dashboard: 'Tableau de bord', console: 'Validation console', academy: 'Academy', team: 'Mon équipe', support: 'Support', profile: 'Profil' },
-  de: { dashboard: 'Dashboard', console: 'Konsolenvalidierung', academy: 'Academy', team: 'Mein Team', support: 'Support', profile: 'Profil' },
-  it: { dashboard: 'Dashboard', console: 'Validazione console', academy: 'Academy', team: 'Il mio team', support: 'Supporto', profile: 'Profilo' },
-  es: { dashboard: 'Panel', console: 'Validación de consola', academy: 'Academy', team: 'Mi equipo', support: 'Soporte', profile: 'Perfil' },
-  pt: { dashboard: 'Painel', console: 'Validação de consola', academy: 'Academy', team: 'A minha equipa', support: 'Suporte', profile: 'Perfil' },
+  en: { dashboard: 'Dashboard', atelier: 'My pressroom', parc: 'Client fleet', console: 'Console validation', academy: 'Academy', team: 'My team', support: 'Support', profile: 'Profile' },
+  fr: { dashboard: 'Tableau de bord', atelier: 'Mon atelier', parc: 'Parc clients', console: 'Validation console', academy: 'Academy', team: 'Mon équipe', support: 'Support', profile: 'Profil' },
+  de: { dashboard: 'Dashboard', atelier: 'Meine Druckerei', parc: 'Kundenpark', console: 'Konsolenvalidierung', academy: 'Academy', team: 'Mein Team', support: 'Support', profile: 'Profil' },
+  it: { dashboard: 'Dashboard', atelier: 'Sala stampa', parc: 'Parco clienti', console: 'Validazione console', academy: 'Academy', team: 'Il mio team', support: 'Supporto', profile: 'Profilo' },
+  es: { dashboard: 'Panel', atelier: 'Sala de prensa', parc: 'Parque de clientes', console: 'Validación de consola', academy: 'Academy', team: 'Mi equipo', support: 'Soporte', profile: 'Perfil' },
+  pt: { dashboard: 'Painel', atelier: 'Sala de impressão', parc: 'Parque de clientes', console: 'Validação de consola', academy: 'Academy', team: 'A minha equipa', support: 'Suporte', profile: 'Perfil' },
 };
 
 export function AccountSubnav({ current }: { current: AccountTab }) {
@@ -62,7 +65,13 @@ export function AccountSubnav({ current }: { current: AccountTab }) {
     <nav className="acct-subnav" aria-label={L.dashboard}>
       <div className="container acct-subnav-inner">
         <div className="acct-subnav-links">
-          {TABS.map((s) => (
+          {TABS.filter((s) =>
+            s.key === 'atelier'
+              ? accountType === null || accountType === 'client'
+              : s.key === 'parc'
+                ? accountType === 'reseller' || accountType === 'distributor'
+                : true
+          ).map((s) => (
             <a
               key={s.key}
               href={s.href}

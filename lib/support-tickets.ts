@@ -15,6 +15,8 @@ export type SupportTicketRecord = {
   description: string;
   asanaTaskGid: string | null;
   photos: Record<string, string>;
+  /** The press (Mon atelier) the ticket is about, already checked against the user's org. */
+  pressId?: string | null;
 };
 
 function adminClient() {
@@ -38,6 +40,7 @@ export async function insertSupportTicket(record: SupportTicketRecord): Promise<
         description: record.description,
         asana_task_gid: record.asanaTaskGid,
         photos: record.photos,
+        press_id: record.pressId ?? null,
       })
       .select('id')
       .single();

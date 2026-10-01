@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { SEO_COPY, localizedMetadata } from '@/lib/seo';
 import { notFound } from 'next/navigation';
+import { ACADEMY_ENABLED } from '@/lib/features';
 import { AcademyPage } from '@/components/academy-page';
 
 export function generateMetadata(): Metadata {
@@ -14,6 +15,6 @@ export function generateMetadata(): Metadata {
 export const dynamic = 'force-dynamic';
 
 export default function AcademyRoute() {
-  if (process.env.NEXT_PUBLIC_ACADEMY_ENABLED !== 'true') notFound();
+  if (!ACADEMY_ENABLED) notFound();
   return <AcademyPage />;
 }

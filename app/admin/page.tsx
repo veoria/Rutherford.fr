@@ -7,7 +7,7 @@ import { getOrgsForAdmin, listOrgsForAdmin } from '@/lib/organizations';
 import { AdminDashboard } from '@/components/admin-dashboard';
 
 export const metadata: Metadata = {
-  title: 'Admin — Rutherford Academy',
+  title: 'Admin — Rutherford',
   robots: { index: false, follow: false },
 };
 

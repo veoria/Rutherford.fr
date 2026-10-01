@@ -12,6 +12,7 @@ import { useRouter } from 'next/navigation';
 import { COUNTRIES } from '@/data/onboarding-options';
 import { ACCOUNT_TYPES, type AccountType } from '@/data/account-types';
 import type { AdminOrgDetail, AdminOrgMemberRow, AdminOrgInviteRow } from '@/lib/admin';
+import { SYSTEM_KINDS, SYSTEM_KIND_LABELS, type SystemKind } from '@/data/press-config';
 
 type MemberRole = 'owner' | 'admin' | 'member';
 
@@ -42,6 +43,9 @@ const ERROR_LABELS: Record<string, string> = {
   bad_email: 'Adresse e-mail invalide.',
   bad_status: 'Statut de licence invalide.',
   bad_date: 'Date invalide (format AAAA-MM-JJ).',
+  bad_kind: 'Type d’équipement invalide.',
+  bad_press: 'Cette presse n’appartient pas à l’organisation.',
+  bad_sold_by: '« Vendu par » doit être un revendeur ou un distributeur.',
   bad_type_upload: 'Format d’image non supporté (PNG, JPG, WebP ou GIF).',
   bad_type_415: 'Format d’image non supporté (PNG, JPG, WebP ou GIF).',
   too_large: 'Fichier trop volumineux (max 4 Mo).',
@@ -58,6 +62,10 @@ const errorLabel = (code: unknown) =>
 export type OrgSystem = {
   id: string;
   siteId: string | null;
+  pressId: string | null;
+  kind: SystemKind;
+  serialNumber: string | null;
+  soldByOrgId: string | null;
   product: string;
   machine: string | null;
   licenseKey: string | null;
@@ -92,8 +100,17 @@ const SYSTEM_PRODUCTS = ['ColorLoop', 'ColorLoop Connect', 'EasySet', 'EasyLoop'
 
 type SystemDraft = Omit<OrgSystem, 'id'>;
 
+/** A press of the org (Mon atelier), for the « Presse » selector. */
+export type OrgPressOption = { id: string; label: string; siteId: string | null };
+/** A partner org for « Vendu par » (null = vente directe Rutherford). */
+export type PartnerOption = { id: string; name: string; type: string };
+
 const EMPTY_SYSTEM: SystemDraft = {
   siteId: null,
+  pressId: null,
+  kind: 'software',
+  serialNumber: null,
+  soldByOrgId: null,
   product: '',
   machine: null,
   licenseKey: null,
@@ -109,12 +126,16 @@ function SystemForm({
   initial,
   submitLabel,
   sites,
+  presses,
+  partners,
   onSubmit,
   onDelete,
 }: {
   initial: SystemDraft;
   submitLabel: string;
   sites: OrgSite[];
+  presses: OrgPressOption[];
+  partners: PartnerOption[];
   onSubmit: (draft: SystemDraft) => Promise<boolean>;
   onDelete?: () => Promise<void>;
 }) {
@@ -131,20 +152,85 @@ function SystemForm({
     Boolean((draft.latestVersion ?? '').trim()) &&
     (draft.installedVersion ?? '').trim() !== (draft.latestVersion ?? '').trim();
 
+  const isSoftware = draft.kind === 'software';
   return (
     <div className="admin-sys-card">
       <div className="admin-field-row">
         <div className="admin-field">
-          <label>Produit</label>
+          <label>Type</label>
+          <select
+            className="admin-input"
+            value={draft.kind}
+            onChange={(e) => set({ kind: e.target.value as SystemKind })}
+            disabled={busy}
+          >
+            {SYSTEM_KINDS.map((k) => (
+              <option key={k} value={k}>
+                {SYSTEM_KIND_LABELS.fr[k]}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="admin-field">
+          <label>Presse (atelier du client)</label>
+          <select
+            className="admin-input"
+            value={draft.pressId ?? ''}
+            onChange={(e) => {
+              const press = presses.find((p) => p.id === e.target.value);
+              // L'usine suit la presse quand celle-ci est rangée sur un site.
+              set({ pressId: press?.id ?? null, ...(press?.siteId ? { siteId: press.siteId } : {}) });
+            }}
+            disabled={busy || !presses.length}
+          >
+            <option value="">{presses.length ? '— Non liée —' : 'Aucune presse déclarée par le client'}</option>
+            {presses.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.label}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="admin-field">
+          <label>Vendu par</label>
+          <select
+            className="admin-input"
+            value={draft.soldByOrgId ?? ''}
+            onChange={(e) => set({ soldByOrgId: e.target.value || null })}
+            disabled={busy}
+          >
+            <option value="">Vente directe Rutherford</option>
+            {partners.map((o) => (
+              <option key={o.id} value={o.id}>
+                {o.name} ({o.type === 'distributor' ? 'distributeur' : 'revendeur'})
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+      <div className="admin-field-row">
+        <div className="admin-field">
+          <label>{isSoftware ? 'Produit' : 'Modèle'}</label>
           <input
             className="admin-input"
             list="admin-org-sys-products"
             value={draft.product}
             onChange={(e) => set({ product: e.target.value })}
             disabled={busy}
-            placeholder="ColorLoop"
+            placeholder={isSoftware ? 'ColorLoop' : draft.kind === 'measurement_device' ? 'IntelliTrax2' : ''}
           />
         </div>
+        {isSoftware ? null : (
+          <div className="admin-field">
+            <label>N° de série</label>
+            <input
+              className="admin-input"
+              value={draft.serialNumber ?? ''}
+              onChange={(e) => set({ serialNumber: text(e.target.value) })}
+              disabled={busy}
+            />
+          </div>
+        )}
         <div className="admin-field">
           <label>Presse / machine</label>
           <input
@@ -220,7 +306,7 @@ function SystemForm({
           />
         </div>
         <div className="admin-field">
-          <label>Version installée</label>
+          <label>{isSoftware ? 'Version installée' : 'Version (firmware / OS)'}</label>
           <input
             className="admin-input"
             value={draft.installedVersion ?? ''}
@@ -284,7 +370,17 @@ function SystemForm({
   );
 }
 
-export function OrgSystemsEditor({ orgId, sites }: { orgId: string; sites: OrgSite[] }) {
+export function OrgSystemsEditor({
+  orgId,
+  sites,
+  presses,
+  partners,
+}: {
+  orgId: string;
+  sites: OrgSite[];
+  presses: OrgPressOption[];
+  partners: PartnerOption[];
+}) {
   const router = useRouter();
   const [systems, setSystems] = useState<OrgSystem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -335,9 +431,10 @@ export function OrgSystemsEditor({ orgId, sites }: { orgId: string; sites: OrgSi
     <div className="admin-modal-members">
       <h4 className="admin-modal-subhead">Modifier les systèmes &amp; licences{loading ? ' …' : ` (${systems.length})`}</h4>
       <p className="admin-modal-section-status">
-        Licence, n° AnyDesk et versions affichés dans l&apos;espace client (« Mon système »). Une « Dernière
-        version » différente de la version installée signale une mise à jour disponible au client et à son
-        revendeur. L&apos;attribution « vendu par » (canal de la commande) se règle ailleurs — non éditable ici.
+        Logiciel (licence, version) et matériel (dispositif de mesure, PC / serveur ColorLoop, interface
+        console : modèle, n° de série, version) affichés dans l&apos;espace client, sur la fiche de la presse
+        liée. Une « Dernière version » différente de la version installée signale une mise à jour disponible.
+        « Vendu par » fixe le canal de la commande : le revendeur ne voit dans son parc que ce qu&apos;il a vendu.
       </p>
       <datalist id="admin-org-sys-products">
         {SYSTEM_PRODUCTS.map((p) => (
@@ -350,6 +447,8 @@ export function OrgSystemsEditor({ orgId, sites }: { orgId: string; sites: OrgSi
           initial={s}
           submitLabel="Enregistrer"
           sites={sites}
+          presses={presses}
+          partners={partners}
           onSubmit={(draft) => save(s.id, draft)}
           onDelete={async () => {
             setError(null);
@@ -364,7 +463,14 @@ export function OrgSystemsEditor({ orgId, sites }: { orgId: string; sites: OrgSi
         />
       ))}
       {adding ? (
-        <SystemForm initial={EMPTY_SYSTEM} submitLabel="Ajouter" sites={sites} onSubmit={(draft) => save(null, draft)} />
+        <SystemForm
+          initial={EMPTY_SYSTEM}
+          submitLabel="Ajouter"
+          sites={sites}
+          presses={presses}
+          partners={partners}
+          onSubmit={(draft) => save(null, draft)}
+        />
       ) : (
         <button type="button" className="admin-link-btn" onClick={() => setAdding(true)}>
           + Ajouter un système
@@ -452,7 +558,7 @@ function SiteForm({
           <input className="admin-input" value={draft.postalCode ?? ''} onChange={(e) => set({ postalCode: text(e.target.value) })} disabled={busy} />
         </div>
         <div className="admin-field">
-          <label>N° AnyDesk du site</label>
+          <label>N° AnyDesk du serveur</label>
           <input className="admin-input" value={draft.anydeskId ?? ''} onChange={(e) => set({ anydeskId: text(e.target.value) })} disabled={busy} placeholder="123 456 789" />
         </div>
       </div>

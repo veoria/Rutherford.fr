@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import { ACCOUNT_ENABLED } from '@/lib/features';
 import { AccountPage } from '@/components/account-page';
 import { ALL_COURSES, FREE_COURSES } from '@/data/academy-courses';
 
@@ -15,7 +16,7 @@ const isoDayUTC = (d: Date) => d.toISOString().slice(0, 10);
 // Auth-free preview of the account dashboard so the UI can be reviewed
 // without a Supabase session. Uses sample data only.
 export default function AccountDemoRoute() {
-  if (process.env.NEXT_PUBLIC_ACADEMY_ENABLED !== 'true') notFound();
+  if (!ACCOUNT_ENABLED) notFound();
 
   // Sample activity: learner active 5 of the last 7 days, 25 XP today.
   const DAY_MS = 24 * 60 * 60 * 1000;

@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { type Locale, useLanguage } from '@/components/language-provider';
 import { createSupabaseBrowserClient } from '@/lib/supabase/client';
+import { ACADEMY_ENABLED } from '@/lib/features';
 
 const NAV_PREFIX_LOCALES = ['fr', 'de', 'it', 'es', 'pt'];
 
@@ -13,7 +14,6 @@ type SiteNavProps = {
   brand?: 'rutherford' | 'colorloop';
 };
 
-const ACADEMY_ENABLED = process.env.NEXT_PUBLIC_ACADEMY_ENABLED === 'true';
 
 // Initials for the account chip — prefer the profile name, fall back to email.
 const initials = (name: string | null, email: string): string => {

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound, redirect } from 'next/navigation';
+import { ACADEMY_ENABLED } from '@/lib/features';
 import { AcademyCoursePage } from '@/components/academy-course-page';
 import { ALL_COURSES, getCourseBySlug } from '@/data/academy-courses';
 import { getCourseAccess } from '@/lib/entitlements';
@@ -31,7 +32,7 @@ export default async function AcademyCourseRoute({
   params: RouteParams;
   searchParams?: { m?: string };
 }) {
-  if (process.env.NEXT_PUBLIC_ACADEMY_ENABLED !== 'true') notFound();
+  if (!ACADEMY_ENABLED) notFound();
   const course = getCourseBySlug(params.slug);
   if (!course) {
     notFound();

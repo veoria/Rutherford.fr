@@ -655,6 +655,27 @@ function SupportUploadField({
   );
 }
 
+// Support opened from a press (Mon atelier): the linked-press card.
+const PRESS_LINKED: Record<Locale, { title: string; note: string }> = {
+  en: { title: 'Press concerned', note: 'Our team receives this press’s configuration and equipment with your request.' },
+  fr: { title: 'Presse concernée', note: 'Notre équipe reçoit la configuration et l’équipement de cette presse avec votre demande.' },
+  de: { title: 'Betroffene Druckmaschine', note: 'Unser Team erhält Konfiguration und Ausstattung dieser Maschine mit Ihrer Anfrage.' },
+  it: { title: 'Macchina interessata', note: 'Il nostro team riceve configurazione ed equipaggiamento di questa macchina con la richiesta.' },
+  es: { title: 'Prensa afectada', note: 'Nuestro equipo recibe la configuración y el equipamiento de esta prensa con su solicitud.' },
+  pt: { title: 'Máquina em causa', note: 'A nossa equipa recebe a configuração e o equipamento desta máquina com o seu pedido.' },
+};
+
+type LinkedPress = {
+  pressId: string;
+  title: string;
+  machine: string;
+  config: string;
+  siteName: string | null;
+  company: string | null;
+  anydesk: string | null;
+  equipment: string[];
+};
+
 export function SupportPage() {
   const { locale } = useLanguage();
   const t = COPY[locale];
@@ -680,15 +701,48 @@ export function SupportPage() {
   );
 
   // Prefill from the URL — the per-press "Support" button in the account passes
-  // ?subject=<machine>&company=<company>. Never clobbers a value already typed.
+  // ?subject=<machine>&company=<company>, plus ?press=<id> (Mon atelier: files
+  // the ticket in that press's support history) and ?anydesk=<id>. Never
+  // clobbers a value already typed.
+  const [pressId, setPressId] = useState<string | null>(null);
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const params = new URLSearchParams(window.location.search);
     const s = params.get('subject');
     const c = params.get('company');
+    const p = params.get('press');
+    const a = params.get('anydesk');
     if (s) setSubject((v) => v || s.slice(0, 200));
     if (c) setCompany((v) => v || c.slice(0, 200));
+    if (p && /^[0-9a-f-]{36}$/i.test(p)) setPressId(p);
+    if (a) setAnydesk((v) => v || a.slice(0, 60));
   }, []);
+
+  // Press context (signed-in client): fill the subject, AnyDesk and company so
+  // the client only has to describe the problem.
+  const [linkedPress, setLinkedPress] = useState<LinkedPress | null>(null);
+  useEffect(() => {
+    if (!pressId) return;
+    let active = true;
+    (async () => {
+      try {
+        const res = await fetch(`/api/account/presses/context?id=${encodeURIComponent(pressId)}`);
+        if (!res.ok || !active) return;
+        const { press } = (await res.json()) as { press?: LinkedPress };
+        if (!press || !active) return;
+        setLinkedPress(press);
+        setSubject((v) => v || press.title.slice(0, 200));
+        if (press.anydesk) setAnydesk((v) => v || press.anydesk!.slice(0, 60));
+        // The organization name is the source of truth for the company.
+        if (press.company) setCompany(press.company.slice(0, 200));
+      } catch {
+        /* keep the URL prefill */
+      }
+    })();
+    return () => {
+      active = false;
+    };
+  }, [pressId]);
 
   // Prefill from the signed-in profile, then fall back to IP geo for the country.
   useEffect(() => {
@@ -807,6 +861,7 @@ export function SupportPage() {
           subject: subject.trim(),
           description: problem.trim(),
           photos,
+          pressId,
         }),
       });
       if (!res.ok) {
@@ -951,6 +1006,20 @@ export function SupportPage() {
                           <span className="cv-login-arrow">→</span>
                         </a>
                       )
+                    ) : null}
+
+                    {linkedPress ? (
+                      <div className="sp-press">
+                        <span className="sp-press-k">{PRESS_LINKED[locale].title}</span>
+                        <strong>{linkedPress.title}</strong>
+                        <span>
+                          {[linkedPress.title !== linkedPress.machine ? linkedPress.machine : null, linkedPress.config, linkedPress.siteName]
+                            .filter(Boolean)
+                            .join(' · ')}
+                        </span>
+                        {linkedPress.equipment.length ? <span>{linkedPress.equipment.join(' — ')}</span> : null}
+                        <small>{PRESS_LINKED[locale].note}</small>
+                      </div>
                     ) : null}
 
                     <div className="cv-grid2">

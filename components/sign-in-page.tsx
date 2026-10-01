@@ -68,7 +68,7 @@ const COPY: Record<Locale, SignInCopy> = {
   en: {
     title: 'Sign in to your account',
     subtitle:
-      'Sign in to track your progress, access your enrolled masterclasses, and manage your Academy Pass subscription.',
+      'Sign in to manage your presses and plants, follow your console validations and reach Rutherford support.',
     google: 'Continue with Google',
     apple: 'Continue with Apple',
     or: 'or',
@@ -112,7 +112,7 @@ const COPY: Record<Locale, SignInCopy> = {
   fr: {
     title: 'Connectez-vous à votre compte',
     subtitle:
-      'Connectez-vous pour suivre votre progression, accéder à vos masterclasses et gérer votre abonnement Academy Pass.',
+      'Connectez-vous pour gérer vos presses et vos sites, suivre vos validations console et contacter le support Rutherford.',
     google: 'Continuer avec Google',
     apple: 'Continuer avec Apple',
     or: 'ou',
@@ -156,7 +156,7 @@ const COPY: Record<Locale, SignInCopy> = {
   de: {
     title: 'Bei Ihrem Konto anmelden',
     subtitle:
-      'Melden Sie sich an, um Ihren Fortschritt zu verfolgen, auf Ihre gebuchten Masterclasses zuzugreifen und Ihr Academy-Pass-Abonnement zu verwalten.',
+      'Melden Sie sich an, um Ihre Druckmaschinen und Standorte zu verwalten, Ihre Konsolenvalidierungen zu verfolgen und den Rutherford-Support zu erreichen.',
     google: 'Weiter mit Google',
     apple: 'Weiter mit Apple',
     or: 'oder',
@@ -200,7 +200,7 @@ const COPY: Record<Locale, SignInCopy> = {
   it: {
     title: 'Acceda al suo account',
     subtitle:
-      'Acceda per seguire i suoi progressi, consultare le sue masterclass e gestire il suo abbonamento Academy Pass.',
+      'Acceda per gestire le Sue macchine da stampa e i Suoi stabilimenti, seguire le validazioni console e contattare il supporto Rutherford.',
     google: 'Continua con Google',
     apple: 'Continua con Apple',
     or: 'oppure',
@@ -244,7 +244,7 @@ const COPY: Record<Locale, SignInCopy> = {
   es: {
     title: 'Inicie sesión en su cuenta',
     subtitle:
-      'Inicie sesión para seguir su progreso, acceder a sus masterclasses y gestionar su suscripción Academy Pass.',
+      'Inicie sesión para gestionar sus prensas y sus plantas, seguir sus validaciones de consola y contactar con el soporte de Rutherford.',
     google: 'Continuar con Google',
     apple: 'Continuar con Apple',
     or: 'o',
@@ -288,7 +288,7 @@ const COPY: Record<Locale, SignInCopy> = {
   pt: {
     title: 'Inicie sessão na sua conta',
     subtitle:
-      'Inicie sessão para acompanhar o seu progresso, aceder às suas masterclasses e gerir a sua subscrição Academy Pass.',
+      'Inicie sessão para gerir as suas máquinas de impressão e fábricas, acompanhar as validações de consola e contactar o suporte Rutherford.',
     google: 'Continuar com Google',
     apple: 'Continuar com Apple',
     or: 'ou',
@@ -584,7 +584,7 @@ export function SignInPage() {
       <section className="signin-section section">
         <div className="container signin-shell">
           <header className="signin-head">
-            <p className="section-kicker">Rutherford Academy</p>
+            <p className="section-kicker">Rutherford</p>
             <h1>{isSignup ? t.titleSignup : t.title}</h1>
             <p>{isSignup ? t.subtitleSignup : t.subtitle}</p>
           </header>
