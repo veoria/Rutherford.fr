@@ -7,14 +7,16 @@ import { getAdminAccess } from '@/lib/admin-access';
 import { createSupabaseAdminClient } from '@/lib/supabase/server';
 import type { AccountType } from '@/data/account-types';
 
-/** Same gate as the account detail page; redirects or 404s when not allowed. */
-export async function requirePreviewAccess(next: string): Promise<void> {
+/** Same gate as the account detail page; redirects or 404s when not allowed.
+ *  Returns whether the admin may manage (edit on the client's behalf). */
+export async function requirePreviewAccess(next: string): Promise<{ canManage: boolean }> {
   const access = await getAdminAccess();
-  if (access.ok) return;
+  if (access.ok) return { canManage: access.canManage };
   if (access.reason === 'unauthenticated') redirect(`/account/sign-in?next=${encodeURIComponent(next)}`);
   if (access.reason === 'needs_2fa_challenge') redirect(`/account/verify-2fa?next=${encodeURIComponent(next)}`);
   if (access.reason === 'needs_2fa_setup') redirect(`/account/security?next=${encodeURIComponent(next)}`);
   notFound(); // forbidden — don't reveal the route exists
+  return { canManage: false };
 }
 
 /** « Retour admin » target: internal /admin paths only, never off-site. */

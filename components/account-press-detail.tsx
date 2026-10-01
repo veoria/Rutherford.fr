@@ -399,7 +399,15 @@ export function AccountPressDetail({
                 ) : null}
               </dl>
               {press.notes ? <p className="pd-notes">{press.notes}</p> : null}
-              {readOnly ? null : (
+              {readOnly ? (
+                previewCtx?.editOrgId ? (
+                  <div className="pd-actions">
+                    <button type="button" className="button button-light" onClick={() => setEditing(true)}>
+                      {t.edit}
+                    </button>
+                  </div>
+                ) : null
+              ) : (
                 <>
                   <div className="pd-actions">
                     <a className="button button-accent" href={supportHref(press, title, anydesk)}>
@@ -480,12 +488,13 @@ export function AccountPressDetail({
           sites={sites}
           initial={press}
           defaultSiteId={null}
-          canDelete={canDelete}
+          canDelete={canDelete || Boolean(previewCtx?.editOrgId)}
+          adminOrgId={previewCtx?.editOrgId}
           onClose={() => setEditing(false)}
           onSaved={(saved, removedId) => {
             setEditing(false);
             if (removedId) {
-              window.location.href = '/account/atelier';
+              window.location.href = previewCtx ? previewHref(previewCtx, 'atelier') : '/account/atelier';
               return;
             }
             if (saved[0]) setPress((p) => ({ ...p, ...saved[0] }));

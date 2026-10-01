@@ -21,7 +21,7 @@ export default async function PreviewWorkshopRoute({
   params: { id: string };
   searchParams: { back?: string };
 }) {
-  await requirePreviewAccess(`/admin/users/${params.id}/preview/atelier`);
+  const { canManage } = await requirePreviewAccess(`/admin/users/${params.id}/preview/atelier`);
   const target = await getPreviewTarget(params.id);
   if (!target || target.accountType !== 'client' || !target.orgId) notFound();
 
@@ -56,6 +56,7 @@ export default async function PreviewWorkshopRoute({
         accountType: target.accountType,
         back: safePreviewBack(searchParams.back),
         name: target.fullName,
+        editOrgId: canManage ? target.orgId : undefined,
       }}
     />
   );

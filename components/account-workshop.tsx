@@ -613,6 +613,39 @@ export function supportHref(p: Pick<WorkshopPress, 'id'>, title: string, anydesk
 
 type Filter = 'all' | 'none' | string;
 
+/**
+ * Write endpoints of the atelier: the client's own (/api/account/*), or — from
+ * the admin « view as client » preview, when the admin may manage — the
+ * client org's (/api/admin/orgs/*, same validation, audited).
+ */
+function workshopApi(adminOrgId?: string) {
+  const q = (v: string) => encodeURIComponent(v);
+  if (adminOrgId) {
+    const base = `/api/admin/orgs/presses?orgId=${q(adminOrgId)}`;
+    return {
+      createPress: base,
+      press: (id: string) => `${base}&id=${q(id)}`,
+      order: `/api/admin/orgs/presses/order?orgId=${q(adminOrgId)}`,
+      site: (method: 'POST' | 'PATCH' | 'DELETE', id: string | null, fields: Record<string, unknown>) =>
+        method === 'DELETE'
+          ? { url: `/api/admin/orgs/sites?id=${q(id ?? '')}`, body: undefined }
+          : {
+              url: '/api/admin/orgs/sites',
+              body: JSON.stringify(method === 'POST' ? { orgId: adminOrgId, ...fields } : { id, ...fields }),
+            },
+    };
+  }
+  return {
+    createPress: '/api/account/presses',
+    press: (id: string) => `/api/account/presses?id=${q(id)}`,
+    order: '/api/account/presses/order',
+    site: (method: 'POST' | 'PATCH' | 'DELETE', id: string | null, fields: Record<string, unknown>) => ({
+      url: id ? `/api/account/sites?id=${q(id)}` : '/api/account/sites',
+      body: method === 'DELETE' ? undefined : JSON.stringify(fields),
+    }),
+  };
+}
+
 export function AccountWorkshop({
   presses: initialPresses,
   sites,
@@ -651,7 +684,12 @@ export function AccountWorkshop({
   );
   const units = presses.reduce((sum, p) => sum + p.colors + (p.coater ? 1 : 0), 0);
   const currentSite = filter !== 'all' && filter !== 'none' ? siteById.get(filter) ?? null : null;
-  const canEdit = !preview;
+  // Admin preview: read only, unless the admin may manage (editOrgId set) —
+  // then the admin maintains the pressroom on the client's behalf.
+  const adminOrgId = previewCtx?.editOrgId;
+  const canEdit = !preview || Boolean(adminOrgId);
+  const manageSites = canManageSites || Boolean(adminOrgId);
+  const api = workshopApi(adminOrgId);
 
   // Move within the filtered view: swap with the visible neighbour, so a plant
   // tab reorders that plant's presses without disturbing the others.
@@ -693,7 +731,7 @@ export function AccountWorkshop({
     setArrangeBusy(true);
     setArrangeError(false);
     try {
-      const res = await fetch('/api/account/presses/order', {
+      const res = await fetch(api.order, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ids: presses.map((p) => p.id) }),
@@ -740,7 +778,7 @@ export function AccountWorkshop({
                     {t.arrange}
                   </button>
                 ) : null}
-                {canManageSites ? (
+                {manageSites ? (
                   <button type="button" className="button button-light" onClick={() => setSiteEditing('new')}>
                     {t.addSite}
                   </button>
@@ -784,7 +822,7 @@ export function AccountWorkshop({
                   .filter(Boolean)
                   .join(', ')}
               </span>
-              {canEdit && canManageSites ? (
+              {canEdit && manageSites ? (
                 <button type="button" className="ws-link" onClick={() => setSiteEditing(currentSite)}>
                   {t.editSite}
                 </button>
@@ -805,7 +843,7 @@ export function AccountWorkshop({
                     + {t.addPress}
                   </button>
                 ) : null}
-                {canEdit && !canManageSites ? <p className="ws-note">{t.membersNote}</p> : null}
+                {canEdit && !manageSites ? <p className="ws-note">{t.membersNote}</p> : null}
               </div>
             </div>
           ) : arranging ? (
@@ -882,7 +920,8 @@ export function AccountWorkshop({
           sites={sites}
           initial={editing === 'new' ? null : editing}
           defaultSiteId={currentSite?.id ?? null}
-          canDelete={canManageSites}
+          canDelete={manageSites}
+          adminOrgId={adminOrgId}
           onClose={() => setEditing(null)}
           onSaved={(saved, removedId) => {
             setPresses((list) => {
@@ -905,6 +944,7 @@ export function AccountWorkshop({
           t={t}
           locale={locale}
           initial={siteEditing === 'new' ? null : siteEditing}
+          adminOrgId={adminOrgId}
           onClose={() => setSiteEditing(null)}
           onSaved={(removed) => {
             setSiteEditing(null);
@@ -1105,6 +1145,7 @@ export function PressEditor({
   initial,
   defaultSiteId,
   canDelete,
+  adminOrgId,
   onClose,
   onSaved,
 }: {
@@ -1114,6 +1155,8 @@ export function PressEditor({
   initial: WorkshopPress | null;
   defaultSiteId: string | null;
   canDelete: boolean;
+  /** Admin preview: write through the admin API for this client org. */
+  adminOrgId?: string;
   onClose: () => void;
   onSaved: (saved: WorkshopPress[], removedId?: string) => void;
 }) {
@@ -1150,7 +1193,8 @@ export function PressEditor({
       quantity: d.quantity,
     };
     try {
-      const res = await fetch(initial ? `/api/account/presses?id=${encodeURIComponent(initial.id)}` : '/api/account/presses', {
+      const api = workshopApi(adminOrgId);
+      const res = await fetch(initial ? api.press(initial.id) : api.createPress, {
         method: initial ? 'PATCH' : 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
@@ -1168,7 +1212,7 @@ export function PressEditor({
     if (!initial || !window.confirm(e.confirmRemove)) return;
     setBusy(true);
     try {
-      const res = await fetch(`/api/account/presses?id=${encodeURIComponent(initial.id)}`, { method: 'DELETE' });
+      const res = await fetch(workshopApi(adminOrgId).press(initial.id), { method: 'DELETE' });
       if (!res.ok) throw new Error('delete');
       onSaved([], initial.id);
     } catch {
@@ -1384,12 +1428,14 @@ function SiteEditor({
   t,
   locale,
   initial,
+  adminOrgId,
   onClose,
   onSaved,
 }: {
   t: Copy;
   locale: Locale;
   initial: WorkshopSite | null;
+  adminOrgId?: string;
   onClose: () => void;
   onSaved: (removed: boolean) => void;
 }) {
@@ -1413,12 +1459,8 @@ function SiteEditor({
     setBusy(true);
     setError(false);
     try {
-      const url = initial ? `/api/account/sites?id=${encodeURIComponent(initial.id)}` : '/api/account/sites';
-      const res = await fetch(url, {
-        method,
-        headers: { 'Content-Type': 'application/json' },
-        body: method === 'DELETE' ? undefined : JSON.stringify(f),
-      });
+      const { url, body } = workshopApi(adminOrgId).site(method, initial?.id ?? null, f);
+      const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body });
       if (!res.ok) throw new Error('site');
       onSaved(method === 'DELETE');
     } catch {

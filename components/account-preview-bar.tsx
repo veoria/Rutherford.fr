@@ -17,6 +17,16 @@ const NOTE: Record<Locale, string> = {
   pt: 'Pré-visualização da área do cliente — apenas leitura',
 };
 
+// When the admin may manage: the atelier is editable on the client's behalf.
+const NOTE_EDIT: Record<Locale, string> = {
+  en: 'Client area preview — pressroom edits are saved for the client',
+  fr: 'Aperçu de l’espace client — les modifications de l’atelier sont enregistrées pour le client',
+  de: 'Vorschau des Kundenbereichs — Änderungen an der Druckerei werden für den Kunden gespeichert',
+  it: 'Anteprima dell’area cliente — le modifiche alla sala stampa sono salvate per il cliente',
+  es: 'Vista previa del área de cliente — los cambios en la sala de prensa se guardan para el cliente',
+  pt: 'Pré-visualização da área do cliente — as alterações à sala de impressão são guardadas para o cliente',
+};
+
 // Neutre : le retour peut viser la fiche utilisateur OU la page organisation
 // selon d'où l'aperçu a été ouvert.
 const BACK: Record<Locale, string> = {
@@ -53,6 +63,8 @@ export type PreviewContext = {
   /** Where « Retour admin » goes (user page or org page); internal /admin path. */
   back?: string;
   name?: string | null;
+  /** Set when the admin may manage: the client org whose atelier they can edit. */
+  editOrgId?: string;
 };
 
 /** A preview route for `path` ('' = hub, 'atelier', 'atelier/<id>', 'parc'), keeping ?back=. */
@@ -77,7 +89,7 @@ export function PreviewBar({ ctx, current }: { ctx: PreviewContext; current: 'da
       <div className="pv-bar">
         <div className="container pv-bar-inner">
           <span className="pv-note">
-            {NOTE[locale] ?? NOTE.en}
+            {ctx.editOrgId && current !== 'dashboard' ? NOTE_EDIT[locale] ?? NOTE_EDIT.en : NOTE[locale] ?? NOTE.en}
             {ctx.name ? ` · ${ctx.name}` : ''}
           </span>
           <span className="pv-actions">
