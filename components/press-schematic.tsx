@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 
-export type PressFormat = 'b2' | 'b1' | 'vlf';
+export type PressFormat = 'b2' | 'b1' | 'f145' | 'vlf';
 
 // Format drives the dimetric scale (s) and the press width/depth (w). Changing
 // format tweens U / WB so the press *widens* crisply (no CSS-scale blur), and
@@ -12,6 +12,7 @@ const BASE_WB = 1.7;
 const PRESS_FMT: Record<PressFormat, { w: number; s: number }> = {
   b2: { w: 0.86, s: 0.92 },
   b1: { w: 1, s: 1 },
+  f145: { w: 1.36, s: 1.08 },
   vlf: { w: 1.5, s: 1.13 },
 };
 

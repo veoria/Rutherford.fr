@@ -402,7 +402,7 @@ export type PressSupportContext = {
   teamLines: string[];
 };
 
-const FORMAT_FR: Record<string, string> = { b3: 'B3', b2: 'B2', b1: 'B1', vlf: 'Grand format' };
+const FORMAT_FR: Record<string, string> = { b3: 'B3', b2: 'B2', b1: 'B1', f145: '145 (106 × 145 cm)', vlf: 'Grand format' };
 
 /** Support context of a press of the user's org (null if not theirs). */
 export async function getPressSupportContext(userId: string, pressId: string): Promise<PressSupportContext | null> {

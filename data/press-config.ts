@@ -9,7 +9,7 @@ import { PRESS_BRANDS_PAGES } from '@/data/press-brands';
 
 export const PRESS_MANUFACTURERS: string[] = PRESS_BRANDS_PAGES.map((b) => b.name);
 
-export const SHEET_FORMATS = ['b3', 'b2', 'b1', 'vlf'] as const;
+export const SHEET_FORMATS = ['b3', 'b2', 'b1', 'f145', 'vlf'] as const;
 export type SheetFormat = (typeof SHEET_FORMATS)[number];
 
 export const PRODUCTION_PROFILES = ['commercial', 'packaging', 'luxe'] as const;
@@ -44,16 +44,17 @@ const FORMAT_DIMS: Record<SheetFormat, string> = {
   b3: '36 × 52 cm',
   b2: '53 × 75 cm',
   b1: '70 × 100 cm',
+  f145: '106 × 145 cm',
   vlf: '110 × 162 cm',
 };
 
 const FORMAT_NAMES: Record<Locale, Record<SheetFormat, string>> = {
-  en: { b3: 'B3', b2: 'B2', b1: 'B1', vlf: 'Large format' },
-  fr: { b3: 'B3', b2: 'B2', b1: 'B1', vlf: 'Grand format' },
-  de: { b3: 'B3', b2: 'B2', b1: 'B1', vlf: 'Großformat' },
-  it: { b3: 'B3', b2: 'B2', b1: 'B1', vlf: 'Grande formato' },
-  es: { b3: 'B3', b2: 'B2', b1: 'B1', vlf: 'Gran formato' },
-  pt: { b3: 'B3', b2: 'B2', b1: 'B1', vlf: 'Grande formato' },
+  en: { b3: 'B3', b2: 'B2', b1: 'B1', f145: '145', vlf: 'Large format' },
+  fr: { b3: 'B3', b2: 'B2', b1: 'B1', f145: '145', vlf: 'Grand format' },
+  de: { b3: 'B3', b2: 'B2', b1: 'B1', f145: '145', vlf: 'Großformat' },
+  it: { b3: 'B3', b2: 'B2', b1: 'B1', f145: '145', vlf: 'Grande formato' },
+  es: { b3: 'B3', b2: 'B2', b1: 'B1', f145: '145', vlf: 'Gran formato' },
+  pt: { b3: 'B3', b2: 'B2', b1: 'B1', f145: '145', vlf: 'Grande formato' },
 };
 
 export function formatCopy(locale: Locale): FormatCopy {

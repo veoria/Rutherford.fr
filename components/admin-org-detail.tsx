@@ -525,7 +525,7 @@ export function AdminOrgDetail({
                             ) : null}
                           </td>
                           <td>
-                            {p.sheetFormat === 'vlf' ? 'Grand format' : p.sheetFormat.toUpperCase()} · {p.colors} coul.
+                            {p.sheetFormat === 'vlf' ? 'Grand format' : p.sheetFormat === 'f145' ? '145' : p.sheetFormat.toUpperCase()} · {p.colors} coul.
                             {p.coater ? ' · vernis' : ''}
                             {p.perfecting ? ' · retiration' : ''}
                           </td>
