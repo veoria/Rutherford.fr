@@ -5,7 +5,7 @@ import { useLanguage, type Locale } from '@/components/language-provider';
 import { PressSchematic } from '@/components/press-schematic';
 
 type Profile = 'commercial' | 'packaging' | 'luxe';
-type MachineFormat = 'b2' | 'b1' | 'vlf';
+type MachineFormat = 'b2' | 'b1' | 'f145' | 'vlf';
 type ColorCount = 4 | 5 | 6 | 8;
 
 type Copy = {
@@ -60,7 +60,7 @@ const COPY: Record<Locale, Copy> = {
       format: 'Sheet format',
       colors: 'Colors',
       profiles: { commercial: 'Commercial', packaging: 'Packaging — carton', luxe: 'Packaging — luxury' },
-      formats: { b2: 'B2 — 53 × 75 cm', b1: 'B1 — 70 × 100 cm', vlf: 'Large format — 110 × 162 cm' },
+      formats: { b2: 'B2 — 53 × 75 cm', b1: 'B1 — 70 × 100 cm', f145: '145 — 106 × 145 cm', vlf: 'Large format — 110 × 162 cm' },
       sheetNote: (dims, cost, paper) => `Sheet ${dims} · ≈ ${cost}/sheet (${paper})`,
     },
     table: {
@@ -95,7 +95,7 @@ const COPY: Record<Locale, Copy> = {
       format: 'Format de feuille',
       colors: 'Couleurs',
       profiles: { commercial: 'Commercial', packaging: 'Packaging carton', luxe: 'Packaging luxe' },
-      formats: { b2: 'B2 — 53 × 75 cm', b1: 'B1 — 70 × 100 cm', vlf: 'Grand format — 110 × 162 cm' },
+      formats: { b2: 'B2 — 53 × 75 cm', b1: 'B1 — 70 × 100 cm', f145: '145 — 106 × 145 cm', vlf: 'Grand format — 110 × 162 cm' },
       sheetNote: (dims, cost, paper) => `Feuille ${dims} · ≈ ${cost}/feuille (${paper})`,
     },
     table: {
@@ -130,7 +130,7 @@ const COPY: Record<Locale, Copy> = {
       format: 'Bogenformat',
       colors: 'Farben',
       profiles: { commercial: 'Akzidenz', packaging: 'Verpackung — Karton', luxe: 'Verpackung — Luxus' },
-      formats: { b2: 'B2 — 53 × 75 cm', b1: 'B1 — 70 × 100 cm', vlf: 'Großformat — 110 × 162 cm' },
+      formats: { b2: 'B2 — 53 × 75 cm', b1: 'B1 — 70 × 100 cm', f145: '145 — 106 × 145 cm', vlf: 'Großformat — 110 × 162 cm' },
       sheetNote: (dims, cost, paper) => `Bogen ${dims} · ≈ ${cost}/Bogen (${paper})`,
     },
     table: {
@@ -165,7 +165,7 @@ const COPY: Record<Locale, Copy> = {
       format: 'Formato foglio',
       colors: 'Colori',
       profiles: { commercial: 'Commerciale', packaging: 'Packaging — cartoncino', luxe: 'Packaging — lusso' },
-      formats: { b2: 'B2 — 53 × 75 cm', b1: 'B1 — 70 × 100 cm', vlf: 'Grande formato — 110 × 162 cm' },
+      formats: { b2: 'B2 — 53 × 75 cm', b1: 'B1 — 70 × 100 cm', f145: '145 — 106 × 145 cm', vlf: 'Grande formato — 110 × 162 cm' },
       sheetNote: (dims, cost, paper) => `Foglio ${dims} · ≈ ${cost}/foglio (${paper})`,
     },
     table: {
@@ -200,7 +200,7 @@ const COPY: Record<Locale, Copy> = {
       format: 'Formato de pliego',
       colors: 'Colores',
       profiles: { commercial: 'Comercial', packaging: 'Packaging — cartón', luxe: 'Packaging — lujo' },
-      formats: { b2: 'B2 — 53 × 75 cm', b1: 'B1 — 70 × 100 cm', vlf: 'Gran formato — 110 × 162 cm' },
+      formats: { b2: 'B2 — 53 × 75 cm', b1: 'B1 — 70 × 100 cm', f145: '145 — 106 × 145 cm', vlf: 'Gran formato — 110 × 162 cm' },
       sheetNote: (dims, cost, paper) => `Pliego ${dims} · ≈ ${cost}/pliego (${paper})`,
     },
     table: {
@@ -235,7 +235,7 @@ const COPY: Record<Locale, Copy> = {
       format: 'Formato de folha',
       colors: 'Cores',
       profiles: { commercial: 'Comercial', packaging: 'Embalagem cartão', luxe: 'Embalagem luxo' },
-      formats: { b2: 'B2 (53 × 75 cm)', b1: 'B1 (70 × 100 cm)', vlf: 'Grande formato (110 × 162 cm)' },
+      formats: { b2: 'B2 (53 × 75 cm)', b1: 'B1 (70 × 100 cm)', f145: '145 (106 × 145 cm)', vlf: 'Grande formato (110 × 162 cm)' },
       sheetNote: (dims, cost, paper) => `Folha ${dims} · ≈ ${cost}/folha (${paper})`,
     },
     table: {
@@ -261,7 +261,7 @@ const REDUCTION_PAPER = 0.55; // ColorLoop target: −55%
 const REDUCTION_TIME = 0.38; // ColorLoop target: −38%
 
 const PROFILE_ORDER: Profile[] = ['commercial', 'packaging', 'luxe'];
-const MACHINE_FORMATS: MachineFormat[] = ['b2', 'b1', 'vlf'];
+const MACHINE_FORMATS: MachineFormat[] = ['b2', 'b1', 'f145', 'vlf'];
 const COLOR_COUNTS: ColorCount[] = [4, 5, 6, 8];
 
 // Production profile drives the "current state" makeready behaviour (paper +
@@ -289,6 +289,7 @@ const PROFILES: Record<
 const FORMATS: Record<MachineFormat, { sheetWidthMm: number; sheetCutMm: number; pressEurPerHour: number }> = {
   b2: { sheetWidthMm: 750, sheetCutMm: 530, pressEurPerHour: 110 },
   b1: { sheetWidthMm: 1000, sheetCutMm: 707, pressEurPerHour: 150 },
+  f145: { sheetWidthMm: 1450, sheetCutMm: 1060, pressEurPerHour: 190 },
   vlf: { sheetWidthMm: 1620, sheetCutMm: 1100, pressEurPerHour: 220 },
 };
 
