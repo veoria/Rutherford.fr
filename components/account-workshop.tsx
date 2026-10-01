@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { SiteFooter } from '@/components/site-footer';
 import { SiteNav } from '@/components/site-nav';
 import { AccountSubnav } from '@/components/account-subnav';
+import { PreviewBar, previewHref, type PreviewContext } from '@/components/account-preview-bar';
 import { PressSchematic, type PressFormat } from '@/components/press-schematic';
 import { type Locale, useLanguage } from '@/components/language-provider';
 import { COUNTRIES } from '@/data/onboarding-options';
@@ -617,15 +618,17 @@ export function AccountWorkshop({
   sites,
   canManageSites,
   partnerNames = [],
-  preview = false,
+  previewCtx,
 }: {
   presses: WorkshopPress[];
   sites: WorkshopSite[];
   canManageSites: boolean;
   /** Reseller / distributor attributed to the org — they see these presses. */
   partnerNames?: string[];
-  preview?: boolean;
+  /** Admin « view as client »: read only, links stay inside the preview. */
+  previewCtx?: PreviewContext;
 }) {
+  const preview = Boolean(previewCtx);
   const { locale } = useLanguage();
   const t = workshopCopy(locale);
   const router = useRouter();
@@ -707,7 +710,7 @@ export function AccountWorkshop({
   return (
     <main className="page-shell" id="top">
       <SiteNav current="account" />
-      {preview ? null : <AccountSubnav current="atelier" />}
+      {previewCtx ? <PreviewBar ctx={previewCtx} current="atelier" /> : <AccountSubnav current="atelier" />}
       <section className="ws-section">
         <div className="container ws-wrap">
           <header className="ws-head">
@@ -861,7 +864,8 @@ export function AccountWorkshop({
                   t={t}
                   locale={locale}
                   onEdit={canEdit ? () => setEditing(p) : undefined}
-                  href={preview ? undefined : `/account/atelier/${p.id}`}
+                  href={previewCtx ? previewHref(previewCtx, `atelier/${p.id}`) : `/account/atelier/${p.id}`}
+                  readOnly={preview}
                 />
               ))}
             </div>
@@ -924,6 +928,7 @@ export function PressCard({
   locale,
   onEdit,
   href,
+  readOnly = false,
   compact = false,
 }: {
   press: WorkshopPress;
@@ -931,8 +936,10 @@ export function PressCard({
   t: Copy;
   locale: Locale;
   onEdit?: () => void;
-  /** Press sheet (/account/atelier/[id]); omitted in the admin preview. */
+  /** Press sheet (/account/atelier/[id], or its admin-preview route). */
   href?: string;
+  /** Admin preview: no support request on the client's behalf. */
+  readOnly?: boolean;
   compact?: boolean;
 }) {
   const fmt = formatCopy(locale)[p.sheetFormat];
@@ -1008,9 +1015,13 @@ export function PressCard({
         ) : null}
         {!compact ? (
           <div className="ws-card-foot">
-            <a className="ws-card-support" href={supportHref(p, title, p.anydeskId ?? site?.anydeskId)}>
-              {t.card.support}
-            </a>
+            {readOnly ? (
+              <span />
+            ) : (
+              <a className="ws-card-support" href={supportHref(p, title, p.anydeskId ?? site?.anydeskId)}>
+                {t.card.support}
+              </a>
+            )}
             {href ? (
               <a className="ws-card-cta" href={href}>
                 {t.card.open} <span aria-hidden="true">→</span>
