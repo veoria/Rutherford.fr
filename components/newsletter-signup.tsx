@@ -2,6 +2,7 @@
 
 import { useId, useState, type FormEvent } from 'react';
 import { useLanguage, type Locale } from '@/components/language-provider';
+import { readAttribution } from '@/lib/attribution';
 import { trackConversion } from '@/lib/track';
 
 // "The Pressroom Letter": newsletter signup, synced to Pipedrive
@@ -130,10 +131,11 @@ export function NewsletterSignup({ variant = 'inline', source }: { variant?: 'fo
       const res = await fetch('/api/newsletter', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: email.trim(), consent, locale, source, website }),
+        body: JSON.stringify({ email: email.trim(), consent, locale, source, website, attribution: readAttribution() }),
       });
       if (!res.ok) throw new Error('request failed');
-      trackConversion('newsletter_signup', { source, locale });
+      // "form", not "source": the lead's source comes from lib/track (attribution).
+      trackConversion('newsletter_signup', { form: source, locale });
       setStatus('sent');
     } catch {
       setStatus('idle');

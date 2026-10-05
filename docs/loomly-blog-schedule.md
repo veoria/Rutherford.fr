@@ -1,5 +1,10 @@
 # Loomly : 10 posts blog, un par mardi
 
+> **Attention aux liens de ce calendrier :** ils utilisent tous
+> `utm_source=linkedin`, même pour Facebook et Instagram. Pour tout nouveau post,
+> prendre le lien du réseau concerné dans `docs/utm-links.md` (une source par
+> réseau).
+
 Calendrier Rutherford. Canaux : Facebook, Instagram, LinkedIn.
 Créneau : **mardi 09h00 CEST**, le meilleur jour B2B sur LinkedIn, tôt le matin,
 et sans collision avec le post du mercredi déjà programmé.

@@ -27,6 +27,8 @@ export type Lead = {
   jobTitle: string;
   /** Where the lead came from — used as the Note header. Defaults to "Rutherford Academy". */
   source?: string;
+  /** First-touch attribution (lib/attribution formatAttribution), written as the Note's "Source :" line. */
+  attribution?: string;
 };
 
 export function pipedriveEnabled(): boolean {
@@ -44,6 +46,10 @@ async function pd(path: string, init?: RequestInit): Promise<any> {
   if (!res.ok) throw new Error(`PipeDrive ${init?.method ?? 'GET'} ${path} → ${res.status}`);
   return res.json();
 }
+
+/** Notes are HTML: escape anything a visitor typed (or put in a UTM) before it lands in one. */
+export const escapeNote = (value: string) =>
+  value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>');
 
 // Pipedrive API v2 — used for deals, because the Zapier "Create/Update Deal"
 // actions the team relies on are deprecating (July 31 2026). Same token, same
@@ -86,7 +92,9 @@ export type ConsoleValidationDealInput = {
  * (`Country - Company - Machine - ID{id}`). That id is the spine of the whole
  * workflow — the Asana task name and Dropbox folder reuse this title, and the
  * downstream notes/emails resolve the deal back from it. Returns null when not
- * configured or on failure, so the caller can carry on without an id.
+ * configured or on failure, so the caller can carry on without an id. The
+ * lead's Person and Organization are linked separately (linkDealParties), so
+ * that lookup never delays the id.
  */
 export async function createConsoleValidationDeal(
   input: ConsoleValidationDealInput
@@ -117,6 +125,71 @@ export async function createConsoleValidationDeal(
   } catch (error) {
     console.error('PipeDrive deal create failed:', error);
     return null;
+  }
+}
+
+/** How long the Person/Organization lookup may keep starting new Pipedrive calls. */
+const PARTIES_BUDGET_MS = 10000;
+
+/**
+ * Find or create the lead's Person (email) and Organization (company) and link
+ * them to an existing deal, so the email reaches the CRM. Only runs once the
+ * deal exists (no deal, nothing created), so no Person or Organization is left
+ * without the request context. Meant to run alongside the rest of the form
+ * flow: best-effort, time-boxed, never throws, no-op without a token or deal id.
+ */
+export async function linkDealParties(dealId: number | null, email: string, company: string): Promise<void> {
+  if (!TOKEN || !dealId || !email) return;
+  const { personId, orgId } = await resolveLeadParties(email, company, Date.now() + PARTIES_BUDGET_MS);
+  if (!personId && !orgId) return;
+  // Always attempted once something was created, so it does not stay unlinked.
+  await pdv2(`/deals/${dealId}`, {
+    method: 'PATCH',
+    body: JSON.stringify({
+      ...(personId ? { person_id: personId } : {}),
+      ...(orgId ? { org_id: orgId } : {}),
+    }),
+  }).catch((error) => console.error('PipeDrive deal person/org link failed:', error));
+}
+
+/**
+ * Find-or-create the lead's Organization (by company) and Person (by email,
+ * searched first so a returning lead is not duplicated). Starts no new step
+ * once `deadline` has passed, so a hanging Pipedrive cannot stretch it to the
+ * sum of every call's timeout. Never throws: ids are null for whatever could
+ * not be resolved in time.
+ */
+async function resolveLeadParties(
+  email: string,
+  company: string,
+  deadline: number
+): Promise<{ personId: number | null; orgId: number | null }> {
+  const inTime = () => Date.now() < deadline;
+  let orgId: number | null = null;
+  try {
+    orgId = company ? await findOrgId(company) : null;
+    if (!inTime()) return { personId: null, orgId };
+
+    let personId = await findPersonId(email);
+    if (!personId) {
+      if (!inTime()) return { personId: null, orgId };
+      const created = await pd('/persons', {
+        method: 'POST',
+        body: JSON.stringify({ name: email, email: [email], ...(orgId ? { org_id: orgId } : {}) }),
+      });
+      personId = (created?.data?.id as number) ?? null;
+    } else if (orgId && inTime()) {
+      // Best-effort: link the existing person to the org.
+      await pd(`/persons/${personId}`, { method: 'PUT', body: JSON.stringify({ org_id: orgId }) }).catch(
+        () => {}
+      );
+    }
+    return { personId, orgId };
+  } catch (error) {
+    // A failed search path carries the email in its query string: log without it.
+    const message = error instanceof Error ? error.message : String(error);
+    console.error('PipeDrive person/org lookup failed:', message.replace(/\?\S*/, ''));
+    return { personId: null, orgId };
   }
 }
 
@@ -179,6 +252,7 @@ export async function syncLeadToPipedrive(lead: Lead): Promise<void> {
       lead.company ? `Société : ${lead.company}` : null,
       lead.country ? `Pays : ${lead.country}` : null,
       lead.jobTitle ? `Poste : ${lead.jobTitle.replace(/_/g, ' ')}` : null,
+      lead.attribution ? `Source : ${escapeNote(lead.attribution)}` : null,
     ].filter(Boolean);
 
     await pd('/notes', {
@@ -191,66 +265,6 @@ export async function syncLeadToPipedrive(lead: Lead): Promise<void> {
     });
   } catch (error) {
     console.error('PipeDrive lead sync failed:', error);
-  }
-}
-
-export type ConsoleValidationLead = {
-  email: string;
-  company: string;
-  country: string;
-  machine: string;
-  notes: string;
-  photoCount: number;
-  storagePath: string;
-  photosLink?: string | null;
-};
-
-/**
- * Console-validation request → PipeDrive (Person + Organization + Note).
- * Same dormant-safe contract as syncLeadToPipedrive: never throws, no-op
- * without a token.
- */
-export async function syncConsoleValidationToPipedrive(lead: ConsoleValidationLead): Promise<void> {
-  if (!TOKEN || !lead.email) return;
-  try {
-    const orgId = lead.company ? await findOrgId(lead.company) : null;
-
-    let personId = await findPersonId(lead.email);
-    if (!personId) {
-      const created = await pd('/persons', {
-        method: 'POST',
-        body: JSON.stringify({
-          name: lead.email,
-          email: [lead.email],
-          ...(orgId ? { org_id: orgId } : {}),
-        }),
-      });
-      personId = (created?.data?.id as number) ?? null;
-    } else if (orgId) {
-      await pd(`/persons/${personId}`, { method: 'PUT', body: JSON.stringify({ org_id: orgId }) }).catch(
-        () => {}
-      );
-    }
-
-    const lines = [
-      '<b>Demande de validation console</b>',
-      lead.company ? `Société : ${lead.company}` : null,
-      lead.country ? `Pays : ${lead.country}` : null,
-      lead.machine ? `Machine : ${lead.machine}` : null,
-      lead.notes ? `Notes : ${lead.notes}` : null,
-      `Photos : ${lead.photoCount}${lead.photosLink ? ` — <a href="${lead.photosLink}">voir les photos</a>` : ` (${lead.storagePath})`}`,
-    ].filter(Boolean);
-
-    await pd('/notes', {
-      method: 'POST',
-      body: JSON.stringify({
-        content: lines.join('<br>'),
-        ...(personId ? { person_id: personId } : {}),
-        ...(orgId ? { org_id: orgId } : {}),
-      }),
-    });
-  } catch (error) {
-    console.error('PipeDrive console-validation sync failed:', error);
   }
 }
 
@@ -369,7 +383,10 @@ export async function listPartnerEmailDomains(): Promise<Map<string, string>> {
 export type NewsletterSignup = {
   email: string;
   locale: string;
+  /** Which signup form, e.g. footer or blog:<slug>. */
   source: string;
+  /** First-touch attribution (lib/attribution formatAttribution). */
+  attribution: string;
 };
 
 /**
@@ -403,7 +420,8 @@ export async function subscribeNewsletterInPipedrive(signup: NewsletterSignup): 
       const lines = [
         '<b>Inscription newsletter</b>',
         `Langue : ${signup.locale}`,
-        `Source : ${signup.source}`,
+        `Formulaire : ${escapeNote(signup.source)}`,
+        `Source : ${escapeNote(signup.attribution)}`,
         `Consentement : case cochée le ${new Date().toISOString().slice(0, 10)}`,
       ];
       await pd('/notes', {
@@ -456,19 +474,17 @@ export async function syncContactRequestToPipedrive(request: ContactRequest): Pr
       );
     }
 
-    const escape = (value: string) =>
-      value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>');
     const lines = [
       '<b>Demande de contact (site)</b>',
-      `Sujet : ${escape(request.topic)}`,
-      request.company ? `Société : ${escape(request.company)}` : null,
-      request.country ? `Pays : ${escape(request.country)}` : null,
-      request.phone ? `Téléphone : ${escape(request.phone)}` : null,
+      `Sujet : ${escapeNote(request.topic)}`,
+      request.company ? `Société : ${escapeNote(request.company)}` : null,
+      request.country ? `Pays : ${escapeNote(request.country)}` : null,
+      request.phone ? `Téléphone : ${escapeNote(request.phone)}` : null,
       request.wantsCall ? '<b>Souhaite être rappelé</b>' : null,
       `Langue : ${request.locale}`,
-      request.source ? `Source : ${escape(request.source)}` : null,
+      request.source ? `Source : ${escapeNote(request.source)}` : null,
       '',
-      escape(request.message),
+      escapeNote(request.message),
     ].filter((line) => line !== null);
 
     await pd('/notes', {

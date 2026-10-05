@@ -1,4 +1,5 @@
-// Lead attribution: where did this console validation request actually come from?
+// Lead attribution: where did this lead (console validation, contact, ROI
+// calculator, newsletter) actually come from?
 //
 // Captured once per session on the first page the visitor lands on, so the
 // original source survives any navigation before they reach the form. Stored in
@@ -62,6 +63,24 @@ export function captureAttribution(): void {
   }
 }
 
+/**
+ * Server side: rebuilds an Attribution from an untrusted request body field,
+ * clamping every value. Null when the client sent nothing usable.
+ */
+export function parseAttribution(raw: unknown): Attribution | null {
+  if (!raw || typeof raw !== 'object') return null;
+  const a = raw as Record<string, unknown>;
+  const field = (v: unknown) => clean(typeof v === 'string' ? v : null);
+  return {
+    source: field(a.source),
+    medium: field(a.medium),
+    campaign: field(a.campaign),
+    content: field(a.content),
+    referrer: field(a.referrer),
+    landing: field(a.landing),
+  };
+}
+
 /** Reads the session's first touch, or null when there is nothing to report. */
 export function readAttribution(): Attribution | null {
   if (typeof window === 'undefined') return null;
@@ -86,6 +105,7 @@ export function formatAttribution(a: Attribution | null | undefined): string {
   if (a.content) parts.push(`content: ${a.content}`);
   if (!parts.length && a.referrer) parts.push(`referrer: ${a.referrer}`);
   if (!parts.length) parts.push('direct');
-  if (a.landing && a.landing !== '/console-validation') parts.push(`landed on ${a.landing}`);
+  // Landing on the form itself (/check redirects there, localized or not) says nothing.
+  if (a.landing && !/^\/(?:[a-z]{2}\/)?console-validation$/.test(a.landing)) parts.push(`landed on ${a.landing}`);
   return parts.join(' ');
 }

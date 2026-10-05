@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server';
+import { formatAttribution, parseAttribution } from '@/lib/attribution';
 import { notifyDiscordContact } from '@/lib/discord';
 import { syncContactRequestToPipedrive } from '@/lib/pipedrive';
 
@@ -33,7 +34,10 @@ export async function POST(request: NextRequest) {
   const message = str(payload.message, 5000);
   const topic = TOPICS.includes(str(payload.topic, 40)) ? str(payload.topic, 40) : 'other';
   const locale = LOCALES.includes(str(payload.locale, 5)) ? str(payload.locale, 5) : 'en';
-  const source = str(payload.source, 120);
+  // First-touch attribution (UTM / referrer) for the note's "Source :" line.
+  // Older clients sent a single "source" string instead: still honored.
+  const attribution = parseAttribution(payload.attribution);
+  const source = attribution ? formatAttribution(attribution) : str(payload.source, 120) || formatAttribution(null);
   const wantsCall = payload.wantsCall === true;
 
   if (!email || !EMAIL_RE.test(email)) {

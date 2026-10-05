@@ -49,6 +49,9 @@ const nextConfig = {
 
       // Short link for social bios / posts → console validation
       { source: '/check', destination: '/console-validation', permanent: false },
+      // Same short link under a locale prefix (/fr/check → /fr/console-validation,
+      // which the middleware then serves in that locale).
+      { source: '/:locale(fr|de|it|es|pt)/check', destination: '/:locale/console-validation', permanent: false },
 
       { source: '/success-story-from-rutherford-xrite-pantone.html', destination: '/#cases', permanent: true },
       { source: '/phillips.html', destination: '/#cases', permanent: true },

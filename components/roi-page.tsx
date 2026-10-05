@@ -2,6 +2,7 @@
 
 import { useState, type FormEvent } from 'react';
 import { useLanguage, type Locale } from '@/components/language-provider';
+import { readAttribution } from '@/lib/attribution';
 import { trackConversion } from '@/lib/track';
 import { SiteNav } from '@/components/site-nav';
 import { SiteFooter } from '@/components/site-footer';
@@ -362,7 +363,7 @@ export function RoiPage() {
       const res = await fetch('/api/roi-lead', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, company }),
+        body: JSON.stringify({ email, company, attribution: readAttribution() }),
       });
       if (!res.ok) throw new Error('request failed');
       setStatus('sent');

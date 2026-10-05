@@ -7,7 +7,7 @@ import { SiteNav } from '@/components/site-nav';
 import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 import { COUNTRY_NAMES, isKnownCountry } from '@/lib/countries';
 import { readAttribution } from '@/lib/attribution';
-import { track } from '@vercel/analytics';
+import { trackConversion } from '@/lib/track';
 
 type UploadFieldId = 'consolePhoto' | 'pressPhoto' | 'insideConsolePhoto' | 'keysPhoto' | 'platePhoto';
 
@@ -455,24 +455,11 @@ export function ConsoleValidationPage({
       }
       const body = await res.json().catch(() => null);
       setReference(body?.reference ?? null);
-      // Conversion event, sent to every analytics surface we run. Vercel Web
-      // Analytics is cookieless, so it counts the leads the consent-gated
-      // trackers miss.
-      (window as any).gtag?.('event', 'console_validation_submit', { event_category: 'lead', machine: machineName });
-      const linkedinConversion = process.env.NEXT_PUBLIC_LINKEDIN_CONVERSION_CONSOLE;
-      if (linkedinConversion) (window as any).lintrk?.('track', { conversion_id: Number(linkedinConversion) });
-      track('console_validation_submit', {
-        country,
-        machine: machineName,
-        source: attribution?.source ?? attribution?.referrer ?? 'direct',
-        campaign: attribution?.campaign ?? '',
-      });
-      (window as any).posthog?.capture?.('console_validation_submit', {
-        country,
-        machine: machineName,
-        source: attribution?.source ?? attribution?.referrer ?? 'direct',
-        campaign: attribution?.campaign ?? '',
-      });
+      // Conversion event, sent to every analytics surface we run (GA4 and
+      // PostHog with the lead's source / medium / campaign, see lib/track).
+      // Vercel Web Analytics is cookieless, so it counts the leads the
+      // consent-gated trackers miss.
+      trackConversion('console_validation_submit', { country, machine: machineName });
       setSubmitted(true);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (error) {
@@ -622,7 +609,7 @@ export function ConsoleValidationPage({
                     <a href="/console-validation/presstek">Presstek</a>
                   </p>
                   <p className="console-simple-roi-link">
-                    Curious what color drift costs you? <a href="/#roi">Try the ROI calculator →</a>
+                    Curious what color drift costs you? <a href="/roi">Try the ROI calculator →</a>
                   </p>
                 </div>
               </div>

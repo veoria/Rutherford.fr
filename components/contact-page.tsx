@@ -317,7 +317,7 @@ export function ContactPage() {
           wantsCall,
           phone: wantsCall ? phone : '',
           locale,
-          source: attribution?.source ?? attribution?.referrer ?? attribution?.landing ?? '',
+          attribution,
           website,
         }),
       });

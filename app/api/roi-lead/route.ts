@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server';
+import { formatAttribution, parseAttribution } from '@/lib/attribution';
 import { syncLeadToPipedrive } from '@/lib/pipedrive';
 
 export const dynamic = 'force-dynamic';
@@ -34,6 +35,7 @@ export async function POST(request: NextRequest) {
     country: '',
     jobTitle: '',
     source: 'Calculateur ROI',
+    attribution: formatAttribution(parseAttribution(payload.attribution)),
   });
 
   return NextResponse.json({ ok: true });

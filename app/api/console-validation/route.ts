@@ -1,7 +1,13 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { createSupabaseAdminClient, createSupabaseServerClient } from '@/lib/supabase/server';
-import { addDealNote, createConsoleValidationDeal, pipedriveDealUrl } from '@/lib/pipedrive';
-import { formatAttribution } from '@/lib/attribution';
+import {
+  addDealNote,
+  createConsoleValidationDeal,
+  escapeNote,
+  linkDealParties,
+  pipedriveDealUrl,
+} from '@/lib/pipedrive';
+import { formatAttribution, parseAttribution } from '@/lib/attribution';
 import { addConsoleValidationPreviews, asanaTaskUrl, createConsoleValidationTask } from '@/lib/asana';
 import { notifyDiscordConsoleValidation } from '@/lib/discord';
 import { dropboxEnabled, uploadConsoleValidation } from '@/lib/dropbox';
@@ -39,12 +45,6 @@ const validPhoto = (p: any): p is PhotoRef =>
   typeof p.path === 'string' &&
   /^tmp\/[a-z0-9-]+\/[a-z]+\.[a-z0-9]+$/i.test(p.path);
 
-/** Clamps an untrusted attribution field to a short, safe string. */
-const str = (v: unknown): string | undefined => {
-  const s = typeof v === 'string' ? v.trim().slice(0, 120) : '';
-  return s || undefined;
-};
-
 export async function POST(request: NextRequest) {
   let body: any;
   try {
@@ -62,18 +62,7 @@ export async function POST(request: NextRequest) {
   const inviteToken = String(body.invite ?? '').trim().slice(0, 200);
   // Where the lead came from (UTM / referrer), captured client-side on the first
   // page of the session. Untrusted input, so every field is clamped.
-  const attribution = formatAttribution(
-    body.attribution && typeof body.attribution === 'object'
-      ? {
-          source: str(body.attribution.source),
-          medium: str(body.attribution.medium),
-          campaign: str(body.attribution.campaign),
-          content: str(body.attribution.content),
-          referrer: str(body.attribution.referrer),
-          landing: str(body.attribution.landing),
-        }
-      : null,
-  );
+  const attribution = formatAttribution(parseAttribution(body.attribution));
 
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 200) {
     return NextResponse.json({ error: 'A valid email address is required' }, { status: 400 });
@@ -163,6 +152,10 @@ export async function POST(request: NextRequest) {
   const baseTitle = [country, companyName, machineName].map((s) => s.trim()).filter(Boolean).join(' - ');
   const title = deal?.title ?? baseTitle;
   const dealId = deal?.id ?? null;
+  // 1b) Link the lead's Person (email) + Organization (company) to the deal in the
+  // background while the steps below run; awaited just before the response. Only
+  // runs when the deal exists, time-boxed, never throws: never costs the form.
+  const partiesLinked = linkDealParties(dealId, email, companyName);
 
   const submittedAt = new Date().toISOString();
   const infosTxt = [
@@ -282,9 +275,16 @@ export async function POST(request: NextRequest) {
     dealId,
     [
       'Console validation request received via rutherford.fr/console-validation.',
+      `Email : ${escapeNote(email)}`,
+      `Pays : ${escapeNote(country)}`,
+      `Machine : ${escapeNote(machineName)}`,
+      refCode ? `Parrainage : ${escapeNote(refCode)}` : null,
+      `Source : ${escapeNote(attribution)}`,
       `Photos: ${photoCount}`,
       `Storage: ${storageRef}`,
-    ].join('<br>')
+    ]
+      .filter(Boolean)
+      .join('<br>')
   );
 
   const validationId = await insertConsoleValidation({
@@ -331,6 +331,8 @@ export async function POST(request: NextRequest) {
       await sendMail({ to: email, subject: cmail.subject, html: cmail.html });
     }
   }
+
+  await partiesLinked;
 
   return NextResponse.json({ ok: true, reference: dealId ? `ID ${dealId}` : null });
 }

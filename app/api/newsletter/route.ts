@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server';
+import { formatAttribution, parseAttribution } from '@/lib/attribution';
 import { subscribeNewsletterInPipedrive } from '@/lib/pipedrive';
 
 export const dynamic = 'force-dynamic';
@@ -27,7 +28,10 @@ export async function POST(request: NextRequest) {
   const email = typeof payload.email === 'string' ? payload.email.trim().toLowerCase() : '';
   const consent = payload.consent === true;
   const locale = typeof payload.locale === 'string' && LOCALES.includes(payload.locale) ? payload.locale : 'en';
+  // Which form (footer, blog:<slug>), not where the visitor came from: that is
+  // the first-touch attribution below.
   const source = typeof payload.source === 'string' ? payload.source.slice(0, 120) : 'site';
+  const attribution = formatAttribution(parseAttribution(payload.attribution));
 
   if (!email || !EMAIL_RE.test(email) || email.length > 200) {
     return NextResponse.json({ error: 'invalid_email' }, { status: 400 });
@@ -36,6 +40,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'consent_required' }, { status: 400 });
   }
 
-  await subscribeNewsletterInPipedrive({ email, locale, source });
+  await subscribeNewsletterInPipedrive({ email, locale, source, attribution });
   return NextResponse.json({ ok: true });
 }
