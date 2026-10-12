@@ -61,3 +61,24 @@ export function parseShared(params: { s?: string | null; t?: string | null; b?: 
     .filter((b): b is Brand => Boolean(b));
   return { score, total, brands };
 }
+
+// CIELAB (D50, Bradford-adapted from sRGB), the same math the quiz builder uses
+// to compute deltaE, so the values shown and the ΔE00 between them agree.
+const M_RGB_XYZ50 = [
+  [0.4360747, 0.3850649, 0.1430804],
+  [0.2225045, 0.7168786, 0.0606169],
+  [0.0139322, 0.0971045, 0.7141733],
+];
+const WHITE50 = [0.96422, 1, 0.82521];
+
+export function hexToLab(hex: string): [number, number, number] {
+  const rgb = [1, 3, 5].map((i) => {
+    const c = parseInt(hex.slice(i, i + 2), 16) / 255;
+    return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+  });
+  const [fx, fy, fz] = M_RGB_XYZ50.map((row, i) => {
+    const t = (row[0] * rgb[0] + row[1] * rgb[1] + row[2] * rgb[2]) / WHITE50[i];
+    return t > 216 / 24389 ? Math.cbrt(t) : ((24389 / 27) * t + 16) / 116;
+  });
+  return [116 * fy - 16, 500 * (fx - fy), 200 * (fy - fz)];
+}

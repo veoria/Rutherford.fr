@@ -4,7 +4,8 @@ import Image from 'next/image';
 import { track } from '@vercel/analytics';
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import { useLanguage, type Locale } from '@/components/language-provider';
-import { BRANDS, ROUNDS, parseShared, rankFor, type Brand, type SharedResult } from '@/lib/color-guesser';
+import { BRANDS, ROUNDS, hexToLab, parseShared, rankFor, type Brand, type SharedResult } from '@/lib/color-guesser';
+import { sounds } from './color-guesser-sound';
 import './color-guesser.css';
 
 // Brand color quiz: two near-identical colors behind a brand logo, only one is
@@ -22,7 +23,6 @@ const CMYK = ['#00A3E0', '#E4007C', '#FFD100', '#111418'];
 
 type Copy = {
   h1: string;
-  lead: string;
   progress: string;
   question: string;
   right: string;
@@ -40,6 +40,8 @@ type Copy = {
   share: string;
   copy: string;
   copied: string;
+  soundOff: string;
+  soundOn: string;
   shareText: string;
   challenge: string;
 };
@@ -47,7 +49,6 @@ type Copy = {
 const COPY: Record<Locale, Copy> = {
   en: {
     h1: 'Which one is the real brand color?',
-    lead: 'Two colors, one logo. Only one is the brand’s real color. Pick A or B.',
     progress: 'Brand {n} of {total}',
     question: 'Which one is the real {brand} color?',
     right: 'Right.',
@@ -66,12 +67,13 @@ const COPY: Record<Locale, Copy> = {
     share: 'Share my score',
     copy: 'Copy link',
     copied: 'Link copied',
+    soundOff: 'Mute sound',
+    soundOn: 'Turn sound on',
     shareText: 'I scored {score}/{total} on the Rutherford color guesser. Can you spot the real brand colors?',
     challenge: 'Someone scored {score}/{total}. Your turn.',
   },
   fr: {
     h1: 'Quelle est la vraie couleur de la marque ?',
-    lead: 'Deux couleurs, un logo. Une seule est la vraie couleur de la marque. Choisissez A ou B.',
     progress: 'Marque {n} sur {total}',
     question: 'Quelle est la vraie couleur {brand} ?',
     right: 'Bien vu.',
@@ -90,12 +92,13 @@ const COPY: Record<Locale, Copy> = {
     share: 'Partager mon score',
     copy: 'Copier le lien',
     copied: 'Lien copié',
+    soundOff: 'Couper le son',
+    soundOn: 'Activer le son',
     shareText: 'J’ai fait {score}/{total} au color guesser de Rutherford. Saurez-vous trouver les vraies couleurs des marques ?',
     challenge: 'Quelqu’un a fait {score}/{total}. À vous de jouer.',
   },
   de: {
     h1: 'Welche ist die echte Markenfarbe?',
-    lead: 'Zwei Farben, ein Logo. Nur eine ist die echte Farbe der Marke. Wählen Sie A oder B.',
     progress: 'Marke {n} von {total}',
     question: 'Welche ist die echte {brand}-Farbe?',
     right: 'Richtig.',
@@ -114,12 +117,13 @@ const COPY: Record<Locale, Copy> = {
     share: 'Ergebnis teilen',
     copy: 'Link kopieren',
     copied: 'Link kopiert',
+    soundOff: 'Ton ausschalten',
+    soundOn: 'Ton einschalten',
     shareText: 'Ich habe {score}/{total} beim Rutherford Color Guesser erreicht. Erkennen Sie die echten Markenfarben?',
     challenge: 'Jemand hat {score}/{total} erreicht. Jetzt sind Sie dran.',
   },
   it: {
     h1: 'Qual è il vero colore del brand?',
-    lead: 'Due colori, un logo. Solo uno è il vero colore del brand. Scelga A o B.',
     progress: 'Brand {n} di {total}',
     question: 'Qual è il vero colore {brand}?',
     right: 'Esatto.',
@@ -138,12 +142,13 @@ const COPY: Record<Locale, Copy> = {
     share: 'Condividi il punteggio',
     copy: 'Copia il link',
     copied: 'Link copiato',
+    soundOff: 'Disattiva l’audio',
+    soundOn: 'Attiva l’audio',
     shareText: 'Ho fatto {score}/{total} al color guesser di Rutherford. Riconosce i veri colori dei brand?',
     challenge: 'Qualcuno ha fatto {score}/{total}. Tocca a Lei.',
   },
   es: {
     h1: '¿Cuál es el verdadero color de la marca?',
-    lead: 'Dos colores, un logo. Solo uno es el color real de la marca. Elija A o B.',
     progress: 'Marca {n} de {total}',
     question: '¿Cuál es el verdadero color de {brand}?',
     right: 'Correcto.',
@@ -162,12 +167,13 @@ const COPY: Record<Locale, Copy> = {
     share: 'Compartir mi puntuación',
     copy: 'Copiar el enlace',
     copied: 'Enlace copiado',
+    soundOff: 'Silenciar el sonido',
+    soundOn: 'Activar el sonido',
     shareText: 'He sacado {score}/{total} en el color guesser de Rutherford. ¿Sabe reconocer los colores reales de las marcas?',
     challenge: 'Alguien ha sacado {score}/{total}. Le toca a usted.',
   },
   pt: {
     h1: 'Qual é a verdadeira cor da marca?',
-    lead: 'Duas cores, um logótipo. Só uma é a cor real da marca. Escolha A ou B.',
     progress: 'Marca {n} de {total}',
     question: 'Qual é a verdadeira cor da {brand}?',
     right: 'Certo.',
@@ -186,6 +192,8 @@ const COPY: Record<Locale, Copy> = {
     share: 'Partilhar a pontuação',
     copy: 'Copiar a ligação',
     copied: 'Ligação copiada',
+    soundOff: 'Desligar o som',
+    soundOn: 'Ligar o som',
     shareText: 'Fiz {score}/{total} no color guesser da Rutherford. Consegue reconhecer as verdadeiras cores das marcas?',
     challenge: 'Alguém fez {score}/{total}. É a sua vez.',
   },
@@ -197,7 +205,10 @@ function fill(template: string, values: Record<string, string | number>): string
 
 // Same as fill(), but the brand name stays on one line (Coca-Cola must not break at the hyphen).
 function fillBrand(template: string, brand: string, values: Record<string, string | number> = {}) {
-  const [before, after = ''] = fill(template, { ...values, brand: '\u0000' }).split('\u0000');
+  const [before, after = ''] = fill(template, {
+    ...values,
+    brand: '\u0000',
+  }).split('\u0000');
   return (
     <>
       {before}
@@ -245,18 +256,94 @@ function Mark({ ok, className = 'cg-mark' }: { ok: boolean; className?: string }
   );
 }
 
-// CMYK dots thrown from the score once. Fixed geometry, so every render matches.
-const BURST = Array.from({ length: 20 }, (_, i) => {
-  const angle = (i / 20) * Math.PI * 2 + (i % 2 ? 0.18 : -0.12);
-  const radius = 110 + ((i * 37) % 70);
-  return {
-    x: Math.round(Math.cos(angle) * radius),
-    y: Math.round(Math.sin(angle) * radius * 0.8),
-    size: 7 + ((i * 5) % 7),
-    color: CMYK[i % 4],
-    delay: (i % 5) * 18,
-  };
-});
+// CMYK confetti. Fixed geometry, so the server and client renders match.
+type Dot = {
+  x: number;
+  y: number;
+  size: number;
+  color: string;
+  delay: number;
+  spin: number;
+};
+
+function makeBurst(count: number, inner: number, spread: number, flatten: number): Dot[] {
+  return Array.from({ length: count }, (_, i) => {
+    const angle = (i / count) * Math.PI * 2 + (i % 2 ? 0.18 : -0.12);
+    const radius = inner + ((i * 37) % spread);
+    return {
+      x: Math.round(Math.cos(angle) * radius),
+      y: Math.round(Math.sin(angle) * radius * flatten),
+      size: 6 + ((i * 5) % 7),
+      color: CMYK[i % 4],
+      delay: (i % 5) * 18,
+      spin: ((i * 53) % 180) - 90,
+    };
+  });
+}
+
+const HIT = makeBurst(24, 40, 84, 1);
+const WIN = makeBurst(28, 110, 90, 0.8);
+
+function Burst({ dots, className = 'cg-burst' }: { dots: Dot[]; className?: string }) {
+  return (
+    <span className={className} aria-hidden="true">
+      {dots.map((d, i) => (
+        <i
+          key={i}
+          className={i % 3 === 0 ? 'is-strip' : undefined}
+          style={
+            {
+              '--x': `${d.x}px`,
+              '--y': `${d.y}px`,
+              '--s': `${d.size}px`,
+              '--c': d.color,
+              '--d': `${d.delay}ms`,
+              '--r': `${d.spin}deg`,
+            } as CSSProperties
+          }
+        />
+      ))}
+    </span>
+  );
+}
+
+// What a spectrophotometer would report for the patch: hex, then L*a*b* (D50).
+function Readout({ hex, light, locale }: { hex: string; light: boolean; locale: string }) {
+  const fmt = new Intl.NumberFormat(locale, {
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1,
+  });
+  const [L, a, b] = hexToLab(hex);
+  return (
+    <span className={`cg-read${light ? ' is-light' : ''}`} aria-hidden="true">
+      <span className="cg-read-hex">{hex}</span>
+      <span>L* {fmt.format(L)}</span>
+      <span>a* {fmt.format(a)}</span>
+      <span>b* {fmt.format(b)}</span>
+    </span>
+  );
+}
+
+function Speaker({ muted }: { muted: boolean }) {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" className="cg-sound-icon">
+      <path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" fill="currentColor" />
+      {muted ? (
+        <path d="M16 9.5l5 5M21 9.5l-5 5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+      ) : (
+        <path
+          d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+        />
+      )}
+    </svg>
+  );
+}
+
+const SOUND_KEY = 'rf-color-guesser-muted';
 
 export function ColorGuesser({ consoleHref }: { consoleHref: string }) {
   const { locale } = useLanguage();
@@ -269,14 +356,32 @@ export function ColorGuesser({ consoleHref }: { consoleHref: string }) {
   const [shared, setShared] = useState<SharedResult | null>(null);
   const [copied, setCopied] = useState(false);
   const [canShare, setCanShare] = useState(false);
+  const [muted, setMuted] = useState(false);
   const nextRef = useRef<HTMLButtonElement | null>(null);
+  const sideNextRef = useRef<HTMLButtonElement | null>(null);
 
   useEffect(() => {
     setDeck((current) => drawDeck(current[0].brand));
     const q = new URLSearchParams(window.location.search);
     setShared(parseShared({ s: q.get('s'), t: q.get('t'), b: q.get('b') }));
     setCanShare(typeof navigator.share === 'function' && window.matchMedia('(pointer: coarse)').matches);
+    try {
+      setMuted(window.localStorage.getItem(SOUND_KEY) === '1');
+    } catch {
+      /* storage blocked: sound stays on */
+    }
   }, []);
+
+  const toggleSound = () => {
+    setMuted((m) => {
+      try {
+        window.localStorage.setItem(SOUND_KEY, m ? '0' : '1');
+      } catch {
+        /* storage blocked: the choice lasts for this visit */
+      }
+      return !m;
+    });
+  };
 
   const round = deck[index];
   const { brand } = round;
@@ -286,27 +391,36 @@ export function ColorGuesser({ consoleHref }: { consoleHref: string }) {
   const isRight = picked !== null && picked === round.real;
   const last = index === deck.length - 1;
   const numberLocale = locale === 'en' ? 'en-US' : locale;
-  const de = new Intl.NumberFormat(numberLocale, { maximumFractionDigits: 1, minimumFractionDigits: 1 }).format(brand.deltaE);
+  const de = new Intl.NumberFormat(numberLocale, {
+    maximumFractionDigits: 1,
+    minimumFractionDigits: 1,
+  }).format(brand.deltaE);
 
   const pick = useCallback(
     (side: Side) => {
       if (picked || done) return;
+      const ok = side === round.real;
+      if (!muted) (ok ? sounds.right : sounds.wrong)();
       setPicked(side);
-      setResults((r) => [...r, { brand, ok: side === round.real }]);
+      setResults((r) => [...r, { brand, ok }]);
     },
-    [picked, done, round.real, brand],
+    [picked, done, round.real, brand, muted],
   );
 
   const advance = useCallback(() => {
     if (!picked) return;
     if (last) {
+      const final = results.filter((r) => r.ok).length;
+      // Lands with the result's confetti (cg-burst-win starts at 700 ms).
+      if (!muted) sounds.finish(final >= Math.ceil(results.length / 2), 0.7);
       setDone(true);
-      track('color_guesser_complete', { score: results.filter((r) => r.ok).length });
+      track('color_guesser_complete', { score: final });
       return;
     }
+    if (!muted) sounds.tick();
     setIndex((i) => i + 1);
     setPicked(null);
-  }, [picked, last, results]);
+  }, [picked, last, results, muted]);
 
   const restart = () => {
     setDeck(drawDeck());
@@ -319,7 +433,10 @@ export function ColorGuesser({ consoleHref }: { consoleHref: string }) {
 
   // Keep the keyboard flow going: Enter continues once the verdict is shown.
   useEffect(() => {
-    if (picked && !done) nextRef.current?.focus({ preventScroll: true });
+    if (!picked || done) return;
+    // Two buttons, one shown: beside the card on a wide screen, inside it otherwise.
+    const visible = [sideNextRef.current, nextRef.current].find((el) => el && el.offsetParent !== null);
+    visible?.focus({ preventScroll: true });
   }, [picked, done]);
 
   useEffect(() => {
@@ -375,53 +492,17 @@ export function ColorGuesser({ consoleHref }: { consoleHref: string }) {
 
   return (
     <div className={`cg${done ? ' is-done' : ''}`}>
-      <div className="cg-copy">
-        {shared && !done && results.length === 0 && (
-          <p className="cg-challenge">{fill(t.challenge, { score: shared.score, total: shared.total })}</p>
-        )}
-        <h1 className="cg-title">{t.h1}</h1>
-        <p className="cg-lead">{t.lead}</p>
-
-        {!done && (
-          <div className="cg-ask">
-            <ol className="cg-steps" aria-label={fill(t.progress, { n: index + 1, total: deck.length })}>
-              {deck.map((r, i) => {
-                const result = results[i];
-                const state = result ? (result.ok ? 'is-ok' : 'is-ko') : i === index ? 'is-current' : '';
-                return (
-                  <li
-                    key={`${r.brand.slug}-${i}`}
-                    className={`cg-step ${state}`}
-                    style={result ? ({ '--patch': r.brand.real } as CSSProperties) : undefined}
-                  >
-                    {result && <Mark ok={result.ok} className="cg-step-mark" />}
-                  </li>
-                );
-              })}
-            </ol>
-            <p className="cg-question">{fillBrand(t.question, brand.brand)}</p>
-            {picked && <p className="cg-gap">{fill(t.gap, { de })}</p>}
-          </div>
-        )}
-
-        {done && (
-          <div className="cg-done">
-            <p className="cg-done-body">{t.doneBody}</p>
-            <div className="cg-actions">
-              <a className="button button-accent" href={consoleHref}>
-                {t.cta}
-              </a>
-              <button type="button" className="button button-light" onClick={restart}>
-                {t.again}
-              </button>
-            </div>
-          </div>
-        )}
-      </div>
+      {/* The question sits right above the card; the page title stays for search
+          engines and screen readers only. */}
+      <h1 className="sr-only">{t.h1}</h1>
+      {shared && !done && results.length === 0 && (
+        <p className="cg-challenge">{fill(t.challenge, { score: shared.score, total: shared.total })}</p>
+      )}
+      {!done && <h2 className="cg-question">{fillBrand(t.question, brand.brand)}</h2>}
 
       <div className="cg-stage">
         {!done ? (
-          <div className={`cg-card${picked ? ' is-revealed' : ''}`}>
+          <div className={`cg-card${picked ? ' is-revealed' : ''}${picked && !isRight ? ' is-miss' : ''}`}>
             {(['A', 'B'] as Side[]).map((side) => {
               const real = side === round.real;
               const chosen = side === picked;
@@ -437,7 +518,9 @@ export function ColorGuesser({ consoleHref }: { consoleHref: string }) {
                 >
                   <span className="cg-bubble" style={{ color: letterColor(side) }}>
                     {picked && (real || chosen) ? <Mark ok={real} /> : side}
+                    {picked && real && isRight && <Burst dots={HIT} />}
                   </span>
+                  {picked && <Readout hex={colorOf(side)} light={brand.light} locale={numberLocale} />}
                 </button>
               );
             })}
@@ -464,6 +547,21 @@ export function ColorGuesser({ consoleHref }: { consoleHref: string }) {
                 </button>
               </div>
             )}
+            {picked && (
+              <button ref={sideNextRef} type="button" className="cg-next-side" onClick={advance}>
+                {last ? t.finish : t.next}
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    d="M5 12h13M13 6l6 6-6 6"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </button>
+            )}
           </div>
         ) : (
           <div className="cg-result" role="status">
@@ -480,24 +578,7 @@ export function ColorGuesser({ consoleHref }: { consoleHref: string }) {
             </ol>
 
             <div className="cg-score-wrap">
-              {score >= Math.ceil(results.length / 2) && (
-                <div className="cg-burst" aria-hidden="true">
-                  {BURST.map((d, i) => (
-                    <span
-                      key={i}
-                      style={
-                        {
-                          '--x': `${d.x}px`,
-                          '--y': `${d.y}px`,
-                          '--s': `${d.size}px`,
-                          '--c': d.color,
-                          '--d': `${d.delay}ms`,
-                        } as CSSProperties
-                      }
-                    />
-                  ))}
-                </div>
-              )}
+              {score >= Math.ceil(results.length / 2) && <Burst dots={WIN} className="cg-burst cg-burst-win" />}
               <p className="cg-score">
                 {score}
                 <span>/{results.length}</span>
@@ -537,7 +618,60 @@ export function ColorGuesser({ consoleHref }: { consoleHref: string }) {
             </div>
           </div>
         )}
+
+        {/* At the end: the closed-loop message and the actions, beside the result on a wide screen. */}
+        {done && (
+          <div className="cg-done">
+            <p className="cg-done-body">{t.doneBody}</p>
+            <div className="cg-actions">
+              <a className="button button-accent" href={consoleHref}>
+                {t.cta}
+              </a>
+              <button type="button" className="button button-light" onClick={restart}>
+                {t.again}
+              </button>
+            </div>
+          </div>
+        )}
       </div>
+
+      {!done && (
+        <div className="cg-track">
+          <div className="cg-track-row">
+            <ol
+              className="cg-steps"
+              aria-label={fill(t.progress, {
+                n: index + 1,
+                total: deck.length,
+              })}
+            >
+              {deck.map((r, i) => {
+                const result = results[i];
+                const state = result ? (result.ok ? 'is-ok' : 'is-ko') : i === index ? 'is-current' : '';
+                return (
+                  <li
+                    key={`${r.brand.slug}-${i}`}
+                    className={`cg-step ${state}`}
+                    style={result ? ({ '--patch': r.brand.real } as CSSProperties) : undefined}
+                  >
+                    {result && <Mark ok={result.ok} className="cg-step-mark" />}
+                  </li>
+                );
+              })}
+            </ol>
+            <button
+              type="button"
+              className="cg-sound"
+              onClick={toggleSound}
+              aria-label={muted ? t.soundOn : t.soundOff}
+              title={muted ? t.soundOn : t.soundOff}
+            >
+              <Speaker muted={muted} />
+            </button>
+          </div>
+          {picked && <p className="cg-gap">{fill(t.gap, { de })}</p>}
+        </div>
+      )}
     </div>
   );
 }
