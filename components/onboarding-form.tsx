@@ -375,7 +375,7 @@ export function OnboardingForm({ next, needsName, defaultName, defaultCompany, a
       <section className="signin-section section">
         <div className="container signin-shell">
           <header className="signin-head">
-            <p className="section-kicker">Rutherford Academy</p>
+            <p className="section-kicker">Rutherford</p>
             <h1>{t.title}</h1>
             <p>{t.subtitle}</p>
           </header>

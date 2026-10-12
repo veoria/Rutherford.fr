@@ -9,6 +9,7 @@
 import { createSupabaseAdminClient } from '@/lib/supabase/server';
 import type { AccountInstallation } from '@/components/account-installations';
 import { getRestrictedSiteIds } from '@/lib/sites';
+import { isSystemKind, type SystemKind } from '@/data/press-config';
 
 export const LICENSE_STATUSES = ['active', 'trial', 'expired', 'suspended'] as const;
 export type LicenseStatus = (typeof LICENSE_STATUSES)[number];
@@ -21,6 +22,10 @@ export type ClientSystemRecord = {
   id: string;
   orgId: string;
   siteId: string | null;
+  pressId: string | null;
+  kind: SystemKind;
+  serialNumber: string | null;
+  soldByOrgId: string | null;
   product: string;
   machine: string | null;
   licenseKey: string | null;
@@ -54,6 +59,9 @@ export function toAccountInstallation(r: ClientSystemRecord): AccountInstallatio
     installedVersion: r.installedVersion,
     latestVersion: r.latestVersion,
     updateAvailable: hasUpdateAvailable(r),
+    kind: r.kind,
+    serialNumber: r.serialNumber,
+    pressId: r.pressId,
   };
 }
 
@@ -66,6 +74,10 @@ type Row = {
   id: string;
   org_id: string;
   site_id: string | null;
+  press_id: string | null;
+  kind: string;
+  serial_number: string | null;
+  sold_by_org_id: string | null;
   product: string;
   machine: string | null;
   license_key: string | null;
@@ -83,6 +95,10 @@ function toRecord(r: Row): ClientSystemRecord {
     id: r.id,
     orgId: r.org_id,
     siteId: r.site_id,
+    pressId: r.press_id ?? null,
+    kind: isSystemKind(r.kind) ? r.kind : 'software',
+    serialNumber: r.serial_number ?? null,
+    soldByOrgId: r.sold_by_org_id ?? null,
     product: r.product,
     machine: r.machine,
     licenseKey: r.license_key,
@@ -97,7 +113,7 @@ function toRecord(r: Row): ClientSystemRecord {
 }
 
 const SELECT =
-  'id, org_id, site_id, product, machine, license_key, license_status, license_expires_at, anydesk_id, installed_version, latest_version, notes, updated_at';
+  'id, org_id, site_id, press_id, kind, serial_number, sold_by_org_id, product, machine, license_key, license_status, license_expires_at, anydesk_id, installed_version, latest_version, notes, updated_at';
 
 /** The signed-in user's systems, via their primary organization, filtered to
  * the sites they may see (site_members restriction; empty = all sites). A
@@ -170,6 +186,10 @@ export async function countSystemsForOrgs(
 export type ClientSystemInput = {
   product: string;
   siteId?: string | null;
+  pressId?: string | null;
+  kind?: SystemKind;
+  serialNumber?: string | null;
+  soldByOrgId?: string | null;
   machine?: string | null;
   licenseKey?: string | null;
   licenseStatus?: LicenseStatus;
@@ -191,6 +211,10 @@ export async function createSystem(orgId: string, input: ClientSystemInput): Pro
       .insert({
         org_id: orgId,
         site_id: input.siteId ?? null,
+        press_id: input.pressId ?? null,
+        kind: input.kind ?? 'software',
+        serial_number: input.serialNumber ?? null,
+        sold_by_org_id: input.soldByOrgId ?? null,
         product: product.slice(0, 120),
         machine: input.machine ?? null,
         license_key: input.licenseKey ?? null,
@@ -212,6 +236,10 @@ export async function createSystem(orgId: string, input: ClientSystemInput): Pro
 
 type SystemPatch = Partial<{
   site_id: string | null;
+  press_id: string | null;
+  kind: SystemKind;
+  serial_number: string | null;
+  sold_by_org_id: string | null;
   product: string;
   machine: string | null;
   license_key: string | null;

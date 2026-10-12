@@ -1,9 +1,11 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import { ACCOUNT_ENABLED } from '@/lib/features';
 import { AccountHub, type ResellerClient } from '@/components/account-hub';
 import type { ClientSystem } from '@/components/account-systems';
 import type { AccountInstallation, AccountSite } from '@/components/account-installations';
 import type { AccountType } from '@/data/account-types';
+import type { WorkshopPress } from '@/components/account-workshop';
 import type { ResellerClientOrg, Team } from '@/lib/organizations';
 
 export const metadata: Metadata = {
@@ -19,7 +21,7 @@ export const dynamic = 'force-dynamic';
 const TYPES: AccountType[] = ['client', 'reseller', 'distributor', 'team'];
 
 export default function AccountHubDemoRoute({ searchParams }: { searchParams: { type?: string; preview?: string } }) {
-  if (process.env.NEXT_PUBLIC_ACADEMY_ENABLED !== 'true') notFound();
+  if (!ACCOUNT_ENABLED) notFound();
   const preview = searchParams.preview === '1';
 
   const accountType = (TYPES.includes(searchParams.type as AccountType) ? searchParams.type : 'distributor') as AccountType;
@@ -117,6 +119,16 @@ export default function AccountHubDemoRoute({ searchParams }: { searchParams: { 
         ]
       : [];
 
+  // Sample pressroom (client view): two plants, presses declared in Mon atelier.
+  const presses: WorkshopPress[] =
+    accountType === 'client'
+      ? [
+          { id: 'p1', siteId: sites[0]?.id ?? null, name: null, manufacturer: 'Heidelberg', model: 'Speedmaster CD 102', sheetFormat: 'b1', colors: 6, coater: true, perfecting: false, productionProfile: 'packaging', console: 'CP2000', year: 2014, notes: null },
+          { id: 'p2', siteId: sites[0]?.id ?? null, name: null, manufacturer: 'Komori', model: 'Lithrone GL-840', sheetFormat: 'b1', colors: 8, coater: false, perfecting: true, productionProfile: 'commercial', console: null, year: 2017, notes: null },
+          { id: 'p3', siteId: sites[1]?.id ?? null, name: null, manufacturer: 'Manroland', model: 'R700', sheetFormat: 'b1', colors: 5, coater: true, perfecting: false, productionProfile: 'luxe', console: null, year: null, notes: null },
+        ]
+      : [];
+
   return (
     <AccountHub
       accountType={accountType}
@@ -126,28 +138,13 @@ export default function AccountHubDemoRoute({ searchParams }: { searchParams: { 
       email={isXrite ? 'demo@xrite.com' : 'demo@acme.com'}
       memberSince="2026-02-01"
       profile={{ fullName: 'Demo User', avatarUrl: null, country: 'France', company, jobTitle: 'Sales' }}
-      academy={{
-        level: 3,
-        percentIntoLevel: 55,
-        xp: 320,
-        xpToNext: 80,
-        isMax: false,
-        completedModules: 7,
-        totalModules: 20,
-        certificates: 2,
-      }}
       consoleStat={{ eligible: 2, open: 1 }}
       supportStat={{ status: 'in_progress', newMessage: true }}
-      resume={{
-        slug: 'closed-loop-flagship',
-        title: 'The Complete Closed-Loop Color Masterclass',
-        moduleIndex: 3,
-        moduleTitle: 'Reading the press: density, ΔE and tolerances',
-      }}
       resellerClients={resellerClients}
       systems={systems}
       installations={installations}
       sites={sites}
+      presses={presses}
       preview={preview}
     />
   );

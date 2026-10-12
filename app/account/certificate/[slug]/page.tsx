@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound, redirect } from 'next/navigation';
+import { ACCOUNT_ENABLED } from '@/lib/features';
 import { CertificateView } from '@/components/certificate-view';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { isOnboarded } from '@/lib/profile';
@@ -14,7 +15,7 @@ export const metadata: Metadata = {
 export const dynamic = 'force-dynamic';
 
 export default async function CertificateRoute({ params }: { params: { slug: string } }) {
-  if (process.env.NEXT_PUBLIC_ACADEMY_ENABLED !== 'true') notFound();
+  if (!ACCOUNT_ENABLED) notFound();
   const course = getCourseBySlug(params.slug);
   if (!course) notFound();
 

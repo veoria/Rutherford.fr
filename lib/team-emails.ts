@@ -38,7 +38,7 @@ export function teamInviteEmail(
     ? `${safeInviter} (${team}) vous invite à rejoindre son réseau de revendeurs sur <strong>Rutherford</strong>.`
     : isClient
       ? `${safeInviter} (${team}) vous invite à suivre vos validations de presse et votre compte sur <strong>Rutherford</strong>.`
-      : `${safeInviter} vous a invité·e à rejoindre son compte <strong>Rutherford</strong> — accès à l'espace équipe, aux validations de presse et à l'Academy.`;
+      : `${safeInviter} vous a invité·e à rejoindre son compte <strong>Rutherford</strong> — accès à l'espace équipe, à l'atelier et aux validations de presse.`;
   const cta = isReseller ? 'Rejoindre le réseau' : isClient ? 'Activer mon compte' : 'Rejoindre l’équipe';
   return {
     subject,

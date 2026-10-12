@@ -7,6 +7,7 @@ import { supportAckEmail } from '@/lib/support-emails';
 import { insertSupportTicket } from '@/lib/support-tickets';
 import { getNotificationEmail } from '@/lib/console-validations';
 import { SUPPORT_COUNTRIES } from '@/lib/support-countries';
+import { getPressSupportContext } from '@/lib/presses';
 
 export const dynamic = 'force-dynamic';
 
@@ -54,6 +55,20 @@ export async function POST(request: NextRequest) {
     // anonymous — fine
   }
 
+  // Ticket about one press of the user's pressroom: keep the link only when the
+  // press belongs to the signed-in user's organization, and hand the press
+  // context (machine, plant, equipment versions) to the team's Asana task.
+  let pressId: string | null = null;
+  let pressContext: string[] | undefined;
+  const pressRaw = typeof body.pressId === 'string' ? body.pressId : '';
+  if (userId && pressRaw && process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    const ctx = await getPressSupportContext(userId, pressRaw);
+    if (ctx) {
+      pressId = ctx.pressId;
+      pressContext = ctx.teamLines;
+    }
+  }
+
   // Move the uploaded photos into a ticket folder and sign shareable links (for
   // the in-account tracker). Keep the final storage paths so we can also attach
   // the actual files to the Asana task.
@@ -80,6 +95,7 @@ export async function POST(request: NextRequest) {
     company: company ?? undefined,
     subject: subject ?? undefined,
     country: country ?? undefined,
+    context: pressContext,
   });
 
   // Attach the real image files to the Asana task (downloaded server-side, so
@@ -102,6 +118,7 @@ export async function POST(request: NextRequest) {
     description,
     asanaTaskGid,
     photos: photoLinks,
+    pressId,
   });
 
   const ref = id ? id.slice(0, 8) : null;

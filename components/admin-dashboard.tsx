@@ -1419,7 +1419,7 @@ export function AdminDashboard({
         <div className="container">
           <header className="admin-head">
             <div>
-              <p className="section-kicker">Admin · Rutherford Academy</p>
+              <p className="section-kicker">Admin · Rutherford</p>
               <h1 className="admin-title">
                 Tableau de bord{!canManage ? <span className="admin-badge">Lecture seule</span> : null}
               </h1>

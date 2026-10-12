@@ -2,6 +2,7 @@
 
 import { type Locale, useLanguage } from '@/components/language-provider';
 import { getCourseBySlug } from '@/data/academy-courses';
+import { ACADEMY_ENABLED } from '@/lib/features';
 
 // One card per press the client has (derived from their Console Validations):
 // the machine, its status, and per-system Support / Training / Help.
@@ -69,42 +70,42 @@ type Copy = {
 
 const COPY: Record<Locale, Copy> = {
   en: {
-    heading: 'My presses',
+    heading: 'My console validations',
     status: { eligible: 'Eligible to connect', review: 'In review', action: 'Action needed', rejected: 'Not eligible', closed: 'Closed' },
     gSupport: 'Support', gTraining: 'Training', gHelp: 'Help',
     supportCta: 'Get support for this press', guides: 'Guides & docs', email: 'Email us',
     validations: (n) => `${n} validation${n === 1 ? '' : 's'}`,
   },
   fr: {
-    heading: 'Mes presses',
+    heading: 'Mes validations console',
     status: { eligible: 'Éligible à la connexion', review: 'En revue', action: 'Action requise', rejected: 'Non éligible', closed: 'Clôturée' },
     gSupport: 'Support', gTraining: 'Formations', gHelp: 'Aide',
     supportCta: 'Support sur cette presse', guides: 'Guides & docs', email: 'Nous écrire',
     validations: (n) => `${n} validation${n === 1 ? '' : 's'}`,
   },
   de: {
-    heading: 'Meine Maschinen',
+    heading: 'Meine Konsolenvalidierungen',
     status: { eligible: 'Verbindung möglich', review: 'In Prüfung', action: 'Aktion erforderlich', rejected: 'Nicht geeignet', closed: 'Abgeschlossen' },
     gSupport: 'Support', gTraining: 'Schulungen', gHelp: 'Hilfe',
     supportCta: 'Support für diese Maschine', guides: 'Anleitungen & Doku', email: 'E-Mail',
     validations: (n) => `${n} Validierung${n === 1 ? '' : 'en'}`,
   },
   it: {
-    heading: 'Le mie macchine',
+    heading: 'Le mie validazioni console',
     status: { eligible: 'Idonea alla connessione', review: 'In revisione', action: 'Azione richiesta', rejected: 'Non idonea', closed: 'Chiusa' },
     gSupport: 'Supporto', gTraining: 'Formazione', gHelp: 'Aiuto',
     supportCta: 'Assistenza per questa macchina', guides: 'Guide & doc', email: 'Scrivici',
     validations: (n) => `${n} validazion${n === 1 ? 'e' : 'i'}`,
   },
   es: {
-    heading: 'Mis prensas',
+    heading: 'Mis validaciones de consola',
     status: { eligible: 'Apta para conexión', review: 'En revisión', action: 'Acción requerida', rejected: 'No apta', closed: 'Cerrada' },
     gSupport: 'Soporte', gTraining: 'Formación', gHelp: 'Ayuda',
     supportCta: 'Soporte para esta prensa', guides: 'Guías & docs', email: 'Escríbanos',
     validations: (n) => `${n} validaci${n === 1 ? 'ón' : 'ones'}`,
   },
   pt: {
-    heading: 'As minhas máquinas',
+    heading: 'As minhas validações de consola',
     status: { eligible: 'Elegível para ligação', review: 'Em análise', action: 'Ação necessária', rejected: 'Não elegível', closed: 'Encerrada' },
     gSupport: 'Suporte', gTraining: 'Formação', gHelp: 'Ajuda',
     supportCta: 'Suporte para esta máquina', guides: 'Guias & docs', email: 'Escreva-nos',
@@ -146,16 +147,18 @@ export function AccountSystems({ systems, accent, preview = false }: { systems: 
                 </div>
               )}
 
-              <div className="ah-sys-group">
-                <div className="ah-sys-glabel">{t.gTraining}</div>
-                <div className="ah-sys-links">
-                  {courses.map((c) => (
-                    <a className="ah-sys-link" href={`/academy/${c.slug}`} key={c.slug}>
-                      {c.title}
-                    </a>
-                  ))}
+              {ACADEMY_ENABLED && courses.length ? (
+                <div className="ah-sys-group">
+                  <div className="ah-sys-glabel">{t.gTraining}</div>
+                  <div className="ah-sys-links">
+                    {courses.map((c) => (
+                      <a className="ah-sys-link" href={`/academy/${c.slug}`} key={c.slug}>
+                        {c.title}
+                      </a>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              ) : null}
 
               <div className="ah-sys-group">
                 <div className="ah-sys-glabel">{t.gHelp}</div>

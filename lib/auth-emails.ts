@@ -52,7 +52,7 @@ const COPY: Record<AuthLocale, Record<ActionKey, ActionCopy>> = {
       tone: 'info',
       headline: { pre: 'Confirm your email to ', accent: 'get started', post: '.' },
       body: [
-        "You're one click from your Rutherford Academy account. Confirm your email address to activate it — then we'll help you complete your profile.",
+        "You're one click from your Rutherford account. Confirm your email address to activate it — then we'll help you complete your profile.",
         "If you didn't create this account, you can safely ignore this email.",
       ],
       cta: 'Confirm email address',
@@ -118,7 +118,7 @@ const COPY: Record<AuthLocale, Record<ActionKey, ActionCopy>> = {
       tone: 'info',
       headline: { pre: 'Confirmez votre e-mail pour ', accent: 'commencer', post: '.' },
       body: [
-        "Vous êtes à un clic de votre compte Rutherford Academy. Confirmez votre adresse e-mail pour l'activer — nous vous aiderons ensuite à compléter votre profil.",
+        "Vous êtes à un clic de votre compte Rutherford. Confirmez votre adresse e-mail pour l'activer — nous vous aiderons ensuite à compléter votre profil.",
         "Si vous n'êtes pas à l'origine de cette inscription, vous pouvez ignorer cet e-mail.",
       ],
       cta: 'Confirmer mon e-mail',
@@ -184,7 +184,7 @@ const COPY: Record<AuthLocale, Record<ActionKey, ActionCopy>> = {
       tone: 'info',
       headline: { pre: 'Bestätigen Sie Ihre E-Mail, um ', accent: 'loszulegen', post: '.' },
       body: [
-        'Sie sind nur einen Klick von Ihrem Rutherford-Academy-Konto entfernt. Bestätigen Sie Ihre E-Mail-Adresse, um es zu aktivieren — danach helfen wir Ihnen, Ihr Profil zu vervollständigen.',
+        'Sie sind nur einen Klick von Ihrem Rutherford-Konto entfernt. Bestätigen Sie Ihre E-Mail-Adresse, um es zu aktivieren — danach helfen wir Ihnen, Ihr Profil zu vervollständigen.',
         'Falls Sie dieses Konto nicht erstellt haben, können Sie diese E-Mail ignorieren.',
       ],
       cta: 'E-Mail-Adresse bestätigen',
@@ -250,7 +250,7 @@ const COPY: Record<AuthLocale, Record<ActionKey, ActionCopy>> = {
       tone: 'info',
       headline: { pre: 'Confermi la sua e-mail per ', accent: 'iniziare', post: '.' },
       body: [
-        'È a un clic dal suo account Rutherford Academy. Confermi il suo indirizzo e-mail per attivarlo — poi la aiuteremo a completare il suo profilo.',
+        'È a un clic dal suo account Rutherford. Confermi il suo indirizzo e-mail per attivarlo — poi la aiuteremo a completare il suo profilo.',
         'Se non ha creato lei questo account, può ignorare questa e-mail.',
       ],
       cta: "Conferma l'e-mail",
@@ -316,7 +316,7 @@ const COPY: Record<AuthLocale, Record<ActionKey, ActionCopy>> = {
       tone: 'info',
       headline: { pre: 'Confirme su correo para ', accent: 'empezar', post: '.' },
       body: [
-        'Está a un clic de su cuenta de Rutherford Academy. Confirme su dirección de correo para activarla; después le ayudaremos a completar su perfil.',
+        'Está a un clic de su cuenta de Rutherford. Confirme su dirección de correo para activarla; después le ayudaremos a completar su perfil.',
         'Si no ha creado usted esta cuenta, puede ignorar este correo.',
       ],
       cta: 'Confirmar mi correo',
@@ -382,7 +382,7 @@ const COPY: Record<AuthLocale, Record<ActionKey, ActionCopy>> = {
       tone: 'info',
       headline: { pre: 'Confirme o seu email para ', accent: 'começar', post: '.' },
       body: [
-        'Está a um clique da sua conta Rutherford Academy. Confirme o seu endereço de email para a ativar e, em seguida, ajudamos a completar o seu perfil.',
+        'Está a um clique da sua conta Rutherford. Confirme o seu endereço de email para a ativar e, em seguida, ajudamos a completar o seu perfil.',
         'Se não foi quem criou esta conta, pode ignorar este email.',
       ],
       cta: 'Confirmar o meu email',

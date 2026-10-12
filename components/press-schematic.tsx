@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 
-export type PressFormat = 'b2' | 'b1' | 'vlf';
+export type PressFormat = 'b2' | 'b1' | 'f145' | 'vlf';
 
 // Format drives the dimetric scale (s) and the press width/depth (w). Changing
 // format tweens U / WB so the press *widens* crisply (no CSS-scale blur), and
@@ -12,6 +12,7 @@ const BASE_WB = 1.7;
 const PRESS_FMT: Record<PressFormat, { w: number; s: number }> = {
   b2: { w: 0.86, s: 0.92 },
   b1: { w: 1, s: 1 },
+  f145: { w: 1.36, s: 1.08 },
   vlf: { w: 1.5, s: 1.13 },
 };
 
@@ -155,9 +156,12 @@ type Props = {
   format: PressFormat;
   colors: number;
   label?: string;
+  // Tighter framing for small renders (account press cards): the default frame
+  // leaves room for the ROI controls overlay.
+  viewBox?: string;
 };
 
-export function PressSchematic({ format, colors, label }: Props) {
+export function PressSchematic({ format, colors, label, viewBox = '0 0 1140 560' }: Props) {
   const gRef = useRef<SVGGElement | null>(null);
   const uRef = useRef(BASE_U * PRESS_FMT[format].s);
   const wbRef = useRef(BASE_WB * PRESS_FMT[format].w);
@@ -227,7 +231,7 @@ export function PressSchematic({ format, colors, label }: Props) {
   }, [format]);
 
   return (
-    <svg className="roi-press-svg" viewBox="0 0 1140 560" role="img" aria-label={label ?? 'Offset press'}>
+    <svg className="roi-press-svg" viewBox={viewBox} role="img" aria-label={label ?? 'Offset press'}>
       <g ref={gRef} />
     </svg>
   );

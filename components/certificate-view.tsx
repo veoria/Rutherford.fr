@@ -1,6 +1,7 @@
 'use client';
 
 import { type Locale, useLanguage } from '@/components/language-provider';
+import { ACADEMY_ENABLED } from '@/lib/features';
 
 type Props = {
   slug: string;
@@ -147,7 +148,7 @@ export function CertificateView({
         <a className="button button-accent" href={`/account/certificate/${slug}/pdf?lang=${locale}`}>
           {t.download}
         </a>
-        <a className="button button-light" href="/account/academy">
+        <a className="button button-light" href={ACADEMY_ENABLED ? '/account/academy' : '/account'}>
           {t.back}
         </a>
         <p className="certificate-hint">{t.hint}</p>

@@ -3,6 +3,7 @@ import { articleLocales, getAllArticles } from '@/lib/blog';
 import { ALL_COURSES } from '@/data/academy-courses';
 import { PRESS_BRANDS_PAGES } from '@/data/press-brands';
 import { ALL_REGIONS } from '@/data/regions';
+import { ACADEMY_ENABLED } from '@/lib/features';
 
 const BASE = 'https://rutherford.fr';
 const PREFIX_LOCALES = ['fr', 'de', 'it', 'es', 'pt'];
@@ -38,7 +39,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: '/closed-loop-color-control', changeFrequency: 'monthly' as const, priority: 0.9 },
     { path: '/console-validation', changeFrequency: 'monthly' as const, priority: 0.9 },
     { path: '/roi', changeFrequency: 'monthly' as const, priority: 0.8 },
-    { path: '/academy', changeFrequency: 'weekly' as const, priority: 0.8 },
+    ...(ACADEMY_ENABLED ? [{ path: '/academy', changeFrequency: 'weekly' as const, priority: 0.8 }] : []),
     { path: '/glossary', changeFrequency: 'monthly' as const, priority: 0.7 },
     { path: '/blog', changeFrequency: 'weekly' as const, priority: 0.7 },
     { path: '/contact', changeFrequency: 'yearly' as const, priority: 0.5 },
@@ -49,7 +50,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     entry({ path: `/console-validation/${brand.slug}`, changeFrequency: 'monthly', priority: 0.8 }),
   );
 
-  const courseRoutes = ALL_COURSES.map((course) =>
+  const courseRoutes = (ACADEMY_ENABLED ? ALL_COURSES : []).map((course) =>
     entry({ path: `/academy/${course.id}`, changeFrequency: 'monthly', priority: 0.6 }),
   );
 

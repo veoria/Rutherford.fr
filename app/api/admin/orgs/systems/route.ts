@@ -1,5 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { requireAdminWrite } from '@/lib/admin-access';
+import { createSupabaseAdminClient } from '@/lib/supabase/server';
+import { isSystemKind } from '@/data/press-config';
 import {
   createSystem,
   deleteSystem,
@@ -32,8 +34,14 @@ function readFields(body: Record<string, unknown>): ClientSystemInput | { error:
   if (!isLicenseStatus(licenseStatus)) return { error: 'bad_status' };
   const expires = clip(body.licenseExpiresAt, 10);
   if (expires && !DATE_RE.test(expires)) return { error: 'bad_date' };
+  const kind = typeof body.kind === 'string' && body.kind ? body.kind : 'software';
+  if (!isSystemKind(kind)) return { error: 'bad_kind' };
   return {
     product,
+    kind,
+    pressId: clip(body.pressId, 40) || null,
+    serialNumber: clip(body.serialNumber, 120) || null,
+    soldByOrgId: clip(body.soldByOrgId, 40) || null,
     siteId: clip(body.siteId, 40) || null,
     machine: clip(body.machine, 160) || null,
     licenseKey: clip(body.licenseKey, 160) || null,
@@ -44,6 +52,25 @@ function readFields(body: Record<string, unknown>): ClientSystemInput | { error:
     latestVersion: clip(body.latestVersion, 60) || null,
     notes: clip(body.notes, 1000) || null,
   };
+}
+
+/**
+ * Cross-row checks: the press must belong to the system's org (a system can't
+ * be pinned on another client's press), and « vendu par » must be a partner
+ * org (reseller / distributor) — null means a direct Rutherford sale.
+ */
+async function checkLinks(orgId: string, fields: ClientSystemInput): Promise<string | null> {
+  const admin = createSupabaseAdminClient();
+  if (fields.pressId) {
+    const { data } = await admin.from('presses').select('id').eq('id', fields.pressId).eq('org_id', orgId).maybeSingle();
+    if (!data) return 'bad_press';
+  }
+  if (fields.soldByOrgId) {
+    const { data } = await admin.from('organizations').select('type').eq('id', fields.soldByOrgId).maybeSingle();
+    const type = (data as { type?: string } | null)?.type;
+    if (type !== 'reseller' && type !== 'distributor') return 'bad_sold_by';
+  }
+  return null;
 }
 
 /** Add a system to an org. */
@@ -61,6 +88,8 @@ export async function POST(request: NextRequest) {
   if (!orgId) return NextResponse.json({ error: 'missing_org' }, { status: 400 });
   const fields = readFields(body);
   if ('error' in fields) return NextResponse.json({ error: fields.error }, { status: 400 });
+  const linkError = await checkLinks(orgId, fields);
+  if (linkError) return NextResponse.json({ error: linkError }, { status: 400 });
 
   const created = await createSystem(orgId, fields);
   return created
@@ -83,9 +112,22 @@ export async function PATCH(request: NextRequest) {
   if (!id) return NextResponse.json({ error: 'missing_id' }, { status: 400 });
   const fields = readFields(body);
   if ('error' in fields) return NextResponse.json({ error: fields.error }, { status: 400 });
+  const { data: current } = await createSupabaseAdminClient()
+    .from('client_systems')
+    .select('org_id')
+    .eq('id', id)
+    .maybeSingle();
+  const orgId = (current as { org_id?: string } | null)?.org_id;
+  if (!orgId) return NextResponse.json({ error: 'missing_id' }, { status: 404 });
+  const linkError = await checkLinks(orgId, fields);
+  if (linkError) return NextResponse.json({ error: linkError }, { status: 400 });
 
   const ok = await updateSystem(id, {
     site_id: fields.siteId ?? null,
+    press_id: fields.pressId ?? null,
+    kind: fields.kind ?? 'software',
+    serial_number: fields.serialNumber ?? null,
+    sold_by_org_id: fields.soldByOrgId ?? null,
     product: fields.product,
     machine: fields.machine,
     license_key: fields.licenseKey,

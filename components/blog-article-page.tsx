@@ -5,6 +5,7 @@ import { SiteFooter } from '@/components/site-footer';
 import { SiteNav } from '@/components/site-nav';
 import { useLanguage } from '@/components/language-provider';
 import type { BlogArticle } from '@/lib/blog';
+import { ACADEMY_ENABLED } from '@/lib/features';
 import { Fragment, type ReactNode } from 'react';
 
 /** Render inline [label](href) markdown links inside body text, so articles can carry references and links. */
@@ -48,7 +49,7 @@ export function BlogArticlePage({ article }: { article: BlogArticle }) {
   const lhref = (p: string) => (locale === 'en' ? p : `/${locale}${p}`);
 
   // Related Rutherford Academy training per article (hands-on training, not a certification, no Idealliance link).
-  const academyEnabled = process.env.NEXT_PUBLIC_ACADEMY_ENABLED === 'true';
+  const academyEnabled = ACADEMY_ENABLED;
   const RELATED_COURSE: Record<string, { id: string; title: string }> = {
     'closed-loop-color-control-offset-guide': { id: 'closed-loop-flagship', title: 'The Complete Closed-Loop Color Masterclass' },
     'reduce-makeready-waste-offset-press': { id: 'where-color-hurts', title: 'Where Color Hurts: From Makeready to Saleable Sheet' },

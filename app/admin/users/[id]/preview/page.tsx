@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
-import { notFound, redirect } from 'next/navigation';
-import { getAdminAccess } from '@/lib/admin-access';
+import { notFound } from 'next/navigation';
+import { requirePreviewAccess, safePreviewBack } from '@/lib/admin-preview';
 import { getAccountHubPreview } from '@/lib/account-preview';
 import { AccountHub } from '@/components/account-hub';
 
@@ -20,21 +20,9 @@ export default async function ClientPreviewRoute({
   params: { id: string };
   searchParams: { back?: string };
 }) {
-  const next = `/admin/users/${params.id}/preview`;
-  const access = await getAdminAccess();
-  if (!access.ok) {
-    if (access.reason === 'unauthenticated') redirect(`/account/sign-in?next=${next}`);
-    if (access.reason === 'needs_2fa_challenge') redirect(`/account/verify-2fa?next=${next}`);
-    if (access.reason === 'needs_2fa_setup') redirect(`/account/security?next=${next}`);
-    notFound(); // forbidden — don't reveal the route exists
-  }
-
+  await requirePreviewAccess(`/admin/users/${params.id}/preview`);
   // « Retour admin » : là d'où l'aperçu a été ouvert (page org ou fiche user).
-  // Chemins internes /admin uniquement — jamais une redirection hors-site.
-  const back =
-    searchParams.back && /^\/admin(?![/\\][/\\])[\w/-]*$/.test(searchParams.back)
-      ? searchParams.back
-      : undefined;
+  const back = safePreviewBack(searchParams.back);
 
   const props = await getAccountHubPreview(params.id);
   if (!props) notFound();
