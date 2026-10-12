@@ -1,0 +1,123 @@
+[
+ {
+  "slug": "coca-cola",
+  "brand": "Coca-Cola",
+  "real": "#F40009",
+  "decoy": "#FE1D12",
+  "deltaE": 2.94,
+  "logo": "/images/color-guesser/coca-cola.png",
+  "logoWidth": 760,
+  "logoHeight": 300,
+  "light": false
+ },
+ {
+  "slug": "milka",
+  "brand": "Milka",
+  "real": "#8678B6",
+  "decoy": "#8D76B3",
+  "deltaE": 2.82,
+  "logo": "/images/color-guesser/milka.png",
+  "logoWidth": 600,
+  "logoHeight": 300,
+  "light": false
+ },
+ {
+  "slug": "telekom",
+  "brand": "Telekom",
+  "real": "#E20074",
+  "decoy": "#EB1B7C",
+  "deltaE": 2.91,
+  "logo": "/images/color-guesser/telekom.png",
+  "logoWidth": 620,
+  "logoHeight": 300,
+  "light": false
+ },
+ {
+  "slug": "starbucks",
+  "brand": "Starbucks",
+  "real": "#006241",
+  "decoy": "#196139",
+  "deltaE": 3.06,
+  "logo": "/images/color-guesser/starbucks.png",
+  "logoWidth": 500,
+  "logoHeight": 500,
+  "light": false
+ },
+ {
+  "slug": "veuve-clicquot",
+  "brand": "Veuve Clicquot",
+  "real": "#FFA300",
+  "decoy": "#F7A737",
+  "deltaE": 3.0,
+  "logo": "/images/color-guesser/veuve-clicquot.png",
+  "logoWidth": 980,
+  "logoHeight": 588,
+  "light": true
+ },
+ {
+  "slug": "louboutin",
+  "brand": "Christian Louboutin",
+  "real": "#BE132D",
+  "decoy": "#BB1D24",
+  "deltaE": 3.06,
+  "logo": "/images/color-guesser/louboutin.png",
+  "logoWidth": 640,
+  "logoHeight": 470,
+  "light": false
+ },
+ {
+  "slug": "ups",
+  "brand": "UPS",
+  "real": "#5C462B",
+  "decoy": "#58482A",
+  "deltaE": 3.39,
+  "logo": "/images/color-guesser/ups.png",
+  "logoWidth": 320,
+  "logoHeight": 380,
+  "light": false
+ },
+ {
+  "slug": "barbie",
+  "brand": "Barbie",
+  "real": "#DA1884",
+  "decoy": "#DD1478",
+  "deltaE": 3.01,
+  "logo": "/images/color-guesser/barbie.png",
+  "logoWidth": 700,
+  "logoHeight": 330,
+  "light": false
+ },
+ {
+  "slug": "nivea",
+  "brand": "Nivea",
+  "real": "#0032A0",
+  "decoy": "#1C3BAB",
+  "deltaE": 3.03,
+  "logo": "/images/color-guesser/nivea.png",
+  "logoWidth": 600,
+  "logoHeight": 200,
+  "light": false
+ },
+ {
+  "slug": "orange",
+  "brand": "Orange",
+  "real": "#FF7900",
+  "decoy": "#F4812D",
+  "deltaE": 2.99,
+  "logo": "/images/color-guesser/orange.png",
+  "logoWidth": 600,
+  "logoHeight": 220,
+  "light": true
+ },
+ {
+  "slug": "mcdonalds",
+  "brand": "McDonald's",
+  "real": "#DA291C",
+  "decoy": "#DE1E26",
+  "deltaE": 2.9,
+  "logo": "/images/color-guesser/mcdonalds.png",
+  "logoWidth": 500,
+  "logoHeight": 440,
+  "light": false
+ }
+]
