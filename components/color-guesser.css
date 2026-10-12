@@ -1,6 +1,9 @@
 /* Color guesser: brand color quiz (components/color-guesser.tsx). */
 
 .cg {
+  --cg-ease: cubic-bezier(0.23, 1, 0.32, 1);
+  --cg-ok: #1f7a45;
+  --cg-ko: #b42318;
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 440px);
   gap: clamp(32px, 6vw, 88px);
@@ -9,6 +12,17 @@
 
 .cg-copy {
   max-width: 560px;
+}
+
+.cg-challenge {
+  display: inline-block;
+  margin: 0 0 18px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: var(--bg-soft);
+  border: 1px solid var(--line);
+  font-size: 0.95rem;
+  font-weight: 600;
 }
 
 .cg-title {
@@ -34,73 +48,69 @@
   border-top: 1px solid var(--line);
 }
 
-.cg-progress {
+.cg-brand {
+  white-space: nowrap;
+}
+
+/* Progress: one patch per round, filled with the brand's real color once played,
+   like a control bar being printed. */
+.cg-steps {
+  list-style: none;
   margin: 0;
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--muted);
-  font-variant-numeric: tabular-nums;
+  padding: 0;
+  display: flex;
+  gap: 8px;
+}
+
+.cg-step {
+  position: relative;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: var(--bg-soft);
+  box-shadow: inset 0 0 0 1px var(--line);
+  display: grid;
+  place-items: center;
+  color: #ffffff;
+  transition: box-shadow 200ms ease-out;
+}
+
+.cg-step.is-current {
+  box-shadow: inset 0 0 0 2px var(--text);
+}
+
+.cg-step.is-ok,
+.cg-step.is-ko {
+  background: var(--patch);
+  box-shadow: none;
+  animation: cg-patch-in 320ms var(--cg-ease) both;
+}
+
+.cg-step-mark {
+  width: 16px;
+  height: 16px;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.35));
 }
 
 .cg-question {
-  margin: 8px 0 0;
+  margin: 16px 0 0;
   font-size: clamp(1.3rem, 2vw, 1.6rem);
   line-height: 1.25;
   letter-spacing: -0.02em;
   font-weight: 650;
 }
 
-.cg-brand {
-  white-space: nowrap;
-}
-
-.cg-result {
-  margin-top: 22px;
-  animation: cg-enter 260ms cubic-bezier(0.23, 1, 0.32, 1) both;
-}
-
-.cg-verdict {
-  margin: 0;
-  font-size: 1.12rem;
-  line-height: 1.45;
-}
-
-.cg-verdict .is-right,
-.cg-verdict .is-wrong {
-  font-weight: 700;
-}
-
-.cg-verdict .is-right {
-  color: #1f7a45;
-}
-
-.cg-verdict .is-wrong {
-  color: #b42318;
-}
-
 .cg-gap {
-  margin: 10px 0 0;
+  margin: 12px 0 0;
   max-width: 52ch;
   font-size: 1rem;
   line-height: 1.55;
   color: var(--muted);
-}
-
-.cg-next {
-  margin-top: 22px;
-  min-height: 52px;
-}
-
-.cg-score {
-  margin: 0;
-  font-size: clamp(1.6rem, 2.6vw, 2.1rem);
-  line-height: 1.15;
-  letter-spacing: -0.03em;
-  font-weight: 700;
+  animation: cg-rise 260ms var(--cg-ease) both;
 }
 
 .cg-done-body {
-  margin: 12px 0 0;
+  margin: 0;
   max-width: 52ch;
   font-size: 1.05rem;
   line-height: 1.55;
@@ -118,16 +128,24 @@
   min-height: 52px;
 }
 
-/* The card mirrors the social posts: 4:5, split in two, logo across the seam. */
-.cg-card {
+/* The playing card mirrors the social posts: 4:5, split in two, logo across the seam. */
+.cg-stage {
+  position: relative;
+}
+
+.cg-card,
+.cg-result {
   position: relative;
   aspect-ratio: 4 / 5;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
   border-radius: 16px;
   overflow: hidden;
   isolation: isolate;
   box-shadow: 0 24px 60px rgba(17, 17, 17, 0.14);
+}
+
+.cg-card {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
 }
 
 .cg-half {
@@ -171,13 +189,13 @@
   font-size: clamp(15px, 1.25rem, 20px);
   font-weight: 600;
   line-height: 1;
-  transition: transform 200ms cubic-bezier(0.23, 1, 0.32, 1);
+  transition: transform 200ms var(--cg-ease);
 }
 
 .cg-mark {
   width: 62%;
   height: 62%;
-  animation: cg-pop 220ms cubic-bezier(0.23, 1, 0.32, 1) both;
+  animation: cg-pop 220ms var(--cg-ease) both;
 }
 
 .cg-logo {
@@ -191,13 +209,269 @@
   animation: cg-fade 240ms ease-out both;
 }
 
+/* Verdict sits inside the card, under the thumb on a phone. */
+.cg-verdict {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 10px 10px 18px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 10px 30px rgba(17, 17, 17, 0.18);
+  animation: cg-rise 280ms var(--cg-ease) both;
+}
+
+.cg-verdict p {
+  margin: 0;
+  font-size: 0.98rem;
+  line-height: 1.3;
+  color: var(--text);
+}
+
+.cg-verdict-gap {
+  display: block;
+  margin-top: 2px;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.cg-verdict .is-right,
+.cg-verdict .is-wrong {
+  font-weight: 700;
+}
+
+.cg-verdict .is-right {
+  color: var(--cg-ok);
+}
+
+.cg-verdict .is-wrong {
+  color: var(--cg-ko);
+}
+
+.cg-next {
+  flex: none;
+  min-height: 44px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 999px;
+  background: #111111;
+  color: #ffffff;
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 650;
+  cursor: pointer;
+  transition: transform 160ms ease-out;
+}
+
+.cg-next:active {
+  transform: scale(0.97);
+}
+
+.cg-next:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+/* Result card: the five colors print in as a control bar, then the score lands. */
+.cg-result {
+  display: flex;
+  flex-direction: column;
+  padding: clamp(22px, 6%, 32px);
+  background: #ffffff;
+}
+
+.cg-bar-label {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.cg-bar {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.cg-bar li {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.cg-patch {
+  position: relative;
+  aspect-ratio: 3 / 4;
+  border-radius: 8px;
+  background: var(--patch);
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+  clip-path: inset(100% 0 0 0 round 8px);
+  animation: cg-print 460ms var(--cg-ease) forwards;
+  animation-delay: calc(var(--i) * 90ms + 120ms);
+}
+
+.cg-patch.is-light {
+  color: #1c1c1e;
+}
+
+.cg-patch-mark {
+  width: 46%;
+  height: 46%;
+}
+
+.cg-patch-name {
+  font-size: 0.72rem;
+  line-height: 1.2;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  opacity: 0;
+  animation: cg-fade 240ms ease-out forwards;
+  animation-delay: calc(var(--i) * 90ms + 360ms);
+}
+
+.cg-score-wrap {
+  position: relative;
+  flex: 1;
+  display: grid;
+  place-content: center;
+  text-align: center;
+}
+
+.cg-score {
+  margin: 0;
+  font-size: clamp(4.4rem, 12vw, 6rem);
+  line-height: 1;
+  letter-spacing: -0.04em;
+  font-weight: 750;
+  font-variant-numeric: tabular-nums;
+  animation: cg-land 520ms var(--cg-ease) both;
+  animation-delay: 680ms;
+}
+
+.cg-score span {
+  font-size: 0.42em;
+  letter-spacing: -0.02em;
+  color: var(--muted);
+}
+
+.cg-rank {
+  margin: 10px 0 0;
+  font-size: 1.15rem;
+  font-weight: 650;
+  letter-spacing: -0.015em;
+  animation: cg-rise 360ms var(--cg-ease) both;
+  animation-delay: 860ms;
+}
+
+.cg-burst {
+  position: absolute;
+  left: 50%;
+  top: 46%;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.cg-burst span {
+  position: absolute;
+  left: calc(var(--s) / -2);
+  top: calc(var(--s) / -2);
+  width: var(--s);
+  height: var(--s);
+  border-radius: 50%;
+  background: var(--c);
+  opacity: 0;
+  animation: cg-burst 900ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation-delay: calc(700ms + var(--d));
+}
+
+.cg-share {
+  display: grid;
+  gap: 10px;
+  animation: cg-rise 360ms var(--cg-ease) both;
+  animation-delay: 1000ms;
+}
+
+.cg-share-main {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  border: 0;
+  border-radius: 999px;
+  background: #111111;
+  color: #ffffff;
+  font: inherit;
+  font-size: 0.98rem;
+  font-weight: 650;
+  cursor: pointer;
+  transition: transform 160ms ease-out;
+}
+
+.cg-share-main:active {
+  transform: scale(0.97);
+}
+
+.cg-share-more {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.cg-share-more a,
+.cg-share-more button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: #ffffff;
+  color: var(--text);
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 160ms ease-out, background-color 160ms ease-out;
+}
+
+.cg-share-more a:active,
+.cg-share-more button:active {
+  transform: scale(0.97);
+}
+
+.cg-share-main:focus-visible,
+.cg-share-more a:focus-visible,
+.cg-share-more button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
 @media (hover: hover) and (pointer: fine) {
   .cg-half:not(:disabled):hover .cg-bubble {
     transform: scale(1.08);
   }
+
+  .cg-share-more a:hover,
+  .cg-share-more button:hover {
+    background: var(--bg-soft);
+  }
 }
 
-@keyframes cg-enter {
+@keyframes cg-rise {
   from {
     opacity: 0;
     transform: translateY(8px);
@@ -215,15 +489,52 @@
   from {
     opacity: 0;
   }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes cg-patch-in {
+  from {
+    transform: scale(0.85);
+  }
+}
+
+@keyframes cg-print {
+  to {
+    clip-path: inset(0 0 0 0 round 8px);
+  }
+}
+
+@keyframes cg-land {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+    filter: blur(6px);
+  }
+}
+
+@keyframes cg-burst {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) scale(0.6);
+  }
+  15% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--x), var(--y)) scale(1);
+  }
 }
 
 @media (max-width: 860px) {
   .cg {
     grid-template-columns: minmax(0, 1fr);
-    gap: 28px;
+    gap: 24px;
   }
 
-  .cg-card {
+  .cg-stage {
     order: 2;
     width: min(100%, 440px);
     margin: 0 auto;
@@ -233,13 +544,14 @@
     display: contents;
   }
 
+  .cg-challenge,
   .cg-title,
   .cg-lead {
     order: 0;
   }
 
   .cg-lead {
-    margin-top: -12px;
+    margin-top: -10px;
   }
 
   .cg-ask {
@@ -247,27 +559,46 @@
     margin-top: 0;
   }
 
-  .cg-result,
   .cg-done {
     order: 3;
     margin-top: 0;
-  }
-
-  .cg-done {
     padding-top: 0;
     border-top: 0;
+  }
+
+  /* On a phone the ΔE note follows the card instead of pushing it down. */
+  .cg-ask .cg-gap {
+    display: none;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .cg-result,
+  .cg-gap,
   .cg-mark,
-  .cg-logo {
+  .cg-logo,
+  .cg-verdict,
+  .cg-step.is-ok,
+  .cg-step.is-ko,
+  .cg-score,
+  .cg-rank,
+  .cg-share,
+  .cg-patch-name {
     animation: none;
+    opacity: 1;
+  }
+
+  .cg-patch {
+    animation: none;
+    clip-path: none;
+  }
+
+  .cg-burst {
+    display: none;
   }
 
   .cg-bubble,
-  .cg-half {
+  .cg-half,
+  .cg-step {
     transition: none;
   }
 }

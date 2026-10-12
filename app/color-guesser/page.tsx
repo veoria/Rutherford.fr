@@ -1,11 +1,14 @@
 import type { Metadata } from 'next';
 import { localizedMetadata, requestLocale } from '@/lib/seo';
+import { parseShared } from '@/lib/color-guesser';
 import { SiteNav } from '@/components/site-nav';
 import { SiteFooter } from '@/components/site-footer';
 import { ColorGuesser } from '@/components/color-guesser';
 
-export function generateMetadata(): Metadata {
-  return localizedMetadata({
+type PageProps = { searchParams?: Record<string, string | string[] | undefined> };
+
+export function generateMetadata({ searchParams = {} }: PageProps): Metadata {
+  const meta = localizedMetadata({
     path: '/color-guesser',
     title: {
       en: 'Color guesser: find the real brand color | Rutherford.fr',
@@ -24,6 +27,21 @@ export function generateMetadata(): Metadata {
       pt: 'Duas cores, um logótipo, só uma é real. Teste o seu olho com cores de marcas conhecidas e veja porque é que as gráficas medem a cor.',
     },
   });
+  // A shared score link previews with its own image (score, title, the five colors).
+  const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v) ?? null;
+  const shared = parseShared({ s: one(searchParams.s), t: one(searchParams.t), b: one(searchParams.b) });
+  if (shared) {
+    const q = new URLSearchParams({
+      s: String(shared.score),
+      t: String(shared.total),
+      b: shared.brands.map((b) => b.slug).join(','),
+      l: requestLocale(),
+    });
+    const image = { url: `/api/og/color-guesser?${q}`, width: 1200, height: 630 };
+    meta.openGraph = { ...meta.openGraph, images: [image] };
+    meta.twitter = { ...meta.twitter, card: 'summary_large_image', images: [image.url] };
+  }
+  return meta;
 }
 
 export default function ColorGuesserRoute() {
