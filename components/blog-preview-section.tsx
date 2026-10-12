@@ -11,9 +11,11 @@ type Article = {
   excerpt: string;
   image: string;
   category: string;
+  review?: boolean;
 };
 
-const RAW = articles as Article[];
+// The home page only ever teases validated articles, on staging too.
+const RAW = (articles as Article[]).filter((article) => !article.review);
 
 type Copy = {
   kicker: string;

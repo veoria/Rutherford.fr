@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { BlogArticlePage } from '@/components/blog-article-page';
+import { BlogReviewBanner } from '@/components/blog-review-banner';
 import { articleLocales, getAllArticles, getArticleBySlug } from '@/lib/blog';
 import { localizedMetadata, type Localized } from '@/lib/seo';
 
@@ -31,7 +32,7 @@ export function generateMetadata({ params }: ArticlePageProps): Metadata {
     description[locale] = t?.lead ?? t?.excerpt ?? article.lead;
   }
 
-  return localizedMetadata({
+  const metadata = localizedMetadata({
     path: `/blog/${article.slug}`,
     title: title as Localized,
     description: description as Localized,
@@ -39,6 +40,8 @@ export function generateMetadata({ params }: ArticlePageProps): Metadata {
     locales,
     image: article.image ? { url: article.image, alt: article.title } : undefined,
   });
+  // An article under review only exists on staging: keep it out of any index.
+  return article.review ? { ...metadata, robots: { index: false, follow: false } } : metadata;
 }
 
 export default function ArticlePage({ params }: ArticlePageProps) {
@@ -75,6 +78,7 @@ export default function ArticlePage({ params }: ArticlePageProps) {
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
+      {article.review ? <BlogReviewBanner article={article} /> : null}
       <BlogArticlePage article={article} />
     </>
   );
