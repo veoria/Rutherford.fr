@@ -143,39 +143,6 @@
   "light": false
  },
  {
-  "slug": "nutella",
-  "brand": "Nutella",
-  "real": "#E20019",
-  "decoy": "#DE1531",
-  "deltaE": 5.0,
-  "logo": "/images/color-guesser/nutella.png",
-  "logoWidth": 760,
-  "logoHeight": 221,
-  "light": false
- },
- {
-  "slug": "kinder",
-  "brand": "Kinder",
-  "real": "#E73F0C",
-  "decoy": "#D95101",
-  "deltaE": 5.0,
-  "logo": "/images/color-guesser/kinder.png",
-  "logoWidth": 760,
-  "logoHeight": 248,
-  "light": false
- },
- {
-  "slug": "haribo",
-  "brand": "Haribo",
-  "real": "#D8232A",
-  "decoy": "#DC113A",
-  "deltaE": 5.0,
-  "logo": "/images/color-guesser/haribo.png",
-  "logoWidth": 760,
-  "logoHeight": 205,
-  "light": false
- },
- {
   "slug": "oreo",
   "brand": "Oreo",
   "real": "#0040C3",
@@ -209,28 +176,6 @@
   "light": false
  },
  {
-  "slug": "ferrero-rocher",
-  "brand": "Ferrero Rocher",
-  "real": "#D5AC5B",
-  "decoy": "#E1A75A",
-  "deltaE": 5.0,
-  "logo": "/images/color-guesser/ferrero-rocher.png",
-  "logoWidth": 760,
-  "logoHeight": 233,
-  "light": false
- },
- {
-  "slug": "lu",
-  "brand": "LU",
-  "real": "#E30613",
-  "decoy": "#D63203",
-  "deltaE": 5.0,
-  "logo": "/images/color-guesser/lu.png",
-  "logoWidth": 247,
-  "logoHeight": 380,
-  "light": false
- },
- {
   "slug": "hersheys",
   "brand": "Hershey's",
   "real": "#3F000B",
@@ -259,17 +204,6 @@
   "decoy": "#0F1E7D",
   "deltaE": 5.0,
   "logo": "/images/color-guesser/pepsi.png",
-  "logoWidth": 420,
-  "logoHeight": 420,
-  "light": false
- },
- {
-  "slug": "7up",
-  "brand": "7UP",
-  "real": "#00B74F",
-  "decoy": "#2BB56C",
-  "deltaE": 5.0,
-  "logo": "/images/color-guesser/7up.png",
   "logoWidth": 420,
   "logoHeight": 420,
   "light": false
@@ -347,8 +281,8 @@
   "decoy": "#223562",
   "deltaE": 5.0,
   "logo": "/images/color-guesser/barilla.png",
-  "logoWidth": 760,
-  "logoHeight": 282,
+  "logoWidth": 744,
+  "logoHeight": 187,
   "light": false
  },
  {
@@ -360,28 +294,6 @@
   "logo": "/images/color-guesser/kelloggs.png",
   "logoWidth": 760,
   "logoHeight": 266,
-  "light": false
- },
- {
-  "slug": "knorr",
-  "brand": "Knorr",
-  "real": "#007A33",
-  "decoy": "#37772A",
-  "deltaE": 5.0,
-  "logo": "/images/color-guesser/knorr.png",
-  "logoWidth": 420,
-  "logoHeight": 349,
-  "light": false
- },
- {
-  "slug": "nestle",
-  "brand": "Nestl\u00e9",
-  "real": "#63513D",
-  "decoy": "#5C533F",
-  "deltaE": 5.0,
-  "logo": "/images/color-guesser/nestle.png",
-  "logoWidth": 760,
-  "logoHeight": 209,
   "light": false
  },
  {
@@ -415,17 +327,6 @@
   "logo": "/images/color-guesser/gillette.png",
   "logoWidth": 760,
   "logoHeight": 185,
-  "light": false
- },
- {
-  "slug": "dove",
-  "brand": "Dove",
-  "real": "#001F5F",
-  "decoy": "#1C1B5B",
-  "deltaE": 5.0,
-  "logo": "/images/color-guesser/dove.png",
-  "logoWidth": 459,
-  "logoHeight": 300,
   "light": false
  },
  {
