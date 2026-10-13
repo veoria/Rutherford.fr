@@ -82,3 +82,23 @@ export function hexToLab(hex: string): [number, number, number] {
   });
   return [116 * fy - 16, 500 * (fx - fy), 200 * (fy - fz)];
 }
+
+// WCAG relative luminance, to pick the readout's ink on a card: white or dark,
+// whichever keeps the better contrast on both patches (one ink per card, so the
+// two readouts match).
+const INK_LUMINANCE = luminance('#1C1C1E');
+
+function luminance(hex: string): number {
+  const [r, g, b] = [1, 3, 5].map((i) => {
+    const c = parseInt(hex.slice(i, i + 2), 16) / 255;
+    return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+  });
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+}
+
+export function readoutInkIsDark(...hexes: string[]): boolean {
+  const ls = hexes.map(luminance);
+  const onWhite = Math.min(...ls.map((l) => 1.05 / (l + 0.05)));
+  const onInk = Math.min(...ls.map((l) => (l + 0.05) / (INK_LUMINANCE + 0.05)));
+  return onInk > onWhite;
+}

@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { track } from '@vercel/analytics';
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import { useLanguage, type Locale } from '@/components/language-provider';
-import { BRANDS, ROUNDS, hexToLab, parseShared, rankFor, type Brand, type SharedResult } from '@/lib/color-guesser';
+import { BRANDS, ROUNDS, hexToLab, parseShared, rankFor, readoutInkIsDark, type Brand, type SharedResult } from '@/lib/color-guesser';
 import { sounds } from './color-guesser-sound';
 import './color-guesser.css';
 
@@ -44,6 +44,7 @@ type Copy = {
   soundOn: string;
   shareText: string;
   challenge: string;
+  srScore: string;
 };
 
 const COPY: Record<Locale, Copy> = {
@@ -71,6 +72,7 @@ const COPY: Record<Locale, Copy> = {
     soundOn: 'Turn sound on',
     shareText: 'I scored {score}/{total} on the Rutherford color guesser. Can you spot the real brand colors?',
     challenge: 'Someone scored {score}/{total}. Your turn.',
+    srScore: 'Score {score} of {total}. {rank}',
   },
   fr: {
     h1: 'Quelle est la vraie couleur de la marque ?',
@@ -96,6 +98,7 @@ const COPY: Record<Locale, Copy> = {
     soundOn: 'Activer le son',
     shareText: 'J’ai fait {score}/{total} au color guesser de Rutherford. Saurez-vous trouver les vraies couleurs des marques ?',
     challenge: 'Quelqu’un a fait {score}/{total}. À vous de jouer.',
+    srScore: 'Score : {score} sur {total}. {rank}',
   },
   de: {
     h1: 'Welche ist die echte Markenfarbe?',
@@ -121,6 +124,7 @@ const COPY: Record<Locale, Copy> = {
     soundOn: 'Ton einschalten',
     shareText: 'Ich habe {score}/{total} beim Rutherford Color Guesser erreicht. Erkennen Sie die echten Markenfarben?',
     challenge: 'Jemand hat {score}/{total} erreicht. Jetzt sind Sie dran.',
+    srScore: 'Ergebnis: {score} von {total}. {rank}',
   },
   it: {
     h1: 'Qual è il vero colore del brand?',
@@ -146,6 +150,7 @@ const COPY: Record<Locale, Copy> = {
     soundOn: 'Attiva l’audio',
     shareText: 'Ho fatto {score}/{total} al color guesser di Rutherford. Riconosce i veri colori dei brand?',
     challenge: 'Qualcuno ha fatto {score}/{total}. Tocca a Lei.',
+    srScore: 'Punteggio: {score} su {total}. {rank}',
   },
   es: {
     h1: '¿Cuál es el verdadero color de la marca?',
@@ -171,6 +176,7 @@ const COPY: Record<Locale, Copy> = {
     soundOn: 'Activar el sonido',
     shareText: 'He sacado {score}/{total} en el color guesser de Rutherford. ¿Sabe reconocer los colores reales de las marcas?',
     challenge: 'Alguien ha sacado {score}/{total}. Le toca a usted.',
+    srScore: 'Puntuación: {score} de {total}. {rank}',
   },
   pt: {
     h1: 'Qual é a verdadeira cor da marca?',
@@ -196,6 +202,7 @@ const COPY: Record<Locale, Copy> = {
     soundOn: 'Ligar o som',
     shareText: 'Fiz {score}/{total} no color guesser da Rutherford. Consegue reconhecer as verdadeiras cores das marcas?',
     challenge: 'Alguém fez {score}/{total}. É a sua vez.',
+    srScore: 'Pontuação: {score} de {total}. {rank}',
   },
 };
 
@@ -308,14 +315,14 @@ function Burst({ dots, className = 'cg-burst' }: { dots: Dot[]; className?: stri
 }
 
 // What a spectrophotometer would report for the patch: hex, then L*a*b* (D50).
-function Readout({ hex, light, locale }: { hex: string; light: boolean; locale: string }) {
+function Readout({ hex, dark, locale }: { hex: string; dark: boolean; locale: string }) {
   const fmt = new Intl.NumberFormat(locale, {
     minimumFractionDigits: 1,
     maximumFractionDigits: 1,
   });
   const [L, a, b] = hexToLab(hex);
   return (
-    <span className={`cg-read${light ? ' is-light' : ''}`} aria-hidden="true">
+    <span className={`cg-read${dark ? ' is-light' : ''}`} aria-hidden="true">
       <span className="cg-read-hex">{hex}</span>
       <span>L* {fmt.format(L)}</span>
       <span>a* {fmt.format(a)}</span>
@@ -357,8 +364,29 @@ export function ColorGuesser({ consoleHref }: { consoleHref: string }) {
   const [copied, setCopied] = useState(false);
   const [canShare, setCanShare] = useState(false);
   const [muted, setMuted] = useState(false);
+  const [live, setLive] = useState('');
+  const rootRef = useRef<HTMLDivElement | null>(null);
+  const questionRef = useRef<HTMLHeadingElement | null>(null);
+  const scoreRef = useRef<HTMLDivElement | null>(null);
   const nextRef = useRef<HTMLButtonElement | null>(null);
   const sideNextRef = useRef<HTMLButtonElement | null>(null);
+  const pendingFocus = useRef<'question' | 'score' | null>(null);
+  const liveTimer = useRef(0);
+
+  // One live region for the whole game: screen readers announce a region that already
+  // exists when its text changes, not one inserted with its text.
+  const announce = useCallback((text: string) => {
+    setLive('');
+    window.clearTimeout(liveTimer.current);
+    liveTimer.current = window.setTimeout(() => setLive(text), 60);
+  }, []);
+  useEffect(() => () => window.clearTimeout(liveTimer.current), []);
+
+  // Was the focus inside the game when a screen changed? Then it follows the game.
+  const focusInGame = () => {
+    const active = document.activeElement;
+    return Boolean(rootRef.current && active && active !== document.body && rootRef.current.contains(active));
+  };
 
   useEffect(() => {
     setDeck((current) => drawDeck(current[0].brand));
@@ -389,6 +417,7 @@ export function ColorGuesser({ consoleHref }: { consoleHref: string }) {
   const colorOf = (side: Side) => (side === round.real ? brand.real : brand.decoy);
   const letterColor = (side: Side) => (brand.light ? INK : colorOf(side));
   const isRight = picked !== null && picked === round.real;
+  const darkInk = readoutInkIsDark(brand.real, brand.decoy);
   const last = index === deck.length - 1;
   const numberLocale = locale === 'en' ? 'en-US' : locale;
   const de = new Intl.NumberFormat(numberLocale, {
@@ -403,26 +432,35 @@ export function ColorGuesser({ consoleHref }: { consoleHref: string }) {
       if (!muted) (ok ? sounds.right : sounds.wrong)();
       setPicked(side);
       setResults((r) => [...r, { brand, ok }]);
+      announce(
+        [ok ? t.right : t.wrong, ok ? '' : fill(t.wrongBody, { letter: round.real }), fill(t.gapShort, { de })].filter(Boolean).join(' '),
+      );
     },
-    [picked, done, round.real, brand, muted],
+    [picked, done, round.real, brand, muted, announce, t, de],
   );
 
   const advance = useCallback(() => {
     if (!picked) return;
+    const hadFocus = focusInGame();
     if (last) {
       const final = results.filter((r) => r.ok).length;
       // Lands with the result's confetti (cg-burst-win starts at 700 ms).
       if (!muted) sounds.finish(final >= Math.ceil(results.length / 2), 0.7);
+      // The focus lands on the score; without focus in the game, the live region says it.
+      if (hadFocus) pendingFocus.current = 'score';
+      else announce(fill(t.srScore, { score: final, total: results.length, rank: rankFor(final, results.length, locale) }));
       setDone(true);
       track('color_guesser_complete', { score: final });
       return;
     }
     if (!muted) sounds.tick();
+    pendingFocus.current = hadFocus ? 'question' : null;
     setIndex((i) => i + 1);
     setPicked(null);
-  }, [picked, last, results, muted]);
+  }, [picked, last, results, muted, announce, t, locale]);
 
   const restart = () => {
+    pendingFocus.current = focusInGame() ? 'question' : null;
     setDeck(drawDeck());
     setIndex(0);
     setPicked(null);
@@ -430,6 +468,15 @@ export function ColorGuesser({ consoleHref }: { consoleHref: string }) {
     setDone(false);
     setCopied(false);
   };
+
+  // After "Next brand" and "Play again" the focus goes to the new question, after
+  // "See my score" to the score, never back to the top of the page.
+  useEffect(() => {
+    const target = pendingFocus.current;
+    if (!target) return;
+    pendingFocus.current = null;
+    (target === 'score' ? scoreRef.current : questionRef.current)?.focus({ preventScroll: true });
+  }, [index, done, deck]);
 
   // Keep the keyboard flow going: Enter continues once the verdict is shown.
   useEffect(() => {
@@ -491,14 +538,22 @@ export function ColorGuesser({ consoleHref }: { consoleHref: string }) {
   const logoStyle = { width: `${(brand.logoWidth / FRAME) * 100}%` };
 
   return (
-    <div className={`cg${done ? ' is-done' : ''}`}>
+    <div ref={rootRef} className={`cg${done ? ' is-done' : ''}`}>
       {/* The question sits right above the card; the page title stays for search
           engines and screen readers only. */}
       <h1 className="sr-only">{t.h1}</h1>
-      {shared && !done && results.length === 0 && (
-        <p className="cg-challenge">{fill(t.challenge, { score: shared.score, total: shared.total })}</p>
+      {/* Once a side is picked the pill fades but keeps its place until the end
+          screen, so the question and the card do not jump under the pointer. */}
+      {shared && !done && (
+        <p className={`cg-challenge${results.length > 0 ? ' is-gone' : ''}`} aria-hidden={results.length > 0 || undefined}>
+          {fill(t.challenge, { score: shared.score, total: shared.total })}
+        </p>
       )}
-      {!done && <h2 className="cg-question">{fillBrand(t.question, brand.brand)}</h2>}
+      {!done && (
+        <h2 ref={questionRef} className="cg-question" tabIndex={-1}>
+          {fillBrand(t.question, brand.brand)}
+        </h2>
+      )}
 
       <div className="cg-stage">
         {!done ? (
@@ -520,7 +575,7 @@ export function ColorGuesser({ consoleHref }: { consoleHref: string }) {
                     {picked && (real || chosen) ? <Mark ok={real} /> : side}
                     {picked && real && isRight && <Burst dots={HIT} />}
                   </span>
-                  {picked && <Readout hex={colorOf(side)} light={brand.light} locale={numberLocale} />}
+                  {picked && <Readout hex={colorOf(side)} dark={darkInk} locale={numberLocale} />}
                 </button>
               );
             })}
@@ -536,7 +591,7 @@ export function ColorGuesser({ consoleHref }: { consoleHref: string }) {
               priority={index === 0}
             />
             {picked && (
-              <div className="cg-verdict" role="status">
+              <div className="cg-verdict">
                 <p>
                   <span className={isRight ? 'is-right' : 'is-wrong'}>{isRight ? t.right : t.wrong}</span>
                   {!isRight && <> {fill(t.wrongBody, { letter: round.real })}</>}
@@ -564,7 +619,7 @@ export function ColorGuesser({ consoleHref }: { consoleHref: string }) {
             )}
           </div>
         ) : (
-          <div className="cg-result" role="status">
+          <div className="cg-result">
             <p className="cg-bar-label">{t.barLabel}</p>
             <ol className="cg-bar">
               {results.map((r, i) => (
@@ -577,7 +632,7 @@ export function ColorGuesser({ consoleHref }: { consoleHref: string }) {
               ))}
             </ol>
 
-            <div className="cg-score-wrap">
+            <div ref={scoreRef} className="cg-score-wrap" tabIndex={-1}>
               {score >= Math.ceil(results.length / 2) && <Burst dots={WIN} className="cg-burst cg-burst-win" />}
               <p className="cg-score">
                 {score}
@@ -651,7 +706,7 @@ export function ColorGuesser({ consoleHref }: { consoleHref: string }) {
                 return (
                   <li
                     key={`${r.brand.slug}-${i}`}
-                    className={`cg-step ${state}`}
+                    className={`cg-step ${state}${result && r.brand.light ? ' is-light' : ''}`}
                     style={result ? ({ '--patch': r.brand.real } as CSSProperties) : undefined}
                   >
                     {result && <Mark ok={result.ok} className="cg-step-mark" />}
@@ -672,6 +727,9 @@ export function ColorGuesser({ consoleHref }: { consoleHref: string }) {
           {picked && <p className="cg-gap">{fill(t.gap, { de })}</p>}
         </div>
       )}
+      <p className="sr-only" aria-live="polite" aria-atomic="true">
+        {live}
+      </p>
     </div>
   );
 }
