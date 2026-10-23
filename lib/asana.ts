@@ -354,6 +354,9 @@ export type SupportTaskState = {
   assigneeName: string | null;
   /** Asana user gid of the assignee — stable across renames, keys the Discord mention. */
   assigneeGid: string | null;
+  /** Whether the task belongs to the Support project (a task created there by
+   * hand has no support_tickets row; a console-validation task is elsewhere). */
+  inSupportProject: boolean;
   progress: string | null;
 };
 
@@ -376,6 +379,7 @@ export async function getSupportTaskState(taskGid: string): Promise<SupportTaskS
       completed: Boolean(data.completed),
       assigneeName: data.assignee?.name ?? null,
       assigneeGid: data.assignee?.gid ?? null,
+      inSupportProject: Boolean(membership),
       progress: progressField?.enum_value?.name ?? null,
     };
   } catch (error) {
