@@ -1,7 +1,13 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { createHmac, timingSafeEqual } from 'crypto';
-import { asanaTaskUrl, getConsoleValidationTaskState, getStory, getSupportTaskState } from '@/lib/asana';
-import { discordUserForAsanaUser, notifyDiscordSupportAssigned } from '@/lib/discord';
+import {
+  asanaTaskUrl,
+  getConsoleValidationTaskState,
+  getStory,
+  getSupportTaskState,
+  type SupportTaskState,
+} from '@/lib/asana';
+import { assigneeMentionsEnabled, discordUserForAsanaUser, notifyDiscordSupportAssigned } from '@/lib/discord';
 import { addDealNote } from '@/lib/pipedrive';
 import { sendMail } from '@/lib/msgraph';
 import {
@@ -26,6 +32,7 @@ import { recordAudit } from '@/lib/admin-audit';
 import {
   getSupportTicketByAsanaTask,
   insertSupportMessage,
+  recordSupportTaskAssignee,
   setAgentMessageByAsanaTask,
   setSupportAssigneeByAsanaTask,
   statusFromProgress,
@@ -56,6 +63,35 @@ const extractDealId = (name: string) => {
   const m = name.match(/ID(\d+)/);
   return m ? Number(m[1]) : null;
 };
+
+/** Tell the new assignee of a Support task (a form ticket, or a task created by
+ * hand in Asana) on Discord — once per change: the last assignee is kept in
+ * support_task_assignees and moved by compare-and-set. The first time a task is
+ * seen its previous assignee is unknown, so it only pings when this delivery is
+ * about the assignee itself (or the task was just created), never because an
+ * old task assigned long ago got a comment. */
+async function pingNewAssignee(
+  gid: string,
+  state: SupportTaskState,
+  ticket: { id: string; email: string; company: string | null; subject: string | null } | null,
+  assigneeEvent: boolean
+): Promise<void> {
+  if (!assigneeMentionsEnabled()) return;
+  const { changed, known } = await recordSupportTaskAssignee(gid, state.assigneeGid);
+  if (!changed || (!known && !assigneeEvent)) return;
+  const discordUserId = discordUserForAsanaUser(state.assigneeGid);
+  if (!discordUserId) return;
+  await notifyDiscordSupportAssigned({
+    discordUserId,
+    assigneeName: state.assigneeName,
+    taskName: state.name,
+    reference: ticket ? `#${ticket.id.slice(0, 8)}` : null,
+    company: ticket?.company,
+    email: ticket?.email,
+    subject: ticket?.subject,
+    asanaUrl: asanaTaskUrl(gid),
+  });
+}
 
 export async function POST(request: NextRequest) {
   const raw = await request.text();
@@ -102,10 +138,18 @@ export async function POST(request: NextRequest) {
   // Comments arrive as "story" events; keep each with its parent task so we can
   // relay the ones tagged for the customer.
   const storyEvents: { storyGid: string; taskGid: string }[] = [];
+  // Tasks whose assignee this delivery is about: an assignee change, or a task
+  // just added to a project (created with its assignee). Only these may ping on
+  // a task never seen before.
+  const assigneeEvents = new Set<string>();
   for (const event of events) {
     if (event?.resource?.resource_type === 'task' && (event.action === 'changed' || event.action === 'added')) {
       const gid = event.resource.gid;
       if (gid) taskGids.add(String(gid));
+      const aboutAssignee =
+        (event.action === 'changed' && event.change?.field === 'assignee') ||
+        (event.action === 'added' && event.parent?.resource_type === 'project');
+      if (gid && aboutAssignee) assigneeEvents.add(String(gid));
     } else if (event?.resource?.resource_type === 'task' && event.action === 'deleted') {
       const gid = event.resource.gid;
       if (gid) deletedTaskGids.add(String(gid));
@@ -155,21 +199,8 @@ export async function POST(request: NextRequest) {
     if (ticket) {
       const sstate = await getSupportTaskState(gid);
       if (sstate) {
-        const reassigned = await setSupportAssigneeByAsanaTask(gid, sstate.assigneeName, ticket.assigneeName);
-        // Newly assigned to someone mapped in DISCORD_ASSIGNEE_MENTIONS → ping
-        // them by mention. Only on a real change, won by this delivery.
-        const discordUserId = reassigned ? discordUserForAsanaUser(sstate.assigneeGid) : null;
-        if (discordUserId) {
-          await notifyDiscordSupportAssigned({
-            discordUserId,
-            assigneeName: sstate.assigneeName,
-            reference: `#${ticket.id.slice(0, 8)}`,
-            company: ticket.company,
-            email: ticket.email,
-            subject: ticket.subject,
-            asanaUrl: asanaTaskUrl(gid),
-          });
-        }
+        await setSupportAssigneeByAsanaTask(gid, sstate.assigneeName);
+        await pingNewAssignee(gid, sstate, ticket, assigneeEvents.has(gid));
         // Prefer the team-driven "Progress" field; fall back to the column.
         const next = statusFromProgress(sstate.progress) ?? supportStatusFromSection(sstate.sectionName, sstate.completed);
         if (next !== ticket.status) {
@@ -179,6 +210,16 @@ export async function POST(request: NextRequest) {
         }
       }
       continue;
+    }
+
+    // A task created by hand in the Support project has no ticket row: nothing
+    // to sync for a client, but its new assignee is told all the same.
+    if (assigneeMentionsEnabled()) {
+      const sstate = await getSupportTaskState(gid);
+      if (sstate?.inSupportProject) {
+        await pingNewAssignee(gid, sstate, null, assigneeEvents.has(gid));
+        continue;
+      }
     }
 
     const state = await getConsoleValidationTaskState(gid);

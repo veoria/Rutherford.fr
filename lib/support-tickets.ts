@@ -86,14 +86,13 @@ export async function getSupportTicketByAsanaTask(gid: string): Promise<{
   lastAgentStoryGid: string | null;
   company: string | null;
   subject: string | null;
-  assigneeName: string | null;
 } | null> {
   const supabase = adminClient();
   if (!supabase) return null;
   try {
     const { data } = await supabase
       .from('support_tickets')
-      .select('id, email, status, last_agent_story_gid, company, subject, assignee_name')
+      .select('id, email, status, last_agent_story_gid, company, subject')
       .eq('asana_task_gid', gid)
       .maybeSingle();
     return data
@@ -104,7 +103,6 @@ export async function getSupportTicketByAsanaTask(gid: string): Promise<{
           lastAgentStoryGid: (data.last_agent_story_gid as string | null) ?? null,
           company: (data.company as string | null) ?? null,
           subject: (data.subject as string | null) ?? null,
-          assigneeName: (data.assignee_name as string | null) ?? null,
         }
       : null;
   } catch {
@@ -148,33 +146,55 @@ export async function updateSupportStatusByAsanaTask(gid: string, status: Suppor
 }
 
 /** Store the Asana assignee's name so the client sees who is handling the
- * ticket. Compare-and-set against the value the caller read: the row only moves
- * if it still holds `previous`, so when Asana re-delivers the same change, only
- * one delivery gets `true` — the one allowed to ping the new assignee.
- * Best-effort: false on no-op, race lost or failure. */
-export async function setSupportAssigneeByAsanaTask(
-  gid: string,
-  assigneeName: string | null,
-  previous: string | null
-): Promise<boolean> {
-  if (assigneeName === previous) return false;
+ * ticket. Best-effort. */
+export async function setSupportAssigneeByAsanaTask(gid: string, assigneeName: string | null): Promise<void> {
   const supabase = adminClient();
-  if (!supabase) return false;
+  if (!supabase) return;
   try {
-    let query = supabase
+    const { error } = await supabase
       .from('support_tickets')
       .update({ assignee_name: assigneeName })
       .eq('asana_task_gid', gid);
-    query = previous === null ? query.is('assignee_name', null) : query.eq('assignee_name', previous);
-    const { data, error } = await query.select('id');
-    if (error) {
-      console.error('support assignee update failed:', error.message);
-      return false;
-    }
-    return (data?.length ?? 0) > 0;
+    if (error) console.error('support assignee update failed:', error.message);
   } catch (error) {
     console.error('support assignee update threw:', error);
-    return false;
+  }
+}
+
+/** Record the live assignee of a Support-project task (form ticket or task
+ * created in Asana) and say whether it moved. Compare-and-set: the row only
+ * moves away from a different value, so when Asana re-delivers the same change
+ * only one delivery sees `changed`. `known` is false the first time a task is
+ * seen — the previous assignee is then unknown. Fails closed (no change) on any
+ * error, so a hiccup never pings twice. */
+export async function recordSupportTaskAssignee(
+  taskGid: string,
+  assigneeGid: string | null
+): Promise<{ changed: boolean; known: boolean }> {
+  const supabase = adminClient();
+  if (!supabase) return { changed: false, known: true };
+  const value = assigneeGid ?? '';
+  const now = new Date().toISOString();
+  try {
+    const moved = await supabase
+      .from('support_task_assignees')
+      .update({ assignee_gid: value, updated_at: now })
+      .eq('task_gid', taskGid)
+      .neq('assignee_gid', value)
+      .select('task_gid');
+    if (moved.error) throw new Error(moved.error.message);
+    if ((moved.data?.length ?? 0) > 0) return { changed: true, known: true };
+
+    const inserted = await supabase
+      .from('support_task_assignees')
+      .upsert({ task_gid: taskGid, assignee_gid: value, updated_at: now }, { onConflict: 'task_gid', ignoreDuplicates: true })
+      .select('task_gid');
+    if (inserted.error) throw new Error(inserted.error.message);
+    // A row came back only if this call created it: first sighting of the task.
+    return (inserted.data?.length ?? 0) > 0 ? { changed: true, known: false } : { changed: false, known: true };
+  } catch (error) {
+    console.error('support_task_assignees update failed:', error);
+    return { changed: false, known: true };
   }
 }
 

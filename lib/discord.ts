@@ -12,18 +12,58 @@
 // (webhook deleted, payload rejected, rate limit) is read and logged here —
 // otherwise the alerts would stop without a single line in the logs.
 //
-// A webhook can only post in its channel — it cannot send a DM. To reach one
-// person, the message mentions them, which pings them like a DM would.
+// Reaching one person (the new assignee of a Support task): a webhook can only
+// post in its channel, so a direct message needs a bot. With DISCORD_BOT_TOKEN
+// the assignee gets a DM; without it, or if the DM is refused (the person
+// blocks DMs from server members, the bot shares no server with them), the
+// channel message mentions them instead, which pings them too.
 // DISCORD_ASSIGNEE_MENTIONS maps an Asana user gid to a Discord user ID
 // (numeric, not the username — Discord: Developer Mode → right-click the
 // member → Copy User ID), comma-separated:
 //   DISCORD_ASSIGNEE_MENTIONS=1204081517474278:123456789012345678
 
 const WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL;
+const BOT_TOKEN = process.env.DISCORD_BOT_TOKEN;
+const DISCORD_API = 'https://discord.com/api/v10';
 const TIMEOUT_MS = 8000;
 const BRAND_COLOR = 0x2433c9; // Rutherford blue
 
 type EmbedField = { name: string; value: string; inline?: boolean };
+
+/** One call to the Discord bot API. Returns the JSON body, or null after
+ * logging a refusal / failure. */
+async function botApi(path: string, body: unknown): Promise<any | null> {
+  if (!BOT_TOKEN) return null;
+  try {
+    const res = await fetch(`${DISCORD_API}${path}`, {
+      method: 'POST',
+      headers: { Authorization: `Bot ${BOT_TOKEN}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+      signal: AbortSignal.timeout(TIMEOUT_MS),
+      cache: 'no-store',
+    });
+    if (!res.ok) {
+      const detail = (await res.text().catch(() => '')).slice(0, 500);
+      console.error(`Discord bot API refused (${res.status}) on ${path}:`, detail);
+      return null;
+    }
+    return await res.json().catch(() => ({}));
+  } catch (error) {
+    console.error(`Discord bot API failed on ${path}:`, error);
+    return null;
+  }
+}
+
+/** Send one embed as a direct message. Returns whether Discord accepted it. */
+async function sendDirectEmbed(userId: string, title: string, fields: EmbedField[]): Promise<boolean> {
+  const channel = await botApi('/users/@me/channels', { recipient_id: userId });
+  if (!channel?.id) return false;
+  const sent = await botApi(`/channels/${channel.id}/messages`, {
+    allowed_mentions: { parse: [] },
+    embeds: [{ title, color: BRAND_COLOR, fields }],
+  });
+  return Boolean(sent);
+}
 
 /** Post one embed. Returns whether Discord accepted it. `mentionUserId` puts a
  * mention in the message content (mentions inside an embed never notify), and
@@ -60,6 +100,12 @@ async function postEmbed(
 }
 
 const DISCORD_ID_RE = /^\d{15,22}$/;
+
+/** Whether assignment pings can go out at all (a bot or a webhook, plus at
+ * least one mapping), so the Asana webhook can skip the lookups otherwise. */
+export function assigneeMentionsEnabled(): boolean {
+  return Boolean((BOT_TOKEN || WEBHOOK_URL) && (process.env.DISCORD_ASSIGNEE_MENTIONS ?? '').trim());
+}
 
 /** Discord user ID to mention for an Asana assignee, from
  * DISCORD_ASSIGNEE_MENTIONS. Null when unmapped or malformed. */
@@ -159,24 +205,31 @@ export async function notifyDiscordContact(v: {
   await postEmbed('✉️ Nouveau message de contact', fields);
 }
 
-/** Ping the person a support ticket was just assigned to in Asana, by mention.
- * No-op without a webhook. */
+/** Tell the person a Support task was just assigned to in Asana — a ticket from
+ * the site form (reference, company, e-mail) or a task created by hand in Asana
+ * (its name only). By DM when a bot token is set, else (or if the DM fails) by
+ * a mention in the webhook channel. */
 export async function notifyDiscordSupportAssigned(t: {
   discordUserId: string;
   assigneeName: string | null;
-  reference: string;
-  company: string | null;
-  email: string;
+  taskName: string;
+  reference?: string | null;
+  company?: string | null;
+  email?: string | null;
   subject?: string | null;
   asanaUrl?: string | null;
 }): Promise<void> {
-  if (!WEBHOOK_URL) return;
+  if (!BOT_TOKEN && !WEBHOOK_URL) return;
   const fields: EmbedField[] = [];
   if (t.company) fields.push({ name: 'Société', value: t.company, inline: true });
-  fields.push({ name: 'E-mail', value: t.email, inline: true });
+  if (t.email) fields.push({ name: 'E-mail', value: t.email, inline: true });
   if (t.subject) fields.push({ name: 'Sujet', value: t.subject });
+  else if (t.taskName) fields.push({ name: 'Tâche', value: t.taskName.slice(0, 1000) });
   const links = linkList([{ label: 'Asana', url: t.asanaUrl }]);
   if (links) fields.push({ name: 'Liens', value: links });
+  const ref = t.reference ? ` ${t.reference}` : '';
   const who = t.assigneeName ? ` à ${t.assigneeName}` : '';
-  await postEmbed(`👤 Ticket support ${t.reference} attribué${who}`, fields, { mentionUserId: t.discordUserId });
+  const title = `👤 Ticket support${ref} attribué${who}`;
+  if (BOT_TOKEN && (await sendDirectEmbed(t.discordUserId, `👤 Ticket support${ref} qui vous est attribué`, fields))) return;
+  await postEmbed(title, fields, { mentionUserId: t.discordUserId });
 }
