@@ -79,15 +79,21 @@ export function statusFromProgress(value: string | null): SupportStatus | null {
   return null;
 }
 
-export async function getSupportTicketByAsanaTask(
-  gid: string
-): Promise<{ id: string; email: string; status: SupportStatus; lastAgentStoryGid: string | null } | null> {
+export async function getSupportTicketByAsanaTask(gid: string): Promise<{
+  id: string;
+  email: string;
+  status: SupportStatus;
+  lastAgentStoryGid: string | null;
+  company: string | null;
+  subject: string | null;
+  assigneeName: string | null;
+} | null> {
   const supabase = adminClient();
   if (!supabase) return null;
   try {
     const { data } = await supabase
       .from('support_tickets')
-      .select('id, email, status, last_agent_story_gid')
+      .select('id, email, status, last_agent_story_gid, company, subject, assignee_name')
       .eq('asana_task_gid', gid)
       .maybeSingle();
     return data
@@ -96,6 +102,9 @@ export async function getSupportTicketByAsanaTask(
           email: data.email as string,
           status: data.status as SupportStatus,
           lastAgentStoryGid: (data.last_agent_story_gid as string | null) ?? null,
+          company: (data.company as string | null) ?? null,
+          subject: (data.subject as string | null) ?? null,
+          assigneeName: (data.assignee_name as string | null) ?? null,
         }
       : null;
   } catch {
@@ -139,18 +148,33 @@ export async function updateSupportStatusByAsanaTask(gid: string, status: Suppor
 }
 
 /** Store the Asana assignee's name so the client sees who is handling the
- * ticket. Best-effort. */
-export async function setSupportAssigneeByAsanaTask(gid: string, assigneeName: string | null): Promise<void> {
+ * ticket. Compare-and-set against the value the caller read: the row only moves
+ * if it still holds `previous`, so when Asana re-delivers the same change, only
+ * one delivery gets `true` — the one allowed to ping the new assignee.
+ * Best-effort: false on no-op, race lost or failure. */
+export async function setSupportAssigneeByAsanaTask(
+  gid: string,
+  assigneeName: string | null,
+  previous: string | null
+): Promise<boolean> {
+  if (assigneeName === previous) return false;
   const supabase = adminClient();
-  if (!supabase) return;
+  if (!supabase) return false;
   try {
-    const { error } = await supabase
+    let query = supabase
       .from('support_tickets')
       .update({ assignee_name: assigneeName })
       .eq('asana_task_gid', gid);
-    if (error) console.error('support assignee update failed:', error.message);
+    query = previous === null ? query.is('assignee_name', null) : query.eq('assignee_name', previous);
+    const { data, error } = await query.select('id');
+    if (error) {
+      console.error('support assignee update failed:', error.message);
+      return false;
+    }
+    return (data?.length ?? 0) > 0;
   } catch (error) {
     console.error('support assignee update threw:', error);
+    return false;
   }
 }
 

@@ -352,6 +352,8 @@ export type SupportTaskState = {
   sectionName: string | null;
   completed: boolean;
   assigneeName: string | null;
+  /** Asana user gid of the assignee — stable across renames, keys the Discord mention. */
+  assigneeGid: string | null;
   progress: string | null;
 };
 
@@ -362,7 +364,7 @@ export async function getSupportTaskState(taskGid: string): Promise<SupportTaskS
   try {
     const res = await asana(
       'GET',
-      `/tasks/${taskGid}?opt_fields=name,completed,assignee.name,memberships.section.name,memberships.project.gid,custom_fields.gid,custom_fields.enum_value.name`
+      `/tasks/${taskGid}?opt_fields=name,completed,assignee.name,assignee.gid,memberships.section.name,memberships.project.gid,custom_fields.gid,custom_fields.enum_value.name`
     );
     const data = res?.data;
     if (!data) return null;
@@ -373,6 +375,7 @@ export async function getSupportTaskState(taskGid: string): Promise<SupportTaskS
       sectionName: membership?.section?.name ?? null,
       completed: Boolean(data.completed),
       assigneeName: data.assignee?.name ?? null,
+      assigneeGid: data.assignee?.gid ?? null,
       progress: progressField?.enum_value?.name ?? null,
     };
   } catch (error) {

@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { createHmac, timingSafeEqual } from 'crypto';
-import { getConsoleValidationTaskState, getStory, getSupportTaskState } from '@/lib/asana';
+import { asanaTaskUrl, getConsoleValidationTaskState, getStory, getSupportTaskState } from '@/lib/asana';
+import { discordUserForAsanaUser, notifyDiscordSupportAssigned } from '@/lib/discord';
 import { addDealNote } from '@/lib/pipedrive';
 import { sendMail } from '@/lib/msgraph';
 import {
@@ -154,7 +155,21 @@ export async function POST(request: NextRequest) {
     if (ticket) {
       const sstate = await getSupportTaskState(gid);
       if (sstate) {
-        await setSupportAssigneeByAsanaTask(gid, sstate.assigneeName);
+        const reassigned = await setSupportAssigneeByAsanaTask(gid, sstate.assigneeName, ticket.assigneeName);
+        // Newly assigned to someone mapped in DISCORD_ASSIGNEE_MENTIONS → ping
+        // them by mention. Only on a real change, won by this delivery.
+        const discordUserId = reassigned ? discordUserForAsanaUser(sstate.assigneeGid) : null;
+        if (discordUserId) {
+          await notifyDiscordSupportAssigned({
+            discordUserId,
+            assigneeName: sstate.assigneeName,
+            reference: `#${ticket.id.slice(0, 8)}`,
+            company: ticket.company,
+            email: ticket.email,
+            subject: ticket.subject,
+            asanaUrl: asanaTaskUrl(gid),
+          });
+        }
         // Prefer the team-driven "Progress" field; fall back to the column.
         const next = statusFromProgress(sstate.progress) ?? supportStatusFromSection(sstate.sectionName, sstate.completed);
         if (next !== ticket.status) {
