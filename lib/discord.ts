@@ -231,7 +231,41 @@ export async function notifyDiscordSupportAssigned(t: {
   if (links) fields.push({ name: 'Links', value: links });
   const ref = t.reference ? ` ${t.reference}` : '';
   const who = t.assigneeName ? ` to ${t.assigneeName}` : '';
-  const title = `👤 Support ticket${ref} assigned${who}`;
-  if (BOT_TOKEN && (await sendDirectEmbed(t.discordUserId, `👤 Support ticket${ref} assigned to you`, fields))) return;
-  await postEmbed(title, fields, { mentionUserId: t.discordUserId });
+  await notifyPerson(t.discordUserId, `👤 Support ticket${ref} assigned to you`, `👤 Support ticket${ref} assigned${who}`, fields);
+}
+
+/** Tell the assignee of a support ticket that the customer just replied from
+ * their account. The reply is relayed to Asana as a comment posted with the
+ * site's token, and Asana never notifies the token owner of their own actions,
+ * so without this the assignee may not hear about it. */
+export async function notifyDiscordSupportReply(t: {
+  discordUserId: string;
+  assigneeName: string | null;
+  reference: string;
+  company?: string | null;
+  email?: string | null;
+  subject?: string | null;
+  reply: string;
+  photoCount: number;
+  asanaUrl?: string | null;
+}): Promise<void> {
+  if (!BOT_TOKEN && !WEBHOOK_URL) return;
+  const fields: EmbedField[] = [];
+  if (t.company) fields.push({ name: 'Company', value: t.company, inline: true });
+  if (t.email) fields.push({ name: 'Email', value: t.email, inline: true });
+  if (t.subject) fields.push({ name: 'Subject', value: t.subject });
+  const text = t.reply.trim();
+  fields.push({ name: 'Reply', value: text ? (text.length > 1000 ? `${text.slice(0, 1000)}…` : text) : '(photos only)' });
+  if (t.photoCount > 0) fields.push({ name: 'Photos', value: String(t.photoCount), inline: true });
+  const links = linkList([{ label: 'Asana', url: t.asanaUrl }]);
+  if (links) fields.push({ name: 'Links', value: links });
+  const who = t.assigneeName ? ` for ${t.assigneeName}` : '';
+  await notifyPerson(t.discordUserId, `💬 Customer reply on support ticket ${t.reference}`, `💬 Customer reply on support ticket ${t.reference}${who}`, fields);
+}
+
+/** Reach one person: a DM from the bot when a token is set, else (or if the DM
+ * is refused) a mention in the webhook channel. */
+async function notifyPerson(discordUserId: string, dmTitle: string, channelTitle: string, fields: EmbedField[]): Promise<void> {
+  if (BOT_TOKEN && (await sendDirectEmbed(discordUserId, dmTitle, fields))) return;
+  await postEmbed(channelTitle, fields, { mentionUserId: discordUserId });
 }
