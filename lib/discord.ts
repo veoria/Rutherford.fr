@@ -220,16 +220,18 @@ export async function notifyDiscordSupportAssigned(t: {
   asanaUrl?: string | null;
 }): Promise<void> {
   if (!BOT_TOKEN && !WEBHOOK_URL) return;
+  // In English: the support team is international, unlike the French channel
+  // announcements above.
   const fields: EmbedField[] = [];
-  if (t.company) fields.push({ name: 'Société', value: t.company, inline: true });
-  if (t.email) fields.push({ name: 'E-mail', value: t.email, inline: true });
-  if (t.subject) fields.push({ name: 'Sujet', value: t.subject });
-  else if (t.taskName) fields.push({ name: 'Tâche', value: t.taskName.slice(0, 1000) });
+  if (t.company) fields.push({ name: 'Company', value: t.company, inline: true });
+  if (t.email) fields.push({ name: 'Email', value: t.email, inline: true });
+  if (t.subject) fields.push({ name: 'Subject', value: t.subject });
+  else if (t.taskName) fields.push({ name: 'Task', value: t.taskName.slice(0, 1000) });
   const links = linkList([{ label: 'Asana', url: t.asanaUrl }]);
-  if (links) fields.push({ name: 'Liens', value: links });
+  if (links) fields.push({ name: 'Links', value: links });
   const ref = t.reference ? ` ${t.reference}` : '';
-  const who = t.assigneeName ? ` à ${t.assigneeName}` : '';
-  const title = `👤 Ticket support${ref} attribué${who}`;
-  if (BOT_TOKEN && (await sendDirectEmbed(t.discordUserId, `👤 Ticket support${ref} qui vous est attribué`, fields))) return;
+  const who = t.assigneeName ? ` to ${t.assigneeName}` : '';
+  const title = `👤 Support ticket${ref} assigned${who}`;
+  if (BOT_TOKEN && (await sendDirectEmbed(t.discordUserId, `👤 Support ticket${ref} assigned to you`, fields))) return;
   await postEmbed(title, fields, { mentionUserId: t.discordUserId });
 }
