@@ -34,6 +34,12 @@ const PHOTO_LABELS: [field: string, label: string][] = [
   ['platePhoto', 'Plate number'],
 ];
 
+/** Who a new console validation task is given to at creation: the assignee and
+ * the extra follower (the validator). Gids, for the Discord person pings. */
+export function consoleValidationWatchers(): { assigneeGid: string | null; followerGid: string | null } {
+  return { assigneeGid: ASSIGNEE || null, followerGid: FOLLOWER || null };
+}
+
 export function asanaEnabled(): boolean {
   return Boolean(TOKEN);
 }
@@ -125,6 +131,9 @@ export type AsanaTaskState = {
   // admin so "validations X handles" is filterable, not just "validated by X".
   assigneeName: string | null;
   followerNames: string[];
+  /** Asana user gids, which key the Discord person pings. */
+  assigneeGid: string | null;
+  followerGids: string[];
 };
 
 /**
@@ -137,7 +146,7 @@ export async function getConsoleValidationTaskState(taskGid: string): Promise<As
   try {
     const res = await asana(
       'GET',
-      `/tasks/${taskGid}?opt_fields=name,notes,approval_status,completed_at,completed_by.name,assignee.name,followers.name,memberships.section.name,memberships.project.gid`
+      `/tasks/${taskGid}?opt_fields=name,notes,approval_status,completed_at,completed_by.name,assignee.name,assignee.gid,followers.name,followers.gid,memberships.section.name,memberships.project.gid`
     );
     const data = res?.data;
     if (!data) return null;
@@ -151,6 +160,8 @@ export async function getConsoleValidationTaskState(taskGid: string): Promise<As
       completedAt: data.completed_at ?? null,
       assigneeName: data.assignee?.name ?? null,
       followerNames: (data.followers ?? []).map((f: any) => f?.name).filter(Boolean) as string[],
+      assigneeGid: data.assignee?.gid ?? null,
+      followerGids: (data.followers ?? []).map((f: any) => f?.gid).filter(Boolean) as string[],
     };
   } catch (error) {
     console.error('Asana task fetch failed:', error);

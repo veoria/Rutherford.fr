@@ -22,22 +22,38 @@
 // member → Copy User ID), comma-separated:
 //   DISCORD_ASSIGNEE_MENTIONS=1204081517474278:123456789012345678
 
+//
+// Two bots, one per audience, each with its own token, avatar and channel:
+//   support — DISCORD_BOT_TOKEN, channel DISCORD_WEBHOOK_URL
+//   console — DISCORD_CONSOLE_BOT_TOKEN, channel DISCORD_CONSOLE_WEBHOOK_URL
+//             (falls back to DISCORD_WEBHOOK_URL until a channel of its own is set)
+// Both share DISCORD_ASSIGNEE_MENTIONS for who is who.
+
 const WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL;
 const BOT_TOKEN = process.env.DISCORD_BOT_TOKEN;
 const DISCORD_API = 'https://discord.com/api/v10';
 const TIMEOUT_MS = 8000;
 const BRAND_COLOR = 0x2433c9; // Rutherford blue
 
+export type DiscordBot = 'support' | 'console';
+const BOTS: Record<DiscordBot, { token?: string; webhook?: string }> = {
+  support: { token: BOT_TOKEN, webhook: WEBHOOK_URL },
+  console: {
+    token: process.env.DISCORD_CONSOLE_BOT_TOKEN,
+    webhook: process.env.DISCORD_CONSOLE_WEBHOOK_URL || WEBHOOK_URL,
+  },
+};
+
 type EmbedField = { name: string; value: string; inline?: boolean };
 
 /** One call to the Discord bot API. Returns the JSON body, or null after
  * logging a refusal / failure. */
-async function botApi(path: string, body: unknown): Promise<any | null> {
-  if (!BOT_TOKEN) return null;
+async function botApi(token: string | undefined, path: string, body: unknown): Promise<any | null> {
+  if (!token) return null;
   try {
     const res = await fetch(`${DISCORD_API}${path}`, {
       method: 'POST',
-      headers: { Authorization: `Bot ${BOT_TOKEN}`, 'Content-Type': 'application/json' },
+      headers: { Authorization: `Bot ${token}`, 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
       signal: AbortSignal.timeout(TIMEOUT_MS),
       cache: 'no-store',
@@ -55,10 +71,10 @@ async function botApi(path: string, body: unknown): Promise<any | null> {
 }
 
 /** Send one embed as a direct message. Returns whether Discord accepted it. */
-async function sendDirectEmbed(userId: string, title: string, fields: EmbedField[]): Promise<boolean> {
-  const channel = await botApi('/users/@me/channels', { recipient_id: userId });
+async function sendDirectEmbed(token: string | undefined, userId: string, title: string, fields: EmbedField[]): Promise<boolean> {
+  const channel = await botApi(token, '/users/@me/channels', { recipient_id: userId });
   if (!channel?.id) return false;
-  const sent = await botApi(`/channels/${channel.id}/messages`, {
+  const sent = await botApi(token, `/channels/${channel.id}/messages`, {
     allowed_mentions: { parse: [] },
     embeds: [{ title, color: BRAND_COLOR, fields }],
   });
@@ -71,12 +87,13 @@ async function sendDirectEmbed(userId: string, title: string, fields: EmbedField
 async function postEmbed(
   title: string,
   fields: EmbedField[],
-  opts: { mentionUserId?: string } = {}
+  opts: { mentionUserId?: string; webhook?: string } = {}
 ): Promise<boolean> {
-  if (!WEBHOOK_URL) return false;
+  const url = opts.webhook ?? WEBHOOK_URL;
+  if (!url) return false;
   const mention = opts.mentionUserId;
   try {
-    const res = await fetch(WEBHOOK_URL, {
+    const res = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -101,10 +118,11 @@ async function postEmbed(
 
 const DISCORD_ID_RE = /^\d{15,22}$/;
 
-/** Whether assignment pings can go out at all (a bot or a webhook, plus at
- * least one mapping), so the Asana webhook can skip the lookups otherwise. */
-export function assigneeMentionsEnabled(): boolean {
-  return Boolean((BOT_TOKEN || WEBHOOK_URL) && (process.env.DISCORD_ASSIGNEE_MENTIONS ?? '').trim());
+/** Whether person pings can go out at all for that bot (its token or its
+ * channel, plus at least one mapping), so callers can skip the lookups. */
+export function assigneeMentionsEnabled(bot: DiscordBot = 'support'): boolean {
+  const b = BOTS[bot];
+  return Boolean((b.token || b.webhook) && (process.env.DISCORD_ASSIGNEE_MENTIONS ?? '').trim());
 }
 
 /** Discord user ID to mention for an Asana assignee, from
@@ -133,7 +151,7 @@ export async function notifyDiscordConsoleValidation(v: {
   asanaUrl?: string | null;
   pipedriveUrl?: string | null;
 }): Promise<void> {
-  if (!WEBHOOK_URL) return;
+  if (!BOTS.console.webhook) return;
   const fields: EmbedField[] = [];
   if (v.company) fields.push({ name: 'Société', value: v.company, inline: true });
   if (v.country) fields.push({ name: 'Pays', value: v.country, inline: true });
@@ -144,7 +162,7 @@ export async function notifyDiscordConsoleValidation(v: {
     { label: 'Pipedrive', url: v.pipedriveUrl },
   ]);
   if (links) fields.push({ name: 'Liens', value: links });
-  await postEmbed(`🆕 Nouvelle validation console${v.dealId ? ` — ID ${v.dealId}` : ''}`, fields);
+  await postEmbed(`🆕 Nouvelle validation console${v.dealId ? ` — ID ${v.dealId}` : ''}`, fields, { webhook: BOTS.console.webhook });
 }
 
 /** Alert the team when the console-validations photo bucket crosses its storage
@@ -219,7 +237,7 @@ export async function notifyDiscordSupportAssigned(t: {
   subject?: string | null;
   asanaUrl?: string | null;
 }): Promise<void> {
-  if (!BOT_TOKEN && !WEBHOOK_URL) return;
+  if (!BOTS.support.token && !BOTS.support.webhook) return;
   // In English: the support team is international, unlike the French channel
   // announcements above.
   const fields: EmbedField[] = [];
@@ -231,7 +249,7 @@ export async function notifyDiscordSupportAssigned(t: {
   if (links) fields.push({ name: 'Links', value: links });
   const ref = t.reference ? ` ${t.reference}` : '';
   const who = t.assigneeName ? ` to ${t.assigneeName}` : '';
-  await notifyPerson(t.discordUserId, `👤 Support ticket${ref} assigned to you`, `👤 Support ticket${ref} assigned${who}`, fields);
+  await notifyPerson('support', t.discordUserId, `👤 Support ticket${ref} assigned to you`, `👤 Support ticket${ref} assigned${who}`, fields);
 }
 
 /** Tell the assignee of a support ticket that the customer just replied from
@@ -249,7 +267,7 @@ export async function notifyDiscordSupportReply(t: {
   photoCount: number;
   asanaUrl?: string | null;
 }): Promise<void> {
-  if (!BOT_TOKEN && !WEBHOOK_URL) return;
+  if (!BOTS.support.token && !BOTS.support.webhook) return;
   const fields: EmbedField[] = [];
   if (t.company) fields.push({ name: 'Company', value: t.company, inline: true });
   if (t.email) fields.push({ name: 'Email', value: t.email, inline: true });
@@ -260,12 +278,82 @@ export async function notifyDiscordSupportReply(t: {
   const links = linkList([{ label: 'Asana', url: t.asanaUrl }]);
   if (links) fields.push({ name: 'Links', value: links });
   const who = t.assigneeName ? ` for ${t.assigneeName}` : '';
-  await notifyPerson(t.discordUserId, `💬 Customer reply on support ticket ${t.reference}`, `💬 Customer reply on support ticket ${t.reference}${who}`, fields);
+  await notifyPerson('support', t.discordUserId, `💬 Customer reply on support ticket ${t.reference}`, `💬 Customer reply on support ticket ${t.reference}${who}`, fields);
 }
 
-/** Reach one person: a DM from the bot when a token is set, else (or if the DM
- * is refused) a mention in the webhook channel. */
-async function notifyPerson(discordUserId: string, dmTitle: string, channelTitle: string, fields: EmbedField[]): Promise<void> {
-  if (BOT_TOKEN && (await sendDirectEmbed(discordUserId, dmTitle, fields))) return;
-  await postEmbed(channelTitle, fields, { mentionUserId: discordUserId });
+/** Reach one person: a DM from that bot when its token is set, else (or if the
+ * DM is refused) a mention in that bot's channel. */
+async function notifyPerson(bot: DiscordBot, discordUserId: string, dmTitle: string, channelTitle: string, fields: EmbedField[]): Promise<void> {
+  const b = BOTS[bot];
+  if (b.token && (await sendDirectEmbed(b.token, discordUserId, dmTitle, fields))) return;
+  await postEmbed(channelTitle, fields, { mentionUserId: discordUserId, webhook: b.webhook });
+}
+
+// --- Console Validation bot (yellow) — messages in English, like the support DMs.
+
+type ConsoleRequest = {
+  dealId: number | null;
+  company?: string | null;
+  country?: string | null;
+  machine?: string | null;
+  email?: string | null;
+  asanaUrl?: string | null;
+  pipedriveUrl?: string | null;
+};
+
+const consoleRef = (dealId: number | null, fallback?: string | null) =>
+  dealId ? `ID ${dealId}` : fallback ? fallback : '';
+
+function consoleFields(v: ConsoleRequest): EmbedField[] {
+  const fields: EmbedField[] = [];
+  if (v.company) fields.push({ name: 'Company', value: v.company, inline: true });
+  if (v.country) fields.push({ name: 'Country', value: v.country, inline: true });
+  if (v.machine) fields.push({ name: 'Press', value: v.machine, inline: true });
+  if (v.email) fields.push({ name: 'Email', value: v.email });
+  return fields;
+}
+
+function consoleLinks(fields: EmbedField[], v: ConsoleRequest) {
+  const links = linkList([
+    { label: 'Asana', url: v.asanaUrl },
+    { label: 'Pipedrive', url: v.pipedriveUrl },
+  ]);
+  if (links) fields.push({ name: 'Links', value: links });
+}
+
+/** A new console validation request, for a person who validates them (the
+ * board's follower). The assignee hears it from the assignment ping. */
+export async function notifyDiscordConsoleNewRequest(discordUserId: string, v: ConsoleRequest): Promise<void> {
+  const fields = consoleFields(v); consoleLinks(fields, v);
+  const ref = consoleRef(v.dealId);
+  const title = `🆕 New console validation request${ref ? ` — ${ref}` : ''}`;
+  await notifyPerson('console', discordUserId, title, title, fields);
+}
+
+/** A console validation task just assigned to someone in Asana. */
+export async function notifyDiscordConsoleAssigned(
+  t: ConsoleRequest & { discordUserId: string; assigneeName: string | null; taskName: string }
+): Promise<void> {
+  const fields = consoleFields(t);
+  if (!t.company && t.taskName) fields.unshift({ name: 'Task', value: t.taskName.slice(0, 1000) });
+  consoleLinks(fields, t);
+  const ref = consoleRef(t.dealId);
+  const label = `🔍 Console validation${ref ? ` ${ref}` : ''}`;
+  const who = t.assigneeName ? ` to ${t.assigneeName}` : '';
+  await notifyPerson('console', t.discordUserId, `${label} assigned to you`, `${label} assigned${who}`, fields);
+}
+
+/** The customer added details (text and/or photos) to a console validation:
+ * for the assignee and the followers. As for support, the reply reaches Asana
+ * as a comment posted with the site's token, which Asana never notifies. */
+export async function notifyDiscordConsoleReply(
+  t: ConsoleRequest & { discordUserId: string; reference: string; reply: string; photoCount: number }
+): Promise<void> {
+  const fields = consoleFields(t);
+  const text = t.reply.trim();
+  fields.push({ name: 'Reply', value: text ? (text.length > 1000 ? `${text.slice(0, 1000)}…` : text) : '(photos only)' });
+  if (t.photoCount > 0) fields.push({ name: 'Photos', value: String(t.photoCount), inline: true });
+  consoleLinks(fields, t);
+  const title = `💬 Customer reply on console validation ${consoleRef(t.dealId, t.reference)}`;
+  await notifyPerson('console', t.discordUserId, title, title, fields);
 }
