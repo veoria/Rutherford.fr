@@ -7,8 +7,14 @@ import {
   getSupportTaskState,
   type SupportTaskState,
 } from '@/lib/asana';
-import { assigneeMentionsEnabled, discordUserForAsanaUser, notifyDiscordSupportAssigned } from '@/lib/discord';
-import { addDealNote } from '@/lib/pipedrive';
+import {
+  assigneeMentionsEnabled,
+  discordUserForAsanaUser,
+  notifyDiscordConsoleAssigned,
+  notifyDiscordSupportAssigned,
+  type DiscordBot,
+} from '@/lib/discord';
+import { addDealNote, pipedriveDealUrl } from '@/lib/pipedrive';
 import { sendMail } from '@/lib/msgraph';
 import {
   canConnectEmail,
@@ -64,22 +70,28 @@ const extractDealId = (name: string) => {
   return m ? Number(m[1]) : null;
 };
 
-/** Tell the new assignee of a Support task (a form ticket, or a task created by
- * hand in Asana) on Discord — once per change: the last assignee is kept in
- * support_task_assignees and moved by compare-and-set. The first time a task is
- * seen its previous assignee is unknown, so it only pings when this delivery is
- * about the assignee itself (or the task was just created), never because an
- * old task assigned long ago got a comment. */
+/** Discord user to tell about a task's new assignee, or null. Once per change:
+ * the last assignee of every Support and Console Validation task is kept in
+ * support_task_assignees (one table for both boards — task gids are unique)
+ * and moved by compare-and-set. The first time a task is seen its previous
+ * assignee is unknown, so it only pings when this delivery is about the
+ * assignee itself (or the task was just created), never because an old task
+ * assigned long ago got a comment. */
+async function newAssigneeToPing(bot: DiscordBot, gid: string, assigneeGid: string | null, assigneeEvent: boolean): Promise<string | null> {
+  if (!assigneeMentionsEnabled(bot)) return null;
+  const { changed, known } = await recordSupportTaskAssignee(gid, assigneeGid);
+  if (!changed || (!known && !assigneeEvent)) return null;
+  return discordUserForAsanaUser(assigneeGid);
+}
+
+/** Support task (form ticket, or task created by hand in Asana): tell its new assignee. */
 async function pingNewAssignee(
   gid: string,
   state: SupportTaskState,
   ticket: { id: string; email: string; company: string | null; subject: string | null } | null,
   assigneeEvent: boolean
 ): Promise<void> {
-  if (!assigneeMentionsEnabled()) return;
-  const { changed, known } = await recordSupportTaskAssignee(gid, state.assigneeGid);
-  if (!changed || (!known && !assigneeEvent)) return;
-  const discordUserId = discordUserForAsanaUser(state.assigneeGid);
+  const discordUserId = await newAssigneeToPing('support', gid, state.assigneeGid, assigneeEvent);
   if (!discordUserId) return;
   await notifyDiscordSupportAssigned({
     discordUserId,
@@ -227,6 +239,24 @@ export async function POST(request: NextRequest) {
     // Mirror who handles it on every change (assignee can shift, and it's set
     // long before any verdict), so the admin "Assigné" view stays current.
     await setConsoleValidationAssignee(gid, { assignee: state.assigneeName, followers: state.followerNames });
+    // Newly assigned → the Console Validation bot tells the new assignee.
+    const consoleAssignee = await newAssigneeToPing('console', gid, state.assigneeGid, assigneeEvents.has(gid));
+    if (consoleAssignee) {
+      const row = await getConsoleValidationByAsanaTask(gid);
+      const deal = extractDealId(state.name);
+      await notifyDiscordConsoleAssigned({
+        discordUserId: consoleAssignee,
+        assigneeName: state.assigneeName,
+        taskName: state.name,
+        dealId: deal,
+        company: row?.company,
+        country: row?.country,
+        machine: row?.machine,
+        email: row?.email ?? extractEmail(state.notes),
+        asanaUrl: asanaTaskUrl(gid),
+        pipedriveUrl: pipedriveDealUrl(deal),
+      });
+    }
     const status = APPROVAL_STATUS[state.approvalStatus ?? ''];
     if (!status) continue; // still pending — no verdict yet
 

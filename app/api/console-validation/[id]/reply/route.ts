@@ -1,8 +1,9 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { createSupabaseAdminClient, createSupabaseServerClient } from '@/lib/supabase/server';
-import { addConsoleValidationTaskComment, addTaskAttachment } from '@/lib/asana';
+import { addConsoleValidationTaskComment, addTaskAttachment, asanaTaskUrl, getConsoleValidationTaskState } from '@/lib/asana';
+import { assigneeMentionsEnabled, discordUserForAsanaUser, notifyDiscordConsoleReply } from '@/lib/discord';
 import { dropboxEnabled, uploadFilesToFolder } from '@/lib/dropbox';
-import { addDealNote } from '@/lib/pipedrive';
+import { addDealNote, pipedriveDealUrl } from '@/lib/pipedrive';
 import { insertConsoleValidationMessage } from '@/lib/console-validations';
 import { teamOrgFromEmail } from '@/lib/account-type';
 
@@ -50,7 +51,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
   // RLS scopes this select to the visitor's own requests — ownership check.
   const { data: row } = await rls
     .from('console_validations')
-    .select('id, asana_task_gid, dropbox_folder, dropbox_link, pipedrive_deal_id, email')
+    .select('id, asana_task_gid, dropbox_folder, dropbox_link, pipedrive_deal_id, email, company, country, machine')
     .eq('id', params.id)
     .maybeSingle();
   if (!row) return NextResponse.json({ error: 'Not found' }, { status: 404 });
@@ -135,6 +136,33 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
     body: comment || null,
     photos: links,
   });
+
+  // Tell the people handling the request on Discord (the Console Validation
+  // bot): the task's assignee and followers. Last, once the reply is saved, so a
+  // slow Discord never holds it up. A team member's reply doesn't ping.
+  if (!isTeamSender && row.asana_task_gid && assigneeMentionsEnabled('console')) {
+    const task = await getConsoleValidationTaskState(String(row.asana_task_gid));
+    const people = new Set(
+      [task?.assigneeGid ?? null, ...(task?.followerGids ?? [])]
+        .map((gid) => discordUserForAsanaUser(gid))
+        .filter((id): id is string => Boolean(id))
+    );
+    for (const discordUserId of people) {
+      await notifyDiscordConsoleReply({
+        discordUserId,
+        reference: ref,
+        dealId,
+        company: (row.company as string | null) ?? null,
+        country: (row.country as string | null) ?? null,
+        machine: (row.machine as string | null) ?? null,
+        email: (row.email as string | null) ?? null,
+        reply: comment,
+        photoCount: links.length,
+        asanaUrl: asanaTaskUrl(String(row.asana_task_gid)),
+        pipedriveUrl: pipedriveDealUrl(dealId),
+      });
+    }
+  }
 
   return NextResponse.json({ ok: true });
 }
