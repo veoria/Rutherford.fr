@@ -8,8 +8,13 @@ import {
   pipedriveDealUrl,
 } from '@/lib/pipedrive';
 import { formatAttribution, parseAttribution } from '@/lib/attribution';
-import { addConsoleValidationPreviews, asanaTaskUrl, createConsoleValidationTask } from '@/lib/asana';
-import { notifyDiscordConsoleValidation } from '@/lib/discord';
+import { addConsoleValidationPreviews, asanaTaskUrl, consoleValidationWatchers, createConsoleValidationTask } from '@/lib/asana';
+import {
+  assigneeMentionsEnabled,
+  discordUserForAsanaUser,
+  notifyDiscordConsoleNewRequest,
+  notifyDiscordConsoleValidation,
+} from '@/lib/discord';
 import { dropboxEnabled, uploadConsoleValidation } from '@/lib/dropbox';
 import { sendMail } from '@/lib/msgraph';
 import { acknowledgementEmail } from '@/lib/console-validation-emails';
@@ -313,6 +318,25 @@ export async function POST(request: NextRequest) {
     asanaUrl: asanaTaskUrl(asanaTaskGid),
     pipedriveUrl: pipedriveDealUrl(dealId),
   });
+
+  // The validator (the board's follower, Shajith by default) gets a DM from the
+  // Console Validation bot. The assignee is told by the assignment ping when
+  // Asana reports the new task, so they are skipped here.
+  if (asanaTaskGid && assigneeMentionsEnabled('console')) {
+    const { assigneeGid, followerGid } = consoleValidationWatchers();
+    const validator = followerGid && followerGid !== assigneeGid ? discordUserForAsanaUser(followerGid) : null;
+    if (validator) {
+      await notifyDiscordConsoleNewRequest(validator, {
+        dealId,
+        company: companyName,
+        country,
+        machine: machineName,
+        email,
+        asanaUrl: asanaTaskUrl(asanaTaskGid),
+        pipedriveUrl: pipedriveDealUrl(dealId),
+      });
+    }
+  }
 
   // Mark the invitation completed (and link the record) so the inviter sees it.
   if (invitation) await completeCvInvitation(inviteToken, validationId);

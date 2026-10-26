@@ -79,15 +79,20 @@ export function statusFromProgress(value: string | null): SupportStatus | null {
   return null;
 }
 
-export async function getSupportTicketByAsanaTask(
-  gid: string
-): Promise<{ id: string; email: string; status: SupportStatus; lastAgentStoryGid: string | null } | null> {
+export async function getSupportTicketByAsanaTask(gid: string): Promise<{
+  id: string;
+  email: string;
+  status: SupportStatus;
+  lastAgentStoryGid: string | null;
+  company: string | null;
+  subject: string | null;
+} | null> {
   const supabase = adminClient();
   if (!supabase) return null;
   try {
     const { data } = await supabase
       .from('support_tickets')
-      .select('id, email, status, last_agent_story_gid')
+      .select('id, email, status, last_agent_story_gid, company, subject')
       .eq('asana_task_gid', gid)
       .maybeSingle();
     return data
@@ -96,6 +101,8 @@ export async function getSupportTicketByAsanaTask(
           email: data.email as string,
           status: data.status as SupportStatus,
           lastAgentStoryGid: (data.last_agent_story_gid as string | null) ?? null,
+          company: (data.company as string | null) ?? null,
+          subject: (data.subject as string | null) ?? null,
         }
       : null;
   } catch {
@@ -151,6 +158,43 @@ export async function setSupportAssigneeByAsanaTask(gid: string, assigneeName: s
     if (error) console.error('support assignee update failed:', error.message);
   } catch (error) {
     console.error('support assignee update threw:', error);
+  }
+}
+
+/** Record the live assignee of a Support-project task (form ticket or task
+ * created in Asana) and say whether it moved. Compare-and-set: the row only
+ * moves away from a different value, so when Asana re-delivers the same change
+ * only one delivery sees `changed`. `known` is false the first time a task is
+ * seen — the previous assignee is then unknown. Fails closed (no change) on any
+ * error, so a hiccup never pings twice. */
+export async function recordSupportTaskAssignee(
+  taskGid: string,
+  assigneeGid: string | null
+): Promise<{ changed: boolean; known: boolean }> {
+  const supabase = adminClient();
+  if (!supabase) return { changed: false, known: true };
+  const value = assigneeGid ?? '';
+  const now = new Date().toISOString();
+  try {
+    const moved = await supabase
+      .from('support_task_assignees')
+      .update({ assignee_gid: value, updated_at: now })
+      .eq('task_gid', taskGid)
+      .neq('assignee_gid', value)
+      .select('task_gid');
+    if (moved.error) throw new Error(moved.error.message);
+    if ((moved.data?.length ?? 0) > 0) return { changed: true, known: true };
+
+    const inserted = await supabase
+      .from('support_task_assignees')
+      .upsert({ task_gid: taskGid, assignee_gid: value, updated_at: now }, { onConflict: 'task_gid', ignoreDuplicates: true })
+      .select('task_gid');
+    if (inserted.error) throw new Error(inserted.error.message);
+    // A row came back only if this call created it: first sighting of the task.
+    return (inserted.data?.length ?? 0) > 0 ? { changed: true, known: false } : { changed: false, known: true };
+  } catch (error) {
+    console.error('support_task_assignees update failed:', error);
+    return { changed: false, known: true };
   }
 }
 

@@ -1,7 +1,20 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { createHmac, timingSafeEqual } from 'crypto';
-import { getConsoleValidationTaskState, getStory, getSupportTaskState } from '@/lib/asana';
-import { addDealNote } from '@/lib/pipedrive';
+import {
+  asanaTaskUrl,
+  getConsoleValidationTaskState,
+  getStory,
+  getSupportTaskState,
+  type SupportTaskState,
+} from '@/lib/asana';
+import {
+  assigneeMentionsEnabled,
+  discordUserForAsanaUser,
+  notifyDiscordConsoleAssigned,
+  notifyDiscordSupportAssigned,
+  type DiscordBot,
+} from '@/lib/discord';
+import { addDealNote, pipedriveDealUrl } from '@/lib/pipedrive';
 import { sendMail } from '@/lib/msgraph';
 import {
   canConnectEmail,
@@ -25,6 +38,7 @@ import { recordAudit } from '@/lib/admin-audit';
 import {
   getSupportTicketByAsanaTask,
   insertSupportMessage,
+  recordSupportTaskAssignee,
   setAgentMessageByAsanaTask,
   setSupportAssigneeByAsanaTask,
   statusFromProgress,
@@ -55,6 +69,41 @@ const extractDealId = (name: string) => {
   const m = name.match(/ID(\d+)/);
   return m ? Number(m[1]) : null;
 };
+
+/** Discord user to tell about a task's new assignee, or null. Once per change:
+ * the last assignee of every Support and Console Validation task is kept in
+ * support_task_assignees (one table for both boards — task gids are unique)
+ * and moved by compare-and-set. The first time a task is seen its previous
+ * assignee is unknown, so it only pings when this delivery is about the
+ * assignee itself (or the task was just created), never because an old task
+ * assigned long ago got a comment. */
+async function newAssigneeToPing(bot: DiscordBot, gid: string, assigneeGid: string | null, assigneeEvent: boolean): Promise<string | null> {
+  if (!assigneeMentionsEnabled(bot)) return null;
+  const { changed, known } = await recordSupportTaskAssignee(gid, assigneeGid);
+  if (!changed || (!known && !assigneeEvent)) return null;
+  return discordUserForAsanaUser(assigneeGid);
+}
+
+/** Support task (form ticket, or task created by hand in Asana): tell its new assignee. */
+async function pingNewAssignee(
+  gid: string,
+  state: SupportTaskState,
+  ticket: { id: string; email: string; company: string | null; subject: string | null } | null,
+  assigneeEvent: boolean
+): Promise<void> {
+  const discordUserId = await newAssigneeToPing('support', gid, state.assigneeGid, assigneeEvent);
+  if (!discordUserId) return;
+  await notifyDiscordSupportAssigned({
+    discordUserId,
+    assigneeName: state.assigneeName,
+    taskName: state.name,
+    reference: ticket ? `#${ticket.id.slice(0, 8)}` : null,
+    company: ticket?.company,
+    email: ticket?.email,
+    subject: ticket?.subject,
+    asanaUrl: asanaTaskUrl(gid),
+  });
+}
 
 export async function POST(request: NextRequest) {
   const raw = await request.text();
@@ -101,10 +150,18 @@ export async function POST(request: NextRequest) {
   // Comments arrive as "story" events; keep each with its parent task so we can
   // relay the ones tagged for the customer.
   const storyEvents: { storyGid: string; taskGid: string }[] = [];
+  // Tasks whose assignee this delivery is about: an assignee change, or a task
+  // just added to a project (created with its assignee). Only these may ping on
+  // a task never seen before.
+  const assigneeEvents = new Set<string>();
   for (const event of events) {
     if (event?.resource?.resource_type === 'task' && (event.action === 'changed' || event.action === 'added')) {
       const gid = event.resource.gid;
       if (gid) taskGids.add(String(gid));
+      const aboutAssignee =
+        (event.action === 'changed' && event.change?.field === 'assignee') ||
+        (event.action === 'added' && event.parent?.resource_type === 'project');
+      if (gid && aboutAssignee) assigneeEvents.add(String(gid));
     } else if (event?.resource?.resource_type === 'task' && event.action === 'deleted') {
       const gid = event.resource.gid;
       if (gid) deletedTaskGids.add(String(gid));
@@ -155,6 +212,7 @@ export async function POST(request: NextRequest) {
       const sstate = await getSupportTaskState(gid);
       if (sstate) {
         await setSupportAssigneeByAsanaTask(gid, sstate.assigneeName);
+        await pingNewAssignee(gid, sstate, ticket, assigneeEvents.has(gid));
         // Prefer the team-driven "Progress" field; fall back to the column.
         const next = statusFromProgress(sstate.progress) ?? supportStatusFromSection(sstate.sectionName, sstate.completed);
         if (next !== ticket.status) {
@@ -166,11 +224,39 @@ export async function POST(request: NextRequest) {
       continue;
     }
 
+    // A task created by hand in the Support project has no ticket row: nothing
+    // to sync for a client, but its new assignee is told all the same.
+    if (assigneeMentionsEnabled()) {
+      const sstate = await getSupportTaskState(gid);
+      if (sstate?.inSupportProject) {
+        await pingNewAssignee(gid, sstate, null, assigneeEvents.has(gid));
+        continue;
+      }
+    }
+
     const state = await getConsoleValidationTaskState(gid);
     if (!state) continue;
     // Mirror who handles it on every change (assignee can shift, and it's set
     // long before any verdict), so the admin "Assigné" view stays current.
     await setConsoleValidationAssignee(gid, { assignee: state.assigneeName, followers: state.followerNames });
+    // Newly assigned → the Console Validation bot tells the new assignee.
+    const consoleAssignee = await newAssigneeToPing('console', gid, state.assigneeGid, assigneeEvents.has(gid));
+    if (consoleAssignee) {
+      const row = await getConsoleValidationByAsanaTask(gid);
+      const deal = extractDealId(state.name);
+      await notifyDiscordConsoleAssigned({
+        discordUserId: consoleAssignee,
+        assigneeName: state.assigneeName,
+        taskName: state.name,
+        dealId: deal,
+        company: row?.company,
+        country: row?.country,
+        machine: row?.machine,
+        email: row?.email ?? extractEmail(state.notes),
+        asanaUrl: asanaTaskUrl(gid),
+        pipedriveUrl: pipedriveDealUrl(deal),
+      });
+    }
     const status = APPROVAL_STATUS[state.approvalStatus ?? ''];
     if (!status) continue; // still pending — no verdict yet
 

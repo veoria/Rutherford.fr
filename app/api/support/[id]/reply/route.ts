@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { createSupabaseAdminClient, createSupabaseServerClient } from '@/lib/supabase/server';
-import { addSupportTaskComment } from '@/lib/asana';
+import { addSupportTaskComment, asanaTaskUrl, getSupportTaskState } from '@/lib/asana';
+import { assigneeMentionsEnabled, discordUserForAsanaUser, notifyDiscordSupportReply } from '@/lib/discord';
 import { insertSupportMessage } from '@/lib/support-tickets';
 import { teamOrgFromEmail } from '@/lib/account-type';
 
@@ -47,7 +48,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
   // RLS scopes this select to the visitor's own tickets — ownership check.
   const { data: row } = await rls
     .from('support_tickets')
-    .select('id, asana_task_gid, email, photos, status')
+    .select('id, asana_task_gid, email, company, subject, photos, status')
     .eq('id', params.id)
     .maybeSingle();
   if (!row) return NextResponse.json({ error: 'Not found' }, { status: 404 });
@@ -110,6 +111,27 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
     body: comment || null,
     photos: links,
   });
+
+  // Tell the ticket's current Asana assignee on Discord. Last, once the reply is
+  // saved, so a slow Discord never holds up the customer's message. A team
+  // member's reply from this form doesn't ping: the team already knows.
+  if (!isTeamSender && row.asana_task_gid && assigneeMentionsEnabled()) {
+    const task = await getSupportTaskState(String(row.asana_task_gid));
+    const discordUserId = discordUserForAsanaUser(task?.assigneeGid ?? null);
+    if (task && discordUserId) {
+      await notifyDiscordSupportReply({
+        discordUserId,
+        assigneeName: task.assigneeName,
+        reference: ref,
+        company: (row.company as string | null) ?? null,
+        email: (row.email as string | null) ?? null,
+        subject: (row.subject as string | null) ?? null,
+        reply: comment,
+        photoCount: links.length,
+        asanaUrl: asanaTaskUrl(String(row.asana_task_gid)),
+      });
+    }
+  }
 
   return NextResponse.json({ ok: true });
 }
