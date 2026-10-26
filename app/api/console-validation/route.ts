@@ -13,6 +13,7 @@ import { dropboxEnabled, uploadConsoleValidation } from '@/lib/dropbox';
 import { sendMail } from '@/lib/msgraph';
 import { acknowledgementEmail } from '@/lib/console-validation-emails';
 import { getNotificationEmail, insertConsoleValidation } from '@/lib/console-validations';
+import { recordSupportTaskAssignee } from '@/lib/support-tickets';
 import { completeCvInvitation, getCvInvitationByToken } from '@/lib/console-invitations';
 import { createInvitation } from '@/lib/organizations';
 import { teamInviteEmail } from '@/lib/team-emails';
@@ -239,6 +240,12 @@ export async function POST(request: NextRequest) {
 
   // 3) Asana task (To do list), 4) acknowledgement email, 5) deal note + row.
   const asanaTaskGid = await createConsoleValidationTask({ title, email, notes, photoLinks, folderLink: dropboxLink });
+  // Record who the task is given to before Asana's webhook can report it: the
+  // new-request DM below already tells them, so the assignment ping must not.
+  if (asanaTaskGid && assigneeMentionsEnabled('console')) {
+    const { assigneeGid } = consoleValidationWatchers();
+    if (assigneeGid) await recordSupportTaskAssignee(asanaTaskGid, assigneeGid);
+  }
 
   // 3b) Attach lightweight machine previews to the Asana task — a resized JPEG
   // per photo (Supabase image transform), viewable inline in Asana, while the
@@ -319,14 +326,18 @@ export async function POST(request: NextRequest) {
     pipedriveUrl: pipedriveDealUrl(dealId),
   });
 
-  // The validator (the board's follower, Shajith by default) gets a DM from the
-  // Console Validation bot. The assignee is told by the assignment ping when
-  // Asana reports the new task, so they are skipped here.
+  // The people the new task is given to (its assignee, and the board's follower
+  // when mapped) get a "New console validation request" DM from the Console
+  // Validation bot, straight from here rather than through the Asana webhook.
+  // The assignee was recorded right after the task was created, so the
+  // webhook's assignment ping doesn't repeat this one.
   if (asanaTaskGid && assigneeMentionsEnabled('console')) {
     const { assigneeGid, followerGid } = consoleValidationWatchers();
-    const validator = followerGid && followerGid !== assigneeGid ? discordUserForAsanaUser(followerGid) : null;
-    if (validator) {
-      await notifyDiscordConsoleNewRequest(validator, {
+    const people = new Set(
+      [assigneeGid, followerGid].map((gid) => discordUserForAsanaUser(gid)).filter((id): id is string => Boolean(id))
+    );
+    for (const discordUserId of people) {
+      await notifyDiscordConsoleNewRequest(discordUserId, {
         dealId,
         company: companyName,
         country,
