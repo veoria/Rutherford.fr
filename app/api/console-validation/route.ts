@@ -7,7 +7,7 @@ import {
   linkDealParties,
   pipedriveDealUrl,
 } from '@/lib/pipedrive';
-import { formatAttribution, parseAttribution } from '@/lib/attribution';
+import { attributionLines, formatAttribution, introducerOf, parseAttribution } from '@/lib/attribution';
 import { addConsoleValidationPreviews, asanaTaskUrl, consoleValidationWatchers, createConsoleValidationTask } from '@/lib/asana';
 import {
   assigneeMentionsEnabled,
@@ -67,7 +67,10 @@ export async function POST(request: NextRequest) {
   const inviteToken = String(body.invite ?? '').trim().slice(0, 200);
   // Where the lead came from (UTM / referrer), captured client-side on the first
   // page of the session. Untrusted input, so every field is clamped.
-  const attribution = formatAttribution(parseAttribution(body.attribution));
+  const parsedAttribution = parseAttribution(body.attribution);
+  const attribution = formatAttribution(parsedAttribution);
+  const introducer = introducerOf(parsedAttribution);
+  const sourceDetails = attributionLines(parsedAttribution);
 
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 200) {
     return NextResponse.json({ error: 'A valid email address is required' }, { status: 400 });
@@ -172,6 +175,7 @@ export async function POST(request: NextRequest) {
     `Email    : ${email}`,
     `Pipedrive: ${dealId ? `ID${dealId}` : 'n/a'}`,
     `Source   : ${attribution}`,
+    introducer ? `Apporteur: ${introducer}` : null,
     refCode ? `Referral : ${refCode}` : null,
     notes ? `Notes    : ${notes}` : null,
     '',
@@ -285,6 +289,7 @@ export async function POST(request: NextRequest) {
       `Machine : ${escapeNote(machineName)}`,
       refCode ? `Parrainage : ${escapeNote(refCode)}` : null,
       `Source : ${escapeNote(attribution)}`,
+      ...sourceDetails.map(escapeNote),
       `Photos: ${photoCount}`,
       `Storage: ${storageRef}`,
     ]
