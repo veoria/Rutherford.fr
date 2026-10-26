@@ -10,7 +10,7 @@ import { colorloopProductUrl, VEORIA_URL } from '@/lib/group-sites';
 const NAV_PREFIX_LOCALES = ['fr', 'de', 'it', 'es', 'pt'];
 
 type SiteNavProps = {
-  current?: 'home' | 'roi' | 'blog' | 'console-validation' | 'support' | 'academy' | 'account' | 'admin';
+  current?: 'home' | 'roi' | 'blog' | 'console-validation' | 'support' | 'academy' | 'account' | 'admin' | 'color-guesser';
   // 'colorloop' swaps the brandmark for the ColorLoop wordmark (NA landings).
   brand?: 'rutherford' | 'colorloop';
 };
