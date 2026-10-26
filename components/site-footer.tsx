@@ -7,6 +7,7 @@ import { SocialLinks } from '@/components/social-links';
 import type { SocialLink } from '@/components/social-links';
 import COPY_DATA from '@/data/home/site-footer.json';
 import { NewsletterSignup } from '@/components/newsletter-signup';
+import { colorloopProductUrl, VEORIA_URL } from '@/lib/group-sites';
 
 // The language selector lives in the footer now (country is auto-detected, so
 // the header no longer needs it). FR first to match the design.
@@ -29,7 +30,7 @@ const socialLinks: SocialLink[] = [
 
 const platformLinks = [
   { label: 'ColorLoop.ai', href: 'https://colorloop.ai/' },
-  { label: 'Veoria.fr', href: 'https://veoria.fr/' },
+  { label: 'Veoria.com', href: VEORIA_URL },
   { label: 'PPWRConnect.com', href: 'https://ppwrconnect.com/' },
 ];
 
@@ -77,7 +78,7 @@ export function SiteFooter() {
 
   const companyLinks: { key: CompanyKey; href: string }[] = [
     { key: 'about', href: '/#about' },
-    { key: 'colorloop', href: '/colorloop' },
+    { key: 'colorloop', href: colorloopProductUrl(locale) },
     { key: 'offset360', href: '/offset360' },
     { key: 'cases', href: '/#cases' },
   ];

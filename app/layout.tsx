@@ -51,7 +51,7 @@ const ORG_JSON_LD = {
   parentOrganization: {
     '@type': 'Organization',
     name: 'VEORIA',
-    url: 'https://veoria.fr',
+    url: 'https://veoria.com',
   },
   sameAs: [
     'https://www.linkedin.com/company/rutherfordfr',
@@ -60,7 +60,7 @@ const ORG_JSON_LD = {
     'https://www.tiktok.com/@rutherfordgraphic',
     'https://go.colorloop.ai',
     'https://colorloop.ai',
-    'https://veoria.fr',
+    'https://veoria.com',
     'https://ppwrconnect.com',
   ],
 };
