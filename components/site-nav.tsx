@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { type Locale, useLanguage } from '@/components/language-provider';
 import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 import { ACADEMY_ENABLED } from '@/lib/features';
-import { colorloopProductUrl, VEORIA_URL } from '@/lib/group-sites';
+import { colorloopProductUrl } from '@/lib/group-sites';
 
 const NAV_PREFIX_LOCALES = ['fr', 'de', 'it', 'es', 'pt'];
 
@@ -183,9 +183,6 @@ export function SiteNav({ current = 'home', brand = 'rutherford' }: SiteNavProps
           ) : null}
           <a className={current === 'support' ? 'is-current' : undefined} href={lhref('/support')} onClick={() => setOpen(false)}>
             {labels.support}
-          </a>
-          <a href={VEORIA_URL} onClick={() => setOpen(false)}>
-            Veoria
           </a>
           {/* Contact — burger only (also in the footer); dropped from the desktop bar to save width */}
           <a className="mobile-nav-link mobile-nav-contact" href="mailto:contact@rutherford.fr" onClick={() => setOpen(false)}>
