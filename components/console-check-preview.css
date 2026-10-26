@@ -389,58 +389,93 @@
   }
 }
 
-/* Intro: title and start on the left, the 3D guides playing in turn on the
-   right; on a phone the title comes first, then the reel, then Start. */
+/* Intro, Apple-like: one centered column. Title, the 3D guide playing, the
+   four photos to take as thumbnails (tap to play one), then Start. */
 .cc-intro {
   display: grid;
-  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.8fr);
-  grid-template-areas: 'head reel' 'act reel';
-  grid-template-rows: auto 1fr;
-  column-gap: clamp(28px, 5vw, 72px);
-  row-gap: 28px;
-  align-items: start;
+  justify-items: center;
+  gap: 28px;
+  text-align: center;
 }
-.cc-intro-h {
-  grid-area: head;
-  align-self: end;
-  display: grid;
-  gap: 16px;
+.cc-form:has(.cc-intro) {
+  width: min(100%, 640px);
 }
+.cc-intro-h,
 .cc-intro-a {
-  grid-area: act;
   display: grid;
-  gap: 16px;
+  justify-items: center;
+  gap: 14px;
+}
+.cc-intro .cc-k {
+  justify-content: center;
 }
 .cc-intro h1 {
-  font-size: clamp(2.8rem, 7vw, 5.2rem);
+  font-size: clamp(2.8rem, 7vw, 5rem);
   line-height: 0.95;
 }
+.cc-intro .cc-badges {
+  justify-content: center;
+  margin: 0;
+}
+.cc-intro .cc-next {
+  justify-self: center;
+  margin-top: 4px;
+}
 .cc-reel {
-  grid-area: reel;
-  align-self: center;
-}
-.cc-reel-still {
   display: grid;
-  gap: 12px;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  justify-items: center;
+  gap: 16px;
+  width: 100%;
 }
-.cc-reel-still img {
+.cc-reel .cc-guide {
+  width: min(100%, 340px);
+}
+.cc-thumbs {
+  display: grid;
+  grid-template-columns: repeat(4, 64px);
+  gap: 10px;
+}
+.cc-thumbs button {
+  padding: 0;
+  border: 0;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #111;
+  cursor: pointer;
+  opacity: 0.45;
+  box-shadow: 0 0 0 2px transparent;
+  transition: opacity 0.2s ease, box-shadow 0.2s ease, transform 0.16s cubic-bezier(0.23, 1, 0.32, 1);
+}
+.cc-thumbs button:hover {
+  opacity: 0.8;
+}
+.cc-thumbs button:active {
+  transform: scale(0.96);
+}
+.cc-thumbs button.is-on {
+  opacity: 1;
+  box-shadow: 0 0 0 2px var(--accent);
+}
+.cc-thumbs button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+.cc-thumbs img {
+  display: block;
   width: 100%;
   height: auto;
-  border-radius: 16px;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
 }
 @media (max-width: 700px) {
   .cc-intro {
-    grid-template-columns: 1fr;
-    grid-template-areas: 'head' 'reel' 'act';
-    grid-template-rows: auto;
-    row-gap: 22px;
-  }
-  .cc-reel {
-    justify-self: center;
+    gap: 22px;
   }
   .cc-reel .cc-guide {
-    max-height: 40svh;
+    max-height: 42svh;
     width: auto;
+  }
+  .cc-thumbs {
+    grid-template-columns: repeat(4, 56px);
   }
 }

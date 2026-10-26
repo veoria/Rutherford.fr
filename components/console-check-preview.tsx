@@ -99,33 +99,45 @@ function IntroReel() {
   }, [k, still]);
 
   const clip = REEL[k];
-  if (still) {
-    return (
-      <div className="cc-reel cc-reel-still" aria-label="The four photos to take">
-        {REEL.map((c) => (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img key={c.id} src={c.poster} alt={c.title} width={600} height={800} />
-        ))}
-      </div>
-    );
-  }
   return (
     <div className="cc-reel">
-      <video
-        key={clip.id}
-        ref={ref}
-        className="cc-guide"
-        muted
-        playsInline
-        autoPlay
-        preload="auto"
-        poster={clip.poster}
-        src={clip.video}
-        width={600}
-        height={800}
-        aria-label={`Photo ${clip.n}: ${clip.title.toLowerCase()}, shown in 3D`}
-        onEnded={() => window.setTimeout(() => setK((x) => (x + 1) % REEL.length), 1400)}
-      />
+      {still ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img className="cc-guide" src={clip.poster} alt={clip.title} width={600} height={800} />
+      ) : (
+        <video
+          key={clip.id}
+          ref={ref}
+          className="cc-guide"
+          muted
+          playsInline
+          autoPlay
+          preload="auto"
+          poster={clip.poster}
+          src={clip.video}
+          width={600}
+          height={800}
+          aria-label={`${clip.title}, shown in 3D`}
+          onEnded={() => window.setTimeout(() => setK((x) => (x + 1) % REEL.length), 1400)}
+        />
+      )}
+      {/* The four photos to take; the one playing is lit, a tap plays it. */}
+      <div className="cc-thumbs" role="tablist" aria-label="The four photos to take">
+        {REEL.map((c, j) => (
+          <button
+            key={c.id}
+            type="button"
+            role="tab"
+            aria-selected={j === k}
+            aria-label={c.title}
+            className={j === k ? 'is-on' : undefined}
+            onClick={() => setK(j)}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={c.poster} alt="" width={120} height={160} />
+          </button>
+        ))}
+      </div>
     </div>
   );
 }
