@@ -110,7 +110,7 @@ function IntroReel() {
     );
   }
   return (
-    <figure className="cc-reel">
+    <div className="cc-reel">
       <video
         key={clip.id}
         ref={ref}
@@ -126,15 +126,7 @@ function IntroReel() {
         aria-label={`Photo ${clip.n}: ${clip.title.toLowerCase()}, shown in 3D`}
         onEnded={() => window.setTimeout(() => setK((x) => (x + 1) % REEL.length), 1400)}
       />
-      <figcaption className="cc-reel-cap">
-        <span className="cc-reel-dots" aria-hidden="true">
-          {REEL.map((c, j) => (
-            <i key={c.id} className={j === k ? 'is-on' : undefined} />
-          ))}
-        </span>
-        Photo {clip.n} · {clip.title}
-      </figcaption>
-    </figure>
+    </div>
   );
 }
 
@@ -260,25 +252,25 @@ export function ConsoleCheckPreview() {
           <div className={`cc-s${need ? ' is-need' : ''}`} key={i} style={{ ['--dir' as string]: dir }}>
             {screen.kind === 'intro' ? (
               <div className="cc-intro">
-                <div className="cc-intro-t">
+                <div className="cc-intro-h">
                   <p className="cc-k">
                     Free console validation <span className="cc-test">Test page</span>
                   </p>
                   <h1 id="cc-title">
                     Check your press<span>.</span>
                   </h1>
-                  <p className="cc-lead">Four photos of your console, and we tell you how much closed-loop color can save you: up to 50% less makeready waste.</p>
+                </div>
+                <IntroReel />
+                <div className="cc-intro-a">
                   <ul className="cc-badges">
-                    <li>Free</li>
-                    <li>About 2 minutes</li>
-                    <li>Reply within 1 business day</li>
+                    <li>2 minutes</li>
+                    <li>Quick reply</li>
                   </ul>
                   <button type="button" className="cc-next" onClick={next} ref={setFocus}>
                     Start <span aria-hidden="true">→</span>
                   </button>
                   <p className="cc-tip">Best on your phone, at the press.</p>
                 </div>
-                <IntroReel />
               </div>
             ) : null}
 

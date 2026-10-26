@@ -389,14 +389,25 @@
   }
 }
 
-/* Intro: text and the 3D reel side by side */
+/* Intro: title and start on the left, the 3D guides playing in turn on the
+   right; on a phone the title comes first, then the reel, then Start. */
 .cc-intro {
   display: grid;
   grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.8fr);
-  gap: clamp(28px, 5vw, 72px);
-  align-items: center;
+  grid-template-areas: 'head reel' 'act reel';
+  grid-template-rows: auto 1fr;
+  column-gap: clamp(28px, 5vw, 72px);
+  row-gap: 28px;
+  align-items: start;
 }
-.cc-intro-t {
+.cc-intro-h {
+  grid-area: head;
+  align-self: end;
+  display: grid;
+  gap: 16px;
+}
+.cc-intro-a {
+  grid-area: act;
   display: grid;
   gap: 16px;
 }
@@ -405,35 +416,12 @@
   line-height: 0.95;
 }
 .cc-reel {
-  margin: 0;
-  display: grid;
-  gap: 14px;
-}
-.cc-reel-cap {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: #1d1d1f;
-}
-.cc-reel-dots {
-  display: inline-flex;
-  gap: 6px;
-}
-.cc-reel-dots i {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #d2d2d7;
-  transition: background-color 0.2s ease, width 0.2s cubic-bezier(0.23, 1, 0.32, 1);
-}
-.cc-reel-dots i.is-on {
-  width: 18px;
-  border-radius: 3px;
-  background: var(--accent);
+  grid-area: reel;
+  align-self: center;
 }
 .cc-reel-still {
+  display: grid;
+  gap: 12px;
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 .cc-reel-still img {
@@ -444,13 +432,15 @@
 @media (max-width: 700px) {
   .cc-intro {
     grid-template-columns: 1fr;
+    grid-template-areas: 'head' 'reel' 'act';
+    grid-template-rows: auto;
+    row-gap: 22px;
   }
   .cc-reel {
-    order: -1;
-    justify-items: center;
+    justify-self: center;
   }
   .cc-reel .cc-guide {
-    max-height: 34svh;
+    max-height: 40svh;
     width: auto;
   }
 }
