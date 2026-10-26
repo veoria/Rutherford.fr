@@ -230,7 +230,7 @@ const COPY: Record<Locale, Copy> = {
 // Two process pillars: the scanner behind each process, offset and flexo.
 const PRODUCTS = [
   { key: 'offset' as const, name: 'IntelliTrax2 · Offset360', href: '/offset360', poster: '/images/intellitrax2-clean.jpg' },
-  { key: 'flexo' as const, name: 'DeltaOne · Veoria', href: 'https://veoria.fr', poster: '/images/DeltaOne_New-size-scaled.png' },
+  { key: 'flexo' as const, name: 'DeltaOne · Veoria', href: 'https://veoria.com/', poster: '/images/DeltaOne_New-size-scaled.png' },
 ];
 
 export function RegionHubPage({ region: _region }: { region?: Region }) {
