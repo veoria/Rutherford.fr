@@ -49,7 +49,8 @@
 .cc-form {
   width: min(100%, 680px);
 }
-.cc-form:has(.cc-photo) {
+.cc-form:has(.cc-photo),
+.cc-form:has(.cc-intro) {
   width: min(100%, 920px);
 }
 .cc-s {
@@ -385,5 +386,71 @@
   }
   .cc-bar i {
     transition: none;
+  }
+}
+
+/* Intro: text and the 3D reel side by side */
+.cc-intro {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.8fr);
+  gap: clamp(28px, 5vw, 72px);
+  align-items: center;
+}
+.cc-intro-t {
+  display: grid;
+  gap: 16px;
+}
+.cc-intro h1 {
+  font-size: clamp(2.8rem, 7vw, 5.2rem);
+  line-height: 0.95;
+}
+.cc-reel {
+  margin: 0;
+  display: grid;
+  gap: 14px;
+}
+.cc-reel-cap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #1d1d1f;
+}
+.cc-reel-dots {
+  display: inline-flex;
+  gap: 6px;
+}
+.cc-reel-dots i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #d2d2d7;
+  transition: background-color 0.2s ease, width 0.2s cubic-bezier(0.23, 1, 0.32, 1);
+}
+.cc-reel-dots i.is-on {
+  width: 18px;
+  border-radius: 3px;
+  background: var(--accent);
+}
+.cc-reel-still {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.cc-reel-still img {
+  width: 100%;
+  height: auto;
+  border-radius: 16px;
+}
+@media (max-width: 700px) {
+  .cc-intro {
+    grid-template-columns: 1fr;
+  }
+  .cc-reel {
+    order: -1;
+    justify-items: center;
+  }
+  .cc-reel .cc-guide {
+    max-height: 34svh;
+    width: auto;
   }
 }

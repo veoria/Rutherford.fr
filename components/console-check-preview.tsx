@@ -76,6 +76,68 @@ type Screen =
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+// Intro: the four 3D guides play one after the other, so the visitor sees what
+// to photograph before starting. Each clip zooms onto its spot (2.6 s), holds,
+// then hands over. Reduced motion: the four end frames, still.
+const REEL = PHOTOS.filter((p) => p.video).map((p, k) => ({ ...p, n: k + 1 }));
+
+function IntroReel() {
+  const [k, setK] = useState(0);
+  const [still, setStill] = useState(false);
+  const ref = useRef<HTMLVideoElement | null>(null);
+
+  useEffect(() => {
+    setStill(window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  }, []);
+
+  useEffect(() => {
+    if (still) return;
+    const v = ref.current;
+    if (!v) return;
+    v.currentTime = 0;
+    v.play().catch(() => {});
+  }, [k, still]);
+
+  const clip = REEL[k];
+  if (still) {
+    return (
+      <div className="cc-reel cc-reel-still" aria-label="The four photos to take">
+        {REEL.map((c) => (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img key={c.id} src={c.poster} alt={c.title} width={600} height={800} />
+        ))}
+      </div>
+    );
+  }
+  return (
+    <figure className="cc-reel">
+      <video
+        key={clip.id}
+        ref={ref}
+        className="cc-guide"
+        muted
+        playsInline
+        autoPlay
+        preload="auto"
+        poster={clip.poster}
+        src={clip.video}
+        width={600}
+        height={800}
+        aria-label={`Photo ${clip.n}: ${clip.title.toLowerCase()}, shown in 3D`}
+        onEnded={() => window.setTimeout(() => setK((x) => (x + 1) % REEL.length), 1400)}
+      />
+      <figcaption className="cc-reel-cap">
+        <span className="cc-reel-dots" aria-hidden="true">
+          {REEL.map((c, j) => (
+            <i key={c.id} className={j === k ? 'is-on' : undefined} />
+          ))}
+        </span>
+        Photo {clip.n} · {clip.title}
+      </figcaption>
+    </figure>
+  );
+}
+
 export function ConsoleCheckPreview() {
   const [i, setI] = useState(0);
   const [dir, setDir] = useState(1);
@@ -197,25 +259,27 @@ export function ConsoleCheckPreview() {
         <form className="cc-form" onSubmit={send} noValidate>
           <div className={`cc-s${need ? ' is-need' : ''}`} key={i} style={{ ['--dir' as string]: dir }}>
             {screen.kind === 'intro' ? (
-              <>
-                <p className="cc-k">
-                  Free console validation <span className="cc-test">Test page</span>
-                </p>
-                <h1 id="cc-title">
-                  Is your press ready for closed-loop color<span>?</span>
-                </h1>
-                <p className="cc-lead">A few questions and a few photos of your console. Rutherford answers within one business day.</p>
-                <ul className="cc-badges">
-                  <li>Free</li>
-                  <li>About 2 minutes</li>
-                  <li>Reply within 1 business day</li>
-                  <li>No commitment</li>
-                </ul>
-                <button type="button" className="cc-next" onClick={next} ref={setFocus}>
-                  Start <span aria-hidden="true">→</span>
-                </button>
-                <p className="cc-tip">Best on your phone, at the press. At your desk, have your photos ready.</p>
-              </>
+              <div className="cc-intro">
+                <div className="cc-intro-t">
+                  <p className="cc-k">
+                    Free console validation <span className="cc-test">Test page</span>
+                  </p>
+                  <h1 id="cc-title">
+                    Check your press<span>.</span>
+                  </h1>
+                  <p className="cc-lead">Four photos of your console, and we tell you how much closed-loop color can save you: up to 50% less makeready waste.</p>
+                  <ul className="cc-badges">
+                    <li>Free</li>
+                    <li>About 2 minutes</li>
+                    <li>Reply within 1 business day</li>
+                  </ul>
+                  <button type="button" className="cc-next" onClick={next} ref={setFocus}>
+                    Start <span aria-hidden="true">→</span>
+                  </button>
+                  <p className="cc-tip">Best on your phone, at the press.</p>
+                </div>
+                <IntroReel />
+              </div>
             ) : null}
 
             {screen.kind === 'text' ? (
