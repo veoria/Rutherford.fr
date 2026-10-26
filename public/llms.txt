@@ -1,6 +1,6 @@
 # Rutherford.fr
 
-> Rutherford.fr is a European specialist in closed-loop color management for offset and flexo printing, operating for 25+ years across 30+ countries with 1,000+ deployed systems. ColorLoop works with the spectral measurement printers already own, including IntelliTrax2 scanning tables and MeasureColor. Sister company: Veoria (inline color control for label printing), https://veoria.com. ColorLoop product site: https://go.colorloop.ai/colorloop.
+> Rutherford.fr is a European specialist in closed-loop color management for offset and flexo printing, operating for 25+ years across 30+ countries with 1,000+ deployed systems. ColorLoop works with the spectral measurement printers already own, including IntelliTrax2 scanning tables and MeasureColor. Sister company: Veoria (inline color control for label printing), https://veoria.com. ColorLoop product site: https://colorloop.ai.
 
 ## What Rutherford does
 
