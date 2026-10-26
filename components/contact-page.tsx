@@ -36,7 +36,7 @@ type Copy = {
   successTitle: string;
   successBody: string;
   backHome: string;
-  errors: { email: string; message: string; phone: string; generic: string };
+  errors: { email: string; disposable: string; message: string; phone: string; generic: string };
 };
 
 const COPY: Record<Locale, Copy> = {
@@ -74,6 +74,7 @@ const COPY: Record<Locale, Copy> = {
     backHome: 'Back to home',
     errors: {
       email: 'Please enter a valid email address.',
+      disposable: 'Please use your work email address, not a disposable one.',
       message: 'Please write a short message (10 characters minimum).',
       phone: 'Please add a phone number so we can call you back.',
       generic: 'Something went wrong, please retry.',
@@ -113,6 +114,7 @@ const COPY: Record<Locale, Copy> = {
     backHome: 'Retour à l’accueil',
     errors: {
       email: 'Merci de saisir une adresse e-mail valide.',
+      disposable: 'Merci d\'utiliser votre adresse e-mail professionnelle, pas une adresse jetable.',
       message: 'Merci d’écrire un court message (10 caractères minimum).',
       phone: 'Merci d’indiquer un numéro de téléphone pour être rappelé.',
       generic: 'Une erreur est survenue, merci de réessayer.',
@@ -152,6 +154,7 @@ const COPY: Record<Locale, Copy> = {
     backHome: 'Zurück zur Startseite',
     errors: {
       email: 'Bitte geben Sie eine gültige E-Mail-Adresse ein.',
+      disposable: 'Bitte verwenden Sie Ihre geschäftliche E-Mail-Adresse, keine Wegwerfadresse.',
       message: 'Bitte schreiben Sie eine kurze Nachricht (mindestens 10 Zeichen).',
       phone: 'Bitte geben Sie eine Telefonnummer für den Rückruf an.',
       generic: 'Ein Fehler ist aufgetreten, bitte erneut versuchen.',
@@ -191,6 +194,7 @@ const COPY: Record<Locale, Copy> = {
     backHome: 'Torna alla home',
     errors: {
       email: 'Inserisca un indirizzo e-mail valido.',
+      disposable: 'Utilizzi il Suo indirizzo e-mail aziendale, non un indirizzo usa e getta.',
       message: 'Scriva un breve messaggio (almeno 10 caratteri).',
       phone: 'Indichi un numero di telefono per essere richiamato.',
       generic: 'Si è verificato un errore, riprovi.',
@@ -230,6 +234,7 @@ const COPY: Record<Locale, Copy> = {
     backHome: 'Volver al inicio',
     errors: {
       email: 'Introduzca una dirección de e-mail válida.',
+      disposable: 'Utilice su dirección de e-mail profesional, no una dirección desechable.',
       message: 'Escriba un mensaje breve (10 caracteres como mínimo).',
       phone: 'Indique un número de teléfono para que le llamemos.',
       generic: 'Se ha producido un error, inténtelo de nuevo.',
@@ -269,6 +274,7 @@ const COPY: Record<Locale, Copy> = {
     backHome: 'Voltar ao início',
     errors: {
       email: 'Introduza um endereço de e-mail válido.',
+      disposable: 'Utilize o seu endereço de e-mail profissional, não um endereço descartável.',
       message: 'Escreva uma mensagem curta (mínimo 10 caracteres).',
       phone: 'Indique um número de telefone para ser contactado.',
       generic: 'Ocorreu um erro, tente novamente.',
@@ -321,7 +327,11 @@ export function ContactPage() {
           website,
         }),
       });
-      if (!res.ok) throw new Error('request failed');
+      if (!res.ok) {
+        const body = await res.json().catch(() => null);
+        if (body?.error === 'disposable_email') return setError(t.errors.disposable);
+        throw new Error('request failed');
+      }
       trackConversion('contact_submit', { topic, country });
       setSent(true);
       window.scrollTo({ top: 0, behavior: 'smooth' });

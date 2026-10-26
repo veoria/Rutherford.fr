@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { formatAttribution, parseAttribution } from '@/lib/attribution';
 import { syncLeadToPipedrive } from '@/lib/pipedrive';
+import { isBotRequest, isDisposableEmail } from '@/lib/spam-guard';
 
 export const dynamic = 'force-dynamic';
 
@@ -27,6 +28,10 @@ export async function POST(request: NextRequest) {
   if (!email || !EMAIL_RE.test(email) || email.length > 200 || company.length > 200) {
     return NextResponse.json({ error: 'Missing or invalid fields' }, { status: 400 });
   }
+  if (isDisposableEmail(email)) {
+    return NextResponse.json({ error: 'disposable_email' }, { status: 400 });
+  }
+  if (await isBotRequest()) return NextResponse.json({ ok: true });
 
   await syncLeadToPipedrive({
     email,

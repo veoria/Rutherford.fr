@@ -7,6 +7,7 @@ import { CookieConsent } from '@/components/cookie-consent';
 import { AttributionCapture } from '@/components/attribution-capture';
 import { LinkedInInsight } from '@/components/linkedin-insight';
 import { Analytics } from '@vercel/analytics/next';
+import { BotIdClient } from 'botid/client';
 import { BASE, SEO_COPY, localizedMetadata } from '@/lib/seo';
 import './globals.css';
 // import './brutalism.css'; // disabled, v1 design
@@ -75,11 +76,21 @@ const WEBSITE_JSON_LD = {
   inLanguage: ['en', 'fr', 'de', 'it', 'es', 'pt'],
 };
 
+// Public forms checked server-side by Vercel BotID (lib/spam-guard.ts).
+const BOTID_PROTECTED = [
+  { path: '/api/contact', method: 'POST' as const },
+  { path: '/api/newsletter', method: 'POST' as const },
+  { path: '/api/roi-lead', method: 'POST' as const },
+];
+
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const locale = ((headers().get('x-locale') as Locale) || 'en') as Locale;
 
   return (
     <html lang={locale}>
+      <head>
+        <BotIdClient protect={BOTID_PROTECTED} />
+      </head>
       <body>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ORG_JSON_LD) }} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(WEBSITE_JSON_LD) }} />

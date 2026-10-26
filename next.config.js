@@ -67,4 +67,7 @@ const nextConfig = {
   },
 };
 
-module.exports = nextConfig;
+// Vercel BotID: proxies its invisible challenge through our own domain.
+const { withBotId } = require('botid/next/config');
+
+module.exports = withBotId(nextConfig);

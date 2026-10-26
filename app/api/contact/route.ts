@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { formatAttribution, parseAttribution } from '@/lib/attribution';
 import { notifyDiscordContact } from '@/lib/discord';
 import { syncContactRequestToPipedrive } from '@/lib/pipedrive';
+import { isBotRequest, isDisposableEmail } from '@/lib/spam-guard';
 
 export const dynamic = 'force-dynamic';
 
@@ -25,6 +26,8 @@ export async function POST(request: NextRequest) {
 
   const payload = (body ?? {}) as Record<string, unknown>;
   if (str(payload.website, 200)) return NextResponse.json({ ok: true });
+  // Bots get the same silent success as the honeypot: they learn nothing.
+  if (await isBotRequest()) return NextResponse.json({ ok: true });
 
   const email = str(payload.email, 200).toLowerCase();
   const name = str(payload.name, 120);
@@ -42,6 +45,9 @@ export async function POST(request: NextRequest) {
 
   if (!email || !EMAIL_RE.test(email)) {
     return NextResponse.json({ error: 'invalid_email' }, { status: 400 });
+  }
+  if (isDisposableEmail(email)) {
+    return NextResponse.json({ error: 'disposable_email' }, { status: 400 });
   }
   if (message.length < 10) {
     return NextResponse.json({ error: 'message_too_short' }, { status: 400 });

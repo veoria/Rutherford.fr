@@ -16,6 +16,7 @@ import {
   notifyDiscordConsoleValidation,
 } from '@/lib/discord';
 import { dropboxEnabled, uploadConsoleValidation } from '@/lib/dropbox';
+import { isDisposableEmail } from '@/lib/spam-guard';
 import { sendMail } from '@/lib/msgraph';
 import { acknowledgementEmail } from '@/lib/console-validation-emails';
 import { getNotificationEmail, insertConsoleValidation } from '@/lib/console-validations';
@@ -74,6 +75,9 @@ export async function POST(request: NextRequest) {
 
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 200) {
     return NextResponse.json({ error: 'A valid email address is required' }, { status: 400 });
+  }
+  if (isDisposableEmail(email)) {
+    return NextResponse.json({ error: 'Please use your work email address, not a disposable one.' }, { status: 400 });
   }
   if (!companyName || companyName.length > 200) {
     return NextResponse.json({ error: 'Company name is required' }, { status: 400 });

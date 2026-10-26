@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { formatAttribution, parseAttribution } from '@/lib/attribution';
 import { subscribeNewsletterInPipedrive } from '@/lib/pipedrive';
+import { isBotRequest, isDisposableEmail } from '@/lib/spam-guard';
 
 export const dynamic = 'force-dynamic';
 
@@ -24,6 +25,7 @@ export async function POST(request: NextRequest) {
   if (typeof payload.website === 'string' && payload.website.trim()) {
     return NextResponse.json({ ok: true });
   }
+  if (await isBotRequest()) return NextResponse.json({ ok: true });
 
   const email = typeof payload.email === 'string' ? payload.email.trim().toLowerCase() : '';
   const consent = payload.consent === true;
@@ -35,6 +37,9 @@ export async function POST(request: NextRequest) {
 
   if (!email || !EMAIL_RE.test(email) || email.length > 200) {
     return NextResponse.json({ error: 'invalid_email' }, { status: 400 });
+  }
+  if (isDisposableEmail(email)) {
+    return NextResponse.json({ error: 'disposable_email' }, { status: 400 });
   }
   if (!consent) {
     return NextResponse.json({ error: 'consent_required' }, { status: 400 });
