@@ -432,7 +432,7 @@
 }
 .cc-thumbs {
   display: grid;
-  grid-template-columns: repeat(4, 64px);
+  grid-template-columns: repeat(5, 56px);
   gap: 10px;
 }
 .cc-thumbs button {
@@ -476,7 +476,7 @@
     width: auto;
   }
   .cc-thumbs {
-    grid-template-columns: repeat(4, 56px);
+    grid-template-columns: repeat(5, 48px);
   }
 }
 
@@ -590,5 +590,87 @@
   .cc-cam.is-shot .cc-cam-flash,
   .cc-cam.is-shot .cc-cam-shutter::after {
     animation: none;
+  }
+}
+
+/* Photo screens (27/10/2026): guide, title, hint and both actions in one
+   viewport; on a phone nothing to scroll before Next. */
+.cc-ph-media {
+  position: relative;
+  justify-self: center;
+  line-height: 0;
+}
+.cc-taken {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  width: 30%;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 3px solid #fff;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+  animation: cc-taken-in 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+}
+@keyframes cc-taken-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+}
+.cc-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-top: 6px;
+}
+.cc-actions .cc-next {
+  margin-top: 0;
+}
+.cc-actions .cc-shot {
+  min-height: 56px;
+}
+@media (max-width: 700px) {
+  .cc-app {
+    min-height: calc(100svh - 72px);
+    padding: 64px 16px 24px;
+  }
+  .cc-back {
+    top: 12px;
+    left: 12px;
+    width: 40px;
+    height: 40px;
+  }
+  .cc-q,
+  .cc-ph-t .cc-q {
+    font-size: clamp(1.8rem, 8vw, 2.2rem);
+  }
+  .cc-photo {
+    gap: 14px;
+  }
+  .cc-ph-t {
+    gap: 8px;
+    text-align: center;
+    justify-items: center;
+  }
+  .cc-hint {
+    font-size: 0.98rem;
+    line-height: 1.4;
+  }
+  /* The guide takes what the viewport leaves after header, title, hint and actions. */
+  .cc-photo .cc-guide {
+    height: clamp(150px, calc(100svh - 404px), 460px);
+    max-height: none;
+    width: auto;
+  }
+  .cc-actions .cc-shot {
+    flex: 1;
+    width: auto;
+    padding: 0 14px;
+  }
+  .cc-actions .cc-next {
+    width: auto;
+    flex: 0 0 auto;
+    padding: 0 22px;
   }
 }

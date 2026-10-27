@@ -36,9 +36,10 @@ const PHOTOS: Photo[] = [
   },
   {
     id: 'pressPhoto',
-    title: 'The press',
-    hint: 'The press with its brand, type and number of units visible.',
-    poster: '/images/Brand:Type and numbers of units.png',
+    title: 'The whole press',
+    hint: 'Step back and frame the press from feeder to delivery, brand and units visible.',
+    video: '/images/console-check/zoom-press.mp4',
+    poster: '/images/console-check/photo-press.webp',
   },
   {
     id: 'keysPhoto',
@@ -437,53 +438,49 @@ export function ConsoleCheckPreview() {
 
             {screen.kind === 'photo' ? (
               <div className="cc-photo">
-                {screen.photo.video ? (
-                  <video
-                    className="cc-guide"
-                    muted
-                    playsInline
-                    preload="auto"
-                    poster={screen.photo.poster}
-                    src={screen.photo.video}
-                    width={600}
-                    height={800}
-                    aria-label={`Where to take it: ${screen.photo.title.toLowerCase()}, shown in 3D`}
-                    ref={videoRef}
-                  />
-                ) : (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img className="cc-guide cc-guide-img" src={screen.photo.poster} alt={`Example: ${screen.photo.title.toLowerCase()}`} width={600} height={800} />
-                )}
+                <div className="cc-ph-media">
+                  {screen.photo.video ? (
+                    <video
+                      className="cc-guide"
+                      muted
+                      playsInline
+                      preload="auto"
+                      poster={screen.photo.poster}
+                      src={screen.photo.video}
+                      width={600}
+                      height={800}
+                      aria-label={`Where to take it: ${screen.photo.title.toLowerCase()}, shown in 3D`}
+                      ref={videoRef}
+                    />
+                  ) : (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img className="cc-guide" src={screen.photo.poster} alt={`Example: ${screen.photo.title.toLowerCase()}`} width={600} height={800} />
+                  )}
+                  {files[screen.photo.id] ? (
+                    // The visitor's own shot, pinned on the guide: no extra row to scroll past.
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img className="cc-taken" src={files[screen.photo.id]!.url} alt="Your photo" />
+                  ) : null}
+                </div>
                 <div className="cc-ph-t">
                   <p className="cc-n">
-                    {n} / {steps} · Photo {photoIndex} of {photos.length}
+                    Photo {photoIndex} of {photos.length}
                     {screen.photo.optional ? ' · optional' : ''}
                   </p>
                   <h2 className="cc-q" id="cc-title">
                     {screen.photo.title}
                   </h2>
                   <p className="cc-hint">{screen.photo.hint}</p>
-                  <label className={`cc-shot${files[screen.photo.id] ? ' is-done' : ''}`}>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      capture="environment"
-                      onChange={onFile(screen.photo.id)}
-                      ref={setFocus}
-                    />
-                    <span>{files[screen.photo.id] ? 'Change the photo' : 'Take or add the photo'}</span>
-                  </label>
-                  {files[screen.photo.id] ? (
-                    <p className="cc-file">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={files[screen.photo.id]!.url} alt="Your photo" />
-                      {files[screen.photo.id]!.name}
-                    </p>
-                  ) : null}
                   {note ? <p className="cc-note" role="alert">{note}</p> : null}
-                  <button type="button" className="cc-next" onClick={next}>
-                    {screen.photo.optional && !files[screen.photo.id] ? 'Skip' : 'Next'} <span aria-hidden="true">→</span>
-                  </button>
+                  <div className="cc-actions">
+                    <label className={`cc-shot${files[screen.photo.id] ? ' is-done' : ''}`}>
+                      <input type="file" accept="image/*" capture="environment" onChange={onFile(screen.photo.id)} ref={setFocus} />
+                      <span>{files[screen.photo.id] ? 'Retake' : 'Take the photo'}</span>
+                    </label>
+                    <button type="button" className="cc-next" onClick={next}>
+                      {screen.photo.optional && !files[screen.photo.id] ? 'Skip' : 'Next'} <span aria-hidden="true">→</span>
+                    </button>
+                  </div>
                 </div>
               </div>
             ) : null}
