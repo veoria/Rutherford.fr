@@ -358,10 +358,6 @@ export function ConsoleCheckPreview() {
                 </div>
                 <IntroReel />
                 <div className="cc-intro-a">
-                  <ul className="cc-badges">
-                    <li>2 minutes</li>
-                    <li>Quick reply</li>
-                  </ul>
                   <button type="button" className="cc-next" onClick={next} ref={setFocus}>
                     Start <span aria-hidden="true">→</span>
                   </button>
