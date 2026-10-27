@@ -82,40 +82,6 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 // then hands over. Reduced motion: the four end frames, still.
 const REEL = PHOTOS.filter((p) => p.video).map((p, k) => ({ ...p, n: k + 1 }));
 
-// Camera shutter "clack": two short bursts of filtered noise (mirror up, mirror
-// down). Browsers only allow sound after the visitor has interacted with the
-// page, so the first loops are silent; that is fine, the flash carries it.
-let shutterCtx: AudioContext | null = null;
-function playShutter() {
-  try {
-    const AC = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
-    if (!AC) return;
-    shutterCtx = shutterCtx ?? new AC();
-    const ctx = shutterCtx;
-    if (ctx.state !== 'running') return;
-    const burst = (at: number, dur: number, freq: number, gain: number) => {
-      const len = Math.floor(ctx.sampleRate * dur);
-      const buf = ctx.createBuffer(1, len, ctx.sampleRate);
-      const d = buf.getChannelData(0);
-      for (let n = 0; n < len; n++) d[n] = (Math.random() * 2 - 1) * Math.pow(1 - n / len, 3);
-      const src = ctx.createBufferSource();
-      src.buffer = buf;
-      const bp = ctx.createBiquadFilter();
-      bp.type = 'bandpass';
-      bp.frequency.value = freq;
-      bp.Q.value = 0.9;
-      const g = ctx.createGain();
-      g.gain.value = gain;
-      src.connect(bp).connect(g).connect(ctx.destination);
-      src.start(ctx.currentTime + at);
-    };
-    burst(0, 0.035, 3200, 0.35);
-    burst(0.07, 0.05, 1800, 0.25);
-  } catch {
-    /* no audio, no problem */
-  }
-}
-
 function IntroReel() {
   const [k, setK] = useState(0);
   const [still, setStill] = useState(false);
@@ -123,26 +89,11 @@ function IntroReel() {
   const ref = useRef<HTMLVideoElement | null>(null);
   const timers = useRef<number[]>([]);
 
-  // Unlock the shutter sound on the first interaction anywhere on the page.
-  useEffect(() => {
-    const unlock = () => {
-      try {
-        const AC = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
-        shutterCtx = shutterCtx ?? new AC();
-        shutterCtx.resume().catch(() => {});
-      } catch {
-        /* ignore */
-      }
-    };
-    window.addEventListener('pointerdown', unlock, { once: true });
-    return () => window.removeEventListener('pointerdown', unlock);
-  }, []);
   useEffect(() => () => timers.current.forEach((t) => window.clearTimeout(t)), []);
 
   // The zoom has landed on the spot: take the picture, hold it, move on.
   const capture = () => {
     setShot(true);
-    playShutter();
     timers.current.push(
       window.setTimeout(() => setShot(false), 1500),
       window.setTimeout(() => setK((x) => (x + 1) % REEL.length), 1700),
