@@ -15,7 +15,6 @@ const SiteFooter = dynamic(
 );
 
 const IMG = '/images/colorloop-ai';
-const DEMO_URL = 'https://rutherfordindustriesgraphiques-2bd706.pipedrive.com/scheduler/3KG0yJSy/meeting';
 
 // colorloop.ai has en / fr / es / it / pt; German readers land on the English pages.
 const CL_LOCALES: Locale[] = ['fr', 'es', 'it', 'pt'];
@@ -23,139 +22,83 @@ function colorloopUrl(locale: Locale, page = '') {
   const prefix = CL_LOCALES.includes(locale) ? `/${locale}` : '';
   return `https://colorloop.ai${prefix}/${page}`;
 }
-function localPath(locale: Locale, path: string) {
-  return locale === 'en' ? path : `/${locale}${path}`;
-}
 
-const PRESSES = [
-  ['heidelberg', 'Heidelberg'],
-  ['komori', 'Komori'],
-  ['koenig-bauer', 'Koenig & Bauer'],
-  ['manroland', 'Manroland'],
-  ['mitsubishi', 'Mitsubishi'],
-  ['ryobi', 'Ryobi'],
+// The five ink dots of colorloop.ai, in the order of the letters, with the
+// proportions of their drawings (width and height relative to one dot height).
+const DOTS = [
+  ['rouge', 1.152, 1],
+  ['rose', 1.234, 0.997],
+  ['bleu', 1.187, 0.975],
+  ['jaune', 1.016, 1.035],
+  ['vert', 1.1, 0.901],
 ] as const;
 
-const AGENTS = ['rouge', 'rose', 'bleu', 'jaune', 'vert'] as const;
-
 type Copy = {
-  switchCustomer: string;
-  switchNew: string;
-  headline: [string, string];
+  title: [string, string];
   lead: string;
-  offerBig: string;
-  offerSmall: string;
-  offerPrice: string;
   primary: string;
+  secondaryPrefix: string;
   secondary: string;
-  productAlt: string;
-  pressesLabel: string;
-  keepTitle: string;
+  dotsAlt: string;
+  keepTitle: [string, string];
   keepLead: string;
-  keep: string[];
-  gainTitle: string;
-  gain: [string, string][];
-  licenseNote: string;
-  stepsTitle: string;
-  steps: [string, string][];
-  stepsCta: string;
-  newTitle: string;
+  keep: [string, string][];
+  offer: string;
+  offerDetail: string;
+  keepCta: string;
+  keepPhotoAlt: string;
+  newTitle: [string, string];
   newLead: string;
-  loop: [string, string][];
-  operator: string;
-  newPrimary: string;
-  newSecondary: string;
-  agentsAlt: string;
+  newCta: string;
+  newPhotoAlt: string;
 };
 
 const EN: Copy = {
-  switchCustomer: 'Already a Rutherford customer',
-  switchNew: 'New to Rutherford',
-  headline: ['Rutherford customer?', 'Move to ColorLoop'],
-  lead: 'For EasySet-EasyLoop and IntelliSet-IntelliLoop users. Keep your press, your console and your Rutherford hardware. ColorLoop goes on top, without reinstalling.',
-  offerBig: '3 months free',
-  offerSmall: 'with the yearly plan',
-  offerPrice: '€5,300 a year per press, excl. VAT. Or €590 a month, no commitment.',
-  primary: 'Move to ColorLoop',
-  secondary: 'Check your console first',
-  productAlt: 'ColorLoop running on the Lenovo ThinkCentre M90a at the press',
-  pressesLabel: 'Works on these presses',
-  keepTitle: 'Same hardware. New software.',
-  keepLead: 'Nothing to buy again, nothing to reinstall. The loop is added to what already runs in your pressroom.',
-  keep: ['Your press and its console', 'Your Rutherford hardware', 'Your Rutherford license', 'Your operators'],
-  gainTitle: 'What changes at the press',
-  gain: [
-    ['Automatic job setup', 'Color mapping and colorbar detection are done when the job is created.'],
-    ['Autosetup in about 30 seconds', 'Pick the job, ColorLoop presets the ink keys.'],
-    ['Corrections after each measured sheet', 'Pull after pull, the operator keeps control.'],
-    ['A modern Windows interface', 'Runs on Windows 10 or 11, at the press.'],
+  title: ['Rutherford customer?', 'Switch to ColorLoop'],
+  lead: 'Same press, same console, same Rutherford hardware. ColorLoop goes on top, with 3 months free on the yearly plan.',
+  primary: 'Switch to ColorLoop',
+  secondaryPrefix: 'New to Rutherford?',
+  secondary: 'Discover ColorLoop',
+  dotsAlt: 'The five ColorLoop ink dots: red, pink, blue, yellow and green',
+  keepTitle: ['Keep your hardware.', 'Change the software.'],
+  keepLead: 'For EasySet-EasyLoop and IntelliSet-IntelliLoop users. Nothing to reinstall: ColorLoop is added to what already runs at your press.',
+  keep: [
+    ['Automatic job setup', 'Colorbar found, ink keys preset in about 30 seconds.'],
+    ['Corrections after each measured sheet', 'Pull after pull. Your operator keeps control.'],
+    ['Your Rutherford license stays yours', 'Stop ColorLoop and you keep working as before.'],
   ],
-  licenseNote: 'Your EasySet-EasyLoop or IntelliSet-IntelliLoop license stays yours. Stop ColorLoop and you keep working as before.',
-  stepsTitle: 'Switch in four steps',
-  steps: [
-    ['Tell us your system', 'EasySet-EasyLoop or IntelliSet-IntelliLoop, and your presses.'],
-    ['See it running', 'A demo with Rutherford, on your kind of press.'],
-    ['Subscribe and activate', 'Online. Rutherford checks your system within five business days, then activates ColorLoop.'],
-    ['Connect the shop', 'Add ColorConnect to prepare jobs once and follow every press.'],
-  ],
-  stepsCta: 'See the upgrade on colorloop.ai',
-  newTitle: 'The same color, on every press',
+  offer: '3 months free',
+  offerDetail: 'with the yearly plan: €5,300 a year per press, excl. VAT. Or €590 a month, no commitment.',
+  keepCta: 'See the offer on colorloop.ai',
+  keepPhotoAlt: 'An operator at the ColorLoop screen next to the press',
+  newTitle: ['The same color,', 'anywhere in the world'],
   newLead: 'ColorLoop presets the ink keys on sheetfed offset, then corrects after each measured sheet. For commercial and packaging printers.',
-  loop: [
-    ['Preset', 'The ink keys are set from the job before the first sheet.'],
-    ['Measure', 'Each measured sheet is compared with the target, zone by zone.'],
-    ['Correct', 'ColorLoop proposes the corrections. The operator validates.'],
-    ['Follow', 'Validated settings improve the next presets.'],
-  ],
-  operator: 'The operator keeps control. ColorLoop does the arithmetic.',
-  newPrimary: 'Discover ColorLoop',
-  newSecondary: 'Book a demo',
-  agentsAlt: 'The five ColorLoop ink characters',
+  newCta: 'Discover ColorLoop',
+  newPhotoAlt: 'An operator checks a printed sheet at the press console',
 };
 
 const FR: Copy = {
-  switchCustomer: 'Déjà client Rutherford',
-  switchNew: 'Nouveau chez Rutherford',
-  headline: ['Client Rutherford ?', 'Passez à ColorLoop'],
-  lead: 'Pour les utilisateurs EasySet-EasyLoop et IntelliSet-IntelliLoop. Gardez votre presse, votre pupitre et votre matériel Rutherford. ColorLoop s’ajoute par-dessus, sans réinstallation.',
-  offerBig: '3 mois offerts',
-  offerSmall: 'avec l’abonnement annuel',
-  offerPrice: '5 300 € HT par presse et par an. Ou 590 € HT par mois, sans engagement.',
+  title: ['Client Rutherford ?', 'Passez à ColorLoop'],
+  lead: 'Même presse, même pupitre, même matériel Rutherford. ColorLoop s’ajoute par-dessus, avec 3 mois offerts sur l’abonnement annuel.',
   primary: 'Passer à ColorLoop',
-  secondary: 'Valider d’abord ma console',
-  productAlt: 'ColorLoop sur le Lenovo ThinkCentre M90a, au pied de la presse',
-  pressesLabel: 'Compatible avec ces presses',
-  keepTitle: 'Même matériel. Nouveau logiciel.',
-  keepLead: 'Rien à racheter, rien à réinstaller. La boucle s’ajoute à ce qui tourne déjà dans votre atelier.',
-  keep: ['Votre presse et son pupitre', 'Votre matériel Rutherford', 'Votre licence Rutherford', 'Vos conducteurs'],
-  gainTitle: 'Ce qui change à la presse',
-  gain: [
-    ['Création du travail automatique', 'Mapping couleur et détection de la barre de contrôle dès la création du travail.'],
-    ['Préréglage en 30 secondes environ', 'Choisissez le travail, ColorLoop prérègle les clés d’encrage.'],
-    ['Corrections après chaque feuille mesurée', 'Tirage après tirage, le conducteur garde la main.'],
-    ['Une interface Windows moderne', 'Sous Windows 10 ou 11, au pied de la presse.'],
+  secondaryPrefix: 'Nouveau chez Rutherford ?',
+  secondary: 'Découvrir ColorLoop',
+  dotsAlt: 'Les cinq dots ColorLoop : rouge, rose, bleu, jaune et vert',
+  keepTitle: ['Gardez votre matériel.', 'Changez de logiciel.'],
+  keepLead: 'Pour les utilisateurs EasySet-EasyLoop et IntelliSet-IntelliLoop. Rien à réinstaller : ColorLoop s’ajoute à ce qui tourne déjà à votre presse.',
+  keep: [
+    ['Création du travail automatique', 'Barre de contrôle détectée, clés d’encrage préréglées en 30 secondes environ.'],
+    ['Corrections après chaque feuille mesurée', 'Tirage après tirage. Le conducteur garde la main.'],
+    ['Votre licence Rutherford reste la vôtre', 'Si vous arrêtez ColorLoop, vous continuez comme avant.'],
   ],
-  licenseNote: 'Votre licence EasySet-EasyLoop ou IntelliSet-IntelliLoop reste la vôtre. Si vous arrêtez ColorLoop, vous continuez comme avant.',
-  stepsTitle: 'Passer à ColorLoop en quatre étapes',
-  steps: [
-    ['Décrivez votre système', 'EasySet-EasyLoop ou IntelliSet-IntelliLoop, et vos presses.'],
-    ['Voyez-le tourner', 'Une démo avec Rutherford, sur votre type de presse.'],
-    ['Abonnez-vous, on active', 'En ligne. Rutherford vérifie votre système sous cinq jours ouvrés, puis active ColorLoop.'],
-    ['Connectez l’atelier', 'Ajoutez ColorConnect pour préparer les travaux une fois et suivre chaque presse.'],
-  ],
-  stepsCta: 'Voir l’offre sur colorloop.ai',
-  newTitle: 'La même couleur, sur toutes vos presses',
-  newLead: 'ColorLoop prérègle les clés d’encrage en offset feuille à feuille, puis corrige après chaque feuille mesurée. Pour les imprimeurs de labeur et de packaging.',
-  loop: [
-    ['Prérégler', 'Les clés d’encrage sont réglées depuis le travail, avant la première feuille.'],
-    ['Mesurer', 'Chaque feuille mesurée est comparée à la cible, zone par zone.'],
-    ['Corriger', 'ColorLoop propose les corrections. Le conducteur valide.'],
-    ['Suivre', 'Les réglages validés améliorent les prochains préréglages.'],
-  ],
-  operator: 'Le conducteur garde la main. ColorLoop fait les calculs.',
-  newPrimary: 'Découvrir ColorLoop',
-  newSecondary: 'Réserver une démo',
-  agentsAlt: 'Les cinq personnages encre de ColorLoop',
+  offer: '3 mois offerts',
+  offerDetail: 'avec l’abonnement annuel : 5 300 € HT par presse et par an. Ou 590 € HT par mois, sans engagement.',
+  keepCta: 'Voir l’offre sur colorloop.ai',
+  keepPhotoAlt: 'Un conducteur devant l’écran ColorLoop, au pied de la presse',
+  newTitle: ['La même couleur,', 'partout dans le monde'],
+  newLead: 'ColorLoop prérègle les clés d’encrage en offset feuille, puis corrige après chaque feuille mesurée. Pour les imprimeurs de labeur et de packaging.',
+  newCta: 'Découvrir ColorLoop',
+  newPhotoAlt: 'Un conducteur contrôle une feuille imprimée au pupitre',
 };
 
 // German, Italian, Spanish and Portuguese copy to follow once the direction is approved.
@@ -165,159 +108,85 @@ export function ColorLoopHome() {
   const { locale } = useLanguage();
   const t = COPY[locale];
   const upgradeUrl = colorloopUrl(locale, 'rutherford-customers');
+  const discoverUrl = colorloopUrl(locale);
 
   return (
     <main className="page-shell clh" id="top">
       <SiteNav current="home" />
 
       <section className="clh-hero" aria-labelledby="clh-title">
-        <video
-          className="clh-hero-video"
-          src={`${IMG}/press-night-loop.mp4`}
-          poster={`${IMG}/press-night-poster.webp`}
-          autoPlay
-          muted
-          loop
-          playsInline
-          aria-hidden="true"
-        />
-        <div className="clh-hero-shade" aria-hidden="true" />
+        <div className="clh-night">
+          <img className="clh-wordmark" src={`${IMG}/logo-white.png`} alt="ColorLoop" width={1204} height={272} />
 
-        <div className="clh-wrap clh-hero-grid">
-          <div className="clh-hero-copy">
-            <nav className="clh-audience" aria-label={t.switchCustomer}>
-              <a href="#rutherford-customers" aria-current="true">{t.switchCustomer}</a>
-              <a href="#new-to-rutherford">{t.switchNew}</a>
-            </nav>
-
-            <img className="clh-wordmark" src={`${IMG}/logo-white.png`} alt="ColorLoop" width={1204} height={272} />
-
-            <h1 id="clh-title" className="clh-title">
-              <span>{t.headline[0]}</span>
-              <span>
-                {t.headline[1]}
-                <i className="clh-dot" aria-hidden="true">.</i>
-              </span>
-            </h1>
-
-            <p className="clh-lead">{t.lead}</p>
-
-            <div className="clh-offer">
-              <p className="clh-offer-big">{t.offerBig}</p>
-              <p className="clh-offer-small">{t.offerSmall}</p>
-              <p className="clh-offer-price">{t.offerPrice}</p>
-            </div>
-
-            <div className="clh-actions">
-              <a className="clh-btn clh-btn-light" href={upgradeUrl}>
-                {t.primary}
-                <svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true"><path d="M7 4l6 6-6 6" /></svg>
-              </a>
-              <a className="clh-btn clh-btn-line" href={localPath(locale, '/console-validation')}>
-                {t.secondary}
-              </a>
-            </div>
-          </div>
-
-          <figure className="clh-product">
-            <img
-              src={`${IMG}/colorloop-m90a-gen6-camera.webp`}
-              alt={t.productAlt}
-              width={1200}
-              height={763}
-            />
-          </figure>
-        </div>
-
-        <div className="clh-wrap clh-presses">
-          <p>{t.pressesLabel}</p>
-          <ul>
-            {PRESSES.map(([file, name]) => (
-              <li key={file}>
-                <img src={`${IMG}/presses/${file}.webp`} alt={name} loading="lazy" />
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
-
-      <section className="clh-customers" id="rutherford-customers" aria-labelledby="clh-keep">
-        <div className="clh-wrap">
-          <div className="clh-split">
-            <div>
-              <h2 id="clh-keep" className="clh-h2">
-                {t.keepTitle}
-              </h2>
-              <p className="clh-body">{t.keepLead}</p>
-              <ul className="clh-keep">
-                {t.keep.map((item) => (
-                  <li key={item}>
-                    <svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true"><path d="M4 10.5l4 4 8-9" /></svg>
-                    {item}
-                  </li>
-                ))}
-              </ul>
-              <p className="clh-note">{t.licenseNote}</p>
-            </div>
-
-            <div>
-              <h3 className="clh-h3">{t.gainTitle}</h3>
-              <dl className="clh-gain">
-                {t.gain.map(([term, desc]) => (
-                  <div key={term}>
-                    <dt>{term}</dt>
-                    <dd>{desc}</dd>
-                  </div>
-                ))}
-              </dl>
-            </div>
-          </div>
-
-          <h3 className="clh-h3 clh-steps-title">{t.stepsTitle}</h3>
-          <ol className="clh-steps">
-            {t.steps.map(([title, desc]) => (
-              <li key={title}>
-                <strong>{title}</strong>
-                <span>{desc}</span>
-              </li>
-            ))}
-          </ol>
-          <a className="clh-link" href={upgradeUrl}>
-            {t.stepsCta}
-            <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><path d="M7 4l6 6-6 6" /></svg>
-          </a>
-        </div>
-      </section>
-
-      <section className="clh-new" id="new-to-rutherford" aria-labelledby="clh-new-title">
-        <div className="clh-wrap">
-          <h2 id="clh-new-title" className="clh-h2 clh-h2-big">
-            {t.newTitle}
-            <i className="clh-dot" aria-hidden="true">.</i>
-          </h2>
-          <p className="clh-body clh-body-wide">{t.newLead}</p>
-
-          <ol className="clh-loop">
-            {t.loop.map(([title, desc], i) => (
-              <li key={title} style={{ ['--agent' as string]: `url(${IMG}/agents/agent-${AGENTS[i]}-joie-small.webp)` }}>
-                <span className="clh-loop-agent" aria-hidden="true" />
-                <strong>{title}</strong>
-                <span>{desc}</span>
-              </li>
-            ))}
-          </ol>
-
-          <p className="clh-operator">{t.operator}</p>
+          <h1 id="clh-title" className="clh-title">
+            {t.title[0]}
+            <br />
+            {t.title[1]}
+            <span className="clh-dot" aria-hidden="true">.</span>
+          </h1>
+          <p className="clh-lead">{t.lead}</p>
 
           <div className="clh-actions">
-            <a className="clh-btn clh-btn-dark" href={colorloopUrl(locale)}>
-              {t.newPrimary}
-              <svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true"><path d="M7 4l6 6-6 6" /></svg>
-            </a>
-            <a className="clh-btn clh-btn-outline" href={DEMO_URL}>
-              {t.newSecondary}
+            <a className="clh-btn" href={upgradeUrl}>{t.primary}</a>
+            <a className="clh-textlink" href={discoverUrl}>
+              <span>{t.secondaryPrefix}</span> {t.secondary}
             </a>
           </div>
+
+          <div className="clh-dots" role="img" aria-label={t.dotsAlt}>
+            {DOTS.map(([name, w, h], i) => (
+              <span
+                key={name}
+                className="clh-ink"
+                style={{ ['--i' as string]: i, ['--dw' as string]: w, ['--dh' as string]: h }}
+              >
+                <img src={`${IMG}/dots/dot-${name}-neutre-640.webp`} alt="" decoding="async" />
+                <img className="clh-ink-joy" src={`${IMG}/dots/dot-${name}-joie-640.webp`} alt="" decoding="async" />
+              </span>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="clh-keep" aria-labelledby="clh-keep-title">
+        <div className="clh-wrap clh-keep-grid">
+          <figure className="clh-photo">
+            <img src={`${IMG}/photos/dsc6999.webp`} alt={t.keepPhotoAlt} width={1200} height={798} loading="lazy" />
+          </figure>
+          <div className="clh-keep-copy">
+            <h2 id="clh-keep-title" className="clh-h2">
+              {t.keepTitle[0]}
+              <br />
+              {t.keepTitle[1]}
+            </h2>
+            <p className="clh-body">{t.keepLead}</p>
+            <ul className="clh-list">
+              {t.keep.map(([head, detail]) => (
+                <li key={head}>
+                  <strong>{head}</strong>
+                  <span>{detail}</span>
+                </li>
+              ))}
+            </ul>
+            <p className="clh-offer">
+              <strong>{t.offer}</strong> {t.offerDetail}
+            </p>
+            <a className="clh-btn clh-btn-ink" href={upgradeUrl}>{t.keepCta}</a>
+          </div>
+        </div>
+      </section>
+
+      <section className="clh-new" aria-labelledby="clh-new-title">
+        <img className="clh-new-photo" src={`${IMG}/photos/dsc7179.webp`} alt={t.newPhotoAlt} width={1200} height={799} loading="lazy" />
+        <div className="clh-new-copy">
+          <h2 id="clh-new-title" className="clh-h2">
+            {t.newTitle[0]}
+            <br />
+            {t.newTitle[1]}
+            <span className="clh-dot" aria-hidden="true">.</span>
+          </h2>
+          <p className="clh-body">{t.newLead}</p>
+          <a className="clh-btn" href={discoverUrl}>{t.newCta}</a>
         </div>
       </section>
 
