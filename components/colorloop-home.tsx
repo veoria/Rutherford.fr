@@ -1,13 +1,14 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
+import Script from 'next/script';
 import { useLanguage, type Locale } from '@/components/language-provider';
 import { SiteNav } from '@/components/site-nav';
 import HOME_LAYOUT from '@/data/home/layout.json';
 import HELPS_COPY from '@/data/home/how-rutherford-helps.json';
 import PPWR_COPY from '@/data/home/ppwr-section.json';
 import { homeLink } from '@/lib/home-links';
+import { STORY_MARKUP } from '@/components/colorloop-story-markup';
 import './colorloop-home.css';
 
 // The current homepage's blocks, in the order of data/home/layout.json, so the
@@ -64,18 +65,6 @@ const CLIPS = [
 ];
 const FACES = ['r7_4EdplcdE', 'ut247z4ren8', 'yAZbtKzN_j0'];
 
-// The real screen's geometry in image units (1200 x 763, measured on the
-// Lenovo photo by colorloop.ai): 6 units, 32 ink zones plus the sum column.
-const ZONES = 32;
-const UNITS = 6;
-const zx = (z: number) => 121 + z * 30.48;
-const uy = (u: number) => 150 + u * 89.8;
-const UNIT_INK = ['#2b2726', '#008be3', '#d9007b', '#eacc00', '#ff8c00', '#f4b900'];
-// A fixed demo pattern of measured results: 0 on target, 1 close, 2 out.
-const MEASURED = Array.from({ length: UNITS }, (_, u) =>
-  Array.from({ length: ZONES }, (_, z) => ((z * 7 + u * 11) % 13 === 0 ? 2 : (z * 5 + u * 3) % 9 === 0 ? 1 : 0))
-);
-
 type Copy = {
   title: [string, string];
   lead: string;
@@ -88,14 +77,6 @@ type Copy = {
   clipsLead: string;
   clipsLink: string;
   playFilm: string;
-  storyTitle: [string, string];
-  storyLead: string;
-  steps: { name: string; title: string; body: string }[];
-  presetFig: [string, string, string, string];
-  toastPreset: string;
-  toastCorrect: string;
-  operator: string;
-  screenNote: string;
   whyTitle: string;
   whyLead: string;
   warnLabel: string;
@@ -128,18 +109,6 @@ const EN: Copy = {
   clipsLead: '1,000+ systems in 30+ countries. Pick a film to play it.',
   clipsLink: 'Watch the customer stories',
   playFilm: 'Play the film',
-  storyTitle: ['See the color.', 'Control the run.'],
-  storyLead: 'ColorLoop runs on a PC next to the press console. It works in three steps.',
-  steps: [
-    { name: 'Preset', title: 'Preset', body: 'Ink-key settings calculated from the plates, paper and ink, sent to the console before the first sheet.' },
-    { name: 'Measure', title: 'Measure', body: 'Your operator scans the color bar. A color-coded view shows where each ink zone sits against its target.' },
-    { name: 'Correct', title: 'Correct', body: 'Each zone is compared with its target and the corrections go to the console, after each measured sheet, pull after pull.' },
-  ],
-  presetFig: ['About 30 s', 'Automatic job setup', 'At least 10 min', 'Manual job setup'],
-  toastPreset: 'Preset sent with success',
-  toastCorrect: 'Correction sent with success',
-  operator: 'Your operator stays in control.',
-  screenNote: 'Real screen, demo job. The animation over it is an illustration with sample values.',
   whyTitle: 'Why change now',
   whyLead: 'Your Rutherford system keeps running. The PC under it may not.',
   warnLabel: 'Security',
@@ -176,18 +145,6 @@ const FR: Copy = {
   clipsLead: '1 000+ systèmes dans 30+ pays. Choisissez un film pour le lancer.',
   clipsLink: 'Voir les témoignages clients',
   playFilm: 'Lancer le film',
-  storyTitle: ['Voyez la couleur.', 'Pilotez le tirage.'],
-  storyLead: 'ColorLoop tourne sur un PC à côté du pupitre. Trois étapes.',
-  steps: [
-    { name: 'Prérégler', title: 'Prérégler', body: 'Les clés d’encrage sont calculées depuis les plaques, le papier et l’encre, puis envoyées au pupitre avant la première feuille.' },
-    { name: 'Mesurer', title: 'Mesurer', body: 'Le conducteur scanne la barre de contrôle. Une vue en couleur montre où se situe chaque zone d’encrage par rapport à sa cible.' },
-    { name: 'Corriger', title: 'Corriger', body: 'Chaque zone est comparée à sa cible et les corrections partent au pupitre, après chaque feuille mesurée, tirage après tirage.' },
-  ],
-  presetFig: ['30 s environ', 'Calage préparé automatiquement', 'Au moins 10 min', 'Calage préparé à la main'],
-  toastPreset: 'Préréglage envoyé',
-  toastCorrect: 'Correction envoyée',
-  operator: 'Le conducteur garde la main.',
-  screenNote: 'Écran réel, travail de démonstration. L’animation par-dessus est une illustration avec des valeurs d’exemple.',
   whyTitle: 'Pourquoi changer maintenant',
   whyLead: 'Votre système Rutherford continue de tourner. Le PC qui est dessous, peut-être pas.',
   warnLabel: 'Sécurité',
@@ -230,83 +187,16 @@ function pauseClip(e: React.SyntheticEvent<HTMLAnchorElement>) {
   e.currentTarget.querySelector('video')?.pause();
 }
 
-/* ---------- The story: the real screen, animated in three steps ---------- */
-const STEP_MS = [5200, 6200, 6200];
-
-function Story({ t }: { t: Copy }) {
-  const ref = useRef<HTMLElement>(null);
-  const [step, setStep] = useState(0); // 0 = not started, 1..3
-  const [auto, setAuto] = useState(true);
-
-  // Starts when the section comes into view, then plays the three steps once.
-  useEffect(() => {
-    const el = ref.current;
-    if (!el || step > 0) return;
-    const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setStep(1); io.disconnect(); } }, { threshold: 0.4 });
-    io.observe(el);
-    return () => io.disconnect();
-  }, [step]);
-  useEffect(() => {
-    if (!auto || step === 0 || step >= 3) return;
-    const id = setTimeout(() => setStep(step + 1), STEP_MS[step - 1]);
-    return () => clearTimeout(id);
-  }, [auto, step]);
-
-  const go = (s: number) => { setAuto(false); setStep(0); requestAnimationFrame(() => setStep(s)); };
-  const current = t.steps[Math.max(0, step - 1)];
-
+/* ---------- The story: colorloop.ai's own section and script ---------- */
+function Story({ locale }: { locale: Locale }) {
+  const html = STORY_MARKUP[locale === 'fr' ? 'fr' : 'en'];
   return (
-    <section className="clh-story" ref={ref} data-step={step} aria-labelledby="clh-story-title">
-      <div className="clh-wrap">
-        <h2 id="clh-story-title" className="clh-h2">
-          {t.storyTitle[0]}
-          <br />
-          {t.storyTitle[1]}
-        </h2>
-        <div className="clh-story-grid">
-          <figure className="clh-cam">
-            <img src={`${IMG}/pc-colorloop.webp`} alt="" width={1200} height={763} loading="lazy" />
-            <svg className="clh-screen" viewBox="0 0 1200 763" aria-hidden="true">
-              {MEASURED.map((row, u) => row.map((m, z) => (
-                <rect
-                  key={`${u}-${z}`}
-                  className={`clh-pill m${m}`}
-                  x={zx(z)} y={uy(u)} width={29} height={62} rx={4}
-                  style={{ ['--ink' as string]: UNIT_INK[u], ['--z' as string]: z, ['--u' as string]: u }}
-                />
-              )))}
-              <rect className="clh-beam" x={121} y={140} width={6} height={548} rx={3} />
-            </svg>
-            <p className="clh-toast clh-toast-preset"><i />{t.toastPreset}</p>
-            <p className="clh-toast clh-toast-correct"><i />{t.toastCorrect}</p>
-            <img className="clh-agent" src={`${IMG}/agent-vert-joie-small.webp`} alt="" width={180} height={146} loading="lazy" />
-            <figcaption>{t.screenNote}</figcaption>
-          </figure>
-
-          <div className="clh-beats">
-            <p className="clh-body">{t.storyLead}</p>
-            <nav className="clh-rail" aria-label="ColorLoop steps">
-              {t.steps.map((s, i) => (
-                <button key={s.name} type="button" aria-current={step === i + 1 ? 'step' : undefined} onClick={() => go(i + 1)}>
-                  <i>0{i + 1}</i> {s.name}
-                </button>
-              ))}
-            </nav>
-            <div className="clh-beat" key={step}>
-              <h3>{current.title}</h3>
-              <p>{current.body}</p>
-              {step === 1 && (
-                <div className="clh-setup">
-                  <div><b>{t.presetFig[0]}</b><span>{t.presetFig[1]}</span><i className="clh-bar clh-bar-auto" /></div>
-                  <div><b>{t.presetFig[2]}</b><span>{t.presetFig[3]}</span><i className="clh-bar clh-bar-man" /></div>
-                </div>
-              )}
-              {step === 3 && <p className="clh-operator">{t.operator}</p>}
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+    <>
+      <link rel="stylesheet" href="/colorloop-story/home-story.css" />
+      <div className="clh-story" dangerouslySetInnerHTML={{ __html: html }} />
+      <Script src="/colorloop-story/motion.js" strategy="afterInteractive" />
+      <Script src="/colorloop-story/home-story.js" strategy="afterInteractive" />
+    </>
   );
 }
 
@@ -445,7 +335,7 @@ export function ColorLoopHome() {
         </div>
       </section>
 
-      <Story t={t} />
+      <Story locale={locale} />
       <RoiTeaser />
 
       <section className="clh-warn" aria-labelledby="clh-warn-title" role="region">
