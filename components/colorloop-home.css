@@ -35,6 +35,8 @@
 .clh-btn:active { transform: scale(0.98); }
 .clh-btn-ink { background: var(--clh-night); color: var(--clh-white); }
 .clh-btn-ink:hover { background: #2a2a30; }
+.clh-btn-yellow { background: var(--clh-yellow); color: var(--clh-night); font-weight: 600; }
+.clh-btn-yellow:hover { background: #ffd93a; }
 .clh-btn-outline { background: transparent; color: var(--clh-night); border: 1px solid var(--clh-night); }
 .clh-btn-outline:hover { background: rgba(20, 20, 22, 0.06); }
 .clh-textlink { display: inline-flex; align-items: center; min-height: 44px; font-size: 16px; font-weight: 500; color: var(--clh-white); text-decoration: underline; text-underline-offset: 6px; text-decoration-thickness: 1px; }
@@ -115,6 +117,8 @@
 @keyframes clh-blink { 0%, 100% { box-shadow: 0 0 0 0 rgba(251, 203, 5, 0.5); } 50% { box-shadow: 0 0 0 12px rgba(251, 203, 5, 0); } }
 .clh-warn h2 { margin: 0; font-size: clamp(38px, 5.6vw, 84px); line-height: 1.0; font-weight: 700; letter-spacing: -0.04em; text-wrap: balance; max-width: 13em; }
 .clh-warn-body { margin: 24px 0 0; max-width: 36em; font-size: clamp(18px, 1.5vw, 22px); line-height: 1.5; color: var(--clh-fg-2); text-wrap: pretty; }
+.clh-warn .clh-actions-left { margin-top: 28px; }
+.clh-cfg { scroll-margin-top: 90px; }
 .clh-warn dl { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; margin: clamp(32px, 4vw, 48px) 0 0; }
 .clh-warn dl div { padding-top: 16px; border-top: 2px solid var(--clh-yellow); }
 .clh-warn dt { font-size: 18px; font-weight: 600; }

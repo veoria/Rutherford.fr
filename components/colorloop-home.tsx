@@ -72,6 +72,7 @@ type Copy = {
   warnBody: string;
   warn: [string, string][];
   warnNote: string;
+  warnCta: string;
   cfgTitle: string;
   cfgLead: string;
   cfgPlan: string;
@@ -112,6 +113,7 @@ const EN: Copy = {
     ['Cyber Resilience Act', 'EU regulation 2024/2847: reporting since September 11, 2026, main obligations from December 11, 2027.'],
   ],
   warnNote: 'Applicability depends on the product and each party’s role. This is not a statement of certification.',
+  warnCta: 'Update my Rutherford system',
   cfgTitle: 'Prepare your ColorLoop.',
   cfgLead: 'Three choices. Then order online, Rutherford checks your system and activates it.',
   cfgPlan: 'Plan',
@@ -152,6 +154,7 @@ const FR: Copy = {
     ['Cyber Resilience Act', 'Règlement UE 2024/2847 : signalement depuis le 11 septembre 2026, obligations principales au 11 décembre 2027.'],
   ],
   warnNote: 'L’applicabilité dépend du produit et du rôle de chacun. Ceci n’est pas une déclaration de certification.',
+  warnCta: 'Mettre à jour mon système Rutherford',
   cfgTitle: 'Préparez votre ColorLoop.',
   cfgLead: 'Trois choix. Puis commandez en ligne, Rutherford vérifie votre système et l’active.',
   cfgPlan: 'Abonnement',
@@ -235,7 +238,7 @@ function Configurator({ locale, t, upgradeUrl, checkUrl }: { locale: Locale; t: 
   );
 
   return (
-    <section className="clh-cfg" aria-labelledby="clh-cfg-title">
+    <section className="clh-cfg" id="prepare" aria-labelledby="clh-cfg-title">
       <div className="clh-wrap clh-cfg-grid">
         <div className="clh-cfg-copy">
           <h2 id="clh-cfg-title" className="clh-h2">{t.cfgTitle}</h2>
@@ -411,6 +414,9 @@ export function ColorLoopHome({ tone = 'light' }: { tone?: 'night' | 'light' }) 
           </p>
           <h2 id="clh-warn-title">{t.warnTitle}</h2>
           <p className="clh-warn-body">{t.warnBody}</p>
+          <div className="clh-actions clh-actions-left">
+            <a className="clh-btn clh-btn-yellow" href="#prepare">{t.warnCta}</a>
+          </div>
           <dl>
             {t.warn.map(([term, desc]) => <div key={term}><dt>{term}</dt><dd>{desc}</dd></div>)}
           </dl>
