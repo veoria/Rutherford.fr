@@ -340,7 +340,7 @@ const ORDER = [
   'team-showcase',
 ];
 
-export function ColorLoopHome() {
+export function ColorLoopHome({ tone = 'night' }: { tone?: 'night' | 'light' }) {
   const { locale, t, upgradeUrl } = useCopy();
   const discoverUrl = colorloopUrl(locale);
   const checkUrl = localPath(locale, '/console-validation');
@@ -349,12 +349,12 @@ export function ColorLoopHome() {
   useClipsAutoplay();
 
   return (
-    <main className="page-shell clh" id="top">
+    <main className={`page-shell clh ${tone === 'light' ? 'clh-light' : ''}`} id="top">
       <SiteNav current="home" />
 
       <section className="clh-hero" aria-labelledby="clh-title">
         <div className="clh-night">
-          <img className="clh-wordmark" src={`${IMG}/logo-white.png`} alt="ColorLoop" width={1204} height={272} />
+          <img className="clh-wordmark" src={`${IMG}/${tone === 'light' ? 'logo.png' : 'logo-white.png'}`} alt="ColorLoop" width={1204} height={272} />
           <h1 id="clh-title" className="clh-title">
             {t.title[0]}
             <br />
