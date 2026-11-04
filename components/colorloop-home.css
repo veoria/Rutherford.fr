@@ -218,8 +218,8 @@
 .clh-light .clh-night .clh-btn { background: var(--clh-night); color: var(--clh-white); }
 .clh-light .clh-night .clh-btn:hover { background: #2a2a30; }
 .clh-light .clh-textlink, .clh-light .clh-faces-link { color: var(--clh-text); }
-.clh-light .clh-marquee img { filter: none; opacity: 0.8; }
-.clh-light .clh-clips-band { background: var(--clh-white); color: var(--clh-text); border-top: 1px solid var(--clh-rule); }
+.clh-light .clh-marquee img { filter: brightness(0); opacity: 0.45; }
+.clh-light .clh-clips-band { background: var(--clh-white); color: var(--clh-text); }
 .clh-light .clh-faces img { border-color: var(--clh-white); }
 .clh-light .clh-clip { background: #e9e9ec; }
 .clh-light .clh-presses { border-top: 0; }
