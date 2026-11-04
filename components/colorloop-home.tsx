@@ -5,7 +5,6 @@ import dynamic from 'next/dynamic';
 import { useLanguage, type Locale } from '@/components/language-provider';
 import { SiteNav } from '@/components/site-nav';
 import HOME_LAYOUT from '@/data/home/layout.json';
-import PPWR_COPY from '@/data/home/ppwr-section.json';
 import { homeLink } from '@/lib/home-links';
 import { STORY_MARKUP } from '@/components/colorloop-story-markup';
 import { HERO_BOOT, HERO_DOTS } from '@/components/colorloop-hero-markup';
@@ -84,7 +83,6 @@ type Copy = {
   cfgLicense: string;
   orderCta: string;
   checkCta: string;
-  regulationCta: string;
   articlesTitle: string;
   articlesAll: string;
   whoTitle: string;
@@ -96,7 +94,7 @@ type Copy = {
 const EN: Copy = {
   title: ['Rutherford customer?', 'Switch to ColorLoop'],
   lead: 'Same press, same console.',
-  promo3: 'Promotion · 3 months free',
+  promo3: '3 months free',
   primary: 'Switch to ColorLoop',
   secondary: 'New to Rutherford?',
   dotsAlt: 'The five ColorLoop ink dots: red, pink, blue, yellow and green',
@@ -131,9 +129,8 @@ const EN: Copy = {
   cfgLicense: 'Your Rutherford license stays yours.',
   orderCta: 'Order',
   checkCta: 'Check your press',
-  regulationCta: 'Discover PPWR Connect',
-  articlesTitle: 'From the blog',
-  articlesAll: 'See all articles',
+  articlesTitle: 'News',
+  articlesAll: 'All the news',
   whoTitle: 'Closed-loop color control for offset, for 25 years.',
   whoBody: 'Rutherford connects offset press consoles to color measurement: Heidelberg Prinect and CP2000, Komori, Koenig & Bauer ErgoTronic, Manroland ColorPilot, Mitsubishi, Ryobi.',
   whoStats: [['25+', 'years'], ['30+', 'countries'], ['1,000+', 'systems installed']],
@@ -143,7 +140,7 @@ const EN: Copy = {
 const FR: Copy = {
   title: ['Client Rutherford ?', 'Passez à ColorLoop'],
   lead: 'Même presse, même pupitre.',
-  promo3: 'Promotion · 3 mois offerts',
+  promo3: '3 mois offerts',
   primary: 'Passer à ColorLoop',
   secondary: 'Nouveau chez Rutherford ?',
   dotsAlt: 'Les cinq dots ColorLoop : rouge, rose, bleu, jaune et vert',
@@ -178,9 +175,8 @@ const FR: Copy = {
   cfgLicense: 'Votre licence Rutherford reste la vôtre.',
   orderCta: 'Commander',
   checkCta: 'Valider ma console',
-  regulationCta: 'Découvrir PPWR Connect',
-  articlesTitle: 'Le blog',
-  articlesAll: 'Voir tous les articles',
+  articlesTitle: 'Les news',
+  articlesAll: 'Toutes les news',
   whoTitle: 'Le contrôle couleur closed-loop pour l’offset, depuis 25 ans.',
   whoBody: 'Rutherford relie les pupitres de presse offset à la mesure couleur : Heidelberg Prinect et CP2000, Komori, Koenig & Bauer ErgoTronic, Manroland ColorPilot, Mitsubishi, Ryobi.',
   whoStats: [['25+', 'ans'], ['30+', 'pays'], ['1 000+', 'systèmes installés']],
@@ -310,22 +306,50 @@ function Configurator({ locale, t, upgradeUrl, checkUrl }: { locale: Locale; t: 
   );
 }
 
-/* ---------- PPWR and DPP, as plain text ---------- */
+/* ---------- PPWR Connect: the group's compliance app, in its own colors ---------- */
+const PPWR_COPY_HOME: Record<'en' | 'fr', { title: string; lead: string; points: string[]; price: string; cta: string; alt: string }> = {
+  en: {
+    title: 'PPWR & DPP',
+    lead: 'Compliance with Regulation (EU) 2025/40, from one record per packaging.',
+    points: ['Declaration of Conformity', 'Recyclability grades', 'Digital Product Passport'],
+    price: '30 SKUs from €29 a month',
+    cta: 'Discover PPWR Connect',
+    alt: 'PPWR Connect: the SKU portfolio and a packaging record with its recyclability grade',
+  },
+  fr: {
+    title: 'PPWR & DPP',
+    lead: 'La conformité au règlement (UE) 2025/40, depuis une seule fiche par emballage.',
+    points: ['Déclaration de conformité', 'Grades de recyclabilité', 'Passeport produit numérique'],
+    price: '30 SKU à partir de 29 € par mois',
+    cta: 'Découvrir PPWR Connect',
+    alt: 'PPWR Connect : le portefeuille de SKU et la fiche d’un emballage avec son grade de recyclabilité',
+  },
+};
+
 function Regulation() {
-  const { locale, t } = useCopy();
-  const c = (PPWR_COPY as Record<Locale, { title: string; tagline: string; ppwrTitle: string; ppwrBody: string; dppTitle: string; dppBody: string }>)[locale];
+  const { locale } = useCopy();
+  const c = PPWR_COPY_HOME[locale === 'fr' ? 'fr' : 'en'];
+  const href = locale === 'fr' ? 'https://ppwrconnect.com/fr/' : homeLink('ppwr-section.ppwrConnect');
   return (
     <section className="clh-reg" id="ppwr" aria-labelledby="clh-reg-title">
-      <div className="clh-wrap clh-reg-grid">
-        <div>
-          <h2 id="clh-reg-title" className="clh-h2">{c.title}</h2>
-          <p className="clh-body">{c.tagline}</p>
-          <a className="clh-btn clh-btn-outline" href={homeLink('ppwr-section.ppwrConnect')} target="_blank" rel="noreferrer">{t.regulationCta}</a>
-        </div>
-        <dl className="clh-reg-list">
-          <div><dt>{c.ppwrTitle}</dt><dd>{c.ppwrBody}</dd></div>
-          <div><dt>{c.dppTitle}</dt><dd>{c.dppBody}</dd></div>
-        </dl>
+      <div className="clh-wrap">
+        <a className="clh-ppwr" href={href} target="_blank" rel="noopener">
+          <span className="clh-ppwr-copy">
+            <img className="clh-ppwr-logo" src="/images/ppwr-connect/logo-horizontal.png" alt="PPWR Connect" width={363} height={140} loading="lazy" />
+            <span id="clh-reg-title" className="clh-ppwr-title" role="heading" aria-level={2}>{c.title}</span>
+            <span className="clh-ppwr-lead">{c.lead}</span>
+            <span className="clh-ppwr-points">
+              {c.points.map((pt) => (
+                <span key={pt}><svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><path d="M4 10.5l4 4 8-9" /></svg>{pt}</span>
+              ))}
+            </span>
+            <span className="clh-ppwr-price">{c.price}</span>
+            <span className="clh-ppwr-cta">{c.cta}<svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true"><path d="M7 4l6 6-6 6" /></svg></span>
+          </span>
+          <span className="clh-ppwr-shot">
+            <img src="/images/ppwr-connect/duo-en-1920.webp" alt={c.alt} width={1920} height={1351} loading="lazy" />
+          </span>
+        </a>
       </div>
     </section>
   );
@@ -355,23 +379,24 @@ function Articles() {
     <section className="clh-articles" id="articles" aria-labelledby="clh-articles-title">
       <div className="clh-wrap">
         <h2 id="clh-articles-title" className="clh-h2">{t.articlesTitle}</h2>
-        <div className="clh-posts">
+        <ol className="clh-posts">
           {LATEST.slice(0, 6).map((a) => (
-            <article key={a.slug} className="clh-post">
+            <li key={a.slug} className="clh-post">
               <a href={localPath(locale, `/blog/${a.slug}`)}>
                 <img src={a.image} alt="" loading="lazy" width={240} height={160} />
-                <div>
-                  <p className="clh-post-meta">
+                <span className="clh-post-main">
+                  <span className="clh-post-meta">
                     <span>{a.category}</span>
                     {a.publishedAt ? <time dateTime={a.publishedAt}>{fmt.format(new Date(a.publishedAt))}</time> : null}
-                  </p>
-                  <h3>{a.i18n?.[locale]?.title ?? a.title}</h3>
-                  <p className="clh-post-excerpt">{a.i18n?.[locale]?.excerpt ?? a.excerpt}</p>
-                </div>
+                  </span>
+                  <span className="clh-post-title">{a.i18n?.[locale]?.title ?? a.title}</span>
+                  <span className="clh-post-more"><span className="clh-post-excerpt">{a.i18n?.[locale]?.excerpt ?? a.excerpt}</span></span>
+                </span>
+                <svg className="clh-post-arrow" viewBox="0 0 20 20" width="20" height="20" aria-hidden="true"><path d="M7 4l6 6-6 6" /></svg>
               </a>
-            </article>
+            </li>
           ))}
-        </div>
+        </ol>
         <a className="clh-btn clh-btn-outline clh-posts-all" href={localPath(locale, '/blog')}>{t.articlesAll}</a>
       </div>
     </section>
@@ -381,8 +406,8 @@ function Articles() {
 // The Rutherford blocks that stay, in this order (4 Nov 2026, Hugues: unclog the page).
 // Dropped: the old ColorLoop block, the ROI teaser, the audiences, the slim band, the outcomes, the team; who we are is redrawn. Hidden ids from /dev/edit still apply.
 const ORDER = [
-  'case-studies-showcase',
   'roi',
+  'case-studies-showcase',
   'brand-explainer-section',
   'ppwr-section',
   'articles',
@@ -407,14 +432,13 @@ export function ColorLoopHome({ tone = 'light' }: { tone?: 'night' | 'light' }) 
           <div className="clh-raw" dangerouslySetInnerHTML={{ __html: HERO_BOOT }} />
           <img className="dh-wm clh-wordmark" src={`${IMG}/${tone === 'light' ? 'logo.png' : 'logo-white.png'}`} alt="ColorLoop" width={1207} height={268} />
           <div className="clh-copy">
-            <p className="clh-promo clh-promo-hero">{t.promo3}</p>
             <h1 id="clh-title" className="clh-title">
               {t.title[0]}
               <br />
               {t.title[1]}
               <span className="clh-dot" aria-hidden="true">.</span>
             </h1>
-            <p className="clh-lead">{t.lead}</p>
+            <p className="clh-lead">{t.lead} <span className="clh-promo clh-promo-hero">{t.promo3}</span></p>
             <div className="clh-actions">
               <a className="clh-btn" href={upgradeUrl}>{t.primary}</a>
               <a className="clh-textlink" href={discoverUrl}>{t.secondary}</a>
@@ -424,7 +448,6 @@ export function ColorLoopHome({ tone = 'light' }: { tone?: 'night' | 'light' }) 
         </div>
 
         <div className="clh-presses">
-          <p>{t.pressesLabel}</p>
           <div className="clh-marquee" aria-hidden="true">
             <ul>
               {[...PRESSES, ...PRESSES].map(([file, name], i) => (
