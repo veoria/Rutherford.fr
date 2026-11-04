@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
-import Script from 'next/script';
 import { useLanguage, type Locale } from '@/components/language-provider';
 import { SiteNav } from '@/components/site-nav';
 import HOME_LAYOUT from '@/data/home/layout.json';
@@ -11,6 +10,8 @@ import PPWR_COPY from '@/data/home/ppwr-section.json';
 import { homeLink } from '@/lib/home-links';
 import { STORY_MARKUP } from '@/components/colorloop-story-markup';
 import { HERO_BOOT, HERO_DOTS } from '@/components/colorloop-hero-markup';
+import { ROI_MARKUP } from '@/components/colorloop-roi-markup';
+import ARTICLES from '@/data/blog-articles.json';
 import './colorloop-home.css';
 
 // The current homepage's blocks, in the order of data/home/layout.json, so the
@@ -91,6 +92,11 @@ type Copy = {
   checkCta: string;
   outcomesCta: string;
   regulationCta: string;
+  articlesTitle: string;
+  articlesAll: string;
+  teamTitle: string;
+  teamBody: string;
+  teamCta: string;
 };
 
 const EN: Copy = {
@@ -132,6 +138,11 @@ const EN: Copy = {
   checkCta: 'Check your press',
   outcomesCta: 'Switch to ColorLoop',
   regulationCta: 'Discover PPWR Connect',
+  articlesTitle: 'Latest articles',
+  articlesAll: 'All articles',
+  teamTitle: 'Our team',
+  teamBody: 'Rutherford.fr and Veoria are two sister companies based in France. Every project is handled from France, by people who know your press.',
+  teamCta: 'Talk to our team',
 };
 
 const FR: Copy = {
@@ -173,6 +184,11 @@ const FR: Copy = {
   checkCta: 'Valider ma console',
   outcomesCta: 'Passer à ColorLoop',
   regulationCta: 'Découvrir PPWR Connect',
+  articlesTitle: 'Derniers articles',
+  articlesAll: 'Tous les articles',
+  teamTitle: 'Notre équipe',
+  teamBody: 'Rutherford.fr et Veoria sont deux sociétés sœurs basées en France. Chaque projet est suivi depuis la France, par des gens qui connaissent votre presse.',
+  teamCta: 'Parler à notre équipe',
 };
 
 // German, Italian, Spanish and Portuguese copy to follow once the direction is approved.
@@ -181,6 +197,29 @@ const COPY: Record<Locale, Copy> = { en: EN, fr: FR, de: EN, it: EN, es: EN, pt:
 function useCopy() {
   const { locale } = useLanguage();
   return { locale, t: COPY[locale], upgradeUrl: colorloopUrl(locale, 'rutherford-customers') };
+}
+
+/* ---------- colorloop.ai's scripts: plain script tags, appended once the markup is on the page ---------- */
+function useScripts(srcs: string[]) {
+  useEffect(() => {
+    let cancelled = false;
+    const added: HTMLScriptElement[] = [];
+    (async () => {
+      for (const src of srcs) {
+        if (cancelled) return;
+        await new Promise<void>((resolve) => {
+          const el = document.createElement('script');
+          el.src = src;
+          el.onload = () => resolve();
+          el.onerror = () => resolve();
+          document.body.appendChild(el);
+          added.push(el);
+        });
+      }
+    })();
+    return () => { cancelled = true; added.forEach((el) => el.remove()); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 }
 
 /* ---------- The press films play on their own once in view ---------- */
@@ -205,12 +244,11 @@ function useClipsAutoplay() {
 /* ---------- The story: colorloop.ai's own section and script ---------- */
 function Story({ locale }: { locale: Locale }) {
   const html = STORY_MARKUP[locale === 'fr' ? 'fr' : 'en'];
+  useScripts(['/colorloop-story/motion.js', '/colorloop-story/home-story.js']);
   return (
     <>
       <link rel="stylesheet" href="/colorloop-story/home-story.css" />
       <div className="clh-story" dangerouslySetInnerHTML={{ __html: html }} />
-      <Script src="/colorloop-story/motion.js" strategy="afterInteractive" />
-      <Script src="/colorloop-story/home-story.js" strategy="afterInteractive" />
     </>
   );
 }
@@ -320,17 +358,73 @@ function Regulation() {
   );
 }
 
+/* ---------- ROI: colorloop.ai's estimator (FX), verbatim ---------- */
+function Roi({ locale, checkUrl }: { locale: Locale; checkUrl: string }) {
+  const html = ROI_MARKUP[locale === 'fr' ? 'fr' : 'en'].replace('https://rutherford.fr/console-validation', checkUrl);
+  useScripts(['/colorloop-story/press-schematic.js', '/colorloop-story/pricing-roi.js']);
+  return (
+    <>
+      <link rel="stylesheet" href="/colorloop-story/pricing-roi.css" />
+      <div className="clh-roi" dangerouslySetInnerHTML={{ __html: html }} />
+    </>
+  );
+}
+
+/* ---------- The latest articles, as a list ---------- */
+type Article = { slug: string; title: string; category: string; publishedAt?: string; review?: boolean; i18n?: Record<string, { title?: string }> };
+const LATEST = (ARTICLES as Article[]).filter((a) => !a.review).sort((a, b) => (b.publishedAt ?? '').localeCompare(a.publishedAt ?? '')).slice(0, 5);
+
+function Articles() {
+  const { locale, t } = useCopy();
+  const fmt = new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'long', year: 'numeric' });
+  return (
+    <section className="clh-articles" id="articles" aria-labelledby="clh-articles-title">
+      <div className="clh-wrap">
+        <h2 id="clh-articles-title" className="clh-h2">{t.articlesTitle}</h2>
+        <ol className="clh-articles-list">
+          {LATEST.map((a) => (
+            <li key={a.slug}>
+              <a href={localPath(locale, `/blog/${a.slug}`)}>
+                <span className="clh-articles-meta">
+                  {a.publishedAt ? <time dateTime={a.publishedAt}>{fmt.format(new Date(a.publishedAt))}</time> : null}
+                  <span>{a.category}</span>
+                </span>
+                <strong>{a.i18n?.[locale]?.title ?? a.title}</strong>
+              </a>
+            </li>
+          ))}
+        </ol>
+        <a className="clh-btn clh-btn-outline" href={homeLink('blog-preview-section.seeAll')}>{t.articlesAll}</a>
+      </div>
+    </section>
+  );
+}
+
+/* ---------- The team, in one sentence ---------- */
+function Team() {
+  const { t } = useCopy();
+  return (
+    <section className="clh-team" id="team" aria-labelledby="clh-team-title">
+      <div className="clh-wrap">
+        <h2 id="clh-team-title" className="clh-h2">{t.teamTitle}</h2>
+        <p className="clh-body">{t.teamBody}</p>
+        <a className="clh-btn clh-btn-ink" href={homeLink('team-showcase.cta')}>{t.teamCta}</a>
+      </div>
+    </section>
+  );
+}
+
 // The Rutherford blocks that stay, in this order (4 Nov 2026, Hugues: unclog the page).
 // Dropped: the old ColorLoop block, the ROI teaser, the audiences, the slim band. Hidden ids from /dev/edit still apply.
 const ORDER = [
   'case-studies-showcase',
-  'console-validation-cta',
+  'roi',
   'brand-explainer-section',
   'how-rutherford-helps',
   'rutherford-identity-section',
   'ppwr-section',
-  'blog-preview-section',
-  'team-showcase',
+  'articles',
+  'team',
 ];
 
 export function ColorLoopHome({ tone = 'light' }: { tone?: 'night' | 'light' }) {
@@ -340,6 +434,7 @@ export function ColorLoopHome({ tone = 'light' }: { tone?: 'night' | 'light' }) 
   const layout = HOME_LAYOUT as { order: string[]; hidden: string[] };
   const order = ORDER.filter((id) => !layout.hidden.includes(id));
   useClipsAutoplay();
+  useScripts(['/colorloop-story/dots-hero.js']);
 
   return (
     <main className={`page-shell clh ${tone === 'light' ? 'clh-light' : ''}`} id="top">
@@ -403,8 +498,6 @@ export function ColorLoopHome({ tone = 'light' }: { tone?: 'night' | 'light' }) 
         </div>
       </section>
 
-      <Script src="/colorloop-story/dots-hero.js" strategy="afterInteractive" />
-
       <Story locale={locale} />
 
       <section className="clh-warn" aria-labelledby="clh-warn-title" role="region">
@@ -428,6 +521,9 @@ export function ColorLoopHome({ tone = 'light' }: { tone?: 'night' | 'light' }) 
       <Configurator locale={locale} t={t} upgradeUrl={upgradeUrl} checkUrl={checkUrl} />
 
       {order.map((id) => {
+        if (id === 'roi') return <Roi key={id} locale={locale} checkUrl={checkUrl} />;
+        if (id === 'articles') return <Articles key={id} />;
+        if (id === 'team') return <Team key={id} />;
         const Section = SECTIONS[id as keyof typeof SECTIONS];
         return Section ? <Section key={id} /> : null;
       })}

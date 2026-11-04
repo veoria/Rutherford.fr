@@ -155,6 +155,24 @@
 .clh-total strong { font-size: clamp(34px, 3.4vw, 48px); line-height: 1.05; font-weight: 600; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
 .clh-total .clh-fine { margin-top: 10px; }
 
+/* ---------- ROI (colorloop.ai's estimator), articles, team ---------- */
+.clh-roi { font-family: var(--clh-font), "Inter", system-ui, sans-serif; color: var(--clh-text); border-top: 1px solid var(--clh-rule); }
+.clh-roi .pv-roi { padding: clamp(64px, 8vw, 112px) 24px; background: var(--clh-white); }
+.clh-roi .roi-head { max-width: 860px; margin: 0 auto; text-align: center; }
+.clh-roi .pv-k { margin: 0 0 16px; font-size: 13px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--clh-text-2); }
+.clh-roi .roi-head h2 { margin: 0; font-size: clamp(30px, 3.1vw, 46px); line-height: 1.06; font-weight: 600; letter-spacing: -0.03em; text-wrap: balance; }
+.clh-roi .roi-head h2 span { color: var(--clh-red); }
+.clh-roi .pv-lead { margin: 18px auto 0; max-width: 30em; font-size: clamp(17px, 1.5vw, 21px); line-height: 1.45; color: var(--clh-text-2); }
+.clh-articles, .clh-team { padding: clamp(64px, 8vw, 112px) 0; border-top: 1px solid var(--clh-rule); font-family: var(--clh-font), "Inter", system-ui, sans-serif; color: var(--clh-text); }
+.clh-articles-list { list-style: none; margin: 28px 0 32px; padding: 0; }
+.clh-articles-list li { border-top: 1px solid var(--clh-rule); }
+.clh-articles-list li:last-child { border-bottom: 1px solid var(--clh-rule); }
+.clh-articles-list a { display: grid; grid-template-columns: 220px 1fr; gap: 16px; align-items: baseline; padding: 18px 0; color: inherit; text-decoration: none; }
+.clh-articles-list a:hover strong { text-decoration: underline; text-underline-offset: 4px; }
+.clh-articles-meta { display: grid; gap: 2px; font-size: 13px; color: var(--clh-text-2); font-variant-numeric: tabular-nums; }
+.clh-articles-list strong { font-size: 19px; font-weight: 600; letter-spacing: -0.015em; line-height: 1.3; }
+.clh-team .clh-btn { margin-top: 24px; }
+
 /* ---------- Outcomes and regulation, redrawn on white ---------- */
 .clh-outcomes { padding: clamp(64px, 8vw, 112px) 0; border-top: 1px solid var(--clh-rule); }
 .clh-outcomes-list { list-style: none; margin: clamp(28px, 4vw, 48px) 0 0; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 28px; counter-reset: o; }
@@ -190,6 +208,7 @@
   .clh-clip-t i::after { left: 8px; top: 6px; border-left-width: 7px; border-top-width: 5px; border-bottom-width: 5px; }
   .clh-clip-t b { font-size: 11px; }
   .clh-outcomes-list, .clh-warn dl { grid-template-columns: 1fr; }
+  .clh-articles-list a { grid-template-columns: 1fr; gap: 4px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .clh-wordmark, .clh-title, .clh-lead, .clh-copy .clh-actions, .clh-marquee ul, .clh-warn-label { animation: none; }

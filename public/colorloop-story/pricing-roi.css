@@ -1,0 +1,166 @@
+:root{--pg-gut:24px;--rs-ink:#141416;--rs-ink2:#55555c}
+
+.clh-roi .pv-roi{padding:clamp(64px,8vw,112px) var(--pg-gut,24px);background:#fff}
+
+.clh-roi .roi-head{max-width:860px;margin:0 auto;text-align:center}
+
+.clh-roi .pv-roi h2{margin:0;font-size:clamp(40px,5.6vw,76px);line-height:1;letter-spacing:-.045em;font-weight:600;color:#141416}
+
+.clh-roi .pv-roi h2 span{color:#64A932}
+
+.clh-roi .roi-box{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:clamp(24px,4vw,56px);max-width:1080px;margin:clamp(40px,5vw,64px) auto 0;padding:clamp(24px,3.6vw,48px);border-radius:28px;background:#f4f3ec}
+
+.clh-roi .roi-in{display:grid;gap:26px;align-content:start}
+
+.clh-roi .roi-l{margin:0 0 10px;font-size:13px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#6a6f74}
+
+.clh-roi .roi-seg{display:flex;flex-wrap:wrap;gap:6px;padding:5px;border-radius:999px;background:#e9e7df;width:max-content;max-width:100%}
+
+.clh-roi .roi-seg button{min-height:40px;padding:0 16px;border:0;border-radius:999px;background:transparent;font:inherit;font-size:14.5px;font-weight:500;color:#2b2e31;cursor:pointer;transition:background-color .2s ease,color .2s ease,box-shadow .2s ease}
+
+.clh-roi .roi-seg button[aria-checked="true"]{background:#fff;color:#141416;box-shadow:0 1px 3px rgba(20,20,22,.12)}
+
+.clh-roi .roi-seg button:focus-visible,.clh-roi .roi-step button:focus-visible{outline:2px solid #141416;outline-offset:2px}
+
+.clh-roi .roi-step{display:inline-flex;align-items:center;gap:6px;padding:5px;border-radius:999px;background:#e9e7df}
+
+.clh-roi .roi-step button{width:40px;height:40px;border:0;border-radius:50%;background:#fff;font:inherit;font-size:20px;color:#141416;cursor:pointer;box-shadow:0 1px 3px rgba(20,20,22,.12)}
+
+.clh-roi .roi-step button:active{transform:scale(.94)}
+
+.clh-roi .roi-step output{min-width:44px;text-align:center;font-size:20px;font-weight:600;font-variant-numeric:tabular-nums}
+
+.clh-roi .roi-out{display:grid;align-content:center;justify-items:center;text-align:center;padding:clamp(20px,3vw,36px);border-radius:22px;background:#141416;color:#fff}
+
+.clh-roi .roi-up{margin:0;font-size:14px;color:#a9abb1}
+
+.clh-roi .roi-big{margin:10px 0 0}
+
+.clh-roi .roi-big b{font-size:clamp(52px,6.4vw,92px);line-height:1;letter-spacing:-.045em;font-weight:600;font-variant-numeric:tabular-nums}
+
+.clh-roi .roi-split{display:flex;gap:28px;margin:18px 0 0;padding:0;list-style:none}
+
+.clh-roi .roi-split li{display:grid;gap:2px}
+
+.clh-roi .roi-split span{font-size:13px;color:#a9abb1}
+
+.clh-roi .roi-split b{font-size:20px;font-weight:600;font-variant-numeric:tabular-nums}
+
+.clh-roi .roi-pay{margin:18px 0 0;padding:8px 14px;border-radius:999px;background:rgba(100,169,50,.18);color:#c8f0ad;font-size:14.5px}
+
+.clh-roi .roi-pay b{color:#fff}
+
+.clh-roi .roi-agents{display:flex;justify-content:center;align-items:flex-end;margin:22px 0 0}
+
+.clh-roi .roi-agents img{width:clamp(44px,5vw,64px);height:auto;margin:0 -6px;filter:drop-shadow(0 10px 14px rgba(0,0,0,.45))}
+
+.clh-roi .pv-roi .pv-src{max-width:46em;margin:22px auto 0;text-align:center;color:#6a6f74}
+@media (max-width:820px){
+  .clh-roi .roi-box{grid-template-columns:1fr;padding:18px}
+  .clh-roi .roi-seg{width:100%}
+  .clh-roi .roi-seg button{flex:1 1 auto;padding:0 10px;font-size:13.5px}}
+
+.clh-roi .roi-big b{color:#fff}
+
+.clh-roi .roi-box{display:block;max-width:1180px;padding:clamp(20px,3vw,40px)}
+
+.clh-roi .roi-art{max-width:600px;margin:0 auto clamp(12px,2vw,24px)}
+
+.clh-roi .roi-art svg{display:block;width:100%;height:auto}
+
+.clh-roi .roi-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(20px,3vw,44px);align-items:start}
+
+.clh-roi .roi-sls{display:grid;gap:18px;padding-top:6px;border-top:1px solid #e3e1d8}
+
+.clh-roi .roi-sl{display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:4px 10px}
+
+.clh-roi .roi-sl-t{grid-column:1/-1;font-size:14px;color:#2b2e31}
+
+.clh-roi .roi-sl input{grid-column:1;width:100%;height:28px;margin:0;background:transparent;-webkit-appearance:none;appearance:none;cursor:pointer}
+
+.clh-roi .roi-sl input::-webkit-slider-runnable-track{height:6px;border-radius:999px;background:linear-gradient(90deg,#19AAE3 var(--p,50%),#dcdad1 var(--p,50%))}
+
+.clh-roi .roi-sl input::-moz-range-track{height:6px;border-radius:999px;background:#dcdad1}
+
+.clh-roi .roi-sl input::-moz-range-progress{height:6px;border-radius:999px;background:#19AAE3}
+
+.clh-roi .roi-sl input::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;margin-top:-8px;border-radius:50%;background:#fff;box-shadow:0 0 0 1.5px #141416,0 2px 6px rgba(20,20,22,.2)}
+
+.clh-roi .roi-sl input::-moz-range-thumb{width:20px;height:20px;border:0;border-radius:50%;background:#fff;box-shadow:0 0 0 1.5px #141416}
+
+.clh-roi .roi-sl input:focus-visible{outline:2px solid #141416;outline-offset:4px;border-radius:6px}
+
+.clh-roi .roi-sl output{grid-column:2;min-width:3ch;text-align:right;font-size:18px;font-weight:600;font-variant-numeric:tabular-nums}
+
+.clh-roi .roi-sl-u{grid-column:3;font-size:13px;color:#6a6f74;min-width:3.6em}
+
+.clh-roi .roi-month{margin:8px 0 0;font-size:15px;color:#a9abb1}
+
+.clh-roi .roi-month b{color:#fff}
+
+.clh-roi .roi-out{position:sticky;top:96px}
+@media (max-width:820px){.clh-roi .roi-grid{grid-template-columns:1fr}.clh-roi .roi-out{position:static}}
+
+.clh-roi .roi-agents .agd-w{width:clamp(44px,5vw,64px);margin:0 -6px}
+
+
+/* the press of rutherford.fr/roi (its own CSS): towers slide in and out; the operator wiggles under the pointer */
+.clh-roi .roi-press-svg,.clh-roi .roi-press-svg *{stroke:none}
+
+.clh-roi .roi-tower.enter{animation:roiTowerEnter .5s cubic-bezier(.22,.61,.36,1) both}
+
+.clh-roi .roi-tower.exit{animation:roiTowerExit .42s cubic-bezier(.4,0,.7,.35) both}
+
+.clh-roi .roi-operator{transform-box:fill-box;transform-origin:50% 100%;cursor:pointer}
+@media (hover:hover) and (prefers-reduced-motion:no-preference){.clh-roi .roi-operator:hover{animation:roiOperatorWiggle .55s ease-in-out 2}}
+@media (prefers-reduced-motion:reduce){.clh-roi .roi-tower.enter,.clh-roi .roi-tower.exit{animation:none}}
+
+/* share the estimate (20 Oct 2026) */
+.clh-roi .roi-sharebar{display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin:14px 0 0}
+
+.clh-roi .roi-share{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 16px;border:1px solid rgba(255,255,255,.28);border-radius:999px;background:transparent;color:#fff;font:600 14.5px/1 Inter,system-ui,sans-serif;cursor:pointer;transition:background-color .2s ease,transform .16s ease-out}
+
+.clh-roi .roi-share svg{width:17px;height:17px}
+
+.clh-roi .roi-share:hover{background:rgba(255,255,255,.1)}
+
+.clh-roi .roi-share:active{transform:scale(.97)}
+
+.clh-roi .roi-share:focus-visible{outline:2px solid #7fd1ff;outline-offset:3px}
+
+.clh-roi .roi-shared{font-size:14px;color:#c8f0ad}
+
+/* share, v2 (20 Oct 2026): centered under the figures, a small panel of four ways */
+.clh-roi .roi-sharebar{justify-content:center;flex-direction:column;gap:8px}
+
+.clh-roi .roi-sharepanel{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:10px 0 0}
+
+.clh-roi .roi-sharepanel[hidden]{display:none}
+
+.clh-roi .roi-sharepanel a,.clh-roi .roi-sharepanel button{display:inline-flex;align-items:center;min-height:40px;padding:0 14px;border:1px solid rgba(255,255,255,.22);border-radius:999px;background:rgba(255,255,255,.06);color:#fff;font:500 14px/1 Inter,system-ui,sans-serif;text-decoration:none;cursor:pointer;transition:background-color .2s ease,transform .16s ease-out}
+
+.clh-roi .roi-sharepanel a:hover,.clh-roi .roi-sharepanel button:hover{background:rgba(255,255,255,.14)}
+
+.clh-roi .roi-sharepanel a:active,.clh-roi .roi-sharepanel button:active{transform:scale(.97)}
+
+.clh-roi .roi-shared{text-align:center;max-width:32em;overflow-wrap:anywhere}
+
+/* 21 Oct 2026 (FX prices): the monthly saving sits in the pill under the figure; the separate month line would repeat it */
+.clh-roi .roi-month{display:none}
+
+
+/* 6. prices */
+.clh-roi .roi-art{display:none}
+
+.clh-roi .roi-out{background:#fff;color:var(--rs-ink);box-shadow:0 1px 0 rgba(0,0,0,.04),0 20px 50px -30px rgba(0,0,0,.25)}
+
+.clh-roi .roi-big b{color:var(--rs-ink)}
+
+.clh-roi .roi-up,.clh-roi .roi-month,.clh-roi .roi-split li span{color:var(--rs-ink2)}
+
+.clh-roi .roi-split li b{color:var(--rs-ink)}
+
+.rs-row .roi-l{margin:0}
+
+/* the site's segmented control and stepper, outside .roi-box */
+.rs-calc .roi-seg button[aria-checked="true"]{background:#1d1d1f;color:#fff}
