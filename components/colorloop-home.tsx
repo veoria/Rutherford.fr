@@ -53,6 +53,7 @@ const FACES = ['r7_4EdplcdE', 'ut247z4ren8', 'yAZbtKzN_j0'];
 type Copy = {
   title: [string, string];
   lead: string;
+  promo3: string;
   primary: string;
   secondary: string;
   dotsAlt: string;
@@ -94,7 +95,8 @@ type Copy = {
 
 const EN: Copy = {
   title: ['Rutherford customer?', 'Switch to ColorLoop'],
-  lead: 'Same press, same console. 3 months free.',
+  lead: 'Same press, same console.',
+  promo3: 'Promotion · 3 months free',
   primary: 'Switch to ColorLoop',
   secondary: 'New to Rutherford?',
   dotsAlt: 'The five ColorLoop ink dots: red, pink, blue, yellow and green',
@@ -131,7 +133,7 @@ const EN: Copy = {
   checkCta: 'Check your press',
   regulationCta: 'Discover PPWR Connect',
   articlesTitle: 'From the blog',
-  articlesAll: 'All articles',
+  articlesAll: 'See all articles',
   whoTitle: 'Closed-loop color control for offset, for 25 years.',
   whoBody: 'Rutherford connects offset press consoles to color measurement: Heidelberg Prinect and CP2000, Komori, Koenig & Bauer ErgoTronic, Manroland ColorPilot, Mitsubishi, Ryobi.',
   whoStats: [['25+', 'years'], ['30+', 'countries'], ['1,000+', 'systems installed']],
@@ -140,7 +142,8 @@ const EN: Copy = {
 
 const FR: Copy = {
   title: ['Client Rutherford ?', 'Passez à ColorLoop'],
-  lead: 'Même presse, même pupitre. 3 mois offerts.',
+  lead: 'Même presse, même pupitre.',
+  promo3: 'Promotion · 3 mois offerts',
   primary: 'Passer à ColorLoop',
   secondary: 'Nouveau chez Rutherford ?',
   dotsAlt: 'Les cinq dots ColorLoop : rouge, rose, bleu, jaune et vert',
@@ -177,7 +180,7 @@ const FR: Copy = {
   checkCta: 'Valider ma console',
   regulationCta: 'Découvrir PPWR Connect',
   articlesTitle: 'Le blog',
-  articlesAll: 'Tous les articles',
+  articlesAll: 'Voir tous les articles',
   whoTitle: 'Le contrôle couleur closed-loop pour l’offset, depuis 25 ans.',
   whoBody: 'Rutherford relie les pupitres de presse offset à la mesure couleur : Heidelberg Prinect et CP2000, Komori, Koenig & Bauer ErgoTronic, Manroland ColorPilot, Mitsubishi, Ryobi.',
   whoStats: [['25+', 'ans'], ['30+', 'pays'], ['1 000+', 'systèmes installés']],
@@ -341,7 +344,7 @@ function Roi({ locale, checkUrl }: { locale: Locale; checkUrl: string }) {
 }
 
 /* ---------- The latest articles, as a list ---------- */
-type Article = { slug: string; title: string; image: string; category: string; publishedAt?: string; review?: boolean; i18n?: Record<string, { title?: string }> };
+type Article = { slug: string; title: string; excerpt: string; image: string; category: string; publishedAt?: string; review?: boolean; i18n?: Record<string, { title?: string; excerpt?: string }> };
 // Every validated article, newest first; undated ones keep their order at the end.
 const LATEST = (ARTICLES as Article[]).filter((a) => !a.review).sort((a, b) => (b.publishedAt ?? '').localeCompare(a.publishedAt ?? ''));
 
@@ -350,45 +353,26 @@ function Articles() {
   const fmt = new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'long', year: 'numeric' });
   return (
     <section className="clh-articles" id="articles" aria-labelledby="clh-articles-title">
-      <div className="clh-wrap clh-articles-head">
+      <div className="clh-wrap">
         <h2 id="clh-articles-title" className="clh-h2">{t.articlesTitle}</h2>
-        <a className="clh-btn clh-btn-outline" href={localPath(locale, '/blog')}>{t.articlesAll}</a>
-      </div>
-      <ol className="clh-articles-strip">
-        {LATEST.map((a) => (
-          <li key={a.slug}>
-            <a href={localPath(locale, `/blog/${a.slug}`)}>
-              <img src={a.image} alt="" loading="lazy" width={640} height={400} />
-              <span className="clh-articles-meta">
-                <span>{a.category}</span>
-                {a.publishedAt ? <time dateTime={a.publishedAt}>{fmt.format(new Date(a.publishedAt))}</time> : null}
-              </span>
-              <strong>{a.i18n?.[locale]?.title ?? a.title}</strong>
-            </a>
-          </li>
-        ))}
-      </ol>
-    </section>
-  );
-}
-
-/* ---------- Who we are, in one line and three figures ---------- */
-function Who() {
-  const { locale, t } = useCopy();
-  return (
-    <section className="clh-who" id="about" aria-labelledby="clh-who-title">
-      <div className="clh-wrap clh-who-grid">
-        <div>
-          <img className="clh-who-mark" src="/images/rutherford-logo-black.png" alt="Rutherford.fr" width={900} height={300} loading="lazy" />
-          <h2 id="clh-who-title" className="clh-h2">{t.whoTitle}</h2>
-          <p className="clh-body">{t.whoBody}</p>
-          <a className="clh-link" href={localPath(locale, '/closed-loop-color-control')}>{t.whoLink}</a>
-        </div>
-        <dl className="clh-who-stats">
-          {t.whoStats.map(([n, l]) => (
-            <div key={l}><dt>{n}</dt><dd>{l}</dd></div>
+        <div className="clh-posts">
+          {LATEST.slice(0, 6).map((a) => (
+            <article key={a.slug} className="clh-post">
+              <a href={localPath(locale, `/blog/${a.slug}`)}>
+                <img src={a.image} alt="" loading="lazy" width={240} height={160} />
+                <div>
+                  <p className="clh-post-meta">
+                    <span>{a.category}</span>
+                    {a.publishedAt ? <time dateTime={a.publishedAt}>{fmt.format(new Date(a.publishedAt))}</time> : null}
+                  </p>
+                  <h3>{a.i18n?.[locale]?.title ?? a.title}</h3>
+                  <p className="clh-post-excerpt">{a.i18n?.[locale]?.excerpt ?? a.excerpt}</p>
+                </div>
+              </a>
+            </article>
           ))}
-        </dl>
+        </div>
+        <a className="clh-btn clh-btn-outline clh-posts-all" href={localPath(locale, '/blog')}>{t.articlesAll}</a>
       </div>
     </section>
   );
@@ -423,6 +407,7 @@ export function ColorLoopHome({ tone = 'light' }: { tone?: 'night' | 'light' }) 
           <div className="clh-raw" dangerouslySetInnerHTML={{ __html: HERO_BOOT }} />
           <img className="dh-wm clh-wordmark" src={`${IMG}/${tone === 'light' ? 'logo.png' : 'logo-white.png'}`} alt="ColorLoop" width={1207} height={268} />
           <div className="clh-copy">
+            <p className="clh-promo clh-promo-hero">{t.promo3}</p>
             <h1 id="clh-title" className="clh-title">
               {t.title[0]}
               <br />
@@ -500,7 +485,6 @@ export function ColorLoopHome({ tone = 'light' }: { tone?: 'night' | 'light' }) 
       {order.map((id) => {
         if (id === 'roi') return <Roi key={id} locale={locale} checkUrl={checkUrl} />;
         if (id === 'articles') return <Articles key={id} />;
-        if (id === 'who') return <Who key={id} />;
         const Section = SECTIONS[id as keyof typeof SECTIONS];
         return Section ? <Section key={id} /> : null;
       })}
