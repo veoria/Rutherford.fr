@@ -10,7 +10,7 @@ import HELPS_COPY from '@/data/home/how-rutherford-helps.json';
 import PPWR_COPY from '@/data/home/ppwr-section.json';
 import { homeLink } from '@/lib/home-links';
 import { STORY_MARKUP } from '@/components/colorloop-story-markup';
-import { HERO_BOOT, HERO_WORDMARK, HERO_DOTS } from '@/components/colorloop-hero-markup';
+import { HERO_BOOT, HERO_DOTS } from '@/components/colorloop-hero-markup';
 import './colorloop-home.css';
 
 // The current homepage's blocks, in the order of data/home/layout.json, so the
@@ -348,7 +348,8 @@ export function ColorLoopHome({ tone = 'light' }: { tone?: 'night' | 'light' }) 
       <link rel="stylesheet" href="/colorloop-story/dots-hero.css" />
       <section className="clh-hero hero dots-hero" data-dh aria-labelledby="clh-title">
         <div className="dh-night">
-          <div className="clh-raw" dangerouslySetInnerHTML={{ __html: HERO_BOOT + HERO_WORDMARK }} />
+          <div className="clh-raw" dangerouslySetInnerHTML={{ __html: HERO_BOOT }} />
+          <img className="dh-wm clh-wordmark" src={`${IMG}/${tone === 'light' ? 'logo.png' : 'logo-white.png'}`} alt="ColorLoop" width={1207} height={268} />
           <div className="clh-copy">
             <h1 id="clh-title" className="clh-title">
               {t.title[0]}

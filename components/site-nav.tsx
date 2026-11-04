@@ -167,10 +167,8 @@ export function SiteNav({ current = 'home', brand = 'rutherford' }: SiteNavProps
           <a className={current === 'home' ? 'is-current' : undefined} href={lhref('/')} onClick={() => setOpen(false)}>
             {labels.home}
           </a>
-          <a className="nav-colorloop" href={colorloopProductUrl(locale)} onClick={() => setOpen(false)}>
+          <a href={colorloopProductUrl(locale)} onClick={() => setOpen(false)}>
             {labels.colorloop}
-            {/* Launch badge: colorloop.ai is new. To drop once the launch is behind us. */}
-            <span className="nav-new" aria-label="colorloop.ai">New</span>
           </a>
           <a className={current === 'roi' ? 'is-current' : undefined} href={lhref('/roi')} onClick={() => setOpen(false)}>
             {labels.roi}

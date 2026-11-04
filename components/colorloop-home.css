@@ -55,6 +55,7 @@
 /* ---------- Hero: colorloop.ai's night, wordmark and dots (dots-hero.css), our copy in between ---------- */
 .clh-hero { position: relative; overflow-x: clip; background: var(--clh-night); color: var(--clh-fg); }
 .clh-raw { display: contents; }
+.clh-wordmark { display: block; height: auto; animation: clh-fade 0.9s var(--clh-out) both; }
 .clh-copy { position: relative; z-index: 6; max-width: 780px; margin: clamp(14px, 3vh, 34px) auto 0; }
 .clh-title { margin: 0 0 14px; font-size: clamp(30px, 3.25vw, 50px); line-height: 1.06; font-weight: 600; letter-spacing: -0.032em; text-wrap: balance; color: var(--dh-fg, var(--clh-fg)); animation: clh-fade 0.9s var(--clh-out) both 0.1s; }
 .clh-lead { margin: 0 auto; max-width: 36em; font-size: clamp(16px, 1.22vw, 18.5px); line-height: 1.5; color: var(--dh-text, var(--clh-fg-2)); animation: clh-fade 0.9s var(--clh-out) both 0.18s; }
@@ -191,24 +192,18 @@
   .clh-outcomes-list, .clh-warn dl { grid-template-columns: 1fr; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .clh-title, .clh-lead, .clh-copy .clh-actions, .clh-marquee ul, .clh-warn-label { animation: none; }
+  .clh-wordmark, .clh-title, .clh-lead, .clh-copy .clh-actions, .clh-marquee ul, .clh-warn-label { animation: none; }
 }
 
 /* ---------- Light variant: the same page on rutherford.fr's white ---------- */
 .clh-light .clh-hero, .clh-light .dots-hero { background: var(--clh-white); color: var(--clh-text); --dh-night: #ffffff; --dh-fg: #141416; --dh-text: #55555c; }
 .clh-light .dh-night::after { background: rgba(20, 20, 22, 0.12); }
-/* on white, the letters keep their ink only: no light layer (it read as a fuzzy outline), crisp vector edges */
-.clh-light .dh-glow { display: none; }
-.clh-light .dh-ink { will-change: auto; animation: none; opacity: 1; }
-/* the four white letters of the wordmark turn ink on white */
-.clh-light .dh-w .dh-glow { fill: #141416; }
-.clh-light .dh-w .dh-ink path[fill="#F2F2F2"] { fill: #141416; }
-.clh-light .dh-w .dh-ink path[fill="#CCCCCC"] { fill: #4a4a4f; }
+
 .clh-light .clh-lead, .clh-light .clh-presses p, .clh-light .clh-clips-copy .clh-body, .clh-light .clh-clip-t span { color: var(--clh-text-2); }
 .clh-light .clh-copy .clh-btn { background: var(--clh-night); color: var(--clh-white); }
 .clh-light .clh-copy .clh-btn:hover { background: #2a2a30; }
 .clh-light .clh-textlink, .clh-light .clh-faces-link { color: var(--clh-text); }
-.clh-light .clh-marquee img { filter: brightness(0); opacity: 0.7; }
+.clh-light .clh-marquee img { filter: brightness(0); opacity: 0.55; }
 .clh-light .clh-clips-band { background: var(--clh-white); color: var(--clh-text); }
 .clh-light .clh-faces img { border-color: var(--clh-white); }
 .clh-light .clh-clip { background: #e9e9ec; }
