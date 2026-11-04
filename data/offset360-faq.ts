@@ -78,7 +78,7 @@ export const OFFSET360_FAQ_BY_LOCALE: Record<Locale, Offset360Faq[]> = {
     },
     {
       q: 'In cosa differisce Offset360 dall’acquisto di una nuova macchina da stampa?',
-      a: 'Offset360 aggiunge alla macchina che già possedete una misura colore connessa a bordo macchina e la correzione automatica delle chiavi di inchiostro. Ottenete il closed-loop senza una nuova macchina, a una frazione del costo.',
+      a: 'Offset360 aggiunge alla macchina che già possiede una misura colore connessa a bordo macchina e la correzione automatica delle chiavi di inchiostro. Si ottiene il closed-loop senza una nuova macchina, a una frazione del costo.',
     },
     {
       q: 'Offset360 funziona con qualsiasi marca di macchina?',
@@ -90,7 +90,7 @@ export const OFFSET360_FAQ_BY_LOCALE: Record<Locale, Offset360Faq[]> = {
     },
     {
       q: 'Quanto costa Offset360?',
-      a: 'Offset360 ha un costo iniziale inferiore a un nuovo sistema di misura ed è disponibile con finanziamento flessibile. Richiedete una validazione console gratuita per ricevere un’offerta per la vostra macchina.',
+      a: 'Offset360 ha un costo iniziale inferiore a un nuovo sistema di misura ed è disponibile con finanziamento flessibile. Richieda una validazione console gratuita per ricevere un’offerta per la sua macchina.',
     },
   ],
   es: [

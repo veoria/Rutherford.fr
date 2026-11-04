@@ -150,10 +150,10 @@ const COPY: Record<Locale, Copy> = {
   },
   it: {
     kicker: 'Stima ROI',
-    headline: 'Quanto può far risparmiare ColorLoop alla Sua sala stampa?',
+    headline: 'Quanto può far risparmiare ColorLoop alla sua sala stampa?',
     intro:
       'Scelga il profilo di produzione, il formato di stampa e il numero di colori — poi affini i parametri di avviamento. Tutti i valori restano regolabili.',
-    figuresHeading: 'Affini i Suoi parametri',
+    figuresHeading: 'Affini i suoi parametri',
     inputs: {
       calages: { label: 'Avviamenti al giorno', hint: 'Impostato dal profilo — regolabile liberamente' },
       temps: { label: 'Tempo di avviamento (minuti)', hint: 'Dal lavaggio all’OK di stampa' },

@@ -154,9 +154,9 @@ const COPY: Record<Locale, Copy> = {
     roi: { title: 'Scopra quanto può risparmiare', sub: 'Meno scarto di avviamento, meno ristampe, colore più stabile. In numeri reali.' },
     console: {
       title: 'Basta perdere denaro a ogni avviamento',
-      sub: 'Verifichi in due minuti se la Sua macchina è idonea al closed-loop Rutherford.',
-      steps: ['Indichi macchina e pulpito', 'Verifichiamo chiavi di inchiostro e sistema di misura', 'Riceva il Suo esito di idoneità gratuito'],
-      cta: 'Verifichi la Sua macchina',
+      sub: 'Verifichi in due minuti se la sua macchina è idonea al closed-loop Rutherford.',
+      steps: ['Indichi macchina e pulpito', 'Verifichiamo chiavi di inchiostro e sistema di misura', 'Riceva il suo esito di idoneità gratuito'],
+      cta: 'Verifichi la sua macchina',
     },
   },
   es: {

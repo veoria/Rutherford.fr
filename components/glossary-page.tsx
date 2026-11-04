@@ -58,7 +58,7 @@ const COPY: Record<Locale, Copy> = {
     countSuffix: 'termini',
     learnMore: 'Scopri di più',
     ctaTitle: 'Manca un termine? Una macchina da verificare?',
-    ctaText: 'Il Rutherford Check gratuito Le dice in circa due minuti se il pulpito della Sua macchina è compatibile con il controllo colore closed-loop.',
+    ctaText: 'Il Rutherford Check gratuito indica in circa due minuti se il pulpito della sua macchina è compatibile con il controllo colore closed-loop.',
     ctaButton: 'Richiedi validazione console',
   },
   es: {

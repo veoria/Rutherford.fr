@@ -475,7 +475,7 @@ export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
         eyebrow: 'Controllo di processo',
         title: 'MeasureColor trasforma le misure in decisioni.',
         body:
-          'Una piattaforma client-server che unifica offset, flexo e digitale. ChromaTrack calcola la correzione di densità ottimale e il ΔE atteso prima ancora che l’operatore tocchi una chiave. I job si configurano in meno di 30 secondi e i dati qualità alimentano report personalizzabili e pronti per l’audit, i vostri dati, sul vostro server.',
+          'Una piattaforma client-server che unifica offset, flexo e digitale. ChromaTrack calcola la correzione di densità ottimale e il ΔE atteso prima ancora che l’operatore tocchi una chiave. I job si configurano in meno di 30 secondi e i dati qualità alimentano report personalizzabili e pronti per l’audit: i dati restano in azienda, sul proprio server.',
         chips: ['Configurazione job < 30 s', 'ΔE / densità in tempo reale', 'Guida ChromaTrack', 'Export PQX · CXF · CGATS', 'Offset · flexo · digitale'],
         imageAlt: 'Bundle Offset360 in una sala stampa Rutherford',
       },
@@ -506,7 +506,7 @@ export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
     process: [
       {
         title: 'Connettere & collaborare',
-        body: 'Gli esperti colore X-Rite e Rutherford mappano i vostri obiettivi di produzione e le vere sfide colore, insieme.',
+        body: 'Gli esperti colore X-Rite e Rutherford mappano i suoi obiettivi di produzione e le vere sfide colore, insieme.',
       },
       {
         title: 'Valutare & configurare',
@@ -514,7 +514,7 @@ export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
       },
       {
         title: 'Proof of concept & supporto',
-        body: 'Installazione, formazione dei team e validazione dei risultati. Obiettivi non raggiunti? Potete fermarvi. Audit annuali mantengono le prestazioni.',
+        body: 'Installazione, formazione dei team e validazione dei risultati. Obiettivi non raggiunti? Può fermarsi. Audit annuali mantengono le prestazioni.',
       },
     ],
     includedEyebrow: 'Cosa è incluso',
@@ -535,7 +535,7 @@ export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
     ctaEyebrow: 'Prossimo passo',
     ctaTitle: 'Basta perdere denaro in avviamento.',
     ctaBody:
-      'Ogni avviamento non controllato costa fogli, inchiostro e tempo macchina. Verificate gratuitamente l’idoneità della vostra macchina: qualche foto, due minuti, risposta entro un giorno lavorativo.',
+      'Ogni avviamento non controllato costa fogli, inchiostro e tempo macchina. Verifichi gratuitamente l’idoneità della sua macchina: qualche foto, due minuti, risposta entro un giorno lavorativo.',
     ctaPrimary: 'Verifica gratuita di idoneità',
     ctaSecondary: 'Scopri di più su X-Rite',
     breadcrumbHome: 'Home',
@@ -544,7 +544,7 @@ export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
     },
     colorloop: {
       metaTitle: 'ColorLoop | Controllo colore closed-loop per offset foglio',
-      heroLede: 'Il software Rutherford che chiude il loop sulla vostra macchina. Misurare, confrontare, correggere, automaticamente.',
+      heroLede: 'Il software Rutherford che chiude il loop sulla macchina che già possiede. Misurare, confrontare, correggere, automaticamente.',
       ctaSecondary: 'Scopri ColorLoop',
     },
   },
