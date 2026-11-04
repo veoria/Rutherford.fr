@@ -73,7 +73,7 @@
 .clh-presses p { margin: 0 0 14px; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--clh-fg-2); }
 .clh-marquee { overflow: hidden; mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent); }
 .clh-marquee ul { display: flex; align-items: center; gap: 56px; width: max-content; margin: 0; padding: 0 28px; list-style: none; animation: clh-slide 40s linear infinite; }
-.clh-marquee img { display: block; height: 14px; width: auto; filter: brightness(0) invert(1); opacity: 0.62; }
+.clh-marquee img { display: block; height: 18px; width: auto; filter: brightness(0) invert(1); opacity: 0.62; }
 @keyframes clh-slide { to { transform: translateX(-50%); } }
 .clh-marquee:hover ul { animation-play-state: paused; }
 
@@ -213,7 +213,7 @@
   .clh-wrap { width: calc(100% - 32px); }
   .clh-actions .clh-btn { width: 100%; }
     .clh-marquee ul { gap: 36px; }
-  .clh-marquee img { height: 11px; }
+  .clh-marquee img { height: 14px; }
   .clh-clip-list { gap: 8px; }
   .clh-clip { border-radius: 10px; }
   .clh-clip-t { padding: 24px 8px 8px; }
@@ -236,7 +236,7 @@
 .clh-light .clh-copy .clh-btn { background: var(--clh-night); color: var(--clh-white); }
 .clh-light .clh-copy .clh-btn:hover { background: #2a2a30; }
 .clh-light .clh-textlink, .clh-light .clh-faces-link { color: var(--clh-text); }
-.clh-light .clh-marquee img { filter: brightness(0); opacity: 0.78; }
+.clh-light .clh-marquee img { filter: brightness(0); opacity: 0.6; }
 .clh-light .clh-clips-band { background: var(--clh-white); color: var(--clh-text); }
 .clh-light .clh-faces img { border-color: var(--clh-white); }
 .clh-light .clh-clip { background: #e9e9ec; }
