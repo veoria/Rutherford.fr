@@ -82,7 +82,7 @@ export const OFFSET360_FAQ_BY_LOCALE: Record<Locale, Offset360Faq[]> = {
     },
     {
       q: 'Offset360 funziona con qualsiasi marca di macchina?',
-      a: 'Sì. Offset360 è aperto per progettazione e funziona con qualsiasi marca di macchina e qualsiasi workflow, senza vincoli di fornitore e senza sostituire tutto.',
+      a: 'Sì. Offset360 è aperto fin dalla progettazione e funziona con qualsiasi marca di macchina e qualsiasi workflow, senza vincoli di fornitore e senza sostituire tutto.',
     },
     {
       q: 'Cosa include Offset360?',
@@ -90,7 +90,7 @@ export const OFFSET360_FAQ_BY_LOCALE: Record<Locale, Offset360Faq[]> = {
     },
     {
       q: 'Quanto costa Offset360?',
-      a: 'Offset360 ha un costo iniziale inferiore a un nuovo sistema di misura ed è disponibile con finanziamento flessibile. Richiedete una validazione console gratuita per ottenere un prezzo per la vostra macchina.',
+      a: 'Offset360 ha un costo iniziale inferiore a un nuovo sistema di misura ed è disponibile con finanziamento flessibile. Richiedete una validazione console gratuita per ricevere un’offerta per la vostra macchina.',
     },
   ],
   es: [
@@ -108,7 +108,7 @@ export const OFFSET360_FAQ_BY_LOCALE: Record<Locale, Offset360Faq[]> = {
     },
     {
       q: '¿Qué incluye Offset360?',
-      a: 'La lectura IntelliTrax2, los informes MeasureColor y el control closed-loop Rutherford ColorLoop, desplegados y soportados como una única solución integrada.',
+      a: 'La lectura IntelliTrax2, los informes MeasureColor y el control closed-loop Rutherford ColorLoop, desplegados y con soporte como una única solución integrada.',
     },
     {
       q: '¿Cuánto cuesta Offset360?',
@@ -118,7 +118,7 @@ export const OFFSET360_FAQ_BY_LOCALE: Record<Locale, Offset360Faq[]> = {
   pt: [
     {
       q: 'O que é o Offset360?',
-      a: 'O Offset360 é o bundle de cor closed-loop da X-Rite e da Rutherford para offset de folhas. Combina a leitura IntelliTrax2, o controlo de processo MeasureColor e a correção closed-loop do Rutherford ColorLoop num único workflow junto à máquina.',
+      a: 'O Offset360 é o bundle de cor closed-loop da X-Rite e da Rutherford para offset de folha. Combina a leitura IntelliTrax2, o controlo de processo MeasureColor e a correção closed-loop do Rutherford ColorLoop num único workflow junto à máquina.',
     },
     {
       q: 'Em que difere o Offset360 de comprar uma máquina nova?',

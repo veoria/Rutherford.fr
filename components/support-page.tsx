@@ -275,7 +275,7 @@ const COPY: Record<Locale, Copy> = {
     subjectPh: 'Kurze Zusammenfassung des Problems',
     anydeskHelpTitle: 'Was ist AnyDesk?',
     anydeskHelp:
-      'Mit AnyDesk kann unser Team Ihren Bildschirm sehen, um schneller zu helfen. Laden Sie es kostenlos unter anydesk.com herunter, öffnen Sie es und kopieren Sie die 9-stellige Adresse unter „Dieser Arbeitsplatz“. Die Verbindung startet erst, wenn Sie sie an Ihrer Maschine bestätigen.',
+      'Mit AnyDesk kann unser Team Ihren Bildschirm sehen, um schneller zu helfen. Laden Sie es kostenlos unter anydesk.com herunter, öffnen Sie es und kopieren Sie die 9-stellige Adresse unter „Dieser Arbeitsplatz“. Die Verbindung startet erst, wenn Sie sie an Ihrem Rechner bestätigen.',
     problemLabel: 'Erklären Sie Ihr Problem',
     problemPh:
       'Was passiert, an welcher Druckmaschine / Software und seit wann? Sie können in Ihrer Sprache schreiben — Englisch hilft uns, schneller zu antworten.',
@@ -303,7 +303,7 @@ const COPY: Record<Locale, Copy> = {
     faq: [
       {
         q: 'Was ist AnyDesk und ist es sicher?',
-        a: 'AnyDesk ist ein Fernzugriffstool, mit dem unser Team Ihren Konsolenbildschirm sehen kann, um schneller zu helfen. Die Verbindung startet erst, wenn Sie sie an Ihrer Maschine bestätigen, und Sie können sie jederzeit beenden. Kostenlos unter anydesk.com.',
+        a: 'AnyDesk ist ein Fernzugriffstool, mit dem unser Team Ihren Konsolenbildschirm sehen kann, um schneller zu helfen. Die Verbindung startet erst, wenn Sie sie an Ihrem Rechner bestätigen, und Sie können sie jederzeit beenden. Kostenlos unter anydesk.com.',
       },
       {
         q: 'Wo finde ich meine AnyDesk-Nummer?',
@@ -349,7 +349,7 @@ const COPY: Record<Locale, Copy> = {
     subjectPh: 'Breve riassunto del problema',
     anydeskHelpTitle: 'Cos’è AnyDesk?',
     anydeskHelp:
-      'AnyDesk permette al nostro team di vedere il suo schermo per aiutarla più velocemente. Lo scarichi gratuitamente su anydesk.com, lo apra e copi l’indirizzo a 9 cifre mostrato sotto « Questa postazione ». La connessione si avvia solo quando la accetta sulla sua macchina.',
+      'AnyDesk permette al nostro team di vedere il suo schermo per aiutarla più velocemente. Lo scarichi gratuitamente su anydesk.com, lo apra e copi l’indirizzo a 9 cifre mostrato sotto “Questa postazione”. La connessione si avvia solo quando la accetta sulla sua macchina.',
     problemLabel: 'Spieghi il suo problema',
     problemPh:
       'Cosa succede, su quale macchina da stampa / software e da quando? Può scrivere nella sua lingua — l’inglese ci aiuta a rispondere più in fretta.',
@@ -367,7 +367,7 @@ const COPY: Record<Locale, Copy> = {
     submitHint: 'Ottimizzato per mobile — scatti e invii le foto direttamente dal telefono.',
     errFields: 'Compili i campi obbligatori (e-mail, oggetto e descrizione).',
     errGeneric: 'Qualcosa è andato storto, riprovi.',
-    nextTitle: 'E poi?',
+    nextTitle: 'Cosa succede dopo',
     nextSteps: [
       'Il nostro team esamina la sua richiesta e le foto.',
       'La contattiamo — la connessione AnyDesk avviene solo con il suo consenso.',
@@ -381,7 +381,7 @@ const COPY: Record<Locale, Copy> = {
       },
       {
         q: 'Dove trovo il mio numero AnyDesk?',
-        a: 'Apra AnyDesk sul computer della console. Il suo indirizzo a 9 cifre compare sotto « Questa postazione » — lo copi nel modulo.',
+        a: 'Apra AnyDesk sul computer della console. Il suo indirizzo a 9 cifre compare sotto “Questa postazione” — lo copi nel modulo.',
       },
       {
         q: 'In quanto tempo rispondete?',
@@ -407,7 +407,7 @@ const COPY: Record<Locale, Copy> = {
     phoneLine: 'Haga una foto y envíela directamente desde su teléfono.',
     ctaPrimary: 'Abrir un ticket',
     ctaSecondary: 'Hable con un experto',
-    reassure: ['Equipo experto', 'Respuesta en menos de 1 día hábil', 'Conexión solo con su permiso', 'Sin compromiso'],
+    reassure: ['Equipo experto', 'Respuesta en menos de 1 día laborable', 'Conexión solo con su permiso', 'Sin compromiso'],
     formTitle: '¿Cómo podemos ayudarle?',
     signedInPrefix: 'Sesión iniciada como',
     loginPrompt: '¿Tiene una cuenta Rutherford? Inicie sesión para rellenar sus datos.',
@@ -423,7 +423,7 @@ const COPY: Record<Locale, Copy> = {
     subjectPh: 'Resumen breve del problema',
     anydeskHelpTitle: '¿Qué es AnyDesk?',
     anydeskHelp:
-      'AnyDesk permite a nuestro equipo ver su pantalla para ayudarle más rápido. Descárguelo gratis en anydesk.com, ábralo y copie la dirección de 9 cifras que aparece bajo « Este escritorio ». La conexión solo se inicia cuando usted la acepta en su máquina.',
+      'AnyDesk permite a nuestro equipo ver su pantalla para ayudarle más rápido. Descárguelo gratis en anydesk.com, ábralo y copie la dirección de 9 cifras que aparece bajo «Este escritorio». La conexión solo se inicia cuando usted la acepta en su máquina.',
     problemLabel: 'Explique su problema',
     problemPh:
       '¿Qué ocurre, en qué prensa / software y desde cuándo? Puede escribir en su idioma — el inglés nos ayuda a responder más rápido.',
@@ -440,7 +440,7 @@ const COPY: Record<Locale, Copy> = {
     sending: 'Enviando…',
     submitHint: 'Compatible con móvil — haga y envíe las fotos directamente desde su teléfono.',
     errFields: 'Complete los campos obligatorios (correo, asunto y descripción).',
-    errGeneric: 'Algo salió mal, vuelva a intentarlo.',
+    errGeneric: 'Se ha producido un error, inténtelo de nuevo.',
     nextTitle: '¿Y después?',
     nextSteps: [
       'Nuestro equipo revisa su solicitud y sus fotos.',
@@ -455,11 +455,11 @@ const COPY: Record<Locale, Copy> = {
       },
       {
         q: '¿Dónde encuentro mi número AnyDesk?',
-        a: 'Abra AnyDesk en el ordenador de la consola. Su dirección de 9 cifras aparece bajo « Este escritorio » — cópiela en el formulario.',
+        a: 'Abra AnyDesk en el ordenador de la consola. Su dirección de 9 cifras aparece bajo «Este escritorio»: cópiela en el formulario.',
       },
       {
         q: '¿En cuánto tiempo responden?',
-        a: 'Respondemos en un día hábil, normalmente mucho antes. Conserve la referencia de su ticket para cualquier seguimiento.',
+        a: 'Respondemos en un día laborable, normalmente mucho antes. Conserve la referencia de su ticket para cualquier seguimiento.',
       },
       {
         q: '¿Puedo seguir mi ticket?',
@@ -660,7 +660,7 @@ const PRESS_LINKED: Record<Locale, { title: string; note: string }> = {
   en: { title: 'Press concerned', note: 'Our team receives this press’s configuration and equipment with your request.' },
   fr: { title: 'Presse concernée', note: 'Notre équipe reçoit la configuration et l’équipement de cette presse avec votre demande.' },
   de: { title: 'Betroffene Druckmaschine', note: 'Unser Team erhält Konfiguration und Ausstattung dieser Maschine mit Ihrer Anfrage.' },
-  it: { title: 'Macchina interessata', note: 'Il nostro team riceve configurazione ed equipaggiamento di questa macchina con la richiesta.' },
+  it: { title: 'Macchina interessata', note: 'Il nostro team riceve configurazione e dotazione di questa macchina insieme alla richiesta.' },
   es: { title: 'Prensa afectada', note: 'Nuestro equipo recibe la configuración y el equipamiento de esta prensa con su solicitud.' },
   pt: { title: 'Máquina em causa', note: 'A nossa equipa recebe a configuração e o equipamento desta máquina com o seu pedido.' },
 };

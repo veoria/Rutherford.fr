@@ -7,9 +7,9 @@
     "secondaryCta": "Talk to Rutherford"
   },
   "fr": {
-    "kicker": "Arrêtez de perdre de l'argent",
-    "headline": "Arrêtez de perdre de l'argent à chaque calage",
-    "supporting": "La dérive couleur brûle des feuilles, de l'encre et du temps presse. Vérifiez gratuitement si votre presse est éligible au closed-loop Rutherford.",
+    "kicker": "Arrêtez de perdre de l’argent",
+    "headline": "Arrêtez de perdre de l’argent à chaque calage",
+    "supporting": "La dérive couleur consomme des feuilles, de l’encre et du temps presse. Vérifiez gratuitement si votre presse est éligible au closed-loop Rutherford.",
     "primaryCta": "Testez gratuitement votre éligibilité",
     "secondaryCta": "Parler à Rutherford"
   },
@@ -21,17 +21,17 @@
     "secondaryCta": "Mit Rutherford sprechen"
   },
   "it": {
-    "kicker": "Smetta di perdere denaro",
-    "headline": "Smetta di perdere denaro a ogni avviamento",
+    "kicker": "Basta perdere denaro",
+    "headline": "Basta perdere denaro a ogni avviamento",
     "supporting": "La deriva colore brucia fogli, inchiostro e tempo macchina. Verifichi gratuitamente se la Sua macchina è idonea al closed-loop Rutherford.",
-    "primaryCta": "Verifichi gratis la Sua idoneità",
+    "primaryCta": "Verifica gratuita dell’idoneità",
     "secondaryCta": "Parla con Rutherford"
   },
   "es": {
     "kicker": "Deje de perder dinero",
     "headline": "Deje de perder dinero en cada puesta a punto",
-    "supporting": "La deriva del color quema pliegos, tinta y tiempo de prensa. Compruebe gratis si su prensa es elegible para el closed-loop de Rutherford.",
-    "primaryCta": "Pruebe gratis su elegibilidad",
+    "supporting": "La deriva del color quema pliegos, tinta y tiempo de prensa. Compruebe gratis si su prensa es apta para el closed-loop de Rutherford.",
+    "primaryCta": "Compruebe gratis si su prensa es apta",
     "secondaryCta": "Hablar con Rutherford"
   },
   "pt": {

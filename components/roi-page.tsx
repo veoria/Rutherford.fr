@@ -93,7 +93,7 @@ const COPY: Record<Locale, RoiCopy> = {
   fr: {
     hero: {
       kicker: 'Estimateur ROI',
-      h1: 'Combien ColorLoop peut faire économiser à votre atelier ?',
+      h1: 'Combien ColorLoop peut-il faire économiser à votre atelier ?',
       lead: 'Estimez en moins d’une minute la gâche, le temps de calage et les coûts que vous pouvez récupérer sur vos presses offset — à partir de vos propres chiffres.',
       ctaCalc: 'Calculez vos économies',
       ctaConsole: 'Demander une validation console',
@@ -101,9 +101,9 @@ const COPY: Record<Locale, RoiCopy> = {
     },
     capture: {
       kicker: 'Estimation détaillée',
-      h2: 'Recevez votre estimation détaillée par email',
+      h2: 'Recevez votre estimation détaillée par e-mail',
       lead: 'Recevez le détail de vos économies potentielles — gâche, temps de calage, encre, papier et énergie — directement dans votre boîte mail.',
-      emailLabel: 'Adresse email',
+      emailLabel: 'Adresse e-mail',
       emailPlaceholder: 'nom@entreprise.com',
       companyLabel: 'Imprimerie',
       companyPlaceholder: 'Votre société',
@@ -120,7 +120,7 @@ const COPY: Record<Locale, RoiCopy> = {
         { title: 'Gâche au calage', body: 'Le closed-loop atteint la cible couleur en quelques feuilles : moins de feuilles perdues à chaque démarrage.' },
         { title: 'Temps de calage', body: 'Des calages plus courts libèrent du temps presse — vous produisez davantage sur le même créneau.' },
         { title: 'Encre, papier et énergie', body: 'Moins de gâche, c’est directement moins de matière et d’énergie consommées sur chaque travail.' },
-        { title: 'Constance & relances', body: 'Une couleur stable d’une équipe et d’une relance à l’autre, sans re-calage.' },
+        { title: 'Constance & relances', body: 'Une couleur stable d’une équipe et d’une relance à l’autre, sans recalage.' },
       ],
     },
     method: {
@@ -129,7 +129,7 @@ const COPY: Record<Locale, RoiCopy> = {
       lead: 'Le calcul s’appuie sur des hypothèses transparentes, ajustables à votre réalité. Aucun chiffre n’est gonflé : ce sont les gains typiques d’un workflow closed-loop ColorLoop.',
       items: [
         { value: '225', unit: 'jours / an', note: 'Base de production annuelle, ajustable à votre activité.' },
-        { value: '−55 %', unit: 'gâche au calage', note: 'Réduction typique grâce au presetting et au closed-loop.' },
+        { value: '−55 %', unit: 'gâche au calage', note: 'Réduction typique grâce au préréglage et au closed-loop.' },
         { value: '−38 %', unit: 'temps de calage', note: 'Gain de temps presse observé sur un workflow ColorLoop.' },
         { value: '€', unit: 'papier & coût presse', note: 'Grammage, prix papier et coût horaire presse paramétrables.' },
       ],
@@ -180,14 +180,14 @@ const COPY: Record<Locale, RoiCopy> = {
       lead: 'Die Berechnung beruht auf transparenten Annahmen, die Sie an Ihre Realität anpassen können. Keine Zahl ist geschönt — es sind die typischen Gewinne eines ColorLoop-Closed-Loop-Workflows.',
       items: [
         { value: '225', unit: 'Tage / Jahr', note: 'Jährliche Produktionsbasis, an Ihre Tätigkeit anpassbar.' },
-        { value: '−55 %', unit: 'Makulatur beim Einrichten', note: 'Typische Reduktion durch Presetting und Closed-Loop.' },
+        { value: '−55 %', unit: 'Makulatur beim Einrichten', note: 'Typische Reduzierung durch Farbvoreinstellung und Closed-Loop.' },
         { value: '−38 %', unit: 'Einrichtungszeit', note: 'Beobachteter Maschinenzeit-Gewinn in einem ColorLoop-Workflow.' },
         { value: '€', unit: 'Papier & Maschinenkosten', note: 'Grammatur, Papierpreis und Maschinenstundensatz konfigurierbar.' },
       ],
     },
     testimonial: {
       kicker: 'Referenz',
-      quote: '„Auf der mit IntelliTrax ausgestatteten Druckmaschine ist unsere durchschnittliche Makulatur beim Einrichten von 700–800 Bogen pro Auftrag (8 Farben) auf 450 Bogen gesunken — gut 40 % weniger Makulatur."',
+      quote: '„Auf der mit IntelliTrax ausgestatteten Druckmaschine ist unsere durchschnittliche Makulatur beim Einrichten von 700–800 Bogen pro Auftrag (8 Farben) auf 450 Bogen gesunken — gut 40 % weniger Makulatur.“',
       author: 'Viappiani Printing — Etikettendruckerei, Mailand',
       cta: 'Testimonial ansehen',
     },
@@ -195,9 +195,9 @@ const COPY: Record<Locale, RoiCopy> = {
   it: {
     hero: {
       kicker: 'Calcolatore ROI',
-      h1: 'Quanto può far risparmiare ColorLoop al Suo reparto stampa?',
+      h1: 'Quanto può far risparmiare ColorLoop alla Sua sala stampa?',
       lead: 'Stimi in meno di un minuto lo scarto, il tempo di avviamento e i costi che può recuperare sulle Sue macchine offset — a partire dai Suoi dati.',
-      ctaCalc: 'Calcola il Suo risparmio',
+      ctaCalc: 'Calcola il risparmio',
       ctaConsole: 'Richiedi validazione console',
       trust: '25+ anni · 30+ paesi · 1.000+ sistemi installati · compatibile con IntelliTrax2 e MeasureColor',
     },
@@ -207,7 +207,7 @@ const COPY: Record<Locale, RoiCopy> = {
       lead: 'Riceva il dettaglio dei Suoi risparmi potenziali — scarto, tempo di avviamento, inchiostro, carta ed energia — direttamente nella Sua casella.',
       emailLabel: 'Indirizzo email',
       emailPlaceholder: 'nome@azienda.com',
-      companyLabel: 'Stamperia',
+      companyLabel: 'Azienda di stampa',
       companyPlaceholder: 'La Sua azienda',
       button: 'Inviami la stima',
       note: 'Niente spam. Usiamo i Suoi dati solo per inviare la stima e ricontattarLa.',
@@ -238,7 +238,7 @@ const COPY: Record<Locale, RoiCopy> = {
     },
     testimonial: {
       kicker: 'Testimonianza',
-      quote: '« Sulla macchina da stampa dotata di IntelliTrax, lo scarto medio di avviamento è passato da 700–800 fogli per lavoro (8 colori) a 450 fogli: ben il 40 % di scarto in meno. »',
+      quote: '“Sulla macchina dotata di IntelliTrax, lo scarto medio di avviamento è passato da 700–800 fogli per lavoro (8 colori) a 450: ben il 40% di scarto in meno.”',
       author: 'Viappiani Printing — stampatore di etichette, Milano',
       cta: 'Guarda il video',
     },
@@ -264,13 +264,13 @@ const COPY: Record<Locale, RoiCopy> = {
       note: 'Sin spam. Usamos sus datos solo para enviar la estimación y volver a contactarle.',
       success: 'Gracias — su estimación detallada está en camino.',
       sending: 'Enviando…',
-      error: 'Algo salió mal. Inténtelo de nuevo o escríbanos directamente.',
+      error: 'Se ha producido un error. Inténtelo de nuevo o escríbanos directamente.',
     },
     levers: {
       kicker: 'Palancas',
       h2: 'Dónde se recupera el dinero',
       items: [
-        { title: 'Desperdicio de puesta a punto', body: 'El closed-loop alcanza el objetivo de color en pocas hojas: menos hojas perdidas en cada arranque.' },
+        { title: 'Desperdicio de puesta a punto', body: 'El closed-loop alcanza el objetivo de color en pocos pliegos: menos pliegos perdidos en cada arranque.' },
         { title: 'Tiempo de puesta a punto', body: 'Puestas a punto más cortas liberan tiempo de prensa — produce más en la misma franja.' },
         { title: 'Tinta, papel y energía', body: 'Menos desperdicio significa directamente menos material y energía consumidos en cada trabajo.' },
         { title: 'Consistencia y reimpresiones', body: 'Color estable de un turno y una reimpresión a otra, sin nueva puesta a punto.' },
@@ -279,17 +279,17 @@ const COPY: Record<Locale, RoiCopy> = {
     method: {
       kicker: 'Metodología',
       h2: 'De dónde vienen estas cifras',
-      lead: 'El cálculo se basa en hipótesis transparentes, ajustables a su realidad. Ninguna cifra está inflada: son las ganancias típicas de un flujo de trabajo closed-loop ColorLoop.',
+      lead: 'El cálculo se basa en hipótesis transparentes, ajustables a su realidad. Ninguna cifra está inflada: son las mejoras típicas de un flujo de trabajo closed-loop ColorLoop.',
       items: [
         { value: '225', unit: 'días / año', note: 'Base de producción anual, ajustable a su actividad.' },
-        { value: '−55 %', unit: 'desperdicio de puesta a punto', note: 'Reducción típica gracias al presetting y al closed-loop.' },
+        { value: '−55 %', unit: 'desperdicio de puesta a punto', note: 'Reducción típica gracias al preajuste y al closed-loop.' },
         { value: '−38 %', unit: 'tiempo de puesta a punto', note: 'Ganancia de tiempo de prensa observada en un flujo ColorLoop.' },
         { value: '€', unit: 'papel y coste de prensa', note: 'Gramaje, precio del papel y coste por hora de prensa configurables.' },
       ],
     },
     testimonial: {
       kicker: 'Testimonio',
-      quote: '« En la prensa equipada con IntelliTrax, nuestro desperdicio medio de puesta a punto pasó de 700–800 pliegos por trabajo (8 colores) a 450: un 40 % menos de desperdicio. »',
+      quote: '«En la prensa equipada con IntelliTrax, nuestro desperdicio medio de puesta a punto pasó de 700–800 pliegos por trabajo (8 colores) a 450: un 40 % menos de desperdicio.»',
       author: 'Viappiani Printing — impresor de etiquetas, Milán',
       cta: 'Ver testimonio',
     },
@@ -309,9 +309,9 @@ const COPY: Record<Locale, RoiCopy> = {
       lead: 'Receba o detalhe da sua poupança potencial (maculatura, tempo de acerto, tinta, papel e energia) diretamente na sua caixa de entrada.',
       emailLabel: 'Endereço de email',
       emailPlaceholder: 'nome@empresa.com',
-      companyLabel: 'Impressor',
+      companyLabel: 'Gráfica',
       companyPlaceholder: 'A sua empresa',
-      button: 'Enviem-me a estimativa',
+      button: 'Receber a estimativa',
       note: 'Sem spam. Usamos os seus dados apenas para enviar a estimativa e dar seguimento.',
       success: 'Obrigado, a sua estimativa detalhada está a caminho.',
       sending: 'A enviar…',
@@ -321,10 +321,10 @@ const COPY: Record<Locale, RoiCopy> = {
       kicker: 'Alavancas',
       h2: 'Onde o dinheiro é recuperado',
       items: [
-        { title: 'Maculatura de acerto', body: 'O closed-loop atinge a cor alvo em poucas folhas, menos folhas perdidas em cada arranque.' },
+        { title: 'Maculatura de acerto', body: 'O closed-loop atinge a cor-alvo em poucas folhas, menos folhas perdidas em cada arranque.' },
         { title: 'Tempo de acerto', body: 'Acertos mais curtos libertam tempo de máquina, produz mais no mesmo período.' },
         { title: 'Tinta, papel e energia', body: 'Menos maculatura significa diretamente menos material e energia consumidos em cada trabalho.' },
-        { title: 'Consistência e relances', body: 'Cor estável de um turno e de um relance para o seguinte, sem novo acerto.' },
+        { title: 'Consistência e reimpressões', body: 'Cor estável de um turno e de uma reimpressão para a seguinte, sem novo acerto.' },
       ],
     },
     method: {
@@ -333,7 +333,7 @@ const COPY: Record<Locale, RoiCopy> = {
       lead: 'O cálculo assenta em pressupostos transparentes que pode ajustar à sua realidade. Nenhum número é inflacionado, são os ganhos típicos de um workflow closed-loop ColorLoop.',
       items: [
         { value: '225', unit: 'dias / ano', note: 'Base de produção anual, ajustável à sua atividade.' },
-        { value: '−55 %', unit: 'maculatura de acerto', note: 'Redução típica graças ao presetting e ao closed-loop.' },
+        { value: '−55 %', unit: 'maculatura de acerto', note: 'Redução típica graças ao pré-ajuste e ao closed-loop.' },
         { value: '−38 %', unit: 'tempo de acerto', note: 'Ganho de tempo de máquina observado num workflow ColorLoop.' },
         { value: '€', unit: 'papel e custo de máquina', note: 'Gramagem, preço do papel e custo horário da máquina são configuráveis.' },
       ],

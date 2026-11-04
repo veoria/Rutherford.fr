@@ -101,7 +101,7 @@ export function SiteNav({ current = 'home', brand = 'rutherford' }: SiteNavProps
       openNav: 'Ouvrir la navigation', mainNav: 'Navigation principale', signIn: 'Se connecter', account: 'Mon compte',
     },
     de: {
-      home: 'Start', colorloop: 'ColorLoop', roi: 'ROI', cases: 'Referenzen', blog: 'Blog',
+      home: 'Startseite', colorloop: 'ColorLoop', roi: 'ROI', cases: 'Referenzen', blog: 'Blog',
       academy: 'Academy', support: 'Support', console: 'Konsolenvalidierung', contact: 'Kontakt',
       openNav: 'Navigation öffnen', mainNav: 'Hauptnavigation', signIn: 'Anmelden', account: 'Mein Konto',
     },

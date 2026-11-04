@@ -48,12 +48,12 @@
       }
     ],
     "techLabel": "Intégrations",
-    "techBody": "ColorLoop s’intègre aux outils standards du secteur comme MeasureColor et IntelliTrax2, vos investissements mesure et reporting restent valorisés.",
+    "techBody": "ColorLoop s’intègre aux outils standards du secteur comme MeasureColor et IntelliTrax2, tout en préservant vos investissements en mesure et en reporting.",
     "primaryCta": "Découvrir ColorLoop"
   },
   "de": {
     "kicker": "Die Software",
-    "headline": "ColorLoop für Offsetdruck",
+    "headline": "ColorLoop für den Offsetdruck",
     "intro": "Aufbauend auf Rutherfords Closed-Loop-Erfahrung hilft ColorLoop Offsetteams, Einrichtungszeiten zu reduzieren, die Farbkonsistenz zu verbessern und Produktionsdaten klarer zu verbinden.",
     "benefits": [
       {
@@ -70,7 +70,7 @@
       },
       {
         "title": "Verbundene Transparenz",
-        "body": "Messungen, Qualitätsdaten und Produktionsinsights in einer klareren Betriebsschicht."
+        "body": "Messungen, Qualitätsdaten und Produktionsauswertungen auf einer gemeinsamen, übersichtlichen Ebene."
       }
     ],
     "techLabel": "Integrationen",
@@ -92,11 +92,11 @@
       },
       {
         "title": "Maggiore ripetibilità",
-        "body": "Usa dati di produzione affidabili per migliorare le prestazioni da un lavoro al successivo."
+        "body": "Dati di produzione affidabili per migliorare le prestazioni da un lavoro al successivo."
       },
       {
         "title": "Visibilità connessa",
-        "body": "Porta misurazioni, dati qualità e insight produttivi in un unico livello operativo, più chiaro e utilizzabile."
+        "body": "Misurazioni, dati qualità e insight produttivi riuniti in un unico livello operativo, più chiaro e utilizzabile."
       }
     ],
     "techLabel": "Integrazioni",
@@ -114,7 +114,7 @@
       },
       {
         "title": "Menos desperdicio",
-        "body": "Menos papel, tinta y reruns innecesarios gracias a una puesta a punto más consistente."
+        "body": "Menos papel, tinta y reimpresiones innecesarias gracias a una puesta a punto más consistente."
       },
       {
         "title": "Mejor repetibilidad",
@@ -122,11 +122,11 @@
       },
       {
         "title": "Visibilidad conectada",
-        "body": "Medidas, datos de calidad e insights de producción en una capa operativa más clara."
+        "body": "Mediciones, datos de calidad e información de producción en una capa operativa más clara."
       }
     ],
     "techLabel": "Integraciones",
-    "techBody": "ColorLoop funciona con herramientas estándar del sector como MeasureColor y IntelliTrax2, sus inversiones en medición y reporting se mantienen.",
+    "techBody": "ColorLoop funciona con herramientas estándar del sector como MeasureColor e IntelliTrax2, y conserva sus inversiones actuales en medición y reporting.",
     "primaryCta": "Descubrir ColorLoop"
   },
   "pt": {
@@ -136,7 +136,7 @@
     "benefits": [
       {
         "title": "Acerto mais rápido",
-        "body": "Alcance a cor alvo mais cedo com workflows de acerto e correção assistidos por IA."
+        "body": "Alcance a cor-alvo mais cedo com workflows de acerto e correção assistidos por IA."
       },
       {
         "title": "Menos maculatura",
@@ -147,7 +147,7 @@
         "body": "Use dados de produção estáveis para melhorar o desempenho de um trabalho para o seguinte."
       },
       {
-        "title": "Visibilidade ligada",
+        "title": "Visibilidade integrada",
         "body": "Reúna medições, dados de qualidade e indicadores de produção numa única camada operacional mais clara."
       }
     ],

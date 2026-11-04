@@ -82,7 +82,7 @@ const COPY: Record<Locale, Copy> = {
   fr: {
     kicker: 'Contact',
     title: 'Parlez à un expert couleur',
-    lead: 'Une question sur le closed-loop, un rétrofit de presse ou ColorLoop ? Écrivez-nous, un expert Rutherford répond sous un jour ouvré.',
+    lead: 'Une question sur le closed-loop, un retrofit de presse ou ColorLoop ? Écrivez-nous, un expert Rutherford répond sous un jour ouvré.',
     consoleHint: 'Vous voulez savoir si votre presse est éligible ?',
     consoleLink: 'Lancer la validation console gratuite',
     formTitle: 'Votre message',
@@ -93,7 +93,7 @@ const COPY: Record<Locale, Copy> = {
     countryPlaceholder: 'Choisir un pays',
     topic: 'Sujet',
     topics: {
-      retrofit: 'Rétrofit de presse',
+      retrofit: 'Retrofit de presse',
       colorloop: 'Logiciel ColorLoop',
       quote: 'Devis ou tarifs',
       partnership: 'Revendeur ou partenariat',
@@ -121,7 +121,7 @@ const COPY: Record<Locale, Copy> = {
   de: {
     kicker: 'Kontakt',
     title: 'Sprechen Sie mit einem Farbexperten',
-    lead: 'Eine Frage zu Closed-Loop-Farbe, zur Nachrüstung einer Druckmaschine oder zu ColorLoop? Schreiben Sie uns, ein Rutherford Experte antwortet innerhalb eines Werktags.',
+    lead: 'Eine Frage zu Closed-Loop-Farbe, zur Nachrüstung einer Druckmaschine oder zu ColorLoop? Schreiben Sie uns, ein Rutherford-Experte antwortet innerhalb eines Werktags.',
     consoleHint: 'Möchten Sie wissen, ob Ihre Druckmaschine geeignet ist?',
     consoleLink: 'Kostenlose Konsolenvalidierung starten',
     formTitle: 'Ihre Nachricht',
@@ -133,7 +133,7 @@ const COPY: Record<Locale, Copy> = {
     topic: 'Thema',
     topics: {
       retrofit: 'Nachrüstung der Druckmaschine',
-      colorloop: 'ColorLoop Software',
+      colorloop: 'ColorLoop-Software',
       quote: 'Angebot oder Preise',
       partnership: 'Händler oder Partnerschaft',
       press: 'Presse und Medien',
@@ -148,7 +148,7 @@ const COPY: Record<Locale, Copy> = {
     sending: 'Wird gesendet…',
     privacy: 'Ihre Angaben werden nur zur Beantwortung Ihrer Anfrage verwendet.',
     successTitle: 'Nachricht gesendet',
-    successBody: 'Vielen Dank. Ein Rutherford Experte antwortet innerhalb eines Werktags.',
+    successBody: 'Vielen Dank. Ein Rutherford-Experte antwortet innerhalb eines Werktags.',
     backHome: 'Zurück zur Startseite',
     errors: {
       email: 'Bitte geben Sie eine gültige E-Mail-Adresse ein.',

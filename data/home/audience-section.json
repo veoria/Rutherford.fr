@@ -21,15 +21,15 @@
   "fr": {
     "kicker": "Pour qui nous travaillons",
     "headline": "Avec qui travaille Rutherford",
-    "intro": "Si l’une de ces situations vous parle, Rutherford est probablement un bon choix. Nous travaillons avec des équipes qui se concentrent sur les résultats presse réels.",
+    "intro": "Si l’une de ces situations vous parle, Rutherford est probablement un bon choix. Nous travaillons avec des équipes qui visent des résultats concrets sur presse.",
     "cards": [
       {
         "title": "Imprimeurs offset",
-        "body": "Imprimeurs qui cherchent un calage plus rapide et une constance couleur plus stable entre travaux, équipes et presses."
+        "body": "Imprimeurs qui cherchent un calage plus rapide et des résultats couleur plus stables entre travaux, équipes et presses."
       },
       {
         "title": "Converters packaging",
-        "body": "Converters qui veulent un contrôle de production plus fort, plus de standardisation et de répétabilité dans l’atelier."
+        "body": "Converters qui recherchent une maîtrise de la production renforcée, plus de standardisation et de répétabilité dans l’atelier."
       },
       {
         "title": "Décideurs",
@@ -40,7 +40,7 @@
   "de": {
     "kicker": "Mit wem wir arbeiten",
     "headline": "Mit wem Rutherford arbeitet",
-    "intro": "Wenn Ihnen eine dieser Situationen vertraut ist, passt Rutherford wahrscheinlich gut. Wir arbeiten am besten mit Teams, denen reale Pressenergebnisse wichtig sind.",
+    "intro": "Wenn Ihnen eine dieser Situationen vertraut ist, passt Rutherford wahrscheinlich gut. Wir arbeiten am besten mit Teams, denen reale Ergebnisse an der Druckmaschine wichtig sind.",
     "cards": [
       {
         "title": "Offsetdruckereien",
@@ -48,7 +48,7 @@
       },
       {
         "title": "Verpackungsverarbeiter",
-        "body": "Converter, die stärkere Produktionskontrolle, Standardisierung und Wiederholbarkeit in der Druckerei suchen."
+        "body": "Verarbeiter, die mehr Produktionskontrolle, Standardisierung und Wiederholbarkeit im Drucksaal suchen."
       },
       {
         "title": "Entscheider",
@@ -90,7 +90,7 @@
       },
       {
         "title": "Decisores",
-        "body": "Líderes que evalúan modernización de flujo, estrategia closed-loop de color o compatibilidad de consola antes de un despliegue."
+        "body": "Directivos que evalúan la modernización del flujo de trabajo, una estrategia closed-loop de color o la compatibilidad de consola antes de un despliegue."
       }
     ]
   },
@@ -108,7 +108,7 @@
         "body": "Transformadores que procuram um controlo de produção mais forte, mais padronização e repetibilidade na gráfica."
       },
       {
-        "title": "Gestores",
+        "title": "Decisores",
         "body": "Responsáveis que avaliam a modernização do workflow, uma estratégia closed-loop de cor ou a compatibilidade da consola antes de uma implementação."
       }
     ]

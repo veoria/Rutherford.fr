@@ -48,7 +48,7 @@
   "de": {
     "kicker": "Wie Rutherford hilft",
     "headline": "Konkrete Ergebnisse für reale Offset-Produktion.",
-    "intro": "Rutherford unterstützt Offsetteams bei Farbmanagement, pressenseitigem Workflow und Produktionsstandardisierung, fokussiert auf das, was die Presse bewegt, nicht auf Schlagworte.",
+    "intro": "Rutherford unterstützt Offsetteams bei Farbmanagement, Workflow an der Druckmaschine und Produktionsstandardisierung, mit Blick auf das, was an der Maschine zählt, nicht auf Schlagworte.",
     "benefits": [
       {
         "title": "Stabile Farbe über alle Aufträge",
@@ -56,11 +56,11 @@
       },
       {
         "title": "Weniger Einrichtungs-Makulatur",
-        "body": "Weniger Bogen, weniger Farbe und kürzere Einrichtungszyklen dank planbarer Farbziele und engerer Pressensteuerung."
+        "body": "Weniger Bogen, weniger Farbe und kürzere Einrichtungszyklen dank zuverlässig getroffener Farbziele und präziserer Maschinensteuerung."
       },
       {
         "title": "Bessere Workflow-Kontrolle",
-        "body": "Klarere Entscheidungen an der Presse, verbundene Messdaten und strukturierte Übergabe zwischen Bedienern und Management."
+        "body": "Klarere Entscheidungen an der Druckmaschine, verbundene Messdaten und strukturierte Übergabe zwischen Bedienern und Management."
       },
       {
         "title": "Produktionsstandardisierung",
@@ -75,7 +75,7 @@
     "benefits": [
       {
         "title": "Colore stabile, tiratura dopo tiratura",
-        "body": "Calibrazione standardizzata, modelli inchiostro e correzione closed-loop mantengono le consegne coerenti da un lavoro al successivo."
+        "body": "Calibrazione standardizzata, modelli di inchiostrazione e correzione closed-loop mantengono le consegne coerenti da un lavoro al successivo."
       },
       {
         "title": "Meno scarti in avviamento",
@@ -102,7 +102,7 @@
       },
       {
         "title": "Menos desperdicio en puesta a punto",
-        "body": "Menos pliegos, menos tinta y ciclos de puesta a punto más cortos gracias a un pilotaje más fiable."
+        "body": "Menos pliegos, menos tinta y ciclos de puesta a punto más cortos gracias a un ajuste al objetivo más predecible y a un control de prensa más preciso."
       },
       {
         "title": "Mejor control del flujo de trabajo",
@@ -129,11 +129,11 @@
       },
       {
         "title": "Melhor controlo do workflow",
-        "body": "Decisões de impressão mais claras, dados de medição ligados e transmissão estruturada entre operadores e gestão."
+        "body": "Decisões de impressão mais claras, dados de medição ligados e passagem de informação estruturada entre operadores e gestão."
       },
       {
         "title": "Padronização da produção",
-        "body": "Processos repetíveis entre máquinas, turnos e instalações, para que proprietários de marca e transformadores possam confiar no que é entregue."
+        "body": "Processos repetíveis entre máquinas, turnos e instalações, para que marcas e transformadores de embalagem possam confiar no que é entregue."
       }
     ]
   }

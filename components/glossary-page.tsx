@@ -42,19 +42,19 @@ const COPY: Record<Locale, Copy> = {
     ctaButton: 'Demander une validation console',
   },
   de: {
-    kicker: 'Rutherford Glossar',
+    kicker: 'Rutherford-Glossar',
     title: 'Farbmanagement im Offsetdruck, von A bis Z',
     subtitle: 'Das Vokabular der Farbsteuerung an der Offsetmaschine: Einrichten, DeltaE, Farbzonenschrauben, G7, Closed Loop. Klare Definitionen, aus der Druckerei geschrieben.',
     countSuffix: 'Begriffe',
     learnMore: 'Mehr erfahren',
-    ctaTitle: 'Ein Begriff fehlt? Eine Maschine zu prüfen?',
+    ctaTitle: 'Ein Begriff fehlt? Eine Druckmaschine prüfen lassen?',
     ctaText: 'Der kostenlose Rutherford Check sagt Ihnen in rund zwei Minuten, ob Ihr Druckpult mit Closed-Loop-Farbsteuerung kompatibel ist.',
     ctaButton: 'Konsolenvalidierung anfragen',
   },
   it: {
     kicker: 'Glossario Rutherford',
     title: 'La gestione del colore offset, dalla A alla Z',
-    subtitle: 'Il vocabolario del controllo colore in macchina offset: avviamento, DeltaE, chiavi di inchiostro, G7, closed loop. Definizioni chiare, scritte dal reparto stampa.',
+    subtitle: 'Il vocabolario del controllo colore in macchina offset: avviamento, DeltaE, chiavi di inchiostro, G7, closed-loop. Definizioni chiare, scritte da chi lavora in sala stampa.',
     countSuffix: 'termini',
     learnMore: 'Scopri di più',
     ctaTitle: 'Manca un termine? Una macchina da verificare?',
@@ -64,7 +64,7 @@ const COPY: Record<Locale, Copy> = {
   es: {
     kicker: 'Glosario Rutherford',
     title: 'La gestión del color offset, de la A a la Z',
-    subtitle: 'El vocabulario del control del color en prensa offset: puesta a punto, DeltaE, llaves de tinta, G7, closed loop. Definiciones claras, escritas desde la sala de impresión.',
+    subtitle: 'El vocabulario del control del color en prensa offset: puesta a punto, DeltaE, llaves de tinta, G7, closed loop. Definiciones claras, escritas desde la sala de prensa.',
     countSuffix: 'términos',
     learnMore: 'Saber más',
     ctaTitle: '¿Falta un término? ¿Una prensa que verificar?',
@@ -74,12 +74,12 @@ const COPY: Record<Locale, Copy> = {
   pt: {
     kicker: 'Glossário Rutherford',
     title: 'A gestão da cor offset, de A a Z',
-    subtitle: 'O vocabulário do controlo de cor na máquina offset: acerto, DeltaE, chaves de tinta, G7, closed loop. Definições claras, escritas a partir da sala de impressão.',
+    subtitle: 'O vocabulário do controlo de cor na máquina offset: acerto, DeltaE, chaves de tinta, G7, closed-loop. Definições claras, escritas a partir da sala de impressão.',
     countSuffix: 'termos',
     learnMore: 'Saber mais',
     ctaTitle: 'Falta um termo? Uma máquina para verificar?',
     ctaText: 'O Rutherford Check gratuito diz-lhe em cerca de dois minutos se a consola da sua máquina é compatível com o controlo de cor closed-loop.',
-    ctaButton: 'Pedir validação de consola',
+    ctaButton: 'Solicitar uma validação de consola',
   },
 };
 

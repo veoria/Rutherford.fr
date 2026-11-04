@@ -137,16 +137,16 @@ const FR: Copy = {
         'Sur une presse feuille équipée par Rutherford, le cycle se déroule ainsi :',
       ],
       list: [
-        'Le conducteur tire une feuille et la pose sur la table de scan ; un X-Rite IntelliTrax2 lit toute la barre de contrôle en moins de 15 secondes.',
+        'Le conducteur tire une feuille et la pose sur la table de lecture ; un X-Rite IntelliTrax2 lit toute la barre de contrôle en moins de 15 secondes.',
         'MeasureColor évalue les mesures par rapport à la cible du travail : ISO 12647-2, G7 ou le bon à rouler approuvé.',
         'ColorLoop calcule la correction de chaque vis d’encrier de chaque groupe et l’envoie à la console de la presse.',
         'La presse applique les nouvelles positions ; la feuille suivante confirme la convergence. Le système apprend le comportement de la presse tirage après tirage.',
       ],
     },
     {
-      h2: 'Ce que ça change : calage, gâche, constance',
+      h2: 'Ce que cela change : calage, gâche, constance',
       paras: [
-        'L’enjeu économique se concentre au démarrage de chaque tirage. Un calage classique brûle 200 à 500 feuilles pendant que le conducteur monte la couleur à la main ; avec un préréglage automatique et un closed loop, la couleur cible est atteinte dès les premières feuilles. Les déploiements mesurent jusqu’à 65 % de gâche au calage en moins et un calage jusqu’à 45 % plus court, ce qui libère de la capacité pour plus de travaux par équipe.',
+        'L’enjeu économique se concentre au démarrage de chaque tirage. Un calage classique consomme 200 à 500 feuilles pendant que le conducteur monte la couleur à la main ; avec un préréglage automatique et un closed loop, la couleur cible est atteinte dès les premières feuilles. Les déploiements mesurent jusqu’à 65 % de gâche au calage en moins et un calage jusqu’à 45 % plus court, ce qui libère de la capacité pour plus de travaux par équipe.',
         'Pendant le tirage, la boucle absorbe la dérive couleur liée à la température, à l’équilibre eau-encre et à l’état des blanchets avant qu’elle soit visible. Le résultat, c’est la constance couleur : la même tolérance DeltaE tenue du bon à rouler à la dernière feuille, tirage après tirage. Pour un atelier, cela vaut typiquement 60 000 à 150 000 euros par an ; le calculateur ROI le traduit dans vos propres chiffres de production.',
       ],
     },
@@ -168,7 +168,7 @@ const FR: Copy = {
       h2: 'Sur quelles presses ? Le retrofit d’abord',
       paras: [
         'Le closed loop n’exige pas une presse neuve. Rutherford équipe en retrofit des presses feuille de pratiquement toutes les marques et générations, des machines de 30 ans aux modèles actuels : Heidelberg, Komori, Koenig & Bauer, Manroland, Mitsubishi, Ryobi et d’autres. Le point de connexion, c’est la console de la presse.',
-        'Le Rutherford Check gratuit (validation console) confirme la compatibilité de votre console précise en deux minutes environ : vous décrivez la console, notre équipe valide l’interface et vous répond avec le chemin de déploiement.',
+        'Le Rutherford Check gratuit (validation console) confirme la compatibilité de votre console précise en deux minutes environ : vous décrivez la console, notre équipe valide l’interface et vous indique la marche à suivre pour le déploiement.',
       ],
     },
   ],

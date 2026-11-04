@@ -37,7 +37,7 @@ export function BlogArticlePage({ article }: { article: BlogArticle }) {
     fr: { sources: 'Sources', back: 'Retour aux articles', original: "Page d'origine", ctaTitle: 'Votre presse est-elle prête pour le closed-loop ?', ctaCheck: 'Vérifier votre éligibilité', ctaRoi: 'Calculer votre ROI', relatedTitle: 'Aller plus loin avec la formation associée' },
     de: { sources: 'Quellen', back: 'Zurück zu allen Artikeln', original: 'Originalseite', ctaTitle: 'Ist Ihre Druckmaschine bereit für Closed-Loop?', ctaCheck: 'Eignung prüfen', ctaRoi: 'ROI berechnen', relatedTitle: 'Mit der passenden Schulung weitermachen' },
     it: { sources: 'Fonti', back: 'Torna a tutti gli articoli', original: 'Pagina originale', ctaTitle: 'La Sua macchina è pronta per il closed-loop?', ctaCheck: "Verifica l'idoneità", ctaRoi: 'Calcola il ROI', relatedTitle: 'Approfondisci con la formazione correlata' },
-    es: { sources: 'Fuentes', back: 'Volver a todos los artículos', original: 'Página original', ctaTitle: '¿Su prensa está lista para el closed-loop?', ctaCheck: 'Comprobar elegibilidad', ctaRoi: 'Calcular su ROI', relatedTitle: 'Profundice con la formación relacionada' },
+    es: { sources: 'Fuentes', back: 'Volver a todos los artículos', original: 'Página original', ctaTitle: '¿Su prensa está lista para el closed-loop?', ctaCheck: 'Comprobar compatibilidad', ctaRoi: 'Calcular su ROI', relatedTitle: 'Profundice con la formación relacionada' },
     pt: { sources: 'Fontes', back: 'Voltar a todos os artigos', original: 'Página original', ctaTitle: 'A sua máquina está pronta para o closed-loop?', ctaCheck: 'Verificar a sua elegibilidade', ctaRoi: 'Calcular o seu ROI', relatedTitle: 'Vá mais longe com a formação associada' },
   }[locale];
 
