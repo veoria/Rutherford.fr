@@ -205,7 +205,7 @@ const COPY: Record<Locale, Copy> = {
       { num: '30+', label: 'Países' },
       { num: '1.000+', label: 'Sistemas instalados' },
     ],
-    productsHead: 'Offset e flexo, um só closed loop',
+    productsHead: 'Offset e flexo, um só closed-loop',
     products: {
       offsetDesc: 'Cor closed-loop para offset de folha e bobina, com X-Rite e MeasureColor.',
       flexoDesc: 'Cor espectral inline para etiquetas e embalagem.',

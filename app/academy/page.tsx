@@ -9,6 +9,8 @@ export function generateMetadata(): Metadata {
     path: '/academy',
     title: SEO_COPY.academy.title,
     description: SEO_COPY.academy.description,
+    // The Academy catalogue is English-only for now: no hreflang for /fr, /de…
+    locales: ['en'],
   });
 }
 

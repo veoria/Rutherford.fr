@@ -34,11 +34,11 @@ const COPY: Record<Locale, Copy> = {
   fr: {
     kicker: 'Glossaire Rutherford',
     title: 'La gestion de la couleur offset, de A à Z',
-    subtitle: 'Le vocabulaire du contrôle couleur sur presse offset : calage, DeltaE, vis d’encrier, G7, closed loop. Des définitions claires, écrites depuis l’atelier.',
+    subtitle: 'Le vocabulaire du contrôle couleur sur presse offset : calage, DeltaE, vis d’encrier, G7, closed-loop. Des définitions claires, écrites depuis l’atelier.',
     countSuffix: 'termes',
     learnMore: 'En savoir plus',
     ctaTitle: 'Un terme manquant ? Une presse à vérifier ?',
-    ctaText: 'Le Rutherford Check gratuit vous dit en deux minutes environ si la console de votre presse est compatible avec le contrôle couleur en closed loop.',
+    ctaText: 'Le Rutherford Check gratuit vous dit en deux minutes environ si la console de votre presse est compatible avec le contrôle couleur en closed-loop.',
     ctaButton: 'Demander une validation console',
   },
   de: {
@@ -48,7 +48,7 @@ const COPY: Record<Locale, Copy> = {
     countSuffix: 'Begriffe',
     learnMore: 'Mehr erfahren',
     ctaTitle: 'Ein Begriff fehlt? Eine Druckmaschine prüfen lassen?',
-    ctaText: 'Der kostenlose Rutherford Check sagt Ihnen in rund zwei Minuten, ob Ihr Druckpult mit Closed-Loop-Farbsteuerung kompatibel ist.',
+    ctaText: 'Der kostenlose Rutherford Check sagt Ihnen in rund zwei Minuten, ob Ihr Druckpult mit Closed-Loop-Farbregelung kompatibel ist.',
     ctaButton: 'Konsolenvalidierung anfragen',
   },
   it: {

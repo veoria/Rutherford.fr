@@ -30,11 +30,11 @@ export const OFFSET360_FAQ_BY_LOCALE: Record<Locale, Offset360Faq[]> = {
   fr: [
     {
       q: 'Qu’est-ce qu’Offset360 ?',
-      a: 'Offset360 est le bundle couleur closed loop de X-Rite et Rutherford pour l’offset feuille à feuille. Il associe la lecture IntelliTrax2, le contrôle du process MeasureColor et la correction closed loop Rutherford ColorLoop dans un seul workflow au pied de la presse.',
+      a: 'Offset360 est le bundle couleur closed-loop de X-Rite et Rutherford pour l’offset feuille à feuille. Il associe la lecture IntelliTrax2, le contrôle du process MeasureColor et la correction closed-loop Rutherford ColorLoop dans un seul workflow au pied de la presse.',
     },
     {
       q: 'En quoi Offset360 diffère-t-il de l’achat d’une nouvelle presse ?',
-      a: 'Offset360 ajoute à la presse que vous possédez déjà une mesure couleur connectée au pied de la presse et une correction automatique des vis d’encrier. Vous obtenez le closed loop sans nouvelle presse, pour une fraction du coût.',
+      a: 'Offset360 ajoute à la presse que vous possédez déjà une mesure couleur connectée au pied de la presse et une correction automatique des vis d’encrier. Vous obtenez le closed-loop sans nouvelle presse, pour une fraction du coût.',
     },
     {
       q: 'Offset360 fonctionne-t-il avec toutes les marques de presses ?',
@@ -42,7 +42,7 @@ export const OFFSET360_FAQ_BY_LOCALE: Record<Locale, Offset360Faq[]> = {
     },
     {
       q: 'Que comprend Offset360 ?',
-      a: 'La lecture IntelliTrax2, le reporting MeasureColor et le contrôle closed loop Rutherford ColorLoop, déployés et accompagnés comme une seule solution intégrée.',
+      a: 'La lecture IntelliTrax2, le reporting MeasureColor et le contrôle closed-loop Rutherford ColorLoop, déployés et accompagnés comme une seule solution intégrée.',
     },
     {
       q: 'Combien coûte Offset360 ?',
@@ -56,7 +56,7 @@ export const OFFSET360_FAQ_BY_LOCALE: Record<Locale, Offset360Faq[]> = {
     },
     {
       q: 'Worin unterscheidet sich Offset360 vom Kauf einer neuen Druckmaschine?',
-      a: 'Offset360 ergänzt Ihre vorhandene Druckmaschine um vernetzte Farbmessung und automatische Farbzonen-Korrektur. Sie erhalten Closed-Loop-Farbsteuerung ohne neue Druckmaschine, zu einem Bruchteil der Kosten.',
+      a: 'Offset360 ergänzt Ihre vorhandene Druckmaschine um vernetzte Farbmessung und automatische Farbzonen-Korrektur. Sie erhalten Closed-Loop-Farbregelung ohne neue Druckmaschine, zu einem Bruchteil der Kosten.',
     },
     {
       q: 'Funktioniert Offset360 mit jedem Maschinenfabrikat?',
@@ -122,7 +122,7 @@ export const OFFSET360_FAQ_BY_LOCALE: Record<Locale, Offset360Faq[]> = {
     },
     {
       q: 'Em que difere o Offset360 de comprar uma máquina nova?',
-      a: 'O Offset360 acrescenta à máquina que já possui uma medição de cor ligada junto à máquina e a correção automática das zonas de tinta. Obtém o closed-loop sem uma máquina nova, por uma fração do custo.',
+      a: 'O Offset360 acrescenta à máquina que já possui uma medição de cor ligada junto à máquina e a correção automática das chaves de tinta. Obtém o closed-loop sem uma máquina nova, por uma fração do custo.',
     },
     {
       q: 'O Offset360 funciona com qualquer marca de máquina?',

@@ -175,20 +175,20 @@ export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
   },
 
   fr: {
-    metaTitle: 'Offset360 | Couleur closed loop pour offset feuille à feuille',
+    metaTitle: 'Offset360 | Couleur closed-loop pour offset feuille à feuille',
     metaDescription:
-      'Offset360 est le bundle closed loop X-Rite + Rutherford pour l’offset feuille à feuille : lecture IntelliTrax2, reporting MeasureColor et contrôle closed loop Rutherford ColorLoop sur la presse.',
-    heroLede: 'Le bundle closed loop pour l’offset feuille à feuille. Mesurer, comparer, corriger, sans quitter le pupitre.',
+      'Offset360 est le bundle closed-loop X-Rite + Rutherford pour l’offset feuille à feuille : lecture IntelliTrax2, reporting MeasureColor et contrôle closed-loop Rutherford ColorLoop sur la presse.',
+    heroLede: 'Le bundle closed-loop pour l’offset feuille à feuille. Mesurer, comparer, corriger, sans quitter le pupitre.',
     watchFilm: 'Voir le film',
     talkToExpert: 'Parlez à un expert',
-    videoTitle: 'Offset360, la couleur closed loop pour offset feuille à feuille',
+    videoTitle: 'Offset360, la couleur closed-loop pour offset feuille à feuille',
     problemEyebrow: 'Le vrai goulot d’étranglement',
     problemTitleMain: 'Souvent, le problème ne vient pas de la presse.',
     problemTitleEm: 'C’est le système de lecture placé devant.',
     problemBody:
       'Des outils de mesure OEM obsolètes ou fermés entraînent une couleur instable, gaspillent de la matière et allongent chaque calage. Offset360 remplace l’à-peu-près par un système de lecture connecté au pied de la presse, sans acheter de nouvelle presse.',
     ideaEyebrow: 'L’idée',
-    ideaTitle: 'Trois briques. Un closed loop.',
+    ideaTitle: 'Trois briques. Un closed-loop.',
     ideaLede:
       'Deux produits X-Rite de référence et un logiciel Rutherford, réunis dans un seul workflow, plus l’accompagnement expert pour le maintenir performant.',
     learnMore: 'En savoir plus',
@@ -206,7 +206,7 @@ export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
         imageAlt: 'Opérateur utilisant MeasureColor au pupitre de la presse',
       },
       {
-        role: 'Préréglage closed loop',
+        role: 'Préréglage closed-loop',
         description:
           'Transforme les mesures en corrections de vis d’encrier et les envoie au pupitre. La boucle se ferme, automatiquement.',
         imageAlt: 'Rutherford ColorLoop sur un iMac',
@@ -230,8 +230,8 @@ export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
         imageAlt: 'Bundle Offset360 dans un atelier Rutherford',
       },
       {
-        eyebrow: 'Closed loop',
-        title: 'Rutherford ColorLoop assure le closed loop au pupitre.',
+        eyebrow: 'Closed-loop',
+        title: 'Rutherford ColorLoop assure le closed-loop au pupitre.',
         body:
           'Les préréglages CIP3 / CIP4 se chargent avant le démarrage de la presse. Pendant qu’IntelliTrax2 et MeasureColor lisent et comparent, ColorLoop convertit les écarts en corrections de vis d’encrier et les envoie directement au pupitre. L’opérateur valide, et la presse tient la couleur pendant tout le tirage, sur toutes les grandes marques de presses.',
         chips: ['Préréglage CIP3 / CIP4', 'Correction automatique des vis d’encrier', 'Heidelberg · Komori · KBA · Manroland', 'Toutes marques de presses'],
@@ -239,7 +239,7 @@ export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
       },
     ],
     stepsEyebrow: 'Le fonctionnement',
-    stepsTitle: 'Le closed loop Offset360.',
+    stepsTitle: 'Le closed-loop Offset360.',
     steps: [
       { title: 'Préréglage', body: 'Les préréglages de vis d’encrier CIP3 / CIP4 se chargent automatiquement. Aucune saisie manuelle.' },
       { title: 'Lecture', body: 'IntelliTrax2 lit la barre de contrôle sur toute la feuille en quelques secondes.' },
@@ -268,11 +268,11 @@ export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
       },
     ],
     includedEyebrow: 'Ce qui est inclus',
-    includedTitle: 'Tout pour faire tourner le closed loop.',
+    includedTitle: 'Tout pour faire tourner le closed-loop.',
     included: [
       'Système de lecture IntelliTrax2',
       'Logiciel de contrôle du process MeasureColor',
-      'Technologie closed loop Rutherford ColorLoop',
+      'Technologie closed-loop Rutherford ColorLoop',
       'Accompagnement par un expert couleur',
       'Audit de performance annuel, inclus',
       'Installation professionnelle & formation',
@@ -293,8 +293,8 @@ export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
       problem: 'Opérateur contrôlant une feuille imprimée au pupitre, scanner IntelliTrax2 au premier plan',
     },
     colorloop: {
-      metaTitle: 'ColorLoop | Contrôle couleur closed loop pour offset feuille à feuille',
-      heroLede: 'Le logiciel Rutherford qui assure le closed loop sur votre presse. Mesurer, comparer, corriger, automatiquement.',
+      metaTitle: 'ColorLoop | Contrôle couleur closed-loop pour offset feuille à feuille',
+      heroLede: 'Le logiciel Rutherford qui assure le closed-loop sur votre presse. Mesurer, comparer, corriger, automatiquement.',
       ctaSecondary: 'Découvrir ColorLoop',
     },
   },
@@ -418,7 +418,7 @@ export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
       problem: 'Bediener prüft einen Druckbogen am Druckpult, IntelliTrax2-Scanner im Vordergrund',
     },
     colorloop: {
-      metaTitle: 'ColorLoop | Closed-Loop-Farbsteuerung für den Bogenoffset',
+      metaTitle: 'ColorLoop | Closed-Loop-Farbregelung für den Bogenoffset',
       heroLede: 'Die Rutherford-Software, die den Loop an Ihrer Druckmaschine schließt. Messen, vergleichen, korrigieren, automatisch.',
       ctaSecondary: 'ColorLoop entdecken',
     },
@@ -677,11 +677,11 @@ export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
   pt: {
     metaTitle: 'Offset360 | Cor closed-loop para offset de folha',
     metaDescription:
-      'O Offset360 é o bundle closed-loop X-Rite + Rutherford para offset de folhas: leitura IntelliTrax2, relatórios MeasureColor e controlo closed-loop Rutherford ColorLoop na máquina.',
-    heroLede: 'O bundle closed-loop para offset de folhas. Medir, comparar, corrigir, sem sair da consola.',
+      'O Offset360 é o bundle closed-loop X-Rite + Rutherford para offset de folha: leitura IntelliTrax2, relatórios MeasureColor e controlo closed-loop Rutherford ColorLoop na máquina.',
+    heroLede: 'O bundle closed-loop para offset de folha. Medir, comparar, corrigir, sem sair da consola.',
     watchFilm: 'Ver o vídeo',
     talkToExpert: 'Fale com um especialista',
-    videoTitle: 'Offset360, cor closed-loop para offset de folhas',
+    videoTitle: 'Offset360, cor closed-loop para offset de folha',
     problemEyebrow: 'O verdadeiro ponto de estrangulamento',
     problemTitleMain: 'Muitas vezes o problema não é a máquina.',
     problemTitleEm: 'É o sistema de leitura à sua frente.',
@@ -733,7 +733,7 @@ export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
         eyebrow: 'Closed-loop',
         title: 'O Rutherford ColorLoop fecha o loop na consola.',
         body:
-          'Os pré-ajustes CIP3 / CIP4 carregam antes de a máquina arrancar. Enquanto o IntelliTrax2 e o MeasureColor leem e comparam, o ColorLoop converte os desvios em correções das zonas de tinta e envia-as diretamente para a consola. O operador valida e a máquina mantém a cor durante toda a tiragem, em todas as grandes marcas de máquinas.',
+          'Os pré-ajustes CIP3 / CIP4 carregam antes de a máquina arrancar. Enquanto o IntelliTrax2 e o MeasureColor leem e comparam, o ColorLoop converte os desvios em correções das chaves de tinta e envia-as diretamente para a consola. O operador valida e a máquina mantém a cor durante toda a tiragem, em todas as grandes marcas de máquinas.',
         chips: ['Pré-ajuste CIP3 / CIP4', 'Correção automática das chaves de tinta', 'Heidelberg · Komori · KBA · Manroland', 'Independente da máquina'],
         imageAlt: 'Interface Rutherford ColorLoop em ação',
       },
@@ -741,7 +741,7 @@ export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
     stepsEyebrow: 'Como funciona',
     stepsTitle: 'O loop Offset360.',
     steps: [
-      { title: 'Pré-ajuste', body: 'Os pré-ajustes CIP3 / CIP4 das zonas de tinta carregam automaticamente. Sem introdução manual.' },
+      { title: 'Pré-ajuste', body: 'Os pré-ajustes CIP3 / CIP4 das chaves de tinta carregam automaticamente. Sem introdução manual.' },
       { title: 'Leitura', body: 'O IntelliTrax2 lê a barra de cores em toda a folha em segundos.' },
       { title: 'Comparação', body: 'O MeasureColor calcula o ΔE face à referência da marca e sinaliza as zonas fora de tolerância.' },
       { title: 'Correção', body: 'O ColorLoop envia as correções para a consola. O operador valida. O loop fecha-se.' },
@@ -793,7 +793,7 @@ export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
       problem: 'Operador a verificar uma folha impressa na consola, scanner IntelliTrax2 em primeiro plano',
     },
     colorloop: {
-      metaTitle: 'ColorLoop | Controlo de cor closed-loop para offset de folhas',
+      metaTitle: 'ColorLoop | Controlo de cor closed-loop para offset de folha',
       heroLede: 'O software da Rutherford que fecha o loop na sua máquina. Medir, comparar, corrigir, automaticamente.',
       ctaSecondary: 'Descobrir o ColorLoop',
     },
