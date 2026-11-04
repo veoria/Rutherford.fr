@@ -50,33 +50,18 @@
 .clh-fine { margin: 12px 0 0; font-size: 12.5px; line-height: 1.5; color: var(--clh-text-2); }
 .clh-fine a { color: inherit; text-underline-offset: 3px; }
 
-/* ---------- Hero: the night, the wordmark, the dots ---------- */
-.clh-hero { --s: clamp(118px, min(15.5vw, 25svh), 250px); --cut: 0.24; position: relative; overflow-x: clip; background: var(--clh-night); color: var(--clh-fg); }
-.clh-night { position: relative; isolation: isolate; overflow: hidden; display: flex; flex-direction: column; align-items: center; text-align: center; min-height: clamp(540px, calc(100svh - 82px), 820px); padding: clamp(36px, 6vh, 72px) 4.5vw 0; }
-.clh-night::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; z-index: 5; height: 1px; background: rgba(255, 255, 255, 0.13); pointer-events: none; }
-.clh-wordmark { display: block; width: min(42vw, 470px); max-width: 100%; height: auto; flex: none; animation: clh-fade 0.9s var(--clh-out) both; }
-.clh-title { position: relative; z-index: 6; margin: clamp(20px, 3.4vh, 36px) 0 14px; font-size: clamp(30px, 3.25vw, 50px); line-height: 1.06; font-weight: 600; letter-spacing: -0.032em; text-wrap: balance; animation: clh-fade 0.9s var(--clh-out) both 0.1s; }
-.clh-lead { position: relative; z-index: 6; margin: 0 auto; max-width: 36em; font-size: clamp(16px, 1.22vw, 18.5px); line-height: 1.5; color: var(--clh-fg-2); animation: clh-fade 0.9s var(--clh-out) both 0.18s; }
-.clh-night .clh-actions { position: relative; z-index: 6; margin-top: clamp(20px, 3.2vh, 30px); animation: clh-fade 0.9s var(--clh-out) both 0.26s; }
+/* ---------- Hero: colorloop.ai's night, wordmark and dots (dots-hero.css), our copy in between ---------- */
+.clh-hero { position: relative; overflow-x: clip; background: var(--clh-night); color: var(--clh-fg); }
+.clh-raw { display: contents; }
+.clh-copy { position: relative; z-index: 6; max-width: 780px; margin: clamp(14px, 3vh, 34px) auto 0; }
+.clh-title { margin: 0 0 14px; font-size: clamp(30px, 3.25vw, 50px); line-height: 1.06; font-weight: 600; letter-spacing: -0.032em; text-wrap: balance; color: var(--dh-fg, var(--clh-fg)); animation: clh-fade 0.9s var(--clh-out) both 0.1s; }
+.clh-lead { margin: 0 auto; max-width: 36em; font-size: clamp(16px, 1.22vw, 18.5px); line-height: 1.5; color: var(--dh-text, var(--clh-fg-2)); animation: clh-fade 0.9s var(--clh-out) both 0.18s; }
+.clh-copy .clh-actions { margin-top: clamp(20px, 3.2vh, 30px); animation: clh-fade 0.9s var(--clh-out) both 0.26s; }
 @keyframes clh-fade { from { opacity: 0.001; transform: translateY(10px); } to { opacity: 1; transform: none; } }
-
-.clh-dots { position: relative; z-index: 2; display: flex; align-items: flex-end; justify-content: center; flex: none; width: 100%; margin-top: auto; padding-top: clamp(16px, 3vh, 40px); margin-bottom: calc(var(--s) * var(--cut) * -1); pointer-events: none; }
-.clh-ink { position: relative; flex: none; display: block; width: calc(var(--s) * var(--dw)); height: calc(var(--s) * var(--dh)); transform-origin: 50% 100%; pointer-events: auto; animation: clh-rise 0.72s var(--clh-out) both, clh-breathe 3.2s ease-in-out infinite alternate; animation-delay: calc(0.3s + var(--i) * 70ms), calc(1.1s + var(--i) * 0.4s); }
-.clh-ink + .clh-ink { margin-left: calc(var(--s) * -0.06); }
-.clh-ink:nth-child(2), .clh-ink:nth-child(4) { z-index: 1; }
-.clh-ink:nth-child(3) { z-index: 2; }
-.clh-ink img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
-.clh-ink-joy { opacity: 0; transition: opacity 0.12s linear; }
-.clh-ink:hover .clh-ink-joy { opacity: 1; }
-.clh-ink:hover { animation: clh-hop 0.62s linear; }
-@keyframes clh-rise { from { transform: translateY(calc(var(--s) * 1.1)); } to { transform: none; } }
-@keyframes clh-breathe { from { transform: none; } to { transform: translateY(calc(var(--s) * -0.015)) scaleY(1.01); } }
-@keyframes clh-hop {
-  0% { transform: none; animation-timing-function: cubic-bezier(0.33, 0, 0.4, 1); }
-  12% { transform: scale(1.06, 0.92); animation-timing-function: cubic-bezier(0.2, 0.8, 0.4, 1); }
-  38% { transform: translateY(-12%) scale(0.97, 1.05); animation-timing-function: cubic-bezier(0.55, 0, 0.85, 0.45); }
-  58% { transform: scale(1.04, 0.96); animation-timing-function: cubic-bezier(0.28, 1.5, 0.4, 1); }
-  100% { transform: none; }
+@media (max-width: 760px) {
+  .clh-copy { margin-top: 20px; }
+  .clh-title { font-size: clamp(30px, 8.6vw, 44px); margin-bottom: 12px; }
+  .clh-lead { font-size: 16.5px; }
 }
 
 /* the press band: one line of marks, sliding */
@@ -190,13 +175,8 @@
 }
 @media (max-width: 560px) {
   .clh-wrap { width: calc(100% - 32px); }
-  .clh-night { min-height: 0; padding-top: 36px; }
-  .clh-wordmark { width: min(62vw, 300px); }
   .clh-actions .clh-btn { width: 100%; }
-  .clh-night .clh-textlink { display: block; text-align: center; font-size: 15px; }
-  .clh-night .clh-textlink span { display: block; margin: 0 0 2px; }
-  .clh-hero { --s: clamp(78px, 17vw, 118px); }
-  .clh-marquee ul { gap: 36px; }
+    .clh-marquee ul { gap: 36px; }
   .clh-marquee img { height: 14px; }
   .clh-clip-list { gap: 8px; }
   .clh-clip { border-radius: 10px; }
@@ -207,16 +187,19 @@
   .clh-outcomes-list, .clh-warn dl { grid-template-columns: 1fr; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .clh-wordmark, .clh-title, .clh-lead, .clh-night .clh-actions, .clh-presses, .clh-ink, .clh-marquee ul, .clh-warn-label { animation: none; }
-  .clh-ink:hover { animation: none; }
+  .clh-title, .clh-lead, .clh-copy .clh-actions, .clh-marquee ul, .clh-warn-label { animation: none; }
 }
 
 /* ---------- Light variant: the same page on rutherford.fr's white ---------- */
-.clh-light .clh-hero { background: var(--clh-white); color: var(--clh-text); }
-.clh-light .clh-night::after { background: rgba(20, 20, 22, 0.12); }
+.clh-light .clh-hero, .clh-light .dots-hero { background: var(--clh-white); color: var(--clh-text); --dh-night: #ffffff; --dh-fg: #141416; --dh-text: #55555c; }
+.clh-light .dh-night::after { background: rgba(20, 20, 22, 0.12); }
+/* the four white letters of the wordmark turn ink on white */
+.clh-light .dh-w .dh-glow { fill: #141416; }
+.clh-light .dh-w .dh-ink path[fill="#F2F2F2"] { fill: #141416; }
+.clh-light .dh-w .dh-ink path[fill="#CCCCCC"] { fill: #4a4a4f; }
 .clh-light .clh-lead, .clh-light .clh-presses p, .clh-light .clh-clips-copy .clh-body, .clh-light .clh-clip-t span { color: var(--clh-text-2); }
-.clh-light .clh-night .clh-btn { background: var(--clh-night); color: var(--clh-white); }
-.clh-light .clh-night .clh-btn:hover { background: #2a2a30; }
+.clh-light .clh-copy .clh-btn { background: var(--clh-night); color: var(--clh-white); }
+.clh-light .clh-copy .clh-btn:hover { background: #2a2a30; }
 .clh-light .clh-textlink, .clh-light .clh-faces-link { color: var(--clh-text); }
 .clh-light .clh-marquee img { filter: brightness(0); opacity: 0.45; }
 .clh-light .clh-clips-band { background: var(--clh-white); color: var(--clh-text); }

@@ -10,13 +10,13 @@ import HELPS_COPY from '@/data/home/how-rutherford-helps.json';
 import PPWR_COPY from '@/data/home/ppwr-section.json';
 import { homeLink } from '@/lib/home-links';
 import { STORY_MARKUP } from '@/components/colorloop-story-markup';
+import { HERO_BOOT, HERO_WORDMARK, HERO_DOTS } from '@/components/colorloop-hero-markup';
 import './colorloop-home.css';
 
 // The current homepage's blocks, in the order of data/home/layout.json, so the
 // team can keep, hide or reorder them from /dev/edit as before. Two of them are
 // redrawn here (outcomes without pictograms, PPWR as plain text) and the old
 // ColorLoop block is dropped: everything about ColorLoop now lives at the top.
-const RoiTeaser = dynamic(() => import('@/components/roi-teaser').then((m) => m.RoiTeaser), { ssr: true });
 const SECTIONS = {
   'rutherford-identity-section': dynamic(() => import('@/components/rutherford-identity-section').then((m) => m.RutherfordIdentitySection), { ssr: true }),
   'brand-explainer-section': dynamic(() => import('@/components/brand-explainer-section').then((m) => m.BrandExplainerSection), { ssr: true }),
@@ -42,16 +42,6 @@ function colorloopUrl(locale: Locale, page = '') {
 function localPath(locale: Locale, path: string) {
   return locale === 'en' ? path : `/${locale}${path}`;
 }
-
-// The five ink dots of colorloop.ai, in the order of the letters, with the
-// proportions of their drawings (width and height relative to one dot height).
-const DOTS = [
-  ['rouge', 1.152, 1],
-  ['rose', 1.234, 0.997],
-  ['bleu', 1.187, 0.975],
-  ['jaune', 1.016, 1.035],
-  ['vert', 1.1, 0.901],
-] as const;
 
 const PRESSES = [
   ['heidelberg', 'Heidelberg'], ['komori', 'Komori'], ['koenig-bauer', 'Koenig & Bauer'], ['manroland', 'Manroland'],
@@ -328,11 +318,11 @@ function Regulation() {
 }
 
 // The Rutherford blocks that stay, in this order (4 Nov 2026, Hugues: unclog the page).
-// Dropped: the old ColorLoop block, the audiences, the slim band. Hidden ids from /dev/edit still apply.
+// Dropped: the old ColorLoop block, the ROI teaser, the audiences, the slim band. Hidden ids from /dev/edit still apply.
 const ORDER = [
-  'brand-explainer-section',
-  'case-studies-showcase',
   'console-validation-cta',
+  'case-studies-showcase',
+  'brand-explainer-section',
   'how-rutherford-helps',
   'rutherford-identity-section',
   'ppwr-section',
@@ -352,28 +342,24 @@ export function ColorLoopHome({ tone = 'night' }: { tone?: 'night' | 'light' }) 
     <main className={`page-shell clh ${tone === 'light' ? 'clh-light' : ''}`} id="top">
       <SiteNav current="home" />
 
-      <section className="clh-hero" aria-labelledby="clh-title">
-        <div className="clh-night">
-          <img className="clh-wordmark" src={`${IMG}/${tone === 'light' ? 'logo.png' : 'logo-white.png'}`} alt="ColorLoop" width={1204} height={272} />
-          <h1 id="clh-title" className="clh-title">
-            {t.title[0]}
-            <br />
-            {t.title[1]}
-            <span className="clh-dot" aria-hidden="true">.</span>
-          </h1>
-          <p className="clh-lead">{t.lead}</p>
-          <div className="clh-actions">
-            <a className="clh-btn" href={upgradeUrl}>{t.primary}</a>
-            <a className="clh-textlink" href={discoverUrl}>{t.secondary}</a>
+      <link rel="stylesheet" href="/colorloop-story/dots-hero.css" />
+      <section className="clh-hero hero dots-hero" data-dh aria-labelledby="clh-title">
+        <div className="dh-night">
+          <div className="clh-raw" dangerouslySetInnerHTML={{ __html: HERO_BOOT + HERO_WORDMARK }} />
+          <div className="clh-copy">
+            <h1 id="clh-title" className="clh-title">
+              {t.title[0]}
+              <br />
+              {t.title[1]}
+              <span className="clh-dot" aria-hidden="true">.</span>
+            </h1>
+            <p className="clh-lead">{t.lead}</p>
+            <div className="clh-actions">
+              <a className="clh-btn" href={upgradeUrl}>{t.primary}</a>
+              <a className="clh-textlink" href={discoverUrl}>{t.secondary}</a>
+            </div>
           </div>
-          <div className="clh-dots" role="img" aria-label={t.dotsAlt}>
-            {DOTS.map(([name, w, h], i) => (
-              <span key={name} className="clh-ink" style={{ ['--i' as string]: i, ['--dw' as string]: w, ['--dh' as string]: h }}>
-                <img src={`${IMG}/dots/dot-${name}-neutre-640.webp`} alt="" decoding="async" />
-                <img className="clh-ink-joy" src={`${IMG}/dots/dot-${name}-joie-640.webp`} alt="" decoding="async" />
-              </span>
-            ))}
-          </div>
+          <div className="clh-raw" dangerouslySetInnerHTML={{ __html: HERO_DOTS }} />
         </div>
 
         <div className="clh-presses">
@@ -413,6 +399,8 @@ export function ColorLoopHome({ tone = 'night' }: { tone?: 'night' | 'light' }) 
         </div>
       </section>
 
+      <Script src="/colorloop-story/dots-hero.js" strategy="afterInteractive" />
+
       <Story locale={locale} />
 
       <section className="clh-warn" aria-labelledby="clh-warn-title" role="region">
@@ -429,8 +417,6 @@ export function ColorLoopHome({ tone = 'night' }: { tone?: 'night' | 'light' }) 
           <p className="clh-fine">{t.warnNote} <a href={CRA_URL} rel="noopener">EUR-Lex</a></p>
         </div>
       </section>
-
-      <RoiTeaser />
 
       <Configurator locale={locale} t={t} upgradeUrl={upgradeUrl} checkUrl={checkUrl} />
 
