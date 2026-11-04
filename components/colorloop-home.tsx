@@ -320,8 +320,8 @@ function Regulation() {
 // The Rutherford blocks that stay, in this order (4 Nov 2026, Hugues: unclog the page).
 // Dropped: the old ColorLoop block, the ROI teaser, the audiences, the slim band. Hidden ids from /dev/edit still apply.
 const ORDER = [
-  'console-validation-cta',
   'case-studies-showcase',
+  'console-validation-cta',
   'brand-explainer-section',
   'how-rutherford-helps',
   'rutherford-identity-section',
@@ -330,7 +330,7 @@ const ORDER = [
   'team-showcase',
 ];
 
-export function ColorLoopHome({ tone = 'night' }: { tone?: 'night' | 'light' }) {
+export function ColorLoopHome({ tone = 'light' }: { tone?: 'night' | 'light' }) {
   const { locale, t, upgradeUrl } = useCopy();
   const discoverUrl = colorloopUrl(locale);
   const checkUrl = localPath(locale, '/console-validation');

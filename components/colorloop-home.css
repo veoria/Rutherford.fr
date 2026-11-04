@@ -193,6 +193,9 @@
 /* ---------- Light variant: the same page on rutherford.fr's white ---------- */
 .clh-light .clh-hero, .clh-light .dots-hero { background: var(--clh-white); color: var(--clh-text); --dh-night: #ffffff; --dh-fg: #141416; --dh-text: #55555c; }
 .clh-light .dh-night::after { background: rgba(20, 20, 22, 0.12); }
+/* on white, the letters keep their ink only: no light layer (it read as a fuzzy outline), crisp vector edges */
+.clh-light .dh-glow { display: none; }
+.clh-light .dh-ink { will-change: auto; animation: none; opacity: 1; }
 /* the four white letters of the wordmark turn ink on white */
 .clh-light .dh-w .dh-glow { fill: #141416; }
 .clh-light .dh-w .dh-ink path[fill="#F2F2F2"] { fill: #141416; }
@@ -201,7 +204,7 @@
 .clh-light .clh-copy .clh-btn { background: var(--clh-night); color: var(--clh-white); }
 .clh-light .clh-copy .clh-btn:hover { background: #2a2a30; }
 .clh-light .clh-textlink, .clh-light .clh-faces-link { color: var(--clh-text); }
-.clh-light .clh-marquee img { filter: brightness(0); opacity: 0.45; }
+.clh-light .clh-marquee img { filter: brightness(0); opacity: 0.7; }
 .clh-light .clh-clips-band { background: var(--clh-white); color: var(--clh-text); }
 .clh-light .clh-faces img { border-color: var(--clh-white); }
 .clh-light .clh-clip { background: #e9e9ec; }
