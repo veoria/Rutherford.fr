@@ -58,7 +58,7 @@
     "benefits": [
       {
         "title": "Schnelleres Einrichten",
-        "body": "Mit KI-gestützten Setup- und Korrektur-Workflows schneller die Zielfarbe erreichen."
+        "body": "Mit KI-gestützten Einrichtungs- und Korrektur-Workflows schneller die Zielfarbe erreichen."
       },
       {
         "title": "Weniger Makulatur",
@@ -80,15 +80,15 @@
   "it": {
     "kicker": "Il software",
     "headline": "ColorLoop per la stampa offset",
-    "intro": "Nato dall’esperienza closed-loop di Rutherford, ColorLoop aiuta i team offset a ridurre i tempi di setup, migliorare la coerenza del colore e collegare con maggiore chiarezza i dati di produzione lungo tutto il workflow.",
+    "intro": "Nato dall’esperienza closed-loop di Rutherford, ColorLoop aiuta i team offset a ridurre i tempi di avviamento, migliorare la coerenza del colore e collegare con maggiore chiarezza i dati di produzione lungo tutto il workflow.",
     "benefits": [
       {
         "title": "Avviamenti più rapidi",
-        "body": "Raggiungi prima il colore target grazie a workflow di setup e correzione guidati dall’AI."
+        "body": "Colore target raggiunto prima, grazie a workflow di avviamento e correzione guidati dall’AI."
       },
       {
         "title": "Meno scarti",
-        "body": "Riduci sprechi di carta, inchiostro e ristampe evitabili grazie a setup più coerenti e prevedibili."
+        "body": "Meno scarto di carta e inchiostro e meno ristampe evitabili, grazie ad avviamenti più coerenti e prevedibili."
       },
       {
         "title": "Maggiore ripetibilità",
@@ -110,7 +110,7 @@
     "benefits": [
       {
         "title": "Puesta a punto más rápida",
-        "body": "Alcanzar antes el color objetivo con flujos de setup y corrección asistidos por IA."
+        "body": "Alcanzar antes el color objetivo con flujos de puesta a punto y corrección asistidos por IA."
       },
       {
         "title": "Menos desperdicio",

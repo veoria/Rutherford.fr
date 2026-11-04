@@ -19,7 +19,7 @@
     "intro": "Le règlement PPWR (Packaging and Packaging Waste Regulation) est le nouveau cadre européen qui fixe des règles contraignantes pour tout emballage mis sur le marché européen : recyclabilité, contenu recyclé, réduction, étiquetage et traçabilité. Pour prouver la conformité, chaque produit embarquera un Passeport Produit Numérique (DPP) : une fiche lisible par machine, généralement accessible par QR code, qui expose composition, origine des matériaux, recyclabilité et fin de vie aux marques, autorités et consommateurs.",
     "ppwrTitle": "Conformité PPWR",
     "ppwrBody": "Recyclable par conception, contenu recyclé validé, supports FSC, emballage minimisé. Nous vous aidons à traduire le texte réglementaire en standards de production concrets, audités, documentés et prêts pour les contrôles marché.",
-    "dppTitle": "Passeport Produit Numérique",
+    "dppTitle": "Passeport produit numérique",
     "dppBody": "Chaque emballage devient un support de données. Un simple scan révèle composition, origine des matériaux et recyclabilité, une donnée structurée, mise à jour en temps réel, partagée de bout en bout de la chaîne de valeur, du fournisseur au consommateur.",
     "cardCta": "En savoir plus",
     "ctaLabel": "Découvrir PPWR Connect",
@@ -44,8 +44,8 @@
     "tagline": "Aiutiamo stampatori e brand a prepararsi alla conformità PPWR e al Digital Product Passport, passo dopo passo.",
     "intro": "Il regolamento PPWR (Packaging and Packaging Waste Regulation) è il nuovo quadro europeo che stabilisce regole vincolanti per ogni imballaggio immesso sul mercato europeo: riciclabilità, contenuto riciclato, riduzione, etichettatura e tracciabilità. A dimostrazione della conformità, ogni prodotto avrà un Digital Product Passport (DPP): una scheda leggibile da macchina, di norma accessibile via QR code, che espone composizione, origine dei materiali, riciclabilità e fine vita a brand, autorità e consumatori.",
     "ppwrTitle": "Conformità PPWR",
-    "ppwrBody": "Design riciclabile, contenuto riciclato validato, supporti certificati FSC, packaging ottimizzato. Ti aiutiamo a trasformare i requisiti normativi in standard produttivi concreti: documentati, verificabili e pronti per eventuali controlli di mercato.",
-    "dppTitle": "Digital Product Passport",
+    "ppwrBody": "Design riciclabile, contenuto riciclato validato, supporti certificati FSC, packaging ottimizzato. Aiutiamo a trasformare i requisiti normativi in standard produttivi concreti: documentati, verificabili e pronti per eventuali controlli di mercato.",
+    "dppTitle": "Passaporto digitale di prodotto",
     "dppBody": "Ogni packaging diventa un supporto dati. Con una sola scansione è possibile accedere a composizione, origine dei materiali e riciclabilità: informazioni strutturate, sempre aggiornate e condivisibili lungo tutta la catena del valore, dal fornitore al consumatore.",
     "cardCta": "Scopri di più",
     "ctaLabel": "Scopri PPWR Connect",
@@ -58,11 +58,11 @@
     "intro": "El reglamento PPWR (Packaging and Packaging Waste Regulation) es el nuevo marco europeo que fija reglas vinculantes para todo envase puesto en el mercado europeo: reciclabilidad, contenido reciclado, reducción, etiquetado y trazabilidad. Para demostrar el cumplimiento, cada producto llevará un Pasaporte Digital de Producto (DPP): una ficha legible por máquina, normalmente accesible mediante código QR, que expone composición, origen de los materiales, reciclabilidad y fin de vida a marcas, autoridades y consumidores.",
     "ppwrTitle": "Cumplimiento PPWR",
     "ppwrBody": "Reciclable por diseño, contenido reciclado validado, soportes FSC, envase minimizado. Le ayudamos a traducir el texto normativo en estándares de producción concretos, auditados, documentados y listos para los controles de mercado.",
-    "dppTitle": "Pasaporte Digital de Producto",
+    "dppTitle": "Pasaporte digital de producto",
     "dppBody": "Cada envase se convierte en soporte de datos. Un escaneo revela composición, origen de los materiales y reciclabilidad, datos estructurados, actualizados en tiempo real, compartidos a lo largo de toda la cadena de valor, desde el proveedor hasta el consumidor.",
     "cardCta": "Saber más",
     "ctaLabel": "Descubrir PPWR Connect",
-    "ctaSub": "Tu vía rápida a la conformidad PPWR y DPP"
+    "ctaSub": "Su vía rápida a la conformidad PPWR y DPP"
   },
   "pt": {
     "kicker": "Regulamentação",

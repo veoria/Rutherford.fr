@@ -14,6 +14,8 @@ export function generateMetadata(): Metadata {
     title: SEO_COPY.closedLoop.title,
     description: SEO_COPY.closedLoop.description,
     type: 'article',
+    // Only EN and FR copy exist (de/it/es/pt render the English text).
+    locales: ['en', 'fr'],
     image: { url: '/images/og-home.png', alt: 'Closed-loop color control for offset printing' },
     keywords: ['closed-loop color control', 'offset color automation', 'makeready waste', 'ink key correction', 'ISO 12647-2', 'G7', 'ColorLoop'],
   });

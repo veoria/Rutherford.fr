@@ -156,7 +156,7 @@ const COPY: Record<Locale, Copy> = {
       title: 'Smetta di perdere denaro a ogni avviamento',
       sub: 'Verifichi in due minuti se la Sua macchina è idonea al closed-loop Rutherford.',
       steps: ['Indichi macchina e pulpito', 'Verifichiamo chiavi di inchiostro e misura', 'Riceva il Suo esito di idoneità gratuito'],
-      cta: 'Testa la tua macchina',
+      cta: 'Verifichi la Sua macchina',
     },
   },
   es: {

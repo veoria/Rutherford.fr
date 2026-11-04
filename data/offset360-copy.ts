@@ -476,7 +476,7 @@ export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
         title: 'MeasureColor trasforma le misure in decisioni.',
         body:
           'Una piattaforma client-server che unifica offset, flexo e digitale. ChromaTrack calcola la correzione di densità ottimale e il ΔE atteso prima ancora che l’operatore tocchi una chiave. I job si configurano in meno di 30 secondi e i dati qualità alimentano report personalizzabili e pronti per l’audit, i vostri dati, sul vostro server.',
-        chips: ['Setup job < 30 s', 'ΔE / densità in tempo reale', 'Guida ChromaTrack', 'Export PQX · CXF · CGATS', 'Offset · flexo · digitale'],
+        chips: ['Avviamento lavoro < 30 s', 'ΔE / densità in tempo reale', 'Guida ChromaTrack', 'Export PQX · CXF · CGATS', 'Offset · flexo · digitale'],
         imageAlt: 'Bundle Offset360 in una sala stampa Rutherford',
       },
       {

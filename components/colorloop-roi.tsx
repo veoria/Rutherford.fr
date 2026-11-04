@@ -309,26 +309,33 @@ function sheetCostEur(profile: Profile, format: MachineFormat) {
 
 type Currency = 'EUR' | 'USD';
 
+const NUMBER_LOCALE: Record<Locale, string> = {
+  en: 'en-US',
+  fr: 'fr-FR',
+  de: 'de-DE',
+  it: 'it-IT',
+  es: 'es-ES',
+  pt: 'pt-PT',
+};
+
 function formatEur(locale: Locale, value: number, currency: Currency = 'EUR') {
-  const code =
-    locale === 'fr' ? 'fr-FR' : locale === 'de' ? 'de-DE' : locale === 'it' ? 'it-IT' : locale === 'es' ? 'es-ES' : 'en-US';
-  return new Intl.NumberFormat(code, { style: 'currency', currency, maximumFractionDigits: 0 }).format(value);
+  const code = NUMBER_LOCALE[locale];
+  return new Intl.NumberFormat(code, { style: 'currency', currency, maximumFractionDigits: 0, useGrouping: 'always' }).format(value);
 }
 
 function formatNum(locale: Locale, value: number) {
-  const code =
-    locale === 'fr' ? 'fr-FR' : locale === 'de' ? 'de-DE' : locale === 'it' ? 'it-IT' : locale === 'es' ? 'es-ES' : 'en-US';
-  return new Intl.NumberFormat(code, { maximumFractionDigits: 0 }).format(value);
+  const code = NUMBER_LOCALE[locale];
+  return new Intl.NumberFormat(code, { maximumFractionDigits: 0, useGrouping: 'always' }).format(value);
 }
 
 function formatEurPrecise(locale: Locale, value: number, currency: Currency = 'EUR') {
-  const code =
-    locale === 'fr' ? 'fr-FR' : locale === 'de' ? 'de-DE' : locale === 'it' ? 'it-IT' : locale === 'es' ? 'es-ES' : 'en-US';
+  const code = NUMBER_LOCALE[locale];
   return new Intl.NumberFormat(code, {
     style: 'currency',
     currency,
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
+    useGrouping: 'always',
   }).format(value);
 }
 
