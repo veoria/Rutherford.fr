@@ -14,8 +14,8 @@ import './colorloop-home.css';
 // team can keep, hide or reorder them from /dev/edit as before. Two of them are
 // redrawn here (outcomes without pictograms, PPWR as plain text) and the old
 // ColorLoop block is dropped: everything about ColorLoop now lives at the top.
+const RoiTeaser = dynamic(() => import('@/components/roi-teaser').then((m) => m.RoiTeaser), { ssr: true });
 const SECTIONS = {
-  'roi-teaser': dynamic(() => import('@/components/roi-teaser').then((m) => m.RoiTeaser), { ssr: true }),
   'rutherford-identity-section': dynamic(() => import('@/components/rutherford-identity-section').then((m) => m.RutherfordIdentitySection), { ssr: true }),
   'brand-explainer-section': dynamic(() => import('@/components/brand-explainer-section').then((m) => m.BrandExplainerSection), { ssr: true }),
   'case-studies-showcase': dynamic(() => import('@/components/case-studies-showcase').then((m) => m.CaseStudiesShowcase), { ssr: true }),
@@ -360,7 +360,10 @@ function SwitchBand() {
   return (
     <aside className="clh-band">
       <div className="clh-wrap">
-        <p>{t.bandText}</p>
+        <p>
+          <img src="/images/rutherford-logo-white.png" alt="Rutherford.fr" width={900} height={300} />
+          {t.bandText}
+        </p>
         <a className="clh-btn" href={upgradeUrl}>{t.bandCta}</a>
       </div>
     </aside>
@@ -372,7 +375,8 @@ export function ColorLoopHome() {
   const discoverUrl = colorloopUrl(locale);
   const checkUrl = localPath(locale, '/console-validation');
   const layout = HOME_LAYOUT as { order: string[]; hidden: string[] };
-  const order = layout.order.filter((id) => !layout.hidden.includes(id) && id !== 'colorloop-section');
+  // The ROI teaser moves up under the story; the old ColorLoop block is dropped.
+  const order = layout.order.filter((id) => !layout.hidden.includes(id) && id !== 'colorloop-section' && id !== 'roi-teaser');
 
   return (
     <main className="page-shell clh" id="top">
@@ -394,6 +398,17 @@ export function ColorLoopHome() {
               <span>{t.secondaryPrefix}</span> {t.secondary}
             </a>
           </div>
+          <div className="clh-presses">
+            <p>{t.pressesLabel}</p>
+            <div className="clh-marquee" aria-hidden="true">
+              <ul>
+                {[...PRESSES, ...PRESSES].map(([file, name], i) => (
+                  <li key={`${file}-${i}`}><img src={`${IMG}/presses/${file}.webp`} alt={i < PRESSES.length ? name : ''} loading="lazy" /></li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
           <div className="clh-dots" role="img" aria-label={t.dotsAlt}>
             {DOTS.map(([name, w, h], i) => (
               <span key={name} className="clh-ink" style={{ ['--i' as string]: i, ['--dw' as string]: w, ['--dh' as string]: h }}>
@@ -401,17 +416,6 @@ export function ColorLoopHome() {
                 <img className="clh-ink-joy" src={`${IMG}/dots/dot-${name}-joie-640.webp`} alt="" decoding="async" />
               </span>
             ))}
-          </div>
-        </div>
-
-        <div className="clh-presses">
-          <p>{t.pressesLabel}</p>
-          <div className="clh-marquee" aria-hidden="true">
-            <ul>
-              {[...PRESSES, ...PRESSES].map(([file, name], i) => (
-                <li key={`${file}-${i}`}><img src={`${IMG}/presses/${file}.webp`} alt={i < PRESSES.length ? name : ''} loading="lazy" /></li>
-              ))}
-            </ul>
           </div>
         </div>
 
@@ -442,24 +446,27 @@ export function ColorLoopHome() {
       </section>
 
       <Story t={t} />
+      <RoiTeaser />
+
+      <section className="clh-warn" aria-labelledby="clh-warn-title" role="region">
+        <div className="clh-wrap">
+          <p className="clh-warn-label">
+            <svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true"><path d="M12 3l10 18H2L12 3z" /><path d="M12 10v5M12 18v.5" /></svg>
+            {t.warnLabel}
+          </p>
+          <h2 id="clh-warn-title">{t.warnTitle}</h2>
+          <p className="clh-warn-body">{t.warnBody}</p>
+          <dl>
+            {t.warn.map(([term, desc]) => <div key={term}><dt>{term}</dt><dd>{desc}</dd></div>)}
+          </dl>
+          <p className="clh-fine">{t.warnNote} <a href={CRA_URL} rel="noopener">EUR-Lex</a></p>
+        </div>
+      </section>
 
       <section className="clh-why" aria-labelledby="clh-why-title">
         <div className="clh-wrap">
           <h2 id="clh-why-title" className="clh-h2">{t.whyTitle}</h2>
           <p className="clh-body">{t.whyLead}</p>
-
-          <div className="clh-warn" role="note">
-            <p className="clh-warn-label">
-              <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M12 3l10 18H2L12 3z" /><path d="M12 10v5M12 18v.5" /></svg>
-              {t.warnLabel}
-            </p>
-            <h3>{t.warnTitle}</h3>
-            <p>{t.warnBody}</p>
-            <dl>
-              {t.warn.map(([term, desc]) => <div key={term}><dt>{term}</dt><dd>{desc}</dd></div>)}
-            </dl>
-            <p className="clh-fine">{t.warnNote} <a href={CRA_URL} rel="noopener">EUR-Lex</a></p>
-          </div>
 
           <div className="clh-why-grid">
             <div>
