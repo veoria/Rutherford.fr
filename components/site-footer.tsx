@@ -93,7 +93,7 @@ export function SiteFooter() {
             <div className="footer-brand">
               <a className="footer-brand-wordmark" href="/" aria-label="Rutherford.fr">
                 <Image
-                  src="/images/rutherford-logo-white.png"
+                  src="/images/rutherford-logo-white-v2.png"
                   alt="Rutherford.fr"
                   width={900}
                   height={300}

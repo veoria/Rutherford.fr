@@ -23,11 +23,20 @@ export async function generateMetadata(): Promise<Metadata> {
   const basePath = PREFIX_LOCALES.includes(seg) ? pathname.slice(seg.length + 1) || '/' : pathname;
   const noindex = ['/account', '/admin', '/api'].some((p) => basePath === p || basePath.startsWith(`${p}/`));
 
+  // The ColorLoop home shares its own card. On a Vercel preview the image must come
+  // from the preview itself (rutherford.fr does not have it yet), so the URL is absolute.
+  const previewOrigin =
+    process.env.VERCEL_ENV === 'preview' && process.env.VERCEL_BRANCH_URL ? `https://${process.env.VERCEL_BRANCH_URL}` : '';
+  const image =
+    basePath === '/'
+      ? { url: `${previewOrigin}/images/og-colorloop-home.png`, alt: 'ColorLoop | Client Rutherford ? Passez à ColorLoop. 3 mois offerts.' }
+      : { url: '/images/og-home.png', alt: 'Rutherford.fr | Closed-loop color control' };
+
   const metadata = localizedMetadata({
     path: basePath,
     title: SEO_COPY.home.title,
     description: SEO_COPY.home.description,
-    image: { url: '/images/og-home.png', alt: 'Rutherford.fr | Closed-loop color control' },
+    image,
   });
   return {
     metadataBase: new URL(BASE),
