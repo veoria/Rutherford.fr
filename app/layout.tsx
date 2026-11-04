@@ -29,7 +29,7 @@ export async function generateMetadata(): Promise<Metadata> {
     process.env.VERCEL_ENV === 'preview' && process.env.VERCEL_BRANCH_URL ? `https://${process.env.VERCEL_BRANCH_URL}` : '';
   const image =
     basePath === '/'
-      ? { url: `${previewOrigin}/images/og-colorloop-home.png`, alt: 'ColorLoop | Client Rutherford ? Passez à ColorLoop. 3 mois offerts.' }
+      ? { url: `${previewOrigin}/images/og-colorloop-home-v2.png`, alt: 'ColorLoop | Client Rutherford ? Passez à ColorLoop. 3 mois offerts.' }
       : { url: '/images/og-home.png', alt: 'Rutherford.fr | Closed-loop color control' };
 
   const metadata = localizedMetadata({
