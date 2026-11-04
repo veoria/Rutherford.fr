@@ -106,8 +106,8 @@ export const SEO_COPY = {
       pt: 'Rutherford.fr | Controlo de cor closed-loop para impressão offset',
     },
     description: {
-      en: 'Rutherford.fr brings closed-loop color control to the offset press you already own. ColorLoop software, console validation and retrofit on Heidelberg, Komori, Koenig & Bauer, Manroland, Mitsubishi and Ryobi.',
-      fr: 'Rutherford.fr apporte le contrôle couleur closed-loop sur la presse offset que vous avez déjà. Logiciel ColorLoop, validation console et rétrofit sur Heidelberg, Komori, Koenig & Bauer, Manroland, Mitsubishi et Ryobi.',
+      en: 'Closed-loop color control on the offset press you already own. EasySet and IntelliSet users: switch to ColorLoop, same press and console, 3 months free. Free console check for Heidelberg, Komori, Koenig & Bauer, Manroland, Mitsubishi, Ryobi.',
+      fr: 'Contrôle couleur closed-loop sur la presse offset que vous avez déjà. Utilisateurs EasySet et IntelliSet : passez à ColorLoop, même presse et même pupitre, 3 mois offerts. Validation console gratuite pour Heidelberg, Komori, Koenig & Bauer, Manroland, Mitsubishi, Ryobi.',
       de: 'Rutherford.fr bringt Closed-Loop-Farbsteuerung auf die Offset-Druckmaschine, die Sie bereits besitzen. ColorLoop Software, Konsolenvalidierung und Nachrüstung auf Heidelberg, Komori, Koenig & Bauer, Manroland, Mitsubishi und Ryobi.',
       it: 'Rutherford.fr porta il controllo colore closed-loop sulla macchina offset che già possiede. Software ColorLoop, validazione console e retrofit su Heidelberg, Komori, Koenig & Bauer, Manroland, Mitsubishi e Ryobi.',
       es: 'Rutherford.fr lleva el control del color closed-loop a la prensa offset que ya tiene. Software ColorLoop, validación de consola y retrofit en Heidelberg, Komori, Koenig & Bauer, Manroland, Mitsubishi y Ryobi.',

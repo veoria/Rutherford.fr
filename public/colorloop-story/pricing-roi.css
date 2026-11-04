@@ -164,3 +164,35 @@
 
 /* the site's segmented control and stepper, outside .roi-box */
 .rs-calc .roi-seg button[aria-checked="true"]{background:#1d1d1f;color:#fff}
+
+/* agents and buttons from page-pricing.css (4 Nov 2026) */
+.clh-roi .pv-buy{margin-top:auto;display:flex;align-items:center;justify-content:center;min-height:54px;border-radius:999px;background:#141416;color:#fff;font-size:16.5px;font-weight:600;text-decoration:none;
+  transition:background-color .2s ease,transform .16s cubic-bezier(.23,1,.32,1)}
+.clh-roi .pv-buy:hover{background:#2b2b2e}
+.clh-roi .pv-buy:active{transform:scale(.98)}
+.clh-roi .pv-buy:focus-visible{outline:2px solid #141416;outline-offset:3px}
+.clh-roi .pv-buy.pv-ghost{background:transparent;color:#141416;box-shadow:inset 0 0 0 1.5px #141416}
+.clh-roi .pv-buy.pv-ghost:hover{background:#141416;color:#fff}
+.clh-roi .roi-agents{display:flex;justify-content:center;align-items:flex-end;margin:22px 0 0}
+.clh-roi .roi-agents img{width:clamp(44px,5vw,64px);height:auto;margin:0 -6px;filter:drop-shadow(0 10px 14px rgba(0,0,0,.45))}
+.clh-roi .pv-buy.pv-light{background:#fff;color:#141416;margin-top:22px;width:100%;max-width:320px}
+.clh-roi .pv-buy.pv-light:hover{background:#e8e8ed}
+/* the ColorLoop dots (19 Oct 2026): calm at rest, they smile and hop under the pointer, as in Join the community */
+.clh-roi .agd{position:relative;display:inline-block;flex:none;line-height:0}
+.clh-roi .agd img{display:block;width:100%!important;height:auto;margin:0!important;animation:none!important;filter:none!important;transition:opacity .15s ease}
+.clh-roi .agd .agd-j{position:absolute;inset:0;opacity:0}
+.clh-roi .agd{filter:drop-shadow(0 16px 20px rgba(0,0,0,.4))}
+.clh-roi .clh-roi .agd:hover .agd-j{opacity:1}
+.clh-roi .clh-roi .agd:hover .agd-n{opacity:0}
+@media (hover:hover) and (prefers-reduced-motion:no-preference){.clh-roi .agd:hover{animation:agd-hop .5s cubic-bezier(.34,1.56,.64,1)}}
+@keyframes agd-hop{0%{transform:translateY(0)}40%{transform:translateY(-10px) scale(1.04)}100%{transform:translateY(0)}}
+.clh-roi .pv-agents .agd-w{width:clamp(64px,8vw,112px);margin:0 -9px}
+.clh-roi .roi-agents .agd-w{width:clamp(44px,5vw,64px);margin:0 -6px}
+.clh-roi .pv-ag.agd{position:absolute;top:-46px;right:28px;width:96px}
+.clh-roi .pv-ru-ag.agd{position:absolute;right:-14%;bottom:-6%;width:46%}
+@media (hover:hover) and (pointer:fine){
+  .clh-roi .pv-ru:hover .pv-ru-ag .agd-j{opacity:1}.clh-roi .pv-ru:hover .pv-ru-ag .agd-n{opacity:0}}
+/* on this site the result card is white: the console button is ink, the dots sit lower */
+.clh-roi .pv-buy.pv-light{background:#141416;color:#fff}
+.clh-roi .pv-buy.pv-light:hover{background:#2b2b2e}
+.clh-roi .roi-agents{margin-top:auto;padding-top:22px}

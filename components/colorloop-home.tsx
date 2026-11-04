@@ -5,7 +5,6 @@ import dynamic from 'next/dynamic';
 import { useLanguage, type Locale } from '@/components/language-provider';
 import { SiteNav } from '@/components/site-nav';
 import HOME_LAYOUT from '@/data/home/layout.json';
-import HELPS_COPY from '@/data/home/how-rutherford-helps.json';
 import PPWR_COPY from '@/data/home/ppwr-section.json';
 import { homeLink } from '@/lib/home-links';
 import { STORY_MARKUP } from '@/components/colorloop-story-markup';
@@ -19,15 +18,9 @@ import './colorloop-home.css';
 // redrawn here (outcomes without pictograms, PPWR as plain text) and the old
 // ColorLoop block is dropped: everything about ColorLoop now lives at the top.
 const SECTIONS = {
-  'rutherford-identity-section': dynamic(() => import('@/components/rutherford-identity-section').then((m) => m.RutherfordIdentitySection), { ssr: true }),
   'brand-explainer-section': dynamic(() => import('@/components/brand-explainer-section').then((m) => m.BrandExplainerSection), { ssr: true }),
   'case-studies-showcase': dynamic(() => import('@/components/case-studies-showcase').then((m) => m.CaseStudiesShowcase), { ssr: true }),
-  'console-validation-cta': dynamic(() => import('@/components/console-validation-cta').then((m) => m.ConsoleValidationCTA), { ssr: true }),
-  'how-rutherford-helps': Outcomes,
-  'audience-section': dynamic(() => import('@/components/audience-section').then((m) => m.AudienceSection), { ssr: true }),
   'ppwr-section': Regulation,
-  'blog-preview-section': dynamic(() => import('@/components/blog-preview-section').then((m) => m.BlogPreviewSection), { ssr: true }),
-  'team-showcase': dynamic(() => import('@/components/team-showcase').then((m) => m.TeamShowcase), { ssr: true }),
 };
 const SiteFooter = dynamic(() => import('@/components/site-footer').then((m) => m.SiteFooter), { ssr: true });
 
@@ -90,13 +83,13 @@ type Copy = {
   cfgLicense: string;
   orderCta: string;
   checkCta: string;
-  outcomesCta: string;
   regulationCta: string;
   articlesTitle: string;
   articlesAll: string;
-  teamTitle: string;
-  teamBody: string;
-  teamCta: string;
+  whoTitle: string;
+  whoBody: string;
+  whoStats: [string, string][];
+  whoLink: string;
 };
 
 const EN: Copy = {
@@ -136,13 +129,13 @@ const EN: Copy = {
   cfgLicense: 'Your Rutherford license stays yours.',
   orderCta: 'Order',
   checkCta: 'Check your press',
-  outcomesCta: 'Switch to ColorLoop',
   regulationCta: 'Discover PPWR Connect',
-  articlesTitle: 'Latest articles',
+  articlesTitle: 'From the blog',
   articlesAll: 'All articles',
-  teamTitle: 'Our team',
-  teamBody: 'Rutherford.fr and Veoria are two sister companies based in France. Every project is handled from France, by people who know your press.',
-  teamCta: 'Talk to our team',
+  whoTitle: 'Closed-loop color control for offset, for 25 years.',
+  whoBody: 'Rutherford connects offset press consoles to color measurement: Heidelberg Prinect and CP2000, Komori, Koenig & Bauer ErgoTronic, Manroland ColorPilot, Mitsubishi, Ryobi.',
+  whoStats: [['25+', 'years'], ['30+', 'countries'], ['1,000+', 'systems installed']],
+  whoLink: 'Read the closed-loop guide',
 };
 
 const FR: Copy = {
@@ -182,13 +175,13 @@ const FR: Copy = {
   cfgLicense: 'Votre licence Rutherford reste la vôtre.',
   orderCta: 'Commander',
   checkCta: 'Valider ma console',
-  outcomesCta: 'Passer à ColorLoop',
   regulationCta: 'Découvrir PPWR Connect',
-  articlesTitle: 'Derniers articles',
+  articlesTitle: 'Le blog',
   articlesAll: 'Tous les articles',
-  teamTitle: 'Notre équipe',
-  teamBody: 'Rutherford.fr et Veoria sont deux sociétés sœurs basées en France. Chaque projet est suivi depuis la France, par des gens qui connaissent votre presse.',
-  teamCta: 'Parler à notre équipe',
+  whoTitle: 'Le contrôle couleur closed-loop pour l’offset, depuis 25 ans.',
+  whoBody: 'Rutherford relie les pupitres de presse offset à la mesure couleur : Heidelberg Prinect et CP2000, Komori, Koenig & Bauer ErgoTronic, Manroland ColorPilot, Mitsubishi, Ryobi.',
+  whoStats: [['25+', 'ans'], ['30+', 'pays'], ['1 000+', 'systèmes installés']],
+  whoLink: 'Lire le guide du closed-loop',
 };
 
 // German, Italian, Spanish and Portuguese copy to follow once the direction is approved.
@@ -314,29 +307,6 @@ function Configurator({ locale, t, upgradeUrl, checkUrl }: { locale: Locale; t: 
   );
 }
 
-/* ---------- Outcomes, redrawn without pictograms ---------- */
-function Outcomes() {
-  const { locale, t, upgradeUrl } = useCopy();
-  const c = (HELPS_COPY as Record<Locale, { kicker: string; headline: string; intro: string; benefits: { title: string; body: string }[] }>)[locale];
-  return (
-    <section className="clh-outcomes" id="how" aria-labelledby="clh-outcomes-title">
-      <div className="clh-wrap">
-        <h2 id="clh-outcomes-title" className="clh-h2">{c.headline}</h2>
-        <p className="clh-body">{c.intro}</p>
-        <ol className="clh-outcomes-list">
-          {c.benefits.map((b) => (
-            <li key={b.title}>
-              <strong>{b.title}</strong>
-              <span>{b.body}</span>
-            </li>
-          ))}
-        </ol>
-        <a className="clh-btn clh-btn-ink" href={upgradeUrl}>{t.outcomesCta}</a>
-      </div>
-    </section>
-  );
-}
-
 /* ---------- PPWR and DPP, as plain text ---------- */
 function Regulation() {
   const { locale, t } = useCopy();
@@ -371,60 +341,67 @@ function Roi({ locale, checkUrl }: { locale: Locale; checkUrl: string }) {
 }
 
 /* ---------- The latest articles, as a list ---------- */
-type Article = { slug: string; title: string; category: string; publishedAt?: string; review?: boolean; i18n?: Record<string, { title?: string }> };
-const LATEST = (ARTICLES as Article[]).filter((a) => !a.review).sort((a, b) => (b.publishedAt ?? '').localeCompare(a.publishedAt ?? '')).slice(0, 5);
+type Article = { slug: string; title: string; image: string; category: string; publishedAt?: string; review?: boolean; i18n?: Record<string, { title?: string }> };
+// Every validated article, newest first; undated ones keep their order at the end.
+const LATEST = (ARTICLES as Article[]).filter((a) => !a.review).sort((a, b) => (b.publishedAt ?? '').localeCompare(a.publishedAt ?? ''));
 
 function Articles() {
   const { locale, t } = useCopy();
   const fmt = new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'long', year: 'numeric' });
   return (
     <section className="clh-articles" id="articles" aria-labelledby="clh-articles-title">
-      <div className="clh-wrap">
+      <div className="clh-wrap clh-articles-head">
         <h2 id="clh-articles-title" className="clh-h2">{t.articlesTitle}</h2>
-        <ol className="clh-articles-list">
-          {LATEST.map((a) => (
-            <li key={a.slug}>
-              <a href={localPath(locale, `/blog/${a.slug}`)}>
-                <span className="clh-articles-meta">
-                  {a.publishedAt ? <time dateTime={a.publishedAt}>{fmt.format(new Date(a.publishedAt))}</time> : null}
-                  <span>{a.category}</span>
-                </span>
-                <strong>{a.i18n?.[locale]?.title ?? a.title}</strong>
-              </a>
-            </li>
-          ))}
-        </ol>
-        <a className="clh-btn clh-btn-outline" href={homeLink('blog-preview-section.seeAll')}>{t.articlesAll}</a>
+        <a className="clh-btn clh-btn-outline" href={localPath(locale, '/blog')}>{t.articlesAll}</a>
       </div>
+      <ol className="clh-articles-strip">
+        {LATEST.map((a) => (
+          <li key={a.slug}>
+            <a href={localPath(locale, `/blog/${a.slug}`)}>
+              <img src={a.image} alt="" loading="lazy" width={640} height={400} />
+              <span className="clh-articles-meta">
+                <span>{a.category}</span>
+                {a.publishedAt ? <time dateTime={a.publishedAt}>{fmt.format(new Date(a.publishedAt))}</time> : null}
+              </span>
+              <strong>{a.i18n?.[locale]?.title ?? a.title}</strong>
+            </a>
+          </li>
+        ))}
+      </ol>
     </section>
   );
 }
 
-/* ---------- The team, in one sentence ---------- */
-function Team() {
-  const { t } = useCopy();
+/* ---------- Who we are, in one line and three figures ---------- */
+function Who() {
+  const { locale, t } = useCopy();
   return (
-    <section className="clh-team" id="team" aria-labelledby="clh-team-title">
-      <div className="clh-wrap">
-        <h2 id="clh-team-title" className="clh-h2">{t.teamTitle}</h2>
-        <p className="clh-body">{t.teamBody}</p>
-        <a className="clh-btn clh-btn-ink" href={homeLink('team-showcase.cta')}>{t.teamCta}</a>
+    <section className="clh-who" id="about" aria-labelledby="clh-who-title">
+      <div className="clh-wrap clh-who-grid">
+        <div>
+          <img className="clh-who-mark" src="/images/rutherford-logo-black.png" alt="Rutherford.fr" width={900} height={300} loading="lazy" />
+          <h2 id="clh-who-title" className="clh-h2">{t.whoTitle}</h2>
+          <p className="clh-body">{t.whoBody}</p>
+          <a className="clh-link" href={localPath(locale, '/closed-loop-color-control')}>{t.whoLink}</a>
+        </div>
+        <dl className="clh-who-stats">
+          {t.whoStats.map(([n, l]) => (
+            <div key={l}><dt>{n}</dt><dd>{l}</dd></div>
+          ))}
+        </dl>
       </div>
     </section>
   );
 }
 
 // The Rutherford blocks that stay, in this order (4 Nov 2026, Hugues: unclog the page).
-// Dropped: the old ColorLoop block, the ROI teaser, the audiences, the slim band. Hidden ids from /dev/edit still apply.
+// Dropped: the old ColorLoop block, the ROI teaser, the audiences, the slim band, the outcomes, the team; who we are is redrawn. Hidden ids from /dev/edit still apply.
 const ORDER = [
   'case-studies-showcase',
   'roi',
   'brand-explainer-section',
-  'how-rutherford-helps',
-  'rutherford-identity-section',
   'ppwr-section',
   'articles',
-  'team',
 ];
 
 export function ColorLoopHome({ tone = 'light' }: { tone?: 'night' | 'light' }) {
@@ -523,7 +500,7 @@ export function ColorLoopHome({ tone = 'light' }: { tone?: 'night' | 'light' }) 
       {order.map((id) => {
         if (id === 'roi') return <Roi key={id} locale={locale} checkUrl={checkUrl} />;
         if (id === 'articles') return <Articles key={id} />;
-        if (id === 'team') return <Team key={id} />;
+        if (id === 'who') return <Who key={id} />;
         const Section = SECTIONS[id as keyof typeof SECTIONS];
         return Section ? <Section key={id} /> : null;
       })}
