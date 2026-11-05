@@ -61,8 +61,10 @@ export function getArticleBySlug(slug: string): BlogArticle | undefined {
 
 /** Locales with a real translation of the article (English base always counts). */
 export function articleLocales(article: BlogArticle): Array<'en' | 'fr' | 'de' | 'it' | 'es' | 'pt'> {
+  // A locale counts as translated only when the article body is too: a page
+  // with a translated title over an English body is not a translation.
   const translated = Object.entries(article.i18n ?? {})
-    .filter(([, t]) => Boolean(t?.title))
+    .filter(([, t]) => Boolean(t?.title) && Boolean(t?.body?.length))
     .map(([locale]) => locale) as Array<'fr' | 'de' | 'it' | 'es' | 'pt'>;
   return ['en', ...translated];
 }

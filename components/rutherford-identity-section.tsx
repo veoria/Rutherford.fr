@@ -5,7 +5,17 @@ import { Fragment, useEffect, useRef, useState } from 'react';
 import { useLanguage, type Locale } from '@/components/language-provider';
 import COPY_DATA from '@/data/home/rutherford-identity-section.json';
 
+const NUMBER_LOCALE: Record<Locale, string> = {
+  en: 'en-US',
+  fr: 'fr-FR',
+  de: 'de-DE',
+  it: 'it-IT',
+  es: 'es-ES',
+  pt: 'pt-PT',
+};
+
 function Stat({ value, suffix, label }: { value: number; suffix: string; label: string }) {
+  const { locale } = useLanguage();
   const nodeRef = useRef<HTMLDivElement | null>(null);
   const [display, setDisplay] = useState(0);
   const hasAnimated = useRef(false);
@@ -41,7 +51,7 @@ function Stat({ value, suffix, label }: { value: number; suffix: string; label: 
   return (
     <div className="rutherford-stat" ref={nodeRef}>
       <dt>
-        <span className="rutherford-stat-value">{display.toLocaleString('en-US')}</span>
+        <span className="rutherford-stat-value">{display.toLocaleString(NUMBER_LOCALE[locale], { useGrouping: 'always' })}</span>
         <span className="rutherford-stat-suffix">{suffix}</span>
       </dt>
       <dd>{label}</dd>

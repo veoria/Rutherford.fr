@@ -9,7 +9,7 @@
   "fr": {
     "label": "Économie annuelle estimée",
     "amount": "≈ 145 000 €",
-    "lead": "pour une presse B1 six couleurs en packaging carton. Combien ColorLoop ferait économiser à votre atelier ?",
+    "lead": "pour une presse B1 six couleurs en packaging carton. Combien ColorLoop ferait-il économiser à votre atelier ?",
     "cta": "Calculez vos économies",
     "aria": "Estimez vos économies avec ColorLoop"
   },
@@ -23,9 +23,9 @@
   "it": {
     "label": "Risparmio annuo stimato",
     "amount": "≈ 145.000 €",
-    "lead": "per una macchina B1 sei colori nel packaging. Quanto potrebbe far risparmiare ColorLoop nel Suo reparto stampa?",
-    "cta": "Calcola il Suo risparmio",
-    "aria": "Stima il Suo risparmio con ColorLoop"
+    "lead": "per una macchina B1 sei colori nel packaging. Quanto potrebbe far risparmiare ColorLoop nella sua sala stampa?",
+    "cta": "Calcola il risparmio",
+    "aria": "Stima del risparmio con ColorLoop"
   },
   "es": {
     "label": "Ahorro anual estimado",
@@ -39,6 +39,6 @@
     "amount": "≈ 145.000 €",
     "lead": "para uma máquina B1 de seis cores em embalagem de cartão. Quanto é que o ColorLoop poderia poupar à sua gráfica?",
     "cta": "Calcule a sua poupança",
-    "aria": "Estime a sua poupança com a ColorLoop"
+    "aria": "Estime a sua poupança com o ColorLoop"
   }
 }

@@ -1,8 +1,9 @@
 import type { Metadata } from 'next';
-import { brandConsoleSeo, localizedMetadata } from '@/lib/seo';
+import { brandConsoleSeo, localeUrl, localizedMetadata, requestLocale } from '@/lib/seo';
+import type { Locale } from '@/components/language-provider';
 import { notFound } from 'next/navigation';
 import { ConsoleValidationPage } from '@/components/console-validation-page';
-import { PRESS_BRANDS_PAGES, getPressBrand } from '@/data/press-brands';
+import { PRESS_BRANDS_PAGES, getPressBrand, localizePressBrand } from '@/data/press-brands';
 
 type RouteParams = { brand: string };
 
@@ -21,9 +22,22 @@ export function generateMetadata({ params }: { params: RouteParams }): Metadata 
   });
 }
 
+// Breadcrumb label of the parent page, per locale.
+const BREADCRUMB_PARENT: Record<Locale, string> = {
+  en: 'Console validation',
+  fr: 'Validation console',
+  de: 'Konsolenvalidierung',
+  it: 'Validazione console',
+  es: 'Validación de consola',
+  pt: 'Validação de consola',
+};
+
 export default function BrandConsoleValidationRoute({ params }: { params: RouteParams }) {
-  const brand = getPressBrand(params.brand);
-  if (!brand) notFound();
+  const source = getPressBrand(params.brand);
+  if (!source) notFound();
+
+  const locale = requestLocale();
+  const brand = localizePressBrand(source, locale);
 
   const faqJsonLd = {
     '@context': 'https://schema.org',
@@ -39,9 +53,9 @@ export default function BrandConsoleValidationRoute({ params }: { params: RouteP
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Rutherford.fr', item: 'https://rutherford.fr/' },
-      { '@type': 'ListItem', position: 2, name: 'Console validation', item: 'https://rutherford.fr/console-validation' },
-      { '@type': 'ListItem', position: 3, name: brand.name, item: `https://rutherford.fr/console-validation/${brand.slug}` },
+      { '@type': 'ListItem', position: 1, name: 'Rutherford.fr', item: localeUrl('/', locale) },
+      { '@type': 'ListItem', position: 2, name: BREADCRUMB_PARENT[locale], item: localeUrl('/console-validation', locale) },
+      { '@type': 'ListItem', position: 3, name: brand.name, item: localeUrl(`/console-validation/${brand.slug}`, locale) },
     ],
   };
 

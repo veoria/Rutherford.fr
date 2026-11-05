@@ -175,20 +175,20 @@ export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
   },
 
   fr: {
-    metaTitle: 'Offset360 | Couleur closed loop pour offset feuille à feuille',
+    metaTitle: 'Offset360 | Couleur closed-loop pour offset feuille à feuille',
     metaDescription:
-      'Offset360 est le bundle closed loop X-Rite + Rutherford pour l’offset feuille à feuille : lecture IntelliTrax2, reporting MeasureColor et contrôle closed loop Rutherford ColorLoop sur la presse.',
-    heroLede: 'Le bundle closed loop pour l’offset feuille à feuille. Mesurer, comparer, corriger, sans quitter le pupitre.',
+      'Offset360 est le bundle closed-loop X-Rite + Rutherford pour l’offset feuille à feuille : lecture IntelliTrax2, reporting MeasureColor et contrôle closed-loop Rutherford ColorLoop sur la presse.',
+    heroLede: 'Le bundle closed-loop pour l’offset feuille à feuille. Mesurer, comparer, corriger, sans quitter le pupitre.',
     watchFilm: 'Voir le film',
     talkToExpert: 'Parlez à un expert',
-    videoTitle: 'Offset360, la couleur closed loop pour offset feuille à feuille',
+    videoTitle: 'Offset360, la couleur closed-loop pour offset feuille à feuille',
     problemEyebrow: 'Le vrai goulot d’étranglement',
     problemTitleMain: 'Souvent, le problème ne vient pas de la presse.',
     problemTitleEm: 'C’est le système de lecture placé devant.',
     problemBody:
       'Des outils de mesure OEM obsolètes ou fermés entraînent une couleur instable, gaspillent de la matière et allongent chaque calage. Offset360 remplace l’à-peu-près par un système de lecture connecté au pied de la presse, sans acheter de nouvelle presse.',
     ideaEyebrow: 'L’idée',
-    ideaTitle: 'Trois briques. Un closed loop.',
+    ideaTitle: 'Trois briques. Un closed-loop.',
     ideaLede:
       'Deux produits X-Rite de référence et un logiciel Rutherford, réunis dans un seul workflow, plus l’accompagnement expert pour le maintenir performant.',
     learnMore: 'En savoir plus',
@@ -196,7 +196,7 @@ export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
       {
         role: 'Lecture au pied de la presse',
         description:
-          'Le premier système de lecture automatisé de bureau. Lit une barre de contrôle complète en moins de dix secondes, barres jusqu’à 2 mm, sans contact.',
+          'Le premier système de lecture automatisé de table. Lit une bande de contrôle complète en moins de dix secondes, bandes dès 2 mm de hauteur, sans contact.',
         imageAlt: 'Scanner IntelliTrax2',
       },
       {
@@ -206,9 +206,9 @@ export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
         imageAlt: 'Opérateur utilisant MeasureColor au pupitre de la presse',
       },
       {
-        role: 'Préréglage closed loop',
+        role: 'Préréglage closed-loop',
         description:
-          'Transforme les mesures en corrections de vis d’encrier et les envoie au pupitre. Closed loop, automatiquement.',
+          'Transforme les mesures en corrections de vis d’encrier et les envoie au pupitre. La boucle se ferme, automatiquement.',
         imageAlt: 'Rutherford ColorLoop sur un iMac',
       },
     ],
@@ -217,7 +217,7 @@ export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
         eyebrow: 'Lecture',
         title: 'IntelliTrax2 lit la feuille, pas l’œil de l’opérateur.',
         body:
-          'Un spectrophotomètre automatisé de bureau qui lit la bande de contrôle complète sur toute la feuille en quelques secondes. L’optique sans contact évite maculage et rayures, un capteur d’anticipation aligne la barre automatiquement, et chaque zone est mesurée en M0, M1 ou M3 en un seul passage.',
+          'Un spectrophotomètre automatisé de table qui lit la bande de contrôle complète sur toute la feuille en quelques secondes. L’optique sans contact évite maculage et rayures, un capteur d’anticipation aligne la barre automatiquement, et chaque zone est mesurée en M0, M1 ou M3 en un seul passage.',
         chips: ['Scan < 10 s', 'Barres dès 2 mm', 'Géométrie 45°/0°', 'M0 / M1 / M3', 'Inter-instruments 0,3 ΔE moy.', 'Sans contact'],
         imageAlt: 'IntelliTrax2 en train de lire une feuille imprimée',
       },
@@ -225,13 +225,13 @@ export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
         eyebrow: 'Contrôle du process',
         title: 'MeasureColor transforme les mesures en décisions.',
         body:
-          'Une plateforme client-serveur qui unifie offset, flexo et numérique. ChromaTrack calcule la correction de densité optimale et le ΔE attendu avant même que l’opérateur ne touche une clé. Les jobs se configurent en moins de 30 secondes, et les données qualité alimentent des rapports personnalisables prêts pour l’audit, vos données, sur votre serveur.',
-        chips: ['Job configuré < 30 s', 'ΔE / densité en temps réel', 'Guidage ChromaTrack', 'Export PQX · CXF · CGATS', 'Offset · flexo · numérique'],
+          'Une plateforme client-serveur qui unifie offset, flexo et numérique. ChromaTrack calcule la correction de densité optimale et le ΔE attendu avant même que l’opérateur ne touche une clé. Les travaux se paramètrent en moins de 30 secondes, et les données qualité alimentent des rapports personnalisables prêts pour l’audit, vos données, sur votre serveur.',
+        chips: ['Travail configuré < 30 s', 'ΔE / densité en temps réel', 'Guidage ChromaTrack', 'Export PQX · CXF · CGATS', 'Offset · flexo · numérique'],
         imageAlt: 'Bundle Offset360 dans un atelier Rutherford',
       },
       {
-        eyebrow: 'Closed loop',
-        title: 'Rutherford ColorLoop assure le closed loop au pupitre.',
+        eyebrow: 'Closed-loop',
+        title: 'Rutherford ColorLoop assure le closed-loop au pupitre.',
         body:
           'Les préréglages CIP3 / CIP4 se chargent avant le démarrage de la presse. Pendant qu’IntelliTrax2 et MeasureColor lisent et comparent, ColorLoop convertit les écarts en corrections de vis d’encrier et les envoie directement au pupitre. L’opérateur valide, et la presse tient la couleur pendant tout le tirage, sur toutes les grandes marques de presses.',
         chips: ['Préréglage CIP3 / CIP4', 'Correction automatique des vis d’encrier', 'Heidelberg · Komori · KBA · Manroland', 'Toutes marques de presses'],
@@ -239,12 +239,12 @@ export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
       },
     ],
     stepsEyebrow: 'Le fonctionnement',
-    stepsTitle: 'Le closed loop Offset360.',
+    stepsTitle: 'Le closed-loop Offset360.',
     steps: [
       { title: 'Préréglage', body: 'Les préréglages de vis d’encrier CIP3 / CIP4 se chargent automatiquement. Aucune saisie manuelle.' },
       { title: 'Lecture', body: 'IntelliTrax2 lit la barre de contrôle sur toute la feuille en quelques secondes.' },
       { title: 'Comparaison', body: 'MeasureColor calcule le ΔE par rapport à la référence de la marque et signale les zones hors tolérance.' },
-      { title: 'Correction', body: 'ColorLoop envoie les corrections au pupitre. L’opérateur valide. Closed loop.' },
+      { title: 'Correction', body: 'ColorLoop envoie les corrections au pupitre. L’opérateur valide. La boucle est bouclée.' },
     ],
     roiEyebrow: 'Retour sur investissement',
     roiPrefix: 'jusqu’à ',
@@ -256,11 +256,11 @@ export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
     process: [
       {
         title: 'Connecter & collaborer',
-        body: 'Les experts couleur X-Rite et Rutherford cartographient vos objectifs de production et vos vrais défis couleur, ensemble.',
+        body: 'Les experts couleur X-Rite et Rutherford définissent avec vous vos objectifs de production et vos vrais enjeux couleur.',
       },
       {
         title: 'Évaluer & configurer',
-        body: 'Votre installation actuelle est évaluée pour la compatibilité, la configuration idéale est conçue, et des objectifs de performance mesurables sont fixés.',
+        body: 'La compatibilité de votre installation actuelle est évaluée, la configuration idéale est conçue, et des objectifs de performance mesurables sont fixés.',
       },
       {
         title: 'Preuve de concept & accompagnement',
@@ -268,11 +268,11 @@ export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
       },
     ],
     includedEyebrow: 'Ce qui est inclus',
-    includedTitle: 'Tout pour faire tourner le closed loop.',
+    includedTitle: 'Tout pour faire tourner le closed-loop.',
     included: [
       'Système de lecture IntelliTrax2',
       'Logiciel de contrôle du process MeasureColor',
-      'Technologie closed loop Rutherford ColorLoop',
+      'Technologie closed-loop Rutherford ColorLoop',
       'Accompagnement par un expert couleur',
       'Audit de performance annuel, inclus',
       'Installation professionnelle & formation',
@@ -293,8 +293,8 @@ export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
       problem: 'Opérateur contrôlant une feuille imprimée au pupitre, scanner IntelliTrax2 au premier plan',
     },
     colorloop: {
-      metaTitle: 'ColorLoop | Contrôle couleur closed loop pour offset feuille à feuille',
-      heroLede: 'Le logiciel Rutherford qui assure le closed loop sur votre presse. Mesurer, comparer, corriger, automatiquement.',
+      metaTitle: 'ColorLoop | Contrôle couleur closed-loop pour offset feuille à feuille',
+      heroLede: 'Le logiciel Rutherford qui assure le closed-loop sur votre presse. Mesurer, comparer, corriger, automatiquement.',
       ctaSecondary: 'Découvrir ColorLoop',
     },
   },
@@ -311,7 +311,7 @@ export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
     problemTitleMain: 'Oft liegt das Problem nicht an der Druckmaschine.',
     problemTitleEm: 'Sondern am Messsystem davor.',
     problemBody:
-      'Veraltete oder geschlossene OEM-Messsysteme führen zu instabiler Farbe, Makulatur und längerem Einrichten. Offset360 ersetzt das Rätselraten durch ein vernetztes Messsystem direkt an der Druckmaschine, ohne Neuinvestition in eine Druckmaschine.',
+      'Veraltete oder geschlossene OEM-Messsysteme führen zu instabiler Farbe, Makulatur und längerem Einrichten. Offset360 ersetzt das Rätselraten durch ein vernetztes Messsystem direkt an der Druckmaschine, ohne eine neue Maschine kaufen zu müssen.',
     ideaEyebrow: 'Die Idee',
     ideaTitle: 'Drei Komponenten. Ein Loop.',
     ideaLede:
@@ -351,7 +351,7 @@ export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
         title: 'MeasureColor macht aus Messungen Entscheidungen.',
         body:
           'Eine Client-Server-Plattform, die Offset, Flexo und Digital vereint. ChromaTrack berechnet die optimale Dichtekorrektur und das erwartete ΔE, bevor der Bediener eine Taste berührt. Jobs sind in unter 30 Sekunden angelegt, und Qualitätsdaten fließen in anpassbare, auditfähige Reports, Ihre Daten, auf Ihrem Server.',
-        chips: ['Jobanlage < 30 s', 'ΔE / Dichte in Echtzeit', 'ChromaTrack-Führung', 'PQX · CXF · CGATS-Export', 'Offset · Flexo · Digital'],
+        chips: ['Jobanlage < 30 s', 'ΔE / Dichte in Echtzeit', 'ChromaTrack-Empfehlungen', 'PQX · CXF · CGATS-Export', 'Offset · Flexo · Digital'],
         imageAlt: 'Offset360-Paket in einer Rutherford-Druckerei',
       },
       {
@@ -418,7 +418,7 @@ export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
       problem: 'Bediener prüft einen Druckbogen am Druckpult, IntelliTrax2-Scanner im Vordergrund',
     },
     colorloop: {
-      metaTitle: 'ColorLoop | Closed-Loop-Farbsteuerung für den Bogenoffset',
+      metaTitle: 'ColorLoop | Closed-Loop-Farbregelung für den Bogenoffset',
       heroLede: 'Die Rutherford-Software, die den Loop an Ihrer Druckmaschine schließt. Messen, vergleichen, korrigieren, automatisch.',
       ctaSecondary: 'ColorLoop entdecken',
     },
@@ -434,7 +434,7 @@ export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
     videoTitle: 'Offset360, colore closed-loop per offset foglio',
     problemEyebrow: 'Il vero collo di bottiglia',
     problemTitleMain: 'Spesso il problema non è la macchina da stampa.',
-    problemTitleEm: 'È il sistema di lettura davanti.',
+    problemTitleEm: 'È il sistema di lettura che le sta davanti.',
     problemBody:
       'Strumenti di misura OEM obsoleti o chiusi rendono il colore incostante, sprecano materiale e allungano ogni avviamento. Offset360 sostituisce le approssimazioni con un sistema di lettura connesso a bordo macchina, senza acquistare una nuova macchina da stampa.',
     ideaEyebrow: 'L’idea',
@@ -475,8 +475,8 @@ export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
         eyebrow: 'Controllo di processo',
         title: 'MeasureColor trasforma le misure in decisioni.',
         body:
-          'Una piattaforma client-server che unifica offset, flexo e digitale. ChromaTrack calcola la correzione di densità ottimale e il ΔE atteso prima ancora che l’operatore tocchi una chiave. I job si configurano in meno di 30 secondi e i dati qualità alimentano report personalizzabili e pronti per l’audit, i vostri dati, sul vostro server.',
-        chips: ['Setup job < 30 s', 'ΔE / densità in tempo reale', 'Guida ChromaTrack', 'Export PQX · CXF · CGATS', 'Offset · flexo · digitale'],
+          'Una piattaforma client-server che unifica offset, flexo e digitale. ChromaTrack calcola la correzione di densità ottimale e il ΔE atteso prima ancora che l’operatore tocchi una chiave. I job si configurano in meno di 30 secondi e i dati qualità alimentano report personalizzabili e pronti per l’audit: i dati restano in azienda, sul proprio server.',
+        chips: ['Configurazione job < 30 s', 'ΔE / densità in tempo reale', 'Guida ChromaTrack', 'Export PQX · CXF · CGATS', 'Offset · flexo · digitale'],
         imageAlt: 'Bundle Offset360 in una sala stampa Rutherford',
       },
       {
@@ -506,15 +506,15 @@ export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
     process: [
       {
         title: 'Connettere & collaborare',
-        body: 'Gli esperti colore X-Rite e Rutherford mappano i vostri obiettivi di produzione e le vere sfide colore, insieme.',
+        body: 'Gli esperti colore X-Rite e Rutherford mappano i suoi obiettivi di produzione e le vere sfide colore, insieme.',
       },
       {
         title: 'Valutare & configurare',
-        body: 'L’installazione attuale viene valutata per la compatibilità, si progetta la configurazione ideale e si fissano obiettivi di prestazione misurabili.',
+        body: 'La dotazione attuale viene valutata per la compatibilità, si progetta la configurazione ideale e si fissano obiettivi di prestazione misurabili.',
       },
       {
         title: 'Proof of concept & supporto',
-        body: 'Installazione, formazione dei team e validazione dei risultati. Obiettivi non raggiunti? Potete fermarvi. Audit annuali mantengono le prestazioni.',
+        body: 'Installazione, formazione dei team e validazione dei risultati. Obiettivi non raggiunti? Può fermarsi. Audit annuali mantengono le prestazioni.',
       },
     ],
     includedEyebrow: 'Cosa è incluso',
@@ -527,7 +527,7 @@ export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
       'Audit di prestazione annuale, incluso',
       'Installazione professionale & formazione',
     ],
-    reassurePre: 'Aperto e flessibile per progettazione. Offset360 funziona con ',
+    reassurePre: 'Aperto e flessibile fin dalla progettazione. Offset360 funziona con ',
     reassureStrong: 'qualsiasi marca di macchina e qualsiasi workflow',
     reassurePost: ', senza vincoli di fornitore, senza sostituire tutto.',
     faqEyebrow: 'FAQ Offset360',
@@ -535,7 +535,7 @@ export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
     ctaEyebrow: 'Prossimo passo',
     ctaTitle: 'Basta perdere denaro in avviamento.',
     ctaBody:
-      'Ogni avviamento non controllato costa fogli, inchiostro e tempo macchina. Verificate gratuitamente l’idoneità della vostra macchina: qualche foto, due minuti, risposta entro un giorno lavorativo.',
+      'Ogni avviamento non controllato costa fogli, inchiostro e tempo macchina. Verifichi gratuitamente l’idoneità della sua macchina: qualche foto, due minuti, risposta entro un giorno lavorativo.',
     ctaPrimary: 'Verifica gratuita di idoneità',
     ctaSecondary: 'Scopri di più su X-Rite',
     breadcrumbHome: 'Home',
@@ -544,7 +544,7 @@ export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
     },
     colorloop: {
       metaTitle: 'ColorLoop | Controllo colore closed-loop per offset foglio',
-      heroLede: 'Il software Rutherford che chiude il loop sulla vostra macchina. Misurare, confrontare, correggere, automaticamente.',
+      heroLede: 'Il software Rutherford che chiude il loop sulla macchina che già possiede. Misurare, confrontare, correggere, automaticamente.',
       ctaSecondary: 'Scopri ColorLoop',
     },
   },
@@ -561,7 +561,7 @@ export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
     problemTitleMain: 'A menudo el problema no es la prensa.',
     problemTitleEm: 'Es el sistema de lectura delante de ella.',
     problemBody:
-      'Los instrumentos de medición OEM obsoletos o cerrados dejan el color inconsistente, desperdician material y alargan cada puesta a punto. Offset360 sustituye las aproximaciones por un sistema de lectura conectado junto a la prensa, sin comprar una prensa nueva.',
+      'Los instrumentos de medición OEM obsoletos o cerrados dejan el color inconsistente, desperdician material y alargan cada puesta a punto. Offset360 sustituye el tanteo por un sistema de lectura conectado a pie de máquina, sin comprar una prensa nueva.',
     ideaEyebrow: 'La idea',
     ideaTitle: 'Tres piezas. Un solo loop.',
     ideaLede:
@@ -593,14 +593,14 @@ export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
         title: 'IntelliTrax2 lee el pliego, no el ojo del operario.',
         body:
           'Un espectrofotómetro automatizado de sobremesa que lee la tira de control completa en todo el pliego en segundos. La óptica sin contacto evita manchas y arañazos, un sensor de anticipación alinea la barra automáticamente y cada zona se captura en M0, M1 o M3 en una sola pasada.',
-        chips: ['Escaneo < 10 s', 'Barras desde 2 mm', 'Geometría 45°/0°', 'M0 / M1 / M3', 'Inter-instrumento 0,3 ΔE prom.', 'Sin contacto'],
+        chips: ['Escaneo < 10 s', 'Barras desde 2 mm', 'Geometría 45°/0°', 'M0 / M1 / M3', 'Inter-instrumento 0,3 ΔE medio', 'Sin contacto'],
         imageAlt: 'IntelliTrax2 leyendo un pliego impreso',
       },
       {
         eyebrow: 'Control de proceso',
         title: 'MeasureColor convierte las mediciones en decisiones.',
         body:
-          'Una plataforma cliente-servidor que unifica offset, flexo y digital. ChromaTrack calcula la corrección de densidad óptima y el ΔE esperado antes de que el operario toque una llave. Los trabajos se configuran en menos de 30 segundos y los datos de calidad alimentan informes personalizables y listos para auditoría, sus datos, en su servidor.',
+          'Una plataforma cliente-servidor que unifica offset, flexo y digital. ChromaTrack calcula la corrección de densidad óptima y el ΔE esperado antes de que el operario toque una llave. Los trabajos se configuran en menos de 30 segundos y los datos de calidad alimentan informes personalizables y listos para auditoría: sus datos, en su servidor.',
         chips: ['Trabajo listo < 30 s', 'ΔE / densidad en tiempo real', 'Guía ChromaTrack', 'Exportación PQX · CXF · CGATS', 'Offset · flexo · digital'],
         imageAlt: 'Bundle Offset360 en una sala de prensa Rutherford',
       },
@@ -608,7 +608,7 @@ export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
         eyebrow: 'Closed-loop',
         title: 'Rutherford ColorLoop cierra el loop en la consola.',
         body:
-          'Los preajustes CIP3 / CIP4 se cargan antes de que arranque la prensa. Mientras IntelliTrax2 y MeasureColor leen y comparan, ColorLoop convierte las desviaciones en correcciones de llaves de tinta y las envía directamente a la consola. El operario valida y la prensa mantiene el color durante toda la tirada, en cualquier gran marca de prensa.',
+          'Los preajustes CIP3 / CIP4 se cargan antes de que arranque la prensa. Mientras IntelliTrax2 y MeasureColor leen y comparan, ColorLoop convierte las desviaciones en correcciones de llaves de tinta y las envía directamente a la consola. El operario valida y la prensa mantiene el color durante toda la tirada, en las principales marcas de prensa.',
         chips: ['Preajuste CIP3 / CIP4', 'Corrección automática de llaves de tinta', 'Heidelberg · Komori · KBA · Manroland', 'Independiente de la prensa'],
         imageAlt: 'Interfaz Rutherford ColorLoop en acción',
       },
@@ -643,7 +643,7 @@ export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
       },
     ],
     includedEyebrow: 'Qué incluye',
-    includedTitle: 'Todo para un closed-loop completo.',
+    includedTitle: 'Todo lo necesario para cerrar el loop.',
     included: [
       'Sistema de escaneado IntelliTrax2',
       'Software de control de proceso MeasureColor',
@@ -656,12 +656,12 @@ export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
     reassureStrong: 'cualquier marca de prensa y cualquier workflow',
     reassurePost: ', sin dependencia del proveedor, sin sustituirlo todo.',
     faqEyebrow: 'FAQ Offset360',
-    faqTitle: 'Offset360, en claro.',
+    faqTitle: 'Offset360, sus dudas resueltas.',
     ctaEyebrow: 'Siguiente paso',
     ctaTitle: 'Deje de perder dinero en la puesta a punto.',
     ctaBody:
-      'Cada puesta a punto sin control cuesta pliegos, tinta y tiempo de máquina. Compruebe gratis la elegibilidad de su prensa: unas fotos, dos minutos, respuesta en un día laborable.',
-    ctaPrimary: 'Pruebe gratis su elegibilidad',
+      'Cada puesta a punto sin control cuesta pliegos, tinta y tiempo de máquina. Compruebe gratis si su prensa es apta: unas fotos, dos minutos, respuesta en un día laborable.',
+    ctaPrimary: 'Compruebe gratis si su prensa es apta',
     ctaSecondary: 'Más información en X-Rite',
     breadcrumbHome: 'Inicio',
     photoAlts: {
@@ -675,14 +675,14 @@ export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
   },
 
   pt: {
-    metaTitle: 'Offset360 | Cor closed-loop para offset de folhas',
+    metaTitle: 'Offset360 | Cor closed-loop para offset de folha',
     metaDescription:
-      'O Offset360 é o bundle closed-loop X-Rite + Rutherford para offset de folhas: leitura IntelliTrax2, relatórios MeasureColor e controlo closed-loop Rutherford ColorLoop na máquina.',
-    heroLede: 'O bundle closed-loop para offset de folhas. Medir, comparar, corrigir, sem sair da consola.',
+      'O Offset360 é o bundle closed-loop X-Rite + Rutherford para offset de folha: leitura IntelliTrax2, relatórios MeasureColor e controlo closed-loop Rutherford ColorLoop na máquina.',
+    heroLede: 'O bundle closed-loop para offset de folha. Medir, comparar, corrigir, sem sair da consola.',
     watchFilm: 'Ver o vídeo',
     talkToExpert: 'Fale com um especialista',
-    videoTitle: 'Offset360, cor closed-loop para offset de folhas',
-    problemEyebrow: 'O verdadeiro estrangulamento',
+    videoTitle: 'Offset360, cor closed-loop para offset de folha',
+    problemEyebrow: 'O verdadeiro ponto de estrangulamento',
     problemTitleMain: 'Muitas vezes o problema não é a máquina.',
     problemTitleEm: 'É o sistema de leitura à sua frente.',
     problemBody:
@@ -696,7 +696,7 @@ export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
       {
         role: 'Leitura junto à máquina',
         description:
-          'O primeiro sistema de leitura automatizado de secretária. Lê uma barra de cores completa em menos de dez segundos, barras até 2 mm, sem contacto.',
+          'O primeiro sistema de leitura automatizado de bancada. Lê uma barra de controlo completa em menos de dez segundos, barras até 2 mm, sem contacto.',
         imageAlt: 'Scanner IntelliTrax2',
       },
       {
@@ -708,7 +708,7 @@ export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
       {
         role: 'Pré-ajuste closed-loop',
         description:
-          'Converte as medições em correções das zonas de tinta e envia-as para a consola. O loop fecha-se, automaticamente.',
+          'Converte as medições em correções das chaves de tinta e envia-as para a consola. O loop fecha-se, automaticamente.',
         imageAlt: 'Rutherford ColorLoop num iMac',
       },
     ],
@@ -717,7 +717,7 @@ export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
         eyebrow: 'Leitura',
         title: 'O IntelliTrax2 lê a folha, não o olho do operador.',
         body:
-          'Um espetrofotómetro automatizado de secretária que lê a tira de controlo completa em toda a folha em segundos. A ótica sem contacto evita borrões e riscos, um sensor de antecipação alinha a barra automaticamente e cada zona é capturada em M0, M1 ou M3 numa única passagem.',
+          'Um espectrofotómetro automatizado de bancada que lê a barra de controlo completa em toda a folha em segundos. A ótica sem contacto evita borrões e riscos, um sensor de antecipação alinha a barra automaticamente e cada zona é capturada em M0, M1 ou M3 numa única passagem.',
         chips: ['Leitura < 10 s', 'Barras desde 2 mm', 'Geometria 45°/0°', 'M0 / M1 / M3', 'Inter-instrumentos 0,3 ΔE méd.', 'Sem contacto'],
         imageAlt: 'IntelliTrax2 a ler uma folha impressa',
       },
@@ -725,7 +725,7 @@ export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
         eyebrow: 'Controlo de processo',
         title: 'O MeasureColor transforma medições em decisões.',
         body:
-          'Uma plataforma cliente-servidor que unifica offset, flexo e digital. O ChromaTrack calcula a correção de densidade ideal e o ΔE esperado antes de o operador tocar numa zona. Os trabalhos configuram-se em menos de 30 segundos e os dados de qualidade alimentam relatórios personalizáveis e prontos para auditoria, os seus dados, no seu servidor.',
+          'Uma plataforma cliente-servidor que unifica offset, flexo e digital. O ChromaTrack calcula a correção de densidade ideal e o ΔE esperado antes de o operador tocar numa chave. Os trabalhos configuram-se em menos de 30 segundos e os dados de qualidade alimentam relatórios personalizáveis e prontos para auditoria, os seus dados, no seu servidor.',
         chips: ['Trabalho pronto < 30 s', 'ΔE / densidade em tempo real', 'Orientação ChromaTrack', 'Exportação PQX · CXF · CGATS', 'Offset · flexo · digital'],
         imageAlt: 'Bundle Offset360 numa gráfica Rutherford',
       },
@@ -733,15 +733,15 @@ export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
         eyebrow: 'Closed-loop',
         title: 'O Rutherford ColorLoop fecha o loop na consola.',
         body:
-          'Os pré-ajustes CIP3 / CIP4 carregam antes de a máquina arrancar. Enquanto o IntelliTrax2 e o MeasureColor leem e comparam, o ColorLoop converte os desvios em correções das zonas de tinta e envia-as diretamente para a consola. O operador valida e a máquina mantém a cor durante toda a tiragem, em todas as grandes marcas de máquinas.',
-        chips: ['Pré-ajuste CIP3 / CIP4', 'Correção automática das zonas de tinta', 'Heidelberg · Komori · KBA · Manroland', 'Independente da máquina'],
+          'Os pré-ajustes CIP3 / CIP4 carregam antes de a máquina arrancar. Enquanto o IntelliTrax2 e o MeasureColor leem e comparam, o ColorLoop converte os desvios em correções das chaves de tinta e envia-as diretamente para a consola. O operador valida e a máquina mantém a cor durante toda a tiragem, em todas as grandes marcas de máquinas.',
+        chips: ['Pré-ajuste CIP3 / CIP4', 'Correção automática das chaves de tinta', 'Heidelberg · Komori · KBA · Manroland', 'Independente da máquina'],
         imageAlt: 'Interface Rutherford ColorLoop em ação',
       },
     ],
     stepsEyebrow: 'Como funciona',
     stepsTitle: 'O loop Offset360.',
     steps: [
-      { title: 'Pré-ajuste', body: 'Os pré-ajustes CIP3 / CIP4 das zonas de tinta carregam automaticamente. Sem introdução manual.' },
+      { title: 'Pré-ajuste', body: 'Os pré-ajustes CIP3 / CIP4 das chaves de tinta carregam automaticamente. Sem introdução manual.' },
       { title: 'Leitura', body: 'O IntelliTrax2 lê a barra de cores em toda a folha em segundos.' },
       { title: 'Comparação', body: 'O MeasureColor calcula o ΔE face à referência da marca e sinaliza as zonas fora de tolerância.' },
       { title: 'Correção', body: 'O ColorLoop envia as correções para a consola. O operador valida. O loop fecha-se.' },
@@ -781,7 +781,7 @@ export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
     reassureStrong: 'qualquer marca de máquina e qualquer workflow',
     reassurePost: ', sem dependência de fornecedor, sem substituir tudo.',
     faqEyebrow: 'FAQ Offset360',
-    faqTitle: 'Offset360, em claro.',
+    faqTitle: 'Offset360, perguntas e respostas.',
     ctaEyebrow: 'Próximo passo',
     ctaTitle: 'Pare de perder dinheiro no acerto.',
     ctaBody:
@@ -793,7 +793,7 @@ export const OFFSET360_COPY: Record<Locale, Offset360Copy> = {
       problem: 'Operador a verificar uma folha impressa na consola, scanner IntelliTrax2 em primeiro plano',
     },
     colorloop: {
-      metaTitle: 'ColorLoop | Controlo de cor closed-loop para offset de folhas',
+      metaTitle: 'ColorLoop | Controlo de cor closed-loop para offset de folha',
       heroLede: 'O software da Rutherford que fecha o loop na sua máquina. Medir, comparar, corrigir, automaticamente.',
       ctaSecondary: 'Descobrir o ColorLoop',
     },

@@ -393,7 +393,7 @@ const HERO: Record<
   de: {
     eyebrow: 'Jetzt zu erledigen',
     eligibleTitle: (n) => `${n} ${n === 1 ? 'Maschine ist' : 'Maschinen sind'} verbindungsbereit`,
-    eligibleSub: 'Verbinden Sie sie für die Closed-Loop-Farbsteuerung und weniger Makulatur beim Einrichten ab dem nächsten Auftrag.',
+    eligibleSub: 'Verbinden Sie sie für die Closed-Loop-Farbregelung und weniger Makulatur beim Einrichten ab dem nächsten Auftrag.',
     eligibleCta: 'Maschinen verbinden',
     supportTitle: 'Unser Team hat auf Ihr Ticket geantwortet', supportSub: 'Setzen Sie das Gespräch fort und bringen Sie Ihre Anfrage voran.', supportCta: 'Support öffnen',
     okTitle: 'Alles erledigt',

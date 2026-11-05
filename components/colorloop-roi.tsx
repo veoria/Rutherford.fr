@@ -86,7 +86,7 @@ const COPY: Record<Locale, Copy> = {
     figuresHeading: 'Affinez vos chiffres',
     inputs: {
       calages: { label: 'Calages par jour', hint: 'Défini par le profil — ajustez librement' },
-      temps: { label: 'Temps de calage (minutes)', hint: 'Du lavage au BAT presse OK' },
+      temps: { label: 'Temps de calage (minutes)', hint: 'Du lavage au bon à rouler' },
       gache: { label: 'Gâche par calage (feuilles)', hint: 'Feuilles jusqu’au premier bon' },
       coutPresse: { label: 'Coût horaire presse (€)', hint: 'Coût horaire presse chargé' },
     },
@@ -110,7 +110,7 @@ const COPY: Record<Locale, Copy> = {
       hours: 'heures presse/an',
     },
     disclaimer:
-      'Estimé sur 225 jours de production/an et les objectifs ColorLoop de −55 % gâche et −38 % temps de calage. Le grammage et le prix du papier dépendent du profil de production sélectionné.',
+      'Estimé sur 225 jours de production/an et les objectifs ColorLoop de −55 % de gâche et −38 % de temps de calage. Le grammage et le prix du papier dépendent du profil de production sélectionné.',
     cta: 'Parler à un expert Rutherford',
   },
   de: {
@@ -121,9 +121,9 @@ const COPY: Record<Locale, Copy> = {
     figuresHeading: 'Werte anpassen',
     inputs: {
       calages: { label: 'Einrichtungen pro Tag', hint: 'Vom Profil gesetzt — frei anpassbar' },
-      temps: { label: 'Einrichtungszeit (Minuten)', hint: 'Vom Waschen bis Druck-OK' },
+      temps: { label: 'Einrichtungszeit (Minuten)', hint: 'Vom Waschen bis zur Druckfreigabe' },
       gache: { label: 'Makulatur pro Einrichtung (Bogen)', hint: 'Bogen bis zum ersten Gutbogen' },
-      coutPresse: { label: 'Stundensatz Presse (€)', hint: 'Belasteter Stundensatz' },
+      coutPresse: { label: 'Maschinenstundensatz (€)', hint: 'Vollkosten-Stundensatz der Maschine' },
     },
     machine: {
       profile: 'Produktionsprofil',
@@ -136,29 +136,29 @@ const COPY: Record<Locale, Copy> = {
     table: {
       line: 'Position',
       paper: 'Papier eingespart',
-      press: 'Pressenzeit gewonnen',
+      press: 'Maschinenzeit gewonnen',
       total: 'Gesamtersparnis',
       annual: 'Geschätzte jährliche Ersparnis',
       perYear: '/ Jahr',
       perMonth: '/ Monat',
       sheets: 'Bogen/Jahr',
-      hours: 'Pressenstunden/Jahr',
+      hours: 'Maschinenstunden/Jahr',
     },
     disclaimer:
-      'Geschätzt auf 225 Produktionstage/Jahr und ColorLoop-Zielen von −55 % Makulatur und −38 % Einrichtungszeit. Papiergewicht und -preis richten sich nach dem gewählten Produktionsprofil.',
+      'Geschätzt auf Basis von 225 Produktionstagen/Jahr und den ColorLoop-Zielwerten von −55 % Makulatur und −38 % Einrichtungszeit. Grammatur und Papierpreis richten sich nach dem gewählten Produktionsprofil.',
     cta: 'Mit einem Rutherford-Experten sprechen',
   },
   it: {
     kicker: 'Stima ROI',
-    headline: 'Quanto può farti risparmiare ColorLoop?',
+    headline: 'Quanto può far risparmiare ColorLoop alla sua sala stampa?',
     intro:
       'Scelga il profilo di produzione, il formato di stampa e il numero di colori — poi affini i parametri di avviamento. Tutti i valori restano regolabili.',
-    figuresHeading: 'Affini i Suoi parametri',
+    figuresHeading: 'Affini i suoi parametri',
     inputs: {
-      calages: { label: 'Avviamenti al giorno', hint: 'Impostato dal profilo — regola liberamente' },
-      temps: { label: 'Tempo di avviamento (minuti)', hint: 'Dal lavaggio al BAT pressa OK' },
+      calages: { label: 'Avviamenti al giorno', hint: 'Impostato dal profilo — regolabile liberamente' },
+      temps: { label: 'Tempo di avviamento (minuti)', hint: 'Dal lavaggio all’OK di stampa' },
       gache: { label: 'Scarto per avviamento (fogli)', hint: 'Fogli fino al primo buono' },
-      coutPresse: { label: 'Costo orario macchina (€)', hint: 'Costo orario caricato' },
+      coutPresse: { label: 'Costo orario macchina (€)', hint: 'Costo orario pieno della macchina' },
     },
     machine: {
       profile: 'Profilo di produzione',
@@ -191,9 +191,9 @@ const COPY: Record<Locale, Copy> = {
     figuresHeading: 'Ajuste sus cifras',
     inputs: {
       calages: { label: 'Puestas a punto por día', hint: 'Definido por el perfil — ajuste libremente' },
-      temps: { label: 'Tiempo de puesta a punto (minutos)', hint: 'Del lavado al BAT prensa OK' },
-      gache: { label: 'Desperdicio por puesta (pliegos)', hint: 'Pliegos hasta el primer bueno' },
-      coutPresse: { label: 'Coste hora prensa (€)', hint: 'Coste horario cargado' },
+      temps: { label: 'Tiempo de puesta a punto (minutos)', hint: 'Del lavado al OK de prensa' },
+      gache: { label: 'Desperdicio por puesta a punto (pliegos)', hint: 'Pliegos hasta el primer bueno' },
+      coutPresse: { label: 'Coste hora prensa (€)', hint: 'Coste hora de prensa, cargas incluidas' },
     },
     machine: {
       profile: 'Perfil de producción',
@@ -226,9 +226,9 @@ const COPY: Record<Locale, Copy> = {
     figuresHeading: 'Afine os seus números',
     inputs: {
       calages: { label: 'Acertos por dia', hint: 'Definido pelo perfil, ajuste livremente' },
-      temps: { label: 'Tempo de acerto (minutos)', hint: 'Da lavagem ao BAT máquina OK' },
+      temps: { label: 'Tempo de acerto (minutos)', hint: 'Da lavagem à folha OK' },
       gache: { label: 'Maculatura por acerto (folhas)', hint: 'Folhas até à primeira boa' },
-      coutPresse: { label: 'Custo horário da máquina (€)', hint: 'Custo horário da máquina carregado' },
+      coutPresse: { label: 'Custo horário da máquina (€)', hint: 'Custo horário completo da máquina (encargos incluídos)' },
     },
     machine: {
       profile: 'Perfil de produção',
@@ -309,26 +309,33 @@ function sheetCostEur(profile: Profile, format: MachineFormat) {
 
 type Currency = 'EUR' | 'USD';
 
+const NUMBER_LOCALE: Record<Locale, string> = {
+  en: 'en-US',
+  fr: 'fr-FR',
+  de: 'de-DE',
+  it: 'it-IT',
+  es: 'es-ES',
+  pt: 'pt-PT',
+};
+
 function formatEur(locale: Locale, value: number, currency: Currency = 'EUR') {
-  const code =
-    locale === 'fr' ? 'fr-FR' : locale === 'de' ? 'de-DE' : locale === 'it' ? 'it-IT' : locale === 'es' ? 'es-ES' : 'en-US';
-  return new Intl.NumberFormat(code, { style: 'currency', currency, maximumFractionDigits: 0 }).format(value);
+  const code = NUMBER_LOCALE[locale];
+  return new Intl.NumberFormat(code, { style: 'currency', currency, maximumFractionDigits: 0, useGrouping: 'always' }).format(value);
 }
 
 function formatNum(locale: Locale, value: number) {
-  const code =
-    locale === 'fr' ? 'fr-FR' : locale === 'de' ? 'de-DE' : locale === 'it' ? 'it-IT' : locale === 'es' ? 'es-ES' : 'en-US';
-  return new Intl.NumberFormat(code, { maximumFractionDigits: 0 }).format(value);
+  const code = NUMBER_LOCALE[locale];
+  return new Intl.NumberFormat(code, { maximumFractionDigits: 0, useGrouping: 'always' }).format(value);
 }
 
 function formatEurPrecise(locale: Locale, value: number, currency: Currency = 'EUR') {
-  const code =
-    locale === 'fr' ? 'fr-FR' : locale === 'de' ? 'de-DE' : locale === 'it' ? 'it-IT' : locale === 'es' ? 'es-ES' : 'en-US';
+  const code = NUMBER_LOCALE[locale];
   return new Intl.NumberFormat(code, {
     style: 'currency',
     currency,
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
+    useGrouping: 'always',
   }).format(value);
 }
 

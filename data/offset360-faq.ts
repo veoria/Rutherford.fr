@@ -30,11 +30,11 @@ export const OFFSET360_FAQ_BY_LOCALE: Record<Locale, Offset360Faq[]> = {
   fr: [
     {
       q: 'Qu’est-ce qu’Offset360 ?',
-      a: 'Offset360 est le bundle couleur closed loop de X-Rite et Rutherford pour l’offset feuille à feuille. Il associe la lecture IntelliTrax2, le contrôle du process MeasureColor et la correction closed loop Rutherford ColorLoop dans un seul workflow au pied de la presse.',
+      a: 'Offset360 est le bundle couleur closed-loop de X-Rite et Rutherford pour l’offset feuille à feuille. Il associe la lecture IntelliTrax2, le contrôle du process MeasureColor et la correction closed-loop Rutherford ColorLoop dans un seul workflow au pied de la presse.',
     },
     {
       q: 'En quoi Offset360 diffère-t-il de l’achat d’une nouvelle presse ?',
-      a: 'Offset360 ajoute à la presse que vous possédez déjà une mesure couleur connectée au pied de la presse et une correction automatique des vis d’encrier. Vous obtenez le closed loop sans nouvelle presse, pour une fraction du coût.',
+      a: 'Offset360 ajoute à la presse que vous possédez déjà une mesure couleur connectée au pied de la presse et une correction automatique des vis d’encrier. Vous obtenez le closed-loop sans nouvelle presse, pour une fraction du coût.',
     },
     {
       q: 'Offset360 fonctionne-t-il avec toutes les marques de presses ?',
@@ -42,7 +42,7 @@ export const OFFSET360_FAQ_BY_LOCALE: Record<Locale, Offset360Faq[]> = {
     },
     {
       q: 'Que comprend Offset360 ?',
-      a: 'La lecture IntelliTrax2, le reporting MeasureColor et le contrôle closed loop Rutherford ColorLoop, déployés et accompagnés comme une seule solution intégrée.',
+      a: 'La lecture IntelliTrax2, le reporting MeasureColor et le contrôle closed-loop Rutherford ColorLoop, déployés et accompagnés comme une seule solution intégrée.',
     },
     {
       q: 'Combien coûte Offset360 ?',
@@ -56,7 +56,7 @@ export const OFFSET360_FAQ_BY_LOCALE: Record<Locale, Offset360Faq[]> = {
     },
     {
       q: 'Worin unterscheidet sich Offset360 vom Kauf einer neuen Druckmaschine?',
-      a: 'Offset360 ergänzt Ihre vorhandene Druckmaschine um vernetzte Farbmessung und automatische Farbzonen-Korrektur. Sie erhalten Closed-Loop-Farbsteuerung ohne neue Druckmaschine, zu einem Bruchteil der Kosten.',
+      a: 'Offset360 ergänzt Ihre vorhandene Druckmaschine um vernetzte Farbmessung und automatische Farbzonen-Korrektur. Sie erhalten Closed-Loop-Farbregelung ohne neue Druckmaschine, zu einem Bruchteil der Kosten.',
     },
     {
       q: 'Funktioniert Offset360 mit jedem Maschinenfabrikat?',
@@ -78,11 +78,11 @@ export const OFFSET360_FAQ_BY_LOCALE: Record<Locale, Offset360Faq[]> = {
     },
     {
       q: 'In cosa differisce Offset360 dall’acquisto di una nuova macchina da stampa?',
-      a: 'Offset360 aggiunge alla macchina che già possedete una misura colore connessa a bordo macchina e la correzione automatica delle chiavi di inchiostro. Ottenete il closed-loop senza una nuova macchina, a una frazione del costo.',
+      a: 'Offset360 aggiunge alla macchina che già possiede una misura colore connessa a bordo macchina e la correzione automatica delle chiavi di inchiostro. Si ottiene il closed-loop senza una nuova macchina, a una frazione del costo.',
     },
     {
       q: 'Offset360 funziona con qualsiasi marca di macchina?',
-      a: 'Sì. Offset360 è aperto per progettazione e funziona con qualsiasi marca di macchina e qualsiasi workflow, senza vincoli di fornitore e senza sostituire tutto.',
+      a: 'Sì. Offset360 è aperto fin dalla progettazione e funziona con qualsiasi marca di macchina e qualsiasi workflow, senza vincoli di fornitore e senza sostituire tutto.',
     },
     {
       q: 'Cosa include Offset360?',
@@ -90,7 +90,7 @@ export const OFFSET360_FAQ_BY_LOCALE: Record<Locale, Offset360Faq[]> = {
     },
     {
       q: 'Quanto costa Offset360?',
-      a: 'Offset360 ha un costo iniziale inferiore a un nuovo sistema di misura ed è disponibile con finanziamento flessibile. Richiedete una validazione console gratuita per ottenere un prezzo per la vostra macchina.',
+      a: 'Offset360 ha un costo iniziale inferiore a un nuovo sistema di misura ed è disponibile con finanziamento flessibile. Richieda una validazione console gratuita per ricevere un’offerta per la sua macchina.',
     },
   ],
   es: [
@@ -108,7 +108,7 @@ export const OFFSET360_FAQ_BY_LOCALE: Record<Locale, Offset360Faq[]> = {
     },
     {
       q: '¿Qué incluye Offset360?',
-      a: 'La lectura IntelliTrax2, los informes MeasureColor y el control closed-loop Rutherford ColorLoop, desplegados y soportados como una única solución integrada.',
+      a: 'La lectura IntelliTrax2, los informes MeasureColor y el control closed-loop Rutherford ColorLoop, desplegados y con soporte como una única solución integrada.',
     },
     {
       q: '¿Cuánto cuesta Offset360?',
@@ -118,11 +118,11 @@ export const OFFSET360_FAQ_BY_LOCALE: Record<Locale, Offset360Faq[]> = {
   pt: [
     {
       q: 'O que é o Offset360?',
-      a: 'O Offset360 é o bundle de cor closed-loop da X-Rite e da Rutherford para offset de folhas. Combina a leitura IntelliTrax2, o controlo de processo MeasureColor e a correção closed-loop do Rutherford ColorLoop num único workflow junto à máquina.',
+      a: 'O Offset360 é o bundle de cor closed-loop da X-Rite e da Rutherford para offset de folha. Combina a leitura IntelliTrax2, o controlo de processo MeasureColor e a correção closed-loop do Rutherford ColorLoop num único workflow junto à máquina.',
     },
     {
       q: 'Em que difere o Offset360 de comprar uma máquina nova?',
-      a: 'O Offset360 acrescenta à máquina que já possui uma medição de cor ligada junto à máquina e a correção automática das zonas de tinta. Obtém o closed-loop sem uma máquina nova, por uma fração do custo.',
+      a: 'O Offset360 acrescenta à máquina que já possui uma medição de cor ligada junto à máquina e a correção automática das chaves de tinta. Obtém o closed-loop sem uma máquina nova, por uma fração do custo.',
     },
     {
       q: 'O Offset360 funciona com qualquer marca de máquina?',

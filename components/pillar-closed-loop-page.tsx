@@ -121,14 +121,14 @@ const EN: Copy = {
 
 const FR: Copy = {
   kicker: 'Le guide complet',
-  title: 'Le contrôle couleur en closed loop pour l’offset',
-  lede: 'Le closed loop mesure chaque feuille imprimée, la compare à la cible et corrige automatiquement les vis d’encrier. Ce guide explique comment fonctionne la boucle, ce qu’elle change pour le calage, la gâche et la constance couleur, et comment elle s’inscrit dans une production ISO 12647-2 ou G7. Rutherford l’a déployée sur plus de 1 000 presses dans plus de 30 pays.',
+  title: 'Le contrôle couleur en closed-loop pour l’offset',
+  lede: 'Le closed-loop mesure chaque feuille imprimée, la compare à la cible et corrige automatiquement les vis d’encrier. Ce guide explique comment fonctionne la boucle, ce qu’elle change pour le calage, la gâche et la constance couleur, et comment elle s’inscrit dans une production ISO 12647-2 ou G7. Rutherford l’a déployée sur plus de 1 000 presses dans plus de 30 pays.',
   sections: [
     {
-      h2: 'Qu’est-ce que le contrôle couleur en closed loop ?',
+      h2: 'Qu’est-ce que le contrôle couleur en closed-loop ?',
       paras: [
-        'Le closed loop est un cycle d’automatisation sur la presse : un spectrophotomètre à balayage lit la barre de contrôle d’une feuille, le logiciel compare les valeurs mesurées (densité, DeltaE) à la cible, et les vis d’encrier de chaque zone sont corrigées automatiquement. Le conducteur supervise au lieu de courir après la couleur à l’œil.',
-        'Le mot « boucle » compte : mesure, comparaison et correction se répètent en continu pendant le tirage. Les outils en boucle ouverte mesurent et affichent ; le conducteur décide et ajuste encore. Le closed loop ferme cette dernière étape : la couleur converge vers la cible en quelques feuilles et y reste.',
+        'Le closed-loop est un cycle d’automatisation sur la presse : un spectrophotomètre à balayage lit la barre de contrôle d’une feuille, le logiciel compare les valeurs mesurées (densité, DeltaE) à la cible, et les vis d’encrier de chaque zone sont corrigées automatiquement. Le conducteur supervise au lieu de courir après la couleur à l’œil.',
+        'Le mot « boucle » compte : mesure, comparaison et correction se répètent en continu pendant le tirage. Les outils en boucle ouverte mesurent et affichent ; le conducteur décide et ajuste encore. Le closed-loop ferme cette dernière étape : la couleur converge vers la cible en quelques feuilles et y reste.',
       ],
     },
     {
@@ -137,74 +137,74 @@ const FR: Copy = {
         'Sur une presse feuille équipée par Rutherford, le cycle se déroule ainsi :',
       ],
       list: [
-        'Le conducteur tire une feuille et la pose sur la table de scan ; un X-Rite IntelliTrax2 lit toute la barre de contrôle en moins de 15 secondes.',
+        'Le conducteur tire une feuille et la pose sur la table de lecture ; un X-Rite IntelliTrax2 lit toute la barre de contrôle en moins de 15 secondes.',
         'MeasureColor évalue les mesures par rapport à la cible du travail : ISO 12647-2, G7 ou le bon à rouler approuvé.',
         'ColorLoop calcule la correction de chaque vis d’encrier de chaque groupe et l’envoie à la console de la presse.',
         'La presse applique les nouvelles positions ; la feuille suivante confirme la convergence. Le système apprend le comportement de la presse tirage après tirage.',
       ],
     },
     {
-      h2: 'Ce que ça change : calage, gâche, constance',
+      h2: 'Ce que cela change : calage, gâche, constance',
       paras: [
-        'L’enjeu économique se concentre au démarrage de chaque tirage. Un calage classique brûle 200 à 500 feuilles pendant que le conducteur monte la couleur à la main ; avec un préréglage automatique et un closed loop, la couleur cible est atteinte dès les premières feuilles. Les déploiements mesurent jusqu’à 65 % de gâche au calage en moins et un calage jusqu’à 45 % plus court, ce qui libère de la capacité pour plus de travaux par équipe.',
+        'L’enjeu économique se concentre au démarrage de chaque tirage. Un calage classique consomme 200 à 500 feuilles pendant que le conducteur monte la couleur à la main ; avec un préréglage automatique et un closed-loop, la couleur cible est atteinte dès les premières feuilles. Les déploiements mesurent jusqu’à 65 % de gâche au calage en moins et un calage jusqu’à 45 % plus court, ce qui libère de la capacité pour plus de travaux par équipe.',
         'Pendant le tirage, la boucle absorbe la dérive couleur liée à la température, à l’équilibre eau-encre et à l’état des blanchets avant qu’elle soit visible. Le résultat, c’est la constance couleur : la même tolérance DeltaE tenue du bon à rouler à la dernière feuille, tirage après tirage. Pour un atelier, cela vaut typiquement 60 000 à 150 000 euros par an ; le calculateur ROI le traduit dans vos propres chiffres de production.',
       ],
     },
     {
-      h2: 'Préréglage et closed loop : les deux moitiés de la même automatisation',
+      h2: 'Préréglage et closed-loop : les deux moitiés de la même automatisation',
       paras: [
-        'Le préréglage d’encrage (CIP3 / CIP4) utilise les données de couverture du prépresse pour positionner chaque vis d’encrier avant la première feuille. Il amène la presse près de la couleur, mais il ne peut pas réagir à ce qui se passe réellement sur le papier. Le closed loop est l’autre moitié : il mesure la réalité et corrige, de la première feuille à la fin du tirage.',
-        'Combinés, ils se renforcent : un bon préréglage fait démarrer la boucle près de la cible, qui converge en deux ou trois corrections. C’est l’architecture du bundle Offset360 : préréglage, mesure et correction closed loop dans un seul workflow.',
+        'Le préréglage d’encrage (CIP3 / CIP4) utilise les données de couverture du prépresse pour positionner chaque vis d’encrier avant la première feuille. Il amène la presse près de la couleur, mais il ne peut pas réagir à ce qui se passe réellement sur le papier. Le closed-loop est l’autre moitié : il mesure la réalité et corrige, de la première feuille à la fin du tirage.',
+        'Combinés, ils se renforcent : un bon préréglage fait démarrer la boucle près de la cible, qui converge en deux ou trois corrections. C’est l’architecture du bundle Offset360 : préréglage, mesure et correction closed-loop dans un seul workflow.',
       ],
     },
     {
       h2: 'Les standards : tenir l’ISO 12647-2 et le G7, pas seulement les atteindre',
       paras: [
         'L’ISO 12647-2 en Europe et le G7 en Amérique du Nord définissent ce qu’est une couleur juste : cibles CIELAB, courbes de TVI, équilibre des gris. La certification prouve qu’une presse sait atteindre la cible le jour de l’audit ; le défi quotidien est de la tenir sur chaque travail, avec les papiers, les encres et les délais du réel.',
-        'C’est exactement ce que le closed loop industrialise. Le standard devient la cible chargée dans le logiciel, et chaque feuille est ramenée vers elle, avec des relevés de mesure comme preuves pour les clients et les auditeurs. Pour les marques qui impriment dans plusieurs usines ou pays, c’est le mécanisme concret derrière « la même couleur partout ».',
+        'C’est exactement ce que le closed-loop industrialise. Le standard devient la cible chargée dans le logiciel, et chaque feuille est ramenée vers elle, avec des relevés de mesure comme preuves pour les clients et les auditeurs. Pour les marques qui impriment dans plusieurs usines ou pays, c’est le mécanisme concret derrière « la même couleur partout ».',
       ],
     },
     {
       h2: 'Sur quelles presses ? Le retrofit d’abord',
       paras: [
-        'Le closed loop n’exige pas une presse neuve. Rutherford équipe en retrofit des presses feuille de pratiquement toutes les marques et générations, des machines de 30 ans aux modèles actuels : Heidelberg, Komori, Koenig & Bauer, Manroland, Mitsubishi, Ryobi et d’autres. Le point de connexion, c’est la console de la presse.',
-        'Le Rutherford Check gratuit (validation console) confirme la compatibilité de votre console précise en deux minutes environ : vous décrivez la console, notre équipe valide l’interface et vous répond avec le chemin de déploiement.',
+        'Le closed-loop n’exige pas une presse neuve. Rutherford équipe en retrofit des presses feuille de pratiquement toutes les marques et générations, des machines de 30 ans aux modèles actuels : Heidelberg, Komori, Koenig & Bauer, Manroland, Mitsubishi, Ryobi et d’autres. Le point de connexion, c’est la console de la presse.',
+        'Le Rutherford Check gratuit (validation console) confirme la compatibilité de votre console précise en deux minutes environ : vous décrivez la console, notre équipe valide l’interface et vous indique la marche à suivre pour le déploiement.',
       ],
     },
   ],
   faqTitle: 'Questions fréquentes',
   faq: [
     {
-      q: 'Quelle différence entre closed loop et boucle ouverte ?',
-      a: 'Les systèmes en boucle ouverte mesurent la feuille et affichent les écarts ; le conducteur décide et ajuste les vis d’encrier à la main. Les systèmes closed loop comme ColorLoop font l’étape de plus : ils calculent et appliquent automatiquement les corrections, et la couleur converge sans intervention manuelle.',
+      q: 'Quelle différence entre closed-loop et boucle ouverte ?',
+      a: 'Les systèmes en boucle ouverte mesurent la feuille et affichent les écarts ; le conducteur décide et ajuste les vis d’encrier à la main. Les systèmes closed-loop comme ColorLoop font l’étape de plus : ils calculent et appliquent automatiquement les corrections, et la couleur converge sans intervention manuelle.',
     },
     {
-      q: 'Combien de gâche le closed loop économise-t-il ?',
+      q: 'Combien de gâche le closed-loop économise-t-il ?',
       a: 'Les déploiements mesurés par Rutherford montrent jusqu’à 65 % de gâche au calage en moins et un calage jusqu’à 45 % plus court, parce que la presse atteint la couleur cible dès les premières feuilles au lieu de plusieurs centaines. L’économie grandit avec le nombre de changements de travaux par équipe.',
     },
     {
-      q: 'Le closed loop fonctionne-t-il sur une presse ancienne ?',
+      q: 'Le closed-loop fonctionne-t-il sur une presse ancienne ?',
       a: 'Oui. La boucle se connecte à la console de la presse, pas à sa mécanique : des presses de plus de 30 ans sont équipées en retrofit. Le Rutherford Check gratuit valide une console précise en deux minutes environ.',
     },
     {
-      q: 'Le closed loop est-il compatible G7 et ISO 12647-2 ?',
+      q: 'Le closed-loop est-il compatible G7 et ISO 12647-2 ?',
       a: 'Oui, c’est même le moyen concret de les tenir en production. Les valeurs cibles du standard (CIELAB, TVI, équilibre des gris) sont chargées comme référence, et chaque feuille mesurée est corrigée vers cette référence, avec des relevés comme preuves d’audit.',
     },
     {
-      q: 'Quel matériel et quel logiciel utilise un closed loop Rutherford ?',
+      q: 'Quel matériel et quel logiciel utilise un closed-loop Rutherford ?',
       a: 'Une ligne type associe un spectrophotomètre à balayage X-Rite IntelliTrax2 et MeasureColor au logiciel ColorLoop, qui calcule les corrections et pilote la console. Le matériel X-Rite existant peut en général être conservé et mis à niveau.',
     },
   ],
   relatedTitle: 'Pour aller plus loin',
   related: [
-    { href: '/blog/closed-loop-color-control-offset-guide', label: 'Closed loop : le guide terrain' },
+    { href: '/blog/closed-loop-color-control-offset-guide', label: 'Closed-loop : le guide terrain' },
     { href: '/blog/cip3-cip4-ink-presetting-makeready', label: 'Préréglage CIP3 / CIP4 et calage' },
     { href: '/blog/reduce-makeready-waste-offset-press', label: 'Réduire la gâche au calage en offset' },
     { href: '/blog/delta-e-tolerance-print-guide', label: 'Les tolérances DeltaE en imprimerie' },
     { href: '/blog/g7-vs-iso-12647-offset-color', label: 'G7 ou ISO 12647-2 pour l’offset' },
     { href: '/glossary', label: 'Glossaire de la gestion de la couleur offset' },
   ],
-  ctaTitle: 'Votre presse est-elle prête pour le closed loop ?',
+  ctaTitle: 'Votre presse est-elle prête pour le closed-loop ?',
   ctaText: 'Le Rutherford Check gratuit vous dit en deux minutes environ si votre console est compatible, et le calculateur ROI estime ce que la boucle économiserait sur votre propre production.',
   ctaPrimary: 'Demander une validation console',
   ctaSecondary: 'Estimer mon ROI',

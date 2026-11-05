@@ -26,7 +26,7 @@
     "platforms": "Plateformes",
     "resources": "Ressources",
     "company": "Entreprise",
-    "follow": "Suivre",
+    "follow": "Nous suivre",
     "rights": "Tous droits réservés",
     "langAuto": "Langue · détectée automatiquement",
     "resourceLabels": {
@@ -120,7 +120,7 @@
     "resourceLabels": {
       "blog": "Blog",
       "glossary": "Glossário",
-      "support": "Apoio",
+      "support": "Suporte",
       "console": "Validação de consola",
       "contact": "Contacto"
     },

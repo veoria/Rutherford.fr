@@ -9,7 +9,7 @@ import { ACADEMY_ENABLED } from '@/lib/features';
 import { Fragment, type ReactNode } from 'react';
 
 /** Render inline [label](href) markdown links inside body text, so articles can carry references and links. */
-function renderInline(text: string): ReactNode {
+function renderInline(text: string, lhref: (p: string) => string = (p) => p): ReactNode {
   const re = /\[([^\]]+)\]\(([^)]+)\)/g;
   const out: ReactNode[] = [];
   let last = 0;
@@ -17,8 +17,8 @@ function renderInline(text: string): ReactNode {
   let i = 0;
   while ((m = re.exec(text)) !== null) {
     if (m.index > last) out.push(text.slice(last, m.index));
-    const href = m[2];
-    const external = /^https?:\/\//.test(href);
+    const external = /^https?:\/\//.test(m[2]);
+    const href = !external && m[2].startsWith('/') ? lhref(m[2]) : m[2];
     out.push(
       <a key={`lnk-${i++}`} href={href} {...(external ? { target: '_blank', rel: 'noreferrer' } : {})}>
         {m[1]}
@@ -36,8 +36,8 @@ export function BlogArticlePage({ article }: { article: BlogArticle }) {
     en: { sources: 'Sources', back: 'Back to all articles', original: 'Original page', ctaTitle: 'Is your press ready for closed-loop color?', ctaCheck: 'Check your eligibility', ctaRoi: 'Calculate your ROI', relatedTitle: 'Go further with the matching training' },
     fr: { sources: 'Sources', back: 'Retour aux articles', original: "Page d'origine", ctaTitle: 'Votre presse est-elle prête pour le closed-loop ?', ctaCheck: 'Vérifier votre éligibilité', ctaRoi: 'Calculer votre ROI', relatedTitle: 'Aller plus loin avec la formation associée' },
     de: { sources: 'Quellen', back: 'Zurück zu allen Artikeln', original: 'Originalseite', ctaTitle: 'Ist Ihre Druckmaschine bereit für Closed-Loop?', ctaCheck: 'Eignung prüfen', ctaRoi: 'ROI berechnen', relatedTitle: 'Mit der passenden Schulung weitermachen' },
-    it: { sources: 'Fonti', back: 'Torna a tutti gli articoli', original: 'Pagina originale', ctaTitle: 'La tua macchina è pronta per il closed-loop?', ctaCheck: "Verifica l'idoneità", ctaRoi: 'Calcola il ROI', relatedTitle: 'Approfondisci con la formazione correlata' },
-    es: { sources: 'Fuentes', back: 'Volver a todos los artículos', original: 'Página original', ctaTitle: '¿Tu prensa está lista para closed-loop?', ctaCheck: 'Comprobar elegibilidad', ctaRoi: 'Calcular tu ROI', relatedTitle: 'Profundiza con la formación relacionada' },
+    it: { sources: 'Fonti', back: 'Torna a tutti gli articoli', original: 'Pagina originale', ctaTitle: 'La sua macchina è pronta per il closed-loop?', ctaCheck: "Verifica l'idoneità", ctaRoi: 'Calcola il ROI', relatedTitle: 'Approfondisci con la formazione correlata' },
+    es: { sources: 'Fuentes', back: 'Volver a todos los artículos', original: 'Página original', ctaTitle: '¿Su prensa está lista para el closed-loop?', ctaCheck: 'Comprobar compatibilidad', ctaRoi: 'Calcular su ROI', relatedTitle: 'Profundice con la formación relacionada' },
     pt: { sources: 'Fontes', back: 'Voltar a todos os artigos', original: 'Página original', ctaTitle: 'A sua máquina está pronta para o closed-loop?', ctaCheck: 'Verificar a sua elegibilidade', ctaRoi: 'Calcular o seu ROI', relatedTitle: 'Vá mais longe com a formação associada' },
   }[locale];
 
@@ -87,8 +87,8 @@ export function BlogArticlePage({ article }: { article: BlogArticle }) {
               {body?.length
                 ? body.map((block, index) => {
                     const key = `${article.slug}-b-${index}`;
-                    if (block.type === 'h2') return <h2 key={key} className="article-h2">{renderInline(block.text)}</h2>;
-                    if (block.type === 'h3') return <h3 key={key} className="article-h3">{renderInline(block.text)}</h3>;
+                    if (block.type === 'h2') return <h2 key={key} className="article-h2">{renderInline(block.text, lhref)}</h2>;
+                    if (block.type === 'h3') return <h3 key={key} className="article-h3">{renderInline(block.text, lhref)}</h3>;
                     if (block.type === 'figure')
                       return (
                         <figure key={key} className="article-inline-figure">
@@ -100,11 +100,11 @@ export function BlogArticlePage({ article }: { article: BlogArticle }) {
                       return (
                         <ul key={key} className="article-ul">
                           {block.items.map((item, i) => (
-                            <li key={`${key}-${i}`}>{renderInline(item)}</li>
+                            <li key={`${key}-${i}`}>{renderInline(item, lhref)}</li>
                           ))}
                         </ul>
                       );
-                    return <p key={key}>{renderInline(block.text)}</p>;
+                    return <p key={key}>{renderInline(block.text, lhref)}</p>;
                   })
                 : article.paragraphs.map((paragraph, index) => (
                     <p key={`${article.slug}-${index}`}>{paragraph}</p>
