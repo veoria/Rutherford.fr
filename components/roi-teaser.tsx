@@ -29,7 +29,7 @@ export function RoiTeaser() {
           <span className="roi-teaser-amount">{t.amount}</span>
         </p>
         <p className="roi-teaser-lead">{t.lead}</p>
-        <a className="button button-light roi-teaser-cta" href={homeLink('roi-teaser.cta')}>
+        <a className="button button-light roi-teaser-cta" href={homeLink('roi-teaser.cta', locale)}>
           {t.cta} →
         </a>
       </div>

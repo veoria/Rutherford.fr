@@ -6,6 +6,7 @@ import { useLanguage, type Locale } from '@/components/language-provider';
 import { SocialLinks } from '@/components/social-links';
 import type { SocialLink } from '@/components/social-links';
 import COPY_DATA from '@/data/home/site-footer.json';
+import { localizeHref } from '@/lib/home-links';
 import { NewsletterSignup } from '@/components/newsletter-signup';
 import { colorloopProductUrl, VEORIA_URL } from '@/lib/group-sites';
 
@@ -77,10 +78,10 @@ export function SiteFooter() {
   ];
 
   const companyLinks: { key: CompanyKey; href: string }[] = [
-    { key: 'about', href: '/#about' },
+    { key: 'about', href: localizeHref('/#about', locale) },
     { key: 'colorloop', href: colorloopProductUrl(locale) },
-    { key: 'offset360', href: '/offset360' },
-    { key: 'cases', href: '/#cases' },
+    { key: 'offset360', href: lhref('/offset360') },
+    { key: 'cases', href: localizeHref('/#cases', locale) },
   ];
 
   return (

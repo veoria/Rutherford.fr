@@ -6,6 +6,7 @@ import { SiteNav } from '@/components/site-nav';
 import { useLanguage } from '@/components/language-provider';
 import type { BlogArticle } from '@/lib/blog';
 import { ACADEMY_ENABLED } from '@/lib/features';
+import { categoryLabel } from '@/lib/blog-categories';
 import { Fragment, type ReactNode } from 'react';
 
 /** Render inline [label](href) markdown links inside body text, so articles can carry references and links. */
@@ -33,12 +34,12 @@ function renderInline(text: string, lhref: (p: string) => string = (p) => p): Re
 export function BlogArticlePage({ article }: { article: BlogArticle }) {
   const { locale } = useLanguage();
   const labels = {
-    en: { sources: 'Sources', back: 'Back to all articles', original: 'Original page', ctaTitle: 'Is your press ready for closed-loop color?', ctaCheck: 'Check your eligibility', ctaRoi: 'Calculate your ROI', relatedTitle: 'Go further with the matching training' },
-    fr: { sources: 'Sources', back: 'Retour aux articles', original: "Page d'origine", ctaTitle: 'Votre presse est-elle prête pour le closed-loop ?', ctaCheck: 'Vérifier votre éligibilité', ctaRoi: 'Calculer votre ROI', relatedTitle: 'Aller plus loin avec la formation associée' },
-    de: { sources: 'Quellen', back: 'Zurück zu allen Artikeln', original: 'Originalseite', ctaTitle: 'Ist Ihre Druckmaschine bereit für Closed-Loop?', ctaCheck: 'Eignung prüfen', ctaRoi: 'ROI berechnen', relatedTitle: 'Mit der passenden Schulung weitermachen' },
-    it: { sources: 'Fonti', back: 'Torna a tutti gli articoli', original: 'Pagina originale', ctaTitle: 'La sua macchina è pronta per il closed-loop?', ctaCheck: "Verifica l'idoneità", ctaRoi: 'Calcola il ROI', relatedTitle: 'Approfondisci con la formazione correlata' },
-    es: { sources: 'Fuentes', back: 'Volver a todos los artículos', original: 'Página original', ctaTitle: '¿Su prensa está lista para el closed-loop?', ctaCheck: 'Comprobar compatibilidad', ctaRoi: 'Calcular su ROI', relatedTitle: 'Profundice con la formación relacionada' },
-    pt: { sources: 'Fontes', back: 'Voltar a todos os artigos', original: 'Página original', ctaTitle: 'A sua máquina está pronta para o closed-loop?', ctaCheck: 'Verificar a sua elegibilidade', ctaRoi: 'Calcular o seu ROI', relatedTitle: 'Vá mais longe com a formação associada' },
+    en: { readTime: 'min read', dateLocale: 'en-GB', sources: 'Sources', back: 'Back to all articles', original: 'Original page', ctaTitle: 'Is your press ready for closed-loop color?', ctaCheck: 'Check your eligibility', ctaRoi: 'Calculate your ROI', relatedTitle: 'Go further with the matching training' },
+    fr: { readTime: 'min de lecture', dateLocale: 'fr-FR', sources: 'Sources', back: 'Retour aux articles', original: "Page d'origine", ctaTitle: 'Votre presse est-elle prête pour le closed-loop ?', ctaCheck: 'Vérifier votre éligibilité', ctaRoi: 'Calculer votre ROI', relatedTitle: 'Aller plus loin avec la formation associée' },
+    de: { readTime: 'Min. Lesezeit', dateLocale: 'de-DE', sources: 'Quellen', back: 'Zurück zu allen Artikeln', original: 'Originalseite', ctaTitle: 'Ist Ihre Druckmaschine bereit für Closed-Loop?', ctaCheck: 'Eignung prüfen', ctaRoi: 'ROI berechnen', relatedTitle: 'Mit der passenden Schulung weitermachen' },
+    it: { readTime: 'min di lettura', dateLocale: 'it-IT', sources: 'Fonti', back: 'Torna a tutti gli articoli', original: 'Pagina originale', ctaTitle: 'La sua macchina è pronta per il closed-loop?', ctaCheck: "Verifica l'idoneità", ctaRoi: 'Calcola il ROI', relatedTitle: 'Approfondisci con la formazione correlata' },
+    es: { readTime: 'min de lectura', dateLocale: 'es-ES', sources: 'Fuentes', back: 'Volver a todos los artículos', original: 'Página original', ctaTitle: '¿Su prensa está lista para el closed-loop?', ctaCheck: 'Comprobar compatibilidad', ctaRoi: 'Calcular su ROI', relatedTitle: 'Profundice con la formación relacionada' },
+    pt: { readTime: 'min de leitura', dateLocale: 'pt-PT', sources: 'Fontes', back: 'Voltar a todos os artigos', original: 'Página original', ctaTitle: 'A sua máquina está pronta para o closed-loop?', ctaCheck: 'Verificar a sua elegibilidade', ctaRoi: 'Calcular o seu ROI', relatedTitle: 'Vá mais longe com a formação associada' },
   }[locale];
 
   // Localized content (falls back to the English base when a field is missing).
@@ -47,6 +48,16 @@ export function BlogArticlePage({ article }: { article: BlogArticle }) {
   const lead = tr?.lead ?? article.lead;
   const body = tr?.body ?? article.body;
   const lhref = (p: string) => (locale === 'en' ? p : `/${locale}${p}`);
+
+  // Reading time (~220 words a minute) and publication date for the header meta line.
+  const words = (body?.length
+    ? body.map((b) => ('items' in b ? b.items.join(' ') : 'text' in b ? b.text : '')).join(' ')
+    : article.paragraphs.join(' ')
+  ).split(/\s+/).filter(Boolean).length;
+  const minutes = Math.max(1, Math.round(words / 220));
+  const published = article.publishedAt
+    ? new Intl.DateTimeFormat(labels.dateLocale, { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(article.publishedAt))
+    : null;
 
   // Related Rutherford Academy training per article (hands-on training, not a certification, no Idealliance link).
   const academyEnabled = ACADEMY_ENABLED;
@@ -63,18 +74,28 @@ export function BlogArticlePage({ article }: { article: BlogArticle }) {
   const related = academyEnabled ? RELATED_COURSE[article.slug] : undefined;
 
   return (
-    <main className="page-shell">
+    <main className="page-shell article-page">
       <SiteNav current="blog" />
 
-      <section className="article-hero section">
-        <div className="container article-hero-inner">
-          <p className="section-kicker">{article.category}</p>
-          <h1>{title}</h1>
-          <p>{lead}</p>
+      <section className="article-hero">
+        <div className="container">
+          <header className="article-head">
+            <a className="article-back" href={lhref('/blog')}>
+              <span aria-hidden="true">&larr;</span> {labels.back}
+            </a>
+            <p className="section-kicker">{categoryLabel(article.category, locale)}</p>
+            <h1>{title}</h1>
+            <p className="article-lead">{lead}</p>
+            <p className="article-meta">
+              {published ? <time dateTime={article.publishedAt}>{published}</time> : null}
+              {published ? <span aria-hidden="true">·</span> : null}
+              <span>{minutes} {labels.readTime}</span>
+            </p>
+          </header>
         </div>
       </section>
 
-      <section className="section article-section">
+      <section className="article-section">
         <div className="container">
           <div className="article-reading">
             {article.image ? (

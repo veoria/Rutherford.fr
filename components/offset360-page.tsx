@@ -7,6 +7,7 @@ import { ColorLoopROI } from '@/components/colorloop-roi';
 import { useLanguage } from '@/components/language-provider';
 import { OFFSET360_COPY } from '@/data/offset360-copy';
 import { OFFSET360_FAQ_BY_LOCALE } from '@/data/offset360-faq';
+import { localizeHref } from '@/lib/home-links';
 
 const XRITE_OFFSET360_URL = 'https://www.xrite.com/page/offset360';
 const VIDEO_ID = '7X0fOMXK72Y';
@@ -305,7 +306,7 @@ export function Offset360Page({ colorloopFocus = false }: { colorloopFocus?: boo
                   <p>{t.bundle[idx].description}</p>
                   <a
                     className="o360-card-link"
-                    href={item.href}
+                    href={localizeHref(item.href, locale)}
                     target={item.external ? '_blank' : undefined}
                     rel={item.external ? 'noreferrer' : undefined}
                   >
@@ -342,7 +343,7 @@ export function Offset360Page({ colorloopFocus = false }: { colorloopFocus?: boo
               </ul>
               <a
                 className="o360-feature-link"
-                href={f.href}
+                href={localizeHref(f.href, locale)}
                 target={f.external ? '_blank' : undefined}
                 rel={f.external ? 'noreferrer' : undefined}
               >
@@ -472,11 +473,11 @@ export function Offset360Page({ colorloopFocus = false }: { colorloopFocus?: boo
           <h2 className="o360-h2">{t.ctaTitle}</h2>
           <p>{t.ctaBody}</p>
           <div className="o360-cta-row">
-            <a className="o360-btn o360-btn-primary" href="/console-validation">
+            <a className="o360-btn o360-btn-primary" href={localizeHref('/console-validation', locale)}>
               {t.ctaPrimary}
             </a>
             {colorloopFocus ? (
-              <a className="o360-btn o360-btn-ghost" href="/#colorloop">
+              <a className="o360-btn o360-btn-ghost" href={localizeHref('/#colorloop', locale)}>
                 {t.colorloop.ctaSecondary}
               </a>
             ) : (

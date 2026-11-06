@@ -66,11 +66,11 @@ export function ConsoleValidationCTA() {
           <div className="console-cta-actions">
             <a
               className="button button-accent"
-              href={homeLink('console-validation-cta.primary')}
+              href={homeLink('console-validation-cta.primary', locale)}
             >
               {t.primaryCta}
             </a>
-            <a className="button button-light-on-dark" href={homeLink('console-validation-cta.secondary')}>
+            <a className="button button-light-on-dark" href={homeLink('console-validation-cta.secondary', locale)}>
               {t.secondaryCta}
             </a>
           </div>

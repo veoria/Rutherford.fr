@@ -3,7 +3,8 @@
 import articles from '@/data/blog-articles.json';
 import { useLanguage, type Locale } from '@/components/language-provider';
 import COPY_DATA from '@/data/home/blog-preview-section.json';
-import { homeLink } from '@/lib/home-links';
+import { homeLink, localizeHref } from '@/lib/home-links';
+import { categoryLabel } from '@/lib/blog-categories';
 
 type Article = {
   slug: string;
@@ -11,6 +12,7 @@ type Article = {
   excerpt: string;
   image: string;
   category: string;
+  i18n?: Record<string, { title?: string; excerpt?: string }>;
 };
 
 const RAW = articles as Article[];
@@ -40,11 +42,14 @@ export function BlogPreviewSection() {
         </header>
 
         <div className="blog-preview-grid">
-          {latest.map((article) => (
+          {latest.map((a) => {
+            const article = { ...a, title: a.i18n?.[locale]?.title ?? a.title, excerpt: a.i18n?.[locale]?.excerpt ?? a.excerpt };
+            const href = localizeHref(`/blog/${a.slug}`, locale);
+            return (
             <article className="blog-preview-card" key={article.slug}>
               <a
                 className="blog-preview-media"
-                href={`/blog/${article.slug}`}
+                href={href}
                 aria-label={article.title}
               >
                 <img
@@ -55,21 +60,22 @@ export function BlogPreviewSection() {
                 />
               </a>
               <div className="blog-preview-body">
-                <p className="blog-preview-category">{article.category}</p>
+                <p className="blog-preview-category">{categoryLabel(article.category, locale)}</p>
                 <h3>
-                  <a href={`/blog/${article.slug}`}>{article.title}</a>
+                  <a href={href}>{article.title}</a>
                 </h3>
                 <p className="blog-preview-excerpt">{article.excerpt}</p>
-                <a className="blog-preview-cta" href={`/blog/${article.slug}`}>
+                <a className="blog-preview-cta" href={href}>
                   {t.readMore} <span aria-hidden="true">→</span>
                 </a>
               </div>
             </article>
-          ))}
+            );
+          })}
         </div>
 
         <div className="blog-preview-footer">
-          <a className="button button-outline-dark" href={homeLink('blog-preview-section.seeAll')}>
+          <a className="button button-outline-dark" href={homeLink('blog-preview-section.seeAll', locale)}>
             {t.seeAll}
           </a>
         </div>
