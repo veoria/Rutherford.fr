@@ -321,8 +321,8 @@ function consoleLinks(fields: EmbedField[], v: ConsoleRequest) {
   if (links) fields.push({ name: 'Links', value: links });
 }
 
-/** A new console validation request, for a person who validates them (the
- * board's follower). The assignee hears it from the assignment ping. */
+/** A new console validation request, for the people the task is given to: its
+ * assignee and the board's follower (each only if mapped). */
 export async function notifyDiscordConsoleNewRequest(discordUserId: string, v: ConsoleRequest): Promise<void> {
   const fields = consoleFields(v); consoleLinks(fields, v);
   const ref = consoleRef(v.dealId);
