@@ -17549,3 +17549,50 @@ textarea.ws-input { resize: vertical; }
 .pv-note { font-size: 0.88rem; font-weight: 600; color: #7a5b00; }
 .pv-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 .pv-actions .button { min-height: 40px; padding: 0 16px; font-size: 0.88rem; }
+
+/* ===== Blog article: editorial layout v2 (one aligned reading column) ===== */
+.article-page .article-hero { padding: clamp(36px, 6vw, 80px) 0 clamp(28px, 4vw, 44px); }
+.article-head { max-width: 720px; margin: 0 auto; }
+.article-back { display: inline-flex; align-items: center; gap: 6px; margin-bottom: clamp(24px, 3.5vw, 36px); font-size: 0.92rem; font-weight: 600; color: var(--muted); text-decoration: none; }
+.article-back:hover { color: var(--accent); }
+.article-head .section-kicker { margin: 0; }
+.article-head h1 { margin: 12px 0 0; font-size: clamp(2.2rem, 4.6vw, 3.6rem); line-height: 1.06; letter-spacing: -0.03em; font-weight: 700; color: var(--ink); text-wrap: balance; }
+.article-lead { margin: 20px 0 0; max-width: none; font-size: clamp(1.12rem, 1.7vw, 1.3rem); line-height: 1.55; color: var(--muted); }
+.article-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 22px 0 0; padding-top: 18px; border-top: 1px solid var(--line); font-size: 0.92rem; color: #6e6e73; }
+
+.article-page .article-section { padding: 0 0 clamp(56px, 7vw, 96px); }
+.article-page .article-reading { max-width: 720px; margin: 0 auto; }
+.article-page .article-figure { --fig-w: min(1000px, calc(100vw - 48px)); width: var(--fig-w); margin: 0 0 clamp(36px, 5vw, 56px) calc(50% - var(--fig-w) / 2); border-radius: 20px; box-shadow: none; }
+.article-page .article-figure img { aspect-ratio: 16 / 9; }
+
+.article-page .article-content { animation: none; }
+.article-page .article-content > p { max-width: none; margin: 0 0 1.3em; font-size: 1.125rem; line-height: 1.75; color: #1d1d1f; text-align: left; -webkit-hyphens: manual; hyphens: manual; text-wrap: pretty; }
+.article-page .article-content > p:first-child { font-size: clamp(1.18rem, 1.8vw, 1.3rem); line-height: 1.65; color: var(--ink); }
+.article-page .article-h2 { margin: 2.2em 0 0.55em; font-size: clamp(1.45rem, 2.4vw, 1.85rem); line-height: 1.2; letter-spacing: -0.02em; font-weight: 650; text-wrap: balance; }
+.article-page .article-h3 { margin: 1.8em 0 0.45em; font-size: clamp(1.15rem, 1.7vw, 1.3rem); text-wrap: balance; }
+.article-page .article-h2:first-child, .article-page .article-h3:first-child { margin-top: 0; }
+.article-page .article-ul { margin: 0 0 1.5em; gap: 10px; }
+.article-page .article-ul li { font-size: 1.125rem; line-height: 1.7; color: #1d1d1f; }
+.article-page .article-ul li::before { top: 0.72em; }
+.article-page .article-inline-figure { margin: 2em 0; }
+
+.article-page .article-sources { margin-top: 48px; padding: 20px 24px; border: 1px solid var(--line); border-radius: 16px; background: #fafaf8; }
+.article-page .article-sources h2 { margin: 0 0 12px; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.article-page .article-sources ul { list-style: none; padding: 0; gap: 8px; }
+.article-page .article-sources a { color: #3a3a3c; font-size: 0.95rem; text-decoration-color: #c7c7cc; }
+.article-page .article-sources a:hover { color: var(--accent); }
+
+.article-page .article-cta { margin: 56px 0 0; padding: clamp(28px, 4vw, 44px); border: 0; border-radius: 24px; background: #111111; text-align: left; }
+.article-page .article-cta h2 { margin: 0 0 22px; max-width: 26ch; font-size: clamp(1.4rem, 2.6vw, 1.9rem); line-height: 1.2; color: #ffffff; text-wrap: balance; }
+.article-page .article-cta-actions { justify-content: flex-start; }
+.article-page .newsletter-signup { margin-top: 24px; }
+.article-page .article-actions { justify-content: space-between; margin-top: 32px; padding-top: 20px; border-top: 1px solid var(--line); }
+.article-page .article-textlink { font-size: 0.95rem; }
+
+@media (max-width: 640px) {
+  .article-page .article-figure { --fig-w: calc(100vw - 32px); border-radius: 16px; }
+  .article-page .article-content > p, .article-page .article-ul li { font-size: 1.0625rem; line-height: 1.7; }
+  .article-page .article-content > p:first-child { font-size: 1.125rem; }
+  .article-page .article-cta { border-radius: 20px; }
+  .article-page .article-actions { flex-direction: column; align-items: flex-start; gap: 14px; }
+}

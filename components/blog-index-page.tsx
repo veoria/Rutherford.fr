@@ -1,5 +1,6 @@
 'use client';
 import { useMemo, useState } from 'react';
+import { categoryLabel } from '@/lib/blog-categories';
 import { SiteFooter } from '@/components/site-footer';
 import { useLanguage, type Locale } from '@/components/language-provider';
 import { SiteNav } from '@/components/site-nav';
@@ -74,7 +75,7 @@ export function BlogIndexPage({ articles }: { articles: BlogArticle[] }) {
             <div className="blog-chips">
               <button type="button" className={`blog-chip ${cat === 'all' ? 'is-active' : ''}`} onClick={() => setCat('all')}>{t.all}</button>
               {categories.map((c) => (
-                <button type="button" key={c} className={`blog-chip ${cat === c ? 'is-active' : ''}`} onClick={() => setCat(c)}>{c}</button>
+                <button type="button" key={c} className={`blog-chip ${cat === c ? 'is-active' : ''}`} onClick={() => setCat(c)}>{categoryLabel(c, locale)}</button>
               ))}
             </div>
           </div>
@@ -96,7 +97,7 @@ export function BlogIndexPage({ articles }: { articles: BlogArticle[] }) {
                     </span>
                     <span className="blog-row-body">
                       <span className="blog-row-meta">
-                        <span className="blog-row-cat">{article.category}</span>
+                        <span className="blog-row-cat">{categoryLabel(article.category, locale)}</span>
                         {article.publishedAt ? <span className="blog-row-dot">·</span> : null}
                         {article.publishedAt ? <time dateTime={article.publishedAt}>{fmtDate(article.publishedAt)}</time> : null}
                       </span>

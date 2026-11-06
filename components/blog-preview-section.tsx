@@ -4,6 +4,7 @@ import articles from '@/data/blog-articles.json';
 import { useLanguage, type Locale } from '@/components/language-provider';
 import COPY_DATA from '@/data/home/blog-preview-section.json';
 import { homeLink, localizeHref } from '@/lib/home-links';
+import { categoryLabel } from '@/lib/blog-categories';
 
 type Article = {
   slug: string;
@@ -59,7 +60,7 @@ export function BlogPreviewSection() {
                 />
               </a>
               <div className="blog-preview-body">
-                <p className="blog-preview-category">{article.category}</p>
+                <p className="blog-preview-category">{categoryLabel(article.category, locale)}</p>
                 <h3>
                   <a href={href}>{article.title}</a>
                 </h3>
