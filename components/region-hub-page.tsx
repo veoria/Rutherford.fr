@@ -7,6 +7,7 @@ import { SiteFooter } from '@/components/site-footer';
 import { ScrollReveal } from '@/components/scroll-reveal';
 import { ColorLoopROI } from '@/components/colorloop-roi';
 import type { Region } from '@/data/regions';
+import { localizeHref } from '@/lib/home-links';
 
 type Copy = {
   intl: { note: string; link: string };
@@ -364,7 +365,7 @@ export function RegionHubPage({ region: _region }: { region?: Region }) {
               </li>
             ))}
           </ol>
-          <a className="rl-btn rl-btn-primary" href="/console-validation">{t.console.cta}</a>
+          <a className="rl-btn rl-btn-primary" href={localizeHref('/console-validation', locale)}>{t.console.cta}</a>
         </div>
       </section>
 

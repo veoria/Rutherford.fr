@@ -8,6 +8,7 @@ import { SiteFooter } from '@/components/site-footer';
 import { ColorLoopROI } from '@/components/colorloop-roi';
 import { CaseStudiesShowcase } from '@/components/case-studies-showcase';
 import { ConsoleValidationCTA } from '@/components/console-validation-cta';
+import { localizeHref } from '@/lib/home-links';
 
 type Lever = { title: string; body: string };
 type Assumption = { value: string; unit: string; note: string };
@@ -385,7 +386,7 @@ export function RoiPage() {
             <a className="button button-dark" href="#roi">
               {t.hero.ctaCalc} →
             </a>
-            <a className="button button-outline-dark" href="/console-validation">
+            <a className="button button-outline-dark" href={localizeHref('/console-validation', locale)}>
               {t.hero.ctaConsole}
             </a>
           </div>

@@ -160,10 +160,10 @@ export default function HomePage() {
             <p className="hero-supporting">{t.supporting}</p>
 
             <div className="hero-actions">
-              <a className="button button-dark hero-cta" href={homeLink('home-page.primaryCta')}>
+              <a className="button button-dark hero-cta" href={homeLink('home-page.primaryCta', locale)}>
                 {t.primaryCta}
               </a>
-              <a className="button button-light hero-cta" href={homeLink('home-page.secondaryCta')}>
+              <a className="button button-light hero-cta" href={homeLink('home-page.secondaryCta', locale)}>
                 {t.secondaryCta}
               </a>
             </div>
