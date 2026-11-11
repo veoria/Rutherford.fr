@@ -445,6 +445,20 @@ const COPY: Record<AuthLocale, Record<ActionKey, ActionCopy>> = {
 
 const LOCALES = ['en', 'fr', 'de', 'it', 'es', 'pt'] as const;
 
+// The sign-up and sign-in emails also carry the one-time code, under the
+// link: ColorMix (colorloop.ai) signs in with the Rutherford account by code,
+// so the email can be read on a phone and the code typed on the pressroom's
+// computer. The link works as before on rutherford.fr.
+const CODE_LEAD: Record<AuthLocale, string> = {
+  en: 'Signing in from ColorMix or another device? Enter this code there:',
+  fr: 'Vous vous connectez depuis ColorMix ou un autre appareil ? Saisissez-y ce code :',
+  de: 'Sie melden sich über ColorMix oder ein anderes Gerät an? Geben Sie dort diesen Code ein:',
+  it: 'Accede da ColorMix o da un altro dispositivo? Inserisca lì questo codice:',
+  es: '¿Inicia sesión desde ColorMix u otro dispositivo? Introduzca allí este código:',
+  pt: 'Está a iniciar sessão a partir do ColorMix ou de outro dispositivo? Introduza lá este código:',
+};
+const WITH_CODE: ReadonlySet<ActionKey> = new Set<ActionKey>(['signup', 'magiclink']);
+
 // One-time code block for the reauthentication mail.
 const CODE_STYLE =
   "font-family:'JetBrains Mono','Courier New',monospace;display:block;font-size:30px;font-weight:700;letter-spacing:.34em;color:#181410;background:#F1EFEA;border-radius:10px;padding:16px 8px 16px 18px;text-align:center;margin:4px 0;";
@@ -462,8 +476,15 @@ export function authEmail(opts: {
     : 'en';
   const key = mapAction(opts.action);
   const c = COPY[loc][key];
-  const body = c.body.map((p) =>
-    p === '%CODE%' ? `<span style="${CODE_STYLE}">${escDigits(opts.token ?? '')}</span>` : p
+  // Sign-up and sign-in: the code goes before the closing "ignore this email"
+  // line, only when Supabase sent one.
+  const code = escDigits(opts.token ?? '');
+  const paras =
+    WITH_CODE.has(key) && code && c.body.length
+      ? [...c.body.slice(0, -1), CODE_LEAD[loc], '%CODE%', c.body[c.body.length - 1]]
+      : c.body;
+  const body = paras.map((p) =>
+    p === '%CODE%' ? `<span style="${CODE_STYLE}">${code}</span>` : p
   );
   return {
     subject: c.subject,

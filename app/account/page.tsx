@@ -154,8 +154,22 @@ export default async function AccountHubRoute() {
       ? getSystemsForUser(user.id).then((rows) => rows.map(toAccountInstallation))
       : Promise.resolve([]);
 
-  const [{ status: supportStatus, newMessage: supportNewMessage }, resellerClients, team, networkResellers, installations] =
-    await Promise.all([supportSummaryP, resellerClientsP, teamP, networkResellersP, installationsP]);
+  // ColorMix (colorloop.ai) keeps its files under cmx/<user id>/ with this
+  // account: when they were last saved, for its card. Optional — never blocks.
+  const colormixP = (async (): Promise<string | null> => {
+    try {
+      const { data } = await supabase.storage.from('cmx').list(user.id, { limit: 20 });
+      const times = (data ?? [])
+        .map((f) => f.updated_at ?? f.created_at)
+        .filter((v): v is string => Boolean(v));
+      return times.length ? times.sort().slice(-1)[0] : null;
+    } catch {
+      return null;
+    }
+  })();
+
+  const [{ status: supportStatus, newMessage: supportNewMessage }, resellerClients, team, networkResellers, installations, colormixSavedAt] =
+    await Promise.all([supportSummaryP, resellerClientsP, teamP, networkResellersP, installationsP, colormixP]);
 
   // Plants (usines) the user may see — owners/admins see all their org's sites,
   // other members are narrowed by any site_members restriction. Sites feed the
@@ -201,6 +215,7 @@ export default async function AccountHubRoute() {
       installations={installations}
       sites={sites}
       presses={presses}
+      colormixSavedAt={colormixSavedAt}
     />
   );
 }

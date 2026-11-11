@@ -46,6 +46,9 @@ type Props = {
   sites?: AccountSite[];
   // "Mon atelier" — the client's declared presses (client accounts only).
   presses?: WorkshopPress[];
+  // ColorMix (colorloop.ai) signs in with this account: when its files in the
+  // 'cmx' bucket were last saved, null when the account has none.
+  colormixSavedAt?: string | null;
   // Read-only admin preview ("view as client"): hides every action that would
   // act on the admin's own session (edit profile, sign out, uploads, team mgmt).
   preview?: boolean;
@@ -592,7 +595,7 @@ function fmtMonth(iso: string | null, locale: Locale): string {
 type Tile = { ic: string; cls: string; t: string; s: string; href: string; adminHref?: string; statDot?: string; statV: string; statM?: string };
 
 export function AccountHub(props: Props) {
-  const { accountType, team, selfId, networkResellers, email, memberSince, profile, consoleStat, supportStat, resellerClients, systems, installations = [], sites = [], presses = [], preview = false, previewBack } = props;
+  const { accountType, team, selfId, networkResellers, email, memberSince, profile, consoleStat, supportStat, resellerClients, systems, installations = [], sites = [], presses = [], colormixSavedAt = null, preview = false, previewBack } = props;
   const previewCtx: PreviewContext = { userId: selfId, accountType, back: previewBack, name: profile.fullName };
   const { locale } = useLanguage();
   const t = COPY[locale];
@@ -870,6 +873,7 @@ export function AccountHub(props: Props) {
               />
             </div>
             <aside className="ah-aside">
+              <ColormixMini locale={locale} savedAt={colormixSavedAt} preview={preview} />
               <SupportMini t={t} preview={preview} />
             </aside>
           </div>
@@ -1307,6 +1311,50 @@ export function ManagePanel({
           teamView
         )}
       </div>
+    </div>
+  );
+}
+
+// ColorMix: the ink formulation tool on colorloop.ai, signed in with this same
+// Rutherford account. Says when its data was last saved, else what it is.
+const COLORMIX_URL = 'https://colorloop.ai/color-mix.html#kitchen';
+const COLORMIX: Record<Locale, { open: string; about: string; saved: (d: string) => string }> = {
+  en: { open: 'Open ColorMix', about: 'Spot color formulation with your own measurements, in your browser', saved: (d) => `Your colors and formulas, saved ${d}` },
+  fr: { open: 'Ouvrir ColorMix', about: 'Formulation des tons directs avec vos propres mesures, dans votre navigateur', saved: (d) => `Vos couleurs et formules, enregistrées le ${d}` },
+  de: { open: 'ColorMix öffnen', about: 'Sonderfarben mit Ihren eigenen Messungen formulieren, im Browser', saved: (d) => `Ihre Farben und Rezepturen, gespeichert am ${d}` },
+  it: { open: 'Apri ColorMix', about: 'Formulazione delle tinte piatte con le sue misure, nel browser', saved: (d) => `I suoi colori e le sue formule, salvati il ${d}` },
+  es: { open: 'Abrir ColorMix', about: 'Formulación de tintas directas con sus propias mediciones, en su navegador', saved: (d) => `Sus colores y fórmulas, guardados el ${d}` },
+  pt: { open: 'Abrir o ColorMix', about: 'Formulação de cores diretas com as suas próprias medições, no seu navegador', saved: (d) => `As suas cores e fórmulas, guardadas a ${d}` },
+};
+const ICON_COLORMIX = (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 3.5c3 3.6 5.5 6.7 5.5 9.9a5.5 5.5 0 0 1-11 0c0-3.2 2.5-6.3 5.5-9.9z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round"/><path d="M9.5 14.5a2.6 2.6 0 0 0 2.5 2.2" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/></svg>
+);
+
+function ColormixMini({ locale, savedAt, preview = false }: { locale: Locale; savedAt: string | null; preview?: boolean }) {
+  const c = COLORMIX[locale];
+  let day = '';
+  if (savedAt) {
+    try {
+      day = new Date(savedAt).toLocaleDateString(locale, { day: 'numeric', month: 'long', year: 'numeric' });
+    } catch {
+      day = '';
+    }
+  }
+  const body = (
+    <>
+      <span className="ah-support-ic">{ICON_COLORMIX}</span>
+      <span className="ah-support-main"><span className="ah-support-t">{c.open}</span><span className="ah-support-s">{day ? c.saved(day) : c.about}</span></span>
+      {ICON.chevR}
+    </>
+  );
+  return (
+    <div className="ah-mini">
+      <div className="ah-mini-h">ColorMix</div>
+      {preview ? (
+        <span className="ah-support-row ah-static" aria-disabled="true">{body}</span>
+      ) : (
+        <a className="ah-support-row" href={COLORMIX_URL}>{body}</a>
+      )}
     </div>
   );
 }
