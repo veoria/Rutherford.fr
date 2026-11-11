@@ -3,6 +3,34 @@ import { createSupabaseServerClient, createSupabaseAdminClient } from '@/lib/sup
 
 export const dynamic = 'force-dynamic';
 
+// ColorMix (colorloop.ai) keeps its data for a Rutherford account as JSON files
+// in the private 'cmx' bucket, one folder per account (supabase/migrations/
+// 20261111_colormix_storage.sql). Exported and erased with the account.
+const CMX_BUCKET = 'cmx';
+const CMX_FILES = ['colors.json', 'maps.json', 'kitchen.json', 'library.json'];
+
+type AdminClient = ReturnType<typeof createSupabaseAdminClient>;
+
+/** The account's ColorMix files, parsed, by name; null when it has none. */
+async function colormixData(admin: AdminClient, userId: string): Promise<Record<string, unknown> | null> {
+  const { data: listed } = await admin.storage.from(CMX_BUCKET).list(userId, { limit: 100 });
+  const names = (listed ?? []).map((f) => f.name).filter((n) => n.endsWith('.json'));
+  if (!names.length) return null;
+  const out: Record<string, unknown> = {};
+  await Promise.all(
+    names.map(async (name) => {
+      const { data: blob } = await admin.storage.from(CMX_BUCKET).download(`${userId}/${name}`);
+      if (!blob) return;
+      try {
+        out[name] = JSON.parse(await blob.text());
+      } catch {
+        out[name] = null;
+      }
+    })
+  );
+  return out;
+}
+
 /** GDPR data export — downloads everything we hold about the signed-in user. */
 export async function GET() {
   const supabase = createSupabaseServerClient();
@@ -22,6 +50,17 @@ export async function GET() {
     supabase.from('organization_members').select('*').eq('user_id', user.id),
   ]);
 
+  // ColorMix files are private to their owner; the export reads them with the
+  // service role (best-effort: the rest of the export never waits on it).
+  let colormix: Record<string, unknown> | null = null;
+  if (process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    try {
+      colormix = await colormixData(createSupabaseAdminClient(), user.id);
+    } catch {
+      colormix = null;
+    }
+  }
+
   const payload = {
     exported_at: new Date().toISOString(),
     account: { id: user.id, email: user.email, created_at: user.created_at },
@@ -31,6 +70,7 @@ export async function GET() {
     quiz_attempts: quiz.data ?? [],
     course_access: access.data ?? [],
     organization_memberships: membership.data ?? [],
+    colormix,
   };
 
   return new NextResponse(JSON.stringify(payload, null, 2), {
@@ -62,6 +102,11 @@ export async function DELETE() {
   await adminClient.storage
     .from('account-media')
     .remove(['png', 'jpg', 'webp', 'gif'].map((ext) => `avatars/${user.id}.${ext}`));
+
+  // ColorMix keeps its files under cmx/<user id>/: they go with the account.
+  const { data: cmxFiles } = await adminClient.storage.from(CMX_BUCKET).list(user.id, { limit: 100 });
+  const cmxPaths = [...new Set([...CMX_FILES, ...(cmxFiles ?? []).map((f) => f.name)])].map((n) => `${user.id}/${n}`);
+  await adminClient.storage.from(CMX_BUCKET).remove(cmxPaths);
 
   const { error } = await adminClient.auth.admin.deleteUser(user.id);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
