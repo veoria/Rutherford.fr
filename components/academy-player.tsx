@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { type Locale, useLanguage } from '@/components/language-provider';
-import type { AppModule, AppStep } from '@/data/academy-app';
+import { ACADEMY_AGENT_NAMES, type AppModule, type AppStep } from '@/data/academy-app';
 import { AcademyIllustration } from '@/components/academy-illustration';
 
 type PlayerCopy = {
@@ -20,6 +20,7 @@ type PlayerCopy = {
   moduleLabel: (num: string) => string;
   captureLabel: string;
   captureHint: string;
+  playVideo: string;
 };
 
 const PLAYER_COPY: Record<Locale, PlayerCopy> = {
@@ -38,6 +39,7 @@ const PLAYER_COPY: Record<Locale, PlayerCopy> = {
     moduleLabel: (n) => `Module ${n}`,
     captureLabel: 'Product capture to insert',
     captureHint: 'see Captures-Requises.md',
+    playVideo: 'Play the testimonial',
   },
   fr: {
     exit: 'Quitter',
@@ -54,6 +56,7 @@ const PLAYER_COPY: Record<Locale, PlayerCopy> = {
     moduleLabel: (n) => `Module ${n}`,
     captureLabel: 'Capture produit à insérer',
     captureHint: 'voir Captures-Requises.md',
+    playVideo: 'Voir le témoignage',
   },
   de: {
     exit: 'Schließen',
@@ -70,6 +73,7 @@ const PLAYER_COPY: Record<Locale, PlayerCopy> = {
     moduleLabel: (n) => `Modul ${n}`,
     captureLabel: 'Produktaufnahme einzufügen',
     captureHint: 'siehe Captures-Requises.md',
+    playVideo: 'Testimonial ansehen',
   },
   it: {
     exit: 'Esci',
@@ -86,6 +90,7 @@ const PLAYER_COPY: Record<Locale, PlayerCopy> = {
     moduleLabel: (n) => `Modulo ${n}`,
     captureLabel: 'Acquisizione prodotto da inserire',
     captureHint: 'vedi Captures-Requises.md',
+    playVideo: 'Guarda il video',
   },
   es: {
     exit: 'Salir',
@@ -102,6 +107,7 @@ const PLAYER_COPY: Record<Locale, PlayerCopy> = {
     moduleLabel: (n) => `Módulo ${n}`,
     captureLabel: 'Captura de producto por insertar',
     captureHint: 'ver Captures-Requises.md',
+    playVideo: 'Ver testimonio',
   },
   pt: {
     exit: 'Sair',
@@ -118,6 +124,7 @@ const PLAYER_COPY: Record<Locale, PlayerCopy> = {
     moduleLabel: (n) => `Módulo ${n}`,
     captureLabel: 'Captura de produto a inserir',
     captureHint: 'ver Captures-Requises.md',
+    playVideo: 'Ver o testemunho',
   },
 };
 
@@ -274,6 +281,18 @@ export function AcademyPlayer({
             </div>
           ) : current ? (
             <>
+              {current.scene ? (
+                <div className={`academy-scene academy-scene-${current.scene.who}`}>
+                  <img
+                    className="academy-scene-avatar"
+                    src={`/academy/agents/${current.scene.who}.webp`}
+                    alt={ACADEMY_AGENT_NAMES[current.scene.who]}
+                    width={72}
+                    height={72}
+                  />
+                  <p className="academy-scene-bubble">{current.scene.text}</p>
+                </div>
+              ) : null}
               <div className="academy-player-lead">{current.kicker}</div>
               <h3 className="academy-player-headline">{current.headline}</h3>
               {current.paragraphs.map((para, i) => (
@@ -281,6 +300,7 @@ export function AcademyPlayer({
                 <p key={i} dangerouslySetInnerHTML={{ __html: para }} />
               ))}
               {current.illustration ? <AcademyIllustration name={current.illustration} /> : null}
+              {current.video ? <AcademyVideo youtubeId={current.video.youtubeId} title={current.video.title} label={t.playVideo} /> : null}
               {current.capture ? (
                 <div className="academy-capture" role="note">
                   <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
@@ -363,5 +383,29 @@ export function AcademyPlayer({
         </div>
       </div>
     </div>
+  );
+}
+
+/** Click-to-load YouTube testimonial (no third-party request until played). */
+function AcademyVideo({ youtubeId, title, label }: { youtubeId: string; title: string; label: string }) {
+  const [playing, setPlaying] = useState(false);
+  if (playing) {
+    return (
+      <div className="academy-video">
+        <iframe
+          src={`https://www.youtube-nocookie.com/embed/${youtubeId}?autoplay=1&rel=0&modestbranding=1`}
+          title={title}
+          allow="autoplay; encrypted-media; picture-in-picture"
+          allowFullScreen
+        />
+      </div>
+    );
+  }
+  return (
+    <button type="button" className="academy-video academy-video-poster" onClick={() => setPlaying(true)} aria-label={`${label}: ${title}`}>
+      <img src={`https://i.ytimg.com/vi/${youtubeId}/hqdefault.jpg`} alt="" loading="lazy" />
+      <span className="academy-video-play" aria-hidden="true">▶</span>
+      <span className="academy-video-label">{label}</span>
+    </button>
   );
 }

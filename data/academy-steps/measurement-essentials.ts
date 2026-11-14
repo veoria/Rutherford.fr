@@ -1,112 +1,190 @@
 import type { AppModule } from '@/data/academy-app';
 
-// Press-Side Measurement Essentials — step content for the player.
-// Condensed from data/academy-lessons.ts (post-#23 corrections) into the
-// idea -> illustration -> formative micro-quiz format. Module index is 0-based
-// and matches course_progress.lesson_index.
+// Measuring color on press (course id `measurement-essentials`, URL unchanged).
+// 2026-11 rewrite: closer tone ("you"), pressroom scenes told by the Academy
+// characters, Rutherford (sheetfed offset) and Veoria DeltaOne (web presses).
+//
+// Keep 4 modules in this order: module.index = course_progress.lesson_index,
+// and ColorMix links to module 2 (index 1) for the M0-M3 lesson.
+// DeltaOne facts come from https://veoria.com/product#datasheet only; do not
+// attach an M0/M1/M2/M3 condition to DeltaOne.
 const modules: AppModule[] = [
   {
     index: 0,
     num: '01',
-    title: 'Handheld vs automated scanning vs true inline',
-    time: '9 min',
-    summary: 'Three device classes, three different jobs.',
+    title: 'Three ways to read a color',
+    time: '7 min',
+    summary: 'Handheld, off-press scanning, true inline: which one, for which press.',
     steps: [
       {
-        kicker: 'Step 1 · The classes',
-        headline: 'Handheld, scanning table, automated scanner — and true inline',
+        kicker: 'Step 1 · Handheld and scanning',
+        headline: 'Your eye is great. It just can’t be emailed.',
+        scene: {
+          who: 'red',
+          text: 'Monday, 6:10 am. Red pulls a sheet, holds it next to the proof under the booth and says “looks good to me”. Next door, Green hasn’t stopped the label press since Friday. Two pressrooms, two ways to read color.',
+        },
         paragraphs: [
-          `<b>Handheld spectros</b> (X-Rite eXact 2 family) are the swiss-army knives: single-patch reads, mobile, low entry cost, no host PC. Right when you measure infrequently, verify one patch, or check a job at the customer site. <b>Strip readers</b> sit beside the press and scan the full-width color bar in a few seconds — the speed/cost balance for mid-volume sheetfed.`,
-          `<b>Automated scanning</b> (IntelliTrax2 / IntelliTrax2 Pro) is the press-side high end — but it is <b>not inline</b>: the operator pulls a sheet from the delivery and places it on the scan track; only the <i>reading</i> is automated, not the sampling. <b>True inline</b> is a separate class: cameras/spectros mounted inside the press that read continuously without pulling sheets.`,
+          `A <b>handheld spectrophotometer</b> reads one patch at a time. It’s cheap, mobile and perfect to check a job, a proof or a customer sample.`,
+          `A <b>scanning system</b> reads the whole color bar of a sheet in seconds. Every Rutherford system on sheetfed offset is installed with an X-Rite <b>IntelliTrax2</b>, and many of our customers also run a Techkon <b>SpectroDrive</b>. You still pull the sheet and put it on the table, so it’s fast but not inline: the reading is automated, the sampling isn’t.`,
+          `Then the loop closes: the scan tells which ink zones are off, and the Rutherford console moves the ink keys for you.`,
         ],
         illustration: 'ill-devices.svg',
       },
       {
-        kicker: 'Step 2 · The choice',
-        headline: 'Match the device to your volume, not the brochure',
+        kicker: 'Step 2 · True inline',
+        headline: 'On a web press, you measure while you print',
+        scene: {
+          who: 'green',
+          text: 'Green runs labels at 150 m/min. Pulling a sample every five minutes would mean stopping or cutting the web. So the press measures itself.',
+        },
         paragraphs: [
-          `It is never "which is best" — it is "which fits your volume and your tolerance". A 50-makeready-per-week shop on tight ΔE specs needs automated scanning at minimum; a 5-per-week shop on forgiving work lives happily with a handheld. Most real shops own at least two classes and use them for different jobs.`,
+          `Veoria’s <b>DeltaOne</b> sits on the press, travels across the web, finds the color bar on either side by itself and measures it at up to <b>500 m/min</b>, without stopping anything.`,
+          `It uses <b>multispectral imaging (MSI)</b>: a calibrated light, a camera that frames each patch, and <b>36 spectral bands</b>, 10 nm apart, from 380 to 730 nm. You get a full spectrum per patch, so L*a*b*, ΔE00 and density are computed from it, just like with a spectrophotometer.`,
+          `At Eshuis, an eight-color flexo line in the Netherlands, DeltaOne cut press stops by 50%.`,
+        ],
+      },
+      {
+        kicker: 'Step 3 · Pick by process',
+        headline: 'Sheet or web decides, not the brochure',
+        paragraphs: [
+          `<b>Sheetfed offset with ink keys</b>: scan the sheet, correct zone by zone. That’s the Rutherford world.`,
+          `<b>Web presses</b> with even ink across the web (flexo, keyless offset, gravure, digital web): measure inline. That’s the DeltaOne world. DeltaOne isn’t made for sheetfed presses or ink-key offset, which need a reading per zone across the sheet.`,
+          `Most shops still keep a handheld for spot checks and customer samples.`,
         ],
         quiz: {
-          q: 'An automated scanner like IntelliTrax2 reads the whole bar in seconds — so why is it still not an "inline" system?',
+          q: 'Green asks why the label line doesn’t just use the sheet scanner from the offset hall. Best answer?',
           options: [
-            'It only reads one patch at a time',
-            'The operator still pulls the sheet and places it on the track off-press — only the reading is automated',
-            'It is mounted inside the press and reads every sheet',
+            'The scanner is less accurate',
+            'On a web press you’d have to stop or cut the web to sample; an inline system reads the running web',
+            'Flexo inks can’t be measured with a spectrophotometer',
           ],
           answer: 1,
-          ok: 'Right — it automates the reading, not the sampling. True inline reads continuously, inside the press.',
-          no: 'Inline = inside the press, continuous. IntelliTrax2 is off-press: the operator pulls and places the sheet.',
+          ok: 'Exactly. Same physics, different sampling: inline reads while you print.',
+          no: 'Both read color fine. The difference is how you get a sample: pulled sheet versus running web.',
         },
+      },
+      {
+        kicker: 'From the pressroom',
+        headline: 'LEFRANCQ: “We can’t run the press without it”',
+        paragraphs: [
+          `<b>Recap.</b> Handheld for spot checks. Off-press scanning for sheets and ink keys. Inline MSI for webs that never stop.`,
+        ],
+        video: { youtubeId: '78a006Kulok', title: 'LEFRANCQ Packaging, We can’t run the press without it' },
       },
     ],
   },
   {
     index: 1,
     num: '02',
-    title: 'The geometry that matters: 45°/0°, polarization, UV',
-    time: '9 min',
-    summary: 'Three optical choices that drive your results.',
+    title: 'M0, M1, M2, M3: same sheet, four numbers',
+    time: '8 min',
+    summary: 'Which measurement condition, when, and how to switch.',
     steps: [
       {
-        kicker: 'Step 1 · Geometry & polarization',
-        headline: '45°/0° reads like the eye; polarization is a density trick',
+        kicker: 'Step 1 · Why four conditions',
+        headline: 'Before anyone argues, ask: which M?',
+        scene: {
+          who: 'pink',
+          text: 'Pink, the brand owner, calls: “Your white is 2 ΔE off.” Red measured the same sheet this morning and found it perfect. Blue steps in: “Before anyone argues, which M?”',
+        },
         paragraphs: [
-          `<b>45°/0°</b> lights the sample at 45° and reads at normal (0°) — it best simulates how the eye sees a print (ISO 5-4). IntelliTrax2 uses 45°/0° ring illumination to kill directional artifacts.`,
-          `<b>Polarization</b> removes surface gloss, giving a "wet" density reading even on a dry sheet — handy to compare wet press readings to dry. It raises density ~0.05–0.20 D and varies between instruments (worsening inter-instrument agreement). The rule: polarized (<b>M3</b>) data is for <b>density only</b> — never for G7 or any ΔE check against ISO / GRACoL / FOGRA aims, which are all defined unpolarized.`,
+          `Most papers contain <b>optical brighteners</b>. They take in UV light and give it back as blue, which makes white look whiter. So the amount of UV in the instrument’s light changes the number you read, most of all on the paper white and light tints.`,
+          `ISO 13655 defines four measurement conditions so everyone knows which light was used.`,
         ],
-        illustration: 'ill-geometry.svg',
+        illustration: 'm-conditions.svg',
       },
       {
-        kicker: 'Step 2 · UV — and the varnish trap',
-        headline: 'M1 reads the paper the way your customer sees it',
+        kicker: 'Step 2 · The four, in one line each',
+        headline: 'M0, M1, M2, M3',
         paragraphs: [
-          `Most papers carry optical brighteners that fluoresce under UV. <b>M1</b> (D50, UV included) reads the sheet as your customer's D50 booth shows it — the default for current work. <b>M2</b> (UV-cut) is mainly a diagnostic.`,
-          `Don't confuse UV-in-the-measurement with UV in the <i>process</i> (UV varnish, LED-UV inks). Golden rule: <b>never varnish or coat over the control strip</b> — coating shifts gloss, density and L*a*b*, and your targets are defined on bare ink. Plan a varnish knockout over the bar; and a conventional-drying fingerprint is <i>not</i> valid for a press converted to LED-UV.`,
+          `<b>M0</b>: the classic tungsten-like light, with an undefined amount of UV. Most pressrooms, and most of the references they print to, were built on M0, and many still are.`,
+          `<b>M1</b>: D50 light including UV. It reads paper the way a D50 viewing booth shows it. It’s the condition of the current standards (ISO 12647-2:2013, FOGRA51/52, GRACoL 2013), and G7 requires it.`,
+          `<b>M2</b>: UV cut. Reads the paper as if it had no brighteners. Mainly a diagnostic: the gap between M1 and M2 on the paper white shows how much brightener there is.`,
+          `<b>M3</b>: M2 plus a polarizing filter that removes surface gloss, so wet and dry ink read alike. A density tool for the run. Never use it for ΔE against ISO, FOGRA or GRACoL aims, which are measured without polarization.`,
+        ],
+        illustration: 'ill-oba.svg',
+      },
+      {
+        kicker: 'Step 3 · M0 or M1?',
+        headline: 'There’s no wrong answer, only a wrong mix',
+        paragraphs: [
+          `<b>M0 is still perfectly valid</b> for process control when your targets, your press fingerprint and your customers’ specs are in M0 and nobody asks for a certification.`,
+          `<b>Move to M1</b> when a customer specifies it, when you go for G7 or certify against the current ISO 12647-2 data, or when you print on papers loaded with brightener.`,
+          `The one rule: <b>target and measurement use the same M</b>. An M1 reading against an M0 target is a false alarm waiting to happen.`,
         ],
         quiz: {
-          q: "You're running a G7 calibration and checking ΔE against FOGRA aims. Which measurement condition must you NOT use?",
-          options: ['M1 (D50, UV included)', 'M3 (polarized)', 'M0 (legacy tungsten)'],
+          q: 'Pink measures in M1, Red’s old handheld reads M0. They disagree on the paper white only. Most likely cause?',
+          options: [
+            'The press drifted between the two readings',
+            'Different UV content: brighteners react differently under M1 and M0',
+            'Pink’s instrument is broken',
+          ],
           answer: 1,
-          ok: 'Correct — M3 is polarized and density-only; G7 and ISO/GRACoL/FOGRA aims are unpolarized, so use M1.',
-          no: 'M3 is polarized — a density tool. Reference aims are unpolarized; G7 requires M1.',
+          ok: 'Yes. Paper white is where brighteners show. Agree on one M and measure again.',
+          no: 'Look where they disagree: only on white. That points to UV and brighteners, not ink.',
         },
+      },
+      {
+        kicker: 'Step 4 · How Rutherford handles it',
+        headline: 'Switch when your customers are ready',
+        scene: {
+          who: 'blue',
+          text: 'You don’t have to choose today. Run on M0, build your M1 references, and switch when your customers ask for it.',
+        },
+        paragraphs: [
+          `On a Rutherford system, M0 or M1 is <b>a setting in the software</b>. IntelliTrax2 reads two conditions in one scan (M0 and M1, for example) and the SpectroDrive offers M0 to M3, so you switch without touching the hardware.`,
+          `One exception: the first-generation <b>IntelliTrax</b> works to the older standard and stays on M0. If M1 is on your roadmap, that’s the moment to move to IntelliTrax2.`,
+          `<b>Recap.</b> Brighteners make UV matter. M0 still works when your references are in M0. M1 for G7 and the current standards. M2 is a diagnostic, M3 is for density only. Always write down the M.`,
+        ],
       },
     ],
   },
   {
     index: 2,
     num: '03',
-    title: 'Color bars decoded: what to put on the sheet and why',
-    time: '9 min',
-    summary: 'The bar is the bridge between press and measurement.',
+    title: 'The color bar: print it so you can measure it',
+    time: '7 min',
+    summary: 'What goes on the bar, on a sheet and on a web.',
     steps: [
       {
-        kicker: 'Step 1 · What the bar carries',
-        headline: 'No bar, nothing to read',
+        kicker: 'Step 1 · What a bar carries',
+        headline: 'No bar, no number',
+        scene: {
+          who: 'yellow',
+          text: 'Prepress moved the bar 60 mm into the sheet “to keep it safe”. On the label job, the designer shrank it to save substrate. Both jobs come back with no readings. Yellow, from quality, is not amused.',
+        },
         paragraphs: [
-          `A color bar is the strip of patches on every sheet (gripper or tail): solids per ink, percentage tints, gray-balance patches, overprints, and dedicated patches for any spot colors. Without it, automated measurement has nothing to find.`,
-          `Common systems — System Brunner, GMI / Bestcolor, X-Rite Standard, or customer-specific bars — differ in patch sequence, size and special tests. The right one depends on customer requirements and your device.`,
+          `Solids for each ink, a few tints, gray-balance patches, overprints, and a patch for every spot color. Without them, no automated system has anything to read.`,
+          `One rule for everyone: <b>never varnish or coat over the bar</b>. Coating changes gloss, density and L*a*b*, and your targets are defined on bare ink.`,
         ],
         illustration: 'ill-colorbar.svg',
       },
       {
-        kicker: 'Step 2 · The two placement rules',
-        headline: 'Patch height, zone pitch, and the 38 mm edge',
+        kicker: 'Step 2 · On a sheet',
+        headline: 'Across the sheet, one patch per ink zone',
         paragraphs: [
-          `IntelliTrax2 reads patches down to <b>2 mm</b> (Small Spot head; 3 mm Medium). One patch (or group) sits per ink zone at the zone pitch (~30–38 mm by OEM), so the bar spans the full live width — about a metre on B1 — even though each patch is only 3–4 mm wide.`,
-          `Prepress owns two musts: a <b>varnish-free reserve</b> over the bar, and the <b>edge distance</b> — IntelliTrax2 must engage the bar within ~38 mm of the sheet edge. Too far in and it won't scan; too close to the edge and it can't position.`,
+          `The bar runs across the sheet, at the gripper or the tail, with patches repeating for every ink zone (zone width depends on the press, often 30 to 38 mm). Each zone gets its own reading, so each ink key gets its own correction.`,
+          `IntelliTrax2 reads patches down to <b>2 mm</b> high with its small aperture. Keep the bar close to the edge: the scanner must find it within about <b>38 mm</b> of the sheet edge.`,
+        ],
+      },
+      {
+        kicker: 'Step 3 · On a web',
+        headline: 'Along the web, sized for the speed',
+        paragraphs: [
+          `For DeltaOne, the bar runs <b>along the web</b>, in the printing direction, with a start mark so the system knows where it begins. It can mix CMYK, extended gamut and spot patches.`,
+          `Patches can be as small as <b>2 × 2 mm</b> at low speed and get longer as the press goes faster, for example <b>2 × 5 mm at 240 m/min</b>. Use the bar layout made for your press and speed; don’t redraw it.`,
+          `<b>Recap.</b> A bar on every job, never varnished. Sheet: across, one patch per ink zone, near the edge. Web: along the web, sized for the press speed.`,
         ],
         quiz: {
-          q: 'Prepress pushes the color bar 60 mm in from the sheet edge "to keep it safe". What breaks?',
+          q: 'A designer redraws the DeltaOne bar with 2 × 2 mm patches for a job that runs at 240 m/min. What happens?',
           options: [
-            'Nothing — further in is always safer',
-            'The scan head must engage the bar within ~38 mm of the edge, so it can\'t position reliably',
-            'The patches become too tall to read',
+            'Nothing, smaller is always better',
+            'The patches are too short for that speed, so readings become unreliable or fail',
+            'The press slows down automatically',
           ],
           answer: 1,
-          ok: 'Right — it\'s an edge-distance constraint (~38 mm), not a safety margin.',
-          no: 'It\'s about the scanner\'s edge distance (~38 mm) — too far in and the head can\'t engage the bar.',
+          ok: 'Right. Faster web, longer patches: use the bar made for that speed.',
+          no: 'At speed, the camera needs a longer patch in the running direction: about 2 × 5 mm at 240 m/min.',
         },
       },
     ],
@@ -114,37 +192,56 @@ const modules: AppModule[] = [
   {
     index: 3,
     num: '04',
-    title: 'Repeatability vs reproducibility',
-    time: '8 min',
-    summary: 'The trap that costs you hours.',
+    title: 'Two instruments, two numbers',
+    time: '7 min',
+    summary: 'Repeatability, agreement between instruments, and who is right.',
     steps: [
       {
-        kicker: 'Step 1 · Two different numbers',
-        headline: 'Same instrument twice, vs two different instruments',
+        kicker: 'Step 1 · Same sheet, two numbers',
+        headline: 'Don’t touch the press yet',
+        scene: {
+          who: 'yellow',
+          text: 'Yellow holds two reports. The press reads ΔE00 1.3, Pink’s lab reads 1.8 on the very same sheet. Red is ready to re-ink. Blue: “Don’t touch the press yet.”',
+        },
         paragraphs: [
-          `<b>Repeatability</b> is the variation when one instrument reads the same sample repeatedly — intrinsic to the device (a modern handheld ≈ 0.05 ΔE on white; IntelliTrax2 ≤ 0.15 ΔE). <b>Reproducibility</b> is the variation across <i>different</i> instruments, operators, times — always worse. The metric is Inter-Instrument Agreement (IIA): a good spectro reports ≈ 0.3 ΔE average / 0.45 max.`,
-          `Why it bites: the brand owner's handheld in their lab will read a different number than your scanner at the press — on the <i>same</i> sample. Miss this and you'll chase a phantom drift that is really just instrument disagreement.`,
+          `<b>Repeatability</b>: the same instrument reads the same patch again and again. Good instruments stay around 0.1 ΔE.`,
+          `<b>Reproducibility</b>: two different instruments read the same patch. That gap is always bigger. Its name is <b>inter-instrument agreement</b> (IIA), typically around 0.3 ΔE on average for good instruments. DeltaOne is specified at 0.1 ΔE repeatability and 0.3 ΔE agreement.`,
         ],
         illustration: 'ill-repeat.svg',
       },
       {
-        kicker: 'Step 2 · The fix',
-        headline: 'Pick a reference instrument, document the offsets, recertify',
+        kicker: 'Step 2 · Pick a reference',
+        headline: 'One reference instrument per customer',
         paragraphs: [
-          `The fix is procedural: name the reference instrument for each customer relationship, calibrate the others against it on known samples, and document the offsets. Then you can say "our scanner read 1.3, our handheld 1.6, both agree with your 1.8 within IIA."`,
-          `The other fix is hardware: scheduled <b>annual recertification</b> of every device. UV LED sources drift, sensors age, tile references wear — skip it and you slowly walk away from your own reference.`,
+          `For each customer, decide which instrument is the reference, often the brand owner’s. Measure a few known samples on every device, write down the offsets, and align your devices to the reference.`,
+          `DeltaOne has an <b>instrument matching</b> function for exactly this: it aligns its readings to a reference handheld (X-Rite, Techkon, Nix and others).`,
+          `Then you can say: “our press read 1.3, our handheld 1.6, your lab 1.8, all within agreement.”`,
         ],
         quiz: {
-          q: 'Your scanner reads ΔE00 1.3; the brand owner\'s handheld reads 1.8 on the same sheet. First conclusion?',
+          q: 'Press 1.3, brand owner 1.8, same sheet. First move?',
           options: [
-            'The press drifted overnight',
-            'Likely inter-instrument agreement — different instruments disagree; establish a reference and document the offset',
-            'Your scanner is broken',
+            'Add ink until the press reads 1.8',
+            'Check the M condition and the instrument offsets before touching the press',
+            'Ask the brand owner to buy your instrument',
           ],
           answer: 1,
-          ok: 'Exactly — IIA (~0.3–0.45 ΔE) explains the gap. Reference instrument + documented offsets settle it.',
-          no: 'Same sheet, two instruments → that\'s reproducibility/IIA, not press drift.',
+          ok: 'Exactly. Same sheet, two numbers: that’s the instruments talking, not the press.',
+          no: 'The sheet didn’t change between the two readings. Check the M and instrument agreement first.',
         },
+      },
+      {
+        kicker: 'Step 3 · Keep instruments honest',
+        headline: 'Calibrate, recertify, repeat',
+        paragraphs: [
+          `Lights age, white references get dirty, sensors drift. Calibrate on the white reference as the maker asks (DeltaOne does it automatically on a white ceramic) and get handhelds and scanners <b>recertified every year</b>. Skip it and you slowly walk away from your own reference.`,
+          `<b>Recap.</b> One reference instrument per customer. Align everything to it. Recertify every year.`,
+        ],
+      },
+      {
+        kicker: 'From the pressroom',
+        headline: 'Wauters B’Pack: advancing color precision',
+        paragraphs: [`How a packaging printer made measured color the rule, not the exception.`],
+        video: { youtubeId: 'yAZbtKzN_j0', title: 'Wauters B’Pack, Advancing color precision' },
       },
     ],
   },
