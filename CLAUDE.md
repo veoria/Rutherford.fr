@@ -52,6 +52,7 @@ Client names also stay verbatim: **Avery Dennison**, **DS Smith**, **Huhtamaki**
   - **pt** → European Portuguese (pt-PT): formal third person (« o seu / a sua »), never `tu`; no Brazilian forms (equipa, ecrã, ficheiro, telemóvel — not equipe, tela, arquivo, celular).
   - **it, details** → body copy in Lei with a lowercase courtesy pronoun (« la sua macchina »), never `voi` / `vostro` and never `tu / tuo / ti`. Short CTA imperatives (Scopri, Richiedi, Calcola, Verifica) are an accepted UI convention, but never combine a `tu` imperative with a possessive in the same string — use a noun form instead (« Calcola il risparmio », « Verifica gratuita dell'idoneità »).
   - **fr** → « closed-loop » always keeps its hyphen (never « closed loop »).
+- **Exception: Rutherford Academy course content** (`data/academy-steps/`, `data/academy-lessons.ts`, `data/academy-quizzes.ts`, decided by FX on 14 Nov 2026). Courses speak close and direct: informal "you" in English, and when translated **fr → tu, de → du, it → tu, es → tú, pt → tu**. Pressroom scenes are told by the Academy characters (the ColorLoop agents, `public/academy/agents/`). The rest of the site, including the Academy catalogue pages and the player chrome, keeps the formal address above.
 - **No emoji clutter**. The 🌱 in the hero kicker is the only intentional one — don't add others without explicit ask.
 
 ---

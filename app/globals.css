@@ -12569,6 +12569,82 @@ a.blog-card-image:hover img {
 .academy-capture-hint {
   font-style: italic;
 }
+/* Academy characters: pressroom scene (avatar + speech bubble). */
+.academy-scene {
+  display: flex;
+  align-items: flex-end;
+  gap: 14px;
+  margin: 0 0 22px;
+}
+.academy-scene-avatar {
+  width: 72px;
+  height: 72px;
+  flex: none;
+  object-fit: contain;
+}
+.academy-player-inner p.academy-scene-bubble {
+  position: relative;
+  margin: 0 0 8px;
+  padding: 14px 18px;
+  border-radius: 18px 18px 18px 4px;
+  background: var(--bg-soft, #f5f5f2);
+  border: 1px solid var(--line);
+  font-size: 0.96rem;
+  line-height: 1.55;
+  font-style: italic;
+  color: #2c333b;
+}
+.academy-scene-blue .academy-scene-bubble { border-left: 4px solid #19aae3; }
+.academy-scene-red .academy-scene-bubble { border-left: 4px solid #f50c0c; }
+.academy-scene-pink .academy-scene-bubble { border-left: 4px solid #faa1db; }
+.academy-scene-yellow .academy-scene-bubble { border-left: 4px solid #fbcb05; }
+.academy-scene-green .academy-scene-bubble { border-left: 4px solid #64a932; }
+/* Customer testimonial video (click to load). */
+.academy-video {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #111;
+  margin: 6px 0 22px;
+  border: 0;
+  padding: 0;
+}
+.academy-video iframe,
+.academy-video img {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  object-fit: cover;
+  display: block;
+}
+.academy-video-poster {
+  cursor: pointer;
+}
+.academy-video-play {
+  position: absolute;
+  inset: 50% auto auto 50%;
+  transform: translate(-50%, -50%);
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--accent);
+  display: grid;
+  place-items: center;
+  font-size: 1.4rem;
+}
+.academy-video-label {
+  position: absolute;
+  left: 14px;
+  bottom: 12px;
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+}
 .academy-player-quiz {
   margin-top: 8px;
 }

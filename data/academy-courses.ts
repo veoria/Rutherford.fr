@@ -32,16 +32,16 @@ export const FREE_COURSES: AcademyCourse[] = [
   {
     id: 'measurement-essentials',
     tone: 'free',
-    title: 'Press-Side Measurement Essentials',
-    duration: '35 min',
+    title: 'Measuring color on press',
+    duration: '30 min',
     modules: 4,
-    description: 'From manual densitometer to automated scanning.',
+    description: 'Sheet or web, M0 or M1: how color gets measured, and how to trust the number.',
     videoSrc: '/videos/academy/measurement-essentials.mp4',
     syllabus: [
-      'Handheld vs automated scanning vs true inline: pros, cons, cost',
-      'The geometry that matters: 45°/0°, polarization, UV filtering',
-      'Color bars decoded: what to put on the sheet and why',
-      'Repeatability vs reproducibility: the trap that costs you hours',
+      'Three ways to read a color: handheld, off-press scanning, true inline',
+      'M0, M1, M2, M3: same sheet, four numbers',
+      'The color bar: print it so you can measure it',
+      'Two instruments, two numbers',
     ],
   },
   {
