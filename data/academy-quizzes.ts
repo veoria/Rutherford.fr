@@ -190,6 +190,30 @@ export const COURSE_QUIZZES: Record<string, CourseQuiz> = {
         moduleRef: 2,
       },
       {
+        id: 'q6b',
+        prompt: 'Why are M2 and M3 the wrong choice for a ΔE against FOGRA or GRACoL aims?',
+        options: [
+          'They are too slow for production',
+          'M2 ignores the brighteners and M3 removes surface gloss, so neither reads the sheet the way the aims were measured',
+          'They only work on uncoated paper',
+        ],
+        correct: [1],
+        explanation: 'The aims are measured in M1 (or M0 for older data), without polarization. M2 is a brightener diagnostic, M3 a wet-ink density tool.',
+        moduleRef: 2,
+      },
+      {
+        id: 'q6c',
+        prompt: 'The same yellow solid reads 1.35 on your densitometer and 1.00 on your US customer’s. The sheet looks right. Most likely reason?',
+        options: [
+          'One of the two instruments is faulty',
+          'Different density status: Status E in Europe, Status T in North America',
+          'The ink dried between the two readings',
+        ],
+        correct: [1],
+        explanation: 'Status E uses a narrower blue filter than Status T, so yellow reads clearly higher. Always state the status with a density target.',
+        moduleRef: 2,
+      },
+      {
         id: 'q7',
         prompt: 'Why must the color bar never be varnished?',
         options: [

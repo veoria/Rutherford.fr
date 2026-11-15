@@ -77,15 +77,15 @@ const modules: AppModule[] = [
     index: 1,
     num: '02',
     title: 'M0, M1, M2, M3: same sheet, four numbers',
-    time: '8 min',
-    summary: 'Which measurement condition, when, and how to switch.',
+    time: '15 min',
+    summary: 'Which light, which filter, which numbers: read the fine print behind every value.',
     steps: [
       {
         kicker: 'Step 1 · Why four conditions',
         headline: 'Before anyone argues, ask: which M?',
         scene: {
           who: 'pink',
-          text: 'Pink, the brand owner, calls: “Your white is 2 ΔE off.” Red measured the same sheet this morning and found it perfect. Blue steps in: “Before anyone argues, which M?”',
+          text: 'Pink, from quality control, takes the call: the customer’s lab says your white is 2 ΔE off. Red measured the same sheet this morning and found it perfect. Blue steps in: “Before anyone argues, which M?”',
         },
         paragraphs: [
           `Most papers contain <b>optical brighteners</b>. They take in UV light and give it back as blue, which makes white look whiter. So the amount of UV in the instrument’s light changes the number you read, most of all on the paper white and light tints.`,
@@ -94,18 +94,88 @@ const modules: AppModule[] = [
         illustration: 'm-conditions.svg',
       },
       {
-        kicker: 'Step 2 · The four, in one line each',
+        kicker: 'Step 2 · D50 and the 2° observer',
+        headline: 'A color number always comes with a light and an eye',
+        scene: {
+          who: 'yellow',
+          text: 'L*a*b* is not a property of the ink alone. It’s the ink, seen under one light, by one standard eye. Change either and the numbers move.',
+        },
+        paragraphs: [
+          `The instrument reads a <b>spectrum</b>: how much light the sheet reflects at each wavelength. To turn it into L*a*b*, the software needs two more things: an <b>illuminant</b> (the light you pretend the sheet is seen under) and an <b>observer</b> (a standard model of the human eye).`,
+          `In graphic arts the pair is <b>D50 and the 2° observer</b>. D50 is a daylight at about 5000 K, the light of your viewing booth (ISO 3664). Paper, textile and screen people often use D65 and the 10° observer. Same spectrum, different numbers: never compare a D50/2° value with a D65/10° one.`,
+          `Don’t mix the two ideas. <b>D50/2°</b> is the math applied to the spectrum. <b>M0 to M3</b> describe the real lamp inside the instrument, and above all its UV. You need both to know what a number means.`,
+        ],
+      },
+      {
+        kicker: 'Step 3 · The four, in one line each',
         headline: 'M0, M1, M2, M3',
         paragraphs: [
           `<b>M0</b>: the classic tungsten-like light, with an undefined amount of UV. Most pressrooms, and most of the references they print to, were built on M0, and many still are.`,
           `<b>M1</b>: D50 light including UV. It reads paper the way a D50 viewing booth shows it. It’s the condition of the current standards (ISO 12647-2:2013, FOGRA51/52, GRACoL 2013), and G7 requires it.`,
-          `<b>M2</b>: UV cut. Reads the paper as if it had no brighteners. Mainly a diagnostic: the gap between M1 and M2 on the paper white shows how much brightener there is.`,
-          `<b>M3</b>: M2 plus a polarizing filter that removes surface gloss, so wet and dry ink read alike. A density tool for the run. Never use it for ΔE against ISO, FOGRA or GRACoL aims, which are measured without polarization.`,
+          `<b>M2</b>: UV cut. Reads the paper as if it had no brighteners.`,
+          `<b>M3</b>: M2 plus a polarizing filter that removes surface gloss, so wet and dry ink read alike.`,
         ],
         illustration: 'ill-oba.svg',
       },
       {
-        kicker: 'Step 3 · M0 or M1?',
+        kicker: 'Step 4 · Why not M2 for color',
+        headline: 'M2 measures a paper nobody sees',
+        scene: {
+          who: 'yellow',
+          text: 'Cut the UV and the brighteners go to sleep. Your instrument now describes a duller, yellower paper than the one on your customer’s desk.',
+        },
+        paragraphs: [
+          `Under a D50 booth, daylight or shop lighting, there is UV, the brighteners glow and the paper looks blue-white. <b>M2 switches that glow off</b>. The paper white reads yellower (a higher b*), and so do the light tints printed on it.`,
+          `Two consequences. The number no longer matches <b>what the eye sees</b>. And it no longer matches <b>the aims you print to</b>, which were measured in M1 (current standards) or M0 (older ones). A ΔE computed from an M2 reading against those aims is off before the press prints a single sheet.`,
+          `M2 still earns its place as a <b>diagnostic</b>: the gap between M1 and M2 on the paper white tells you how much brightener a stock contains. Handy when a new paper lot suddenly looks different.`,
+        ],
+      },
+      {
+        kicker: 'Step 5 · Why not M3 for color',
+        headline: 'M3 removes the gloss your eye sees',
+        paragraphs: [
+          `Wet ink is glossy. As it dries, the surface gets rougher, scatters more light, and the density reading drops: that’s <b>dry-back</b>. The polarizing filters of M3 block that surface reflection, so <b>wet and dry ink read almost the same</b>. Great for steering density during the run.`,
+          `But that surface reflection is part of what you see. Take it away and every color reads <b>darker and more saturated</b> than it looks, and solid densities come out higher than without the filter.`,
+          `The aims of ISO 12647-2, FOGRA and GRACoL are measured <b>without polarization</b>. So an M3 L*a*b* or ΔE against them means nothing. Keep M3 for <b>density on wet ink</b>, and only against targets that were also set in M3.`,
+        ],
+        quiz: {
+          q: 'Red checks a solid against the FOGRA51 aim and reads ΔE00 4, with the polarizing filter on. What do you tell him?',
+          options: [
+            'The press is 4 ΔE off, correct the ink keys',
+            'The reading is M3 and the aim is M1: measure again without polarization before touching anything',
+            'FOGRA51 is wrong for this paper',
+          ],
+          answer: 1,
+          ok: 'Exactly. Same M on both sides first, then you decide.',
+          no: 'Look at the filter. A polarized reading can’t be compared with an aim measured without polarization.',
+        },
+      },
+      {
+        kicker: 'Step 6 · Density has its fine print too',
+        headline: 'Status E, Status T: same ink, two densities',
+        scene: {
+          who: 'red',
+          text: 'Red reads 1.35 on the yellow solid. The spec from the US customer says 1.00. The sheet looks right. Who’s lying?',
+        },
+        paragraphs: [
+          `Nobody. Density tells you how much light the ink absorbs, seen <b>through a color filter</b>: red for cyan, green for magenta, blue for yellow. The exact shape of those filters is called the <b>status</b> (ISO 5-3).`,
+          `<b>Status T</b> uses wide filters. It’s the habit in North America. <b>Status E</b> is the European habit: same thing for cyan, magenta and black, but a <b>narrower blue filter for yellow</b>. On the same sheet, yellow reads clearly higher in Status E, often around 0.3. You may also meet <b>Status I</b> (very narrow filters) on some instruments.`,
+          `Two more settings travel with a density: <b>absolute or paper-relative</b> (paper white subtracted or not), and <b>polarized or not</b> (that’s M3 again). A density target is only complete when it says all three.`,
+        ],
+        quiz: {
+          q: 'A density target for yellow says “1.00”. What is missing before you can use it?',
+          options: [
+            'Nothing, density is density',
+            'The status (T or E), paper-relative or absolute, and whether a polarizing filter is used',
+            'The ΔE tolerance',
+          ],
+          answer: 1,
+          ok: 'Yes. Without those three, 1.00 can be right or far off.',
+          no: 'Remember Red’s yellow: 1.35 in Status E, 1.00 in Status T, same sheet.',
+        },
+      },
+      {
+        kicker: 'Step 7 · M0 or M1?',
         headline: 'There’s no wrong answer, only a wrong mix',
         paragraphs: [
           `<b>M0 is still perfectly valid</b> for process control when your targets, your press fingerprint and your customers’ specs are in M0 and nobody asks for a certification.`,
@@ -113,11 +183,11 @@ const modules: AppModule[] = [
           `The one rule: <b>target and measurement use the same M</b>. An M1 reading against an M0 target is a false alarm waiting to happen.`,
         ],
         quiz: {
-          q: 'Pink measures in M1, Red’s old handheld reads M0. They disagree on the paper white only. Most likely cause?',
+          q: 'The customer’s lab measures in M1, Red’s old handheld reads M0. They disagree on the paper white only. Most likely cause?',
           options: [
             'The press drifted between the two readings',
             'Different UV content: brighteners react differently under M1 and M0',
-            'Pink’s instrument is broken',
+            'The lab’s instrument is broken',
           ],
           answer: 1,
           ok: 'Yes. Paper white is where brighteners show. Agree on one M and measure again.',
@@ -125,7 +195,20 @@ const modules: AppModule[] = [
         },
       },
       {
-        kicker: 'Step 4 · How Rutherford handles it',
+        kicker: 'Step 8 · The ID card of a number',
+        headline: 'Write the fine print next to every target',
+        scene: {
+          who: 'blue',
+          text: 'A number without its conditions is a rumor. Give every target its ID card and most color arguments end before they start.',
+        },
+        paragraphs: [
+          `For <b>color</b>: the M condition (M0 or M1), the illuminant and observer (D50/2°), the ΔE formula (ΔE00 today, ΔE76 in older specs) and the backing under the sheet (white or black).`,
+          `For <b>density</b>: the status (E or T), absolute or paper-relative, polarized or not.`,
+          `Put it on the job ticket, in the customer spec and in the measuring software. When two numbers disagree, compare the ID cards before you compare the sheets.`,
+        ],
+      },
+      {
+        kicker: 'Step 9 · How Rutherford handles it',
         headline: 'Switch when your customers are ready',
         scene: {
           who: 'blue',
@@ -134,7 +217,7 @@ const modules: AppModule[] = [
         paragraphs: [
           `On a Rutherford system, M0 or M1 is <b>a setting in the software</b>. IntelliTrax2 reads two conditions in one scan (M0 and M1, for example) and the SpectroDrive offers M0 to M3, so you switch without touching the hardware.`,
           `One exception: the first-generation <b>IntelliTrax</b> works to the older standard and stays on M0. If M1 is on your roadmap, that’s the moment to move to IntelliTrax2.`,
-          `<b>Recap.</b> Brighteners make UV matter. M0 still works when your references are in M0. M1 for G7 and the current standards. M2 is a diagnostic, M3 is for density only. Always write down the M.`,
+          `<b>Recap.</b> A color number needs its light (M), its math (D50/2°) and its formula. M0 still works when your references are in M0. M1 for G7 and the current standards. M2 is a brightener diagnostic and M3 a wet-ink density tool: neither is for color against standard aims. Density needs its status, E or T. Always write the fine print down.`,
         ],
       },
     ],

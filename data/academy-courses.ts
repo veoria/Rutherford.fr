@@ -33,7 +33,7 @@ export const FREE_COURSES: AcademyCourse[] = [
     id: 'measurement-essentials',
     tone: 'free',
     title: 'Measuring color on press',
-    duration: '30 min',
+    duration: '40 min',
     modules: 4,
     description: 'Sheet or web, M0 or M1: how color gets measured, and how to trust the number.',
     videoSrc: '/videos/academy/measurement-essentials.mp4',
