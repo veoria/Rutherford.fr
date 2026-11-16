@@ -1,5 +1,373 @@
 [
   {
+    "slug": "cost-of-one-makeready",
+    "title": "The cost of one makeready",
+    "excerpt": "How to calculate what one makeready really costs on an offset press: the formula, a worked packaging example, and what shorter makereadies are worth over a year.",
+    "lead": "One makeready costs the paper it wastes plus the press time it takes. On a B1 packaging press, a two-hour makeready with 800 waste sheets comes to about €482 before ink and plates. Multiply by three makereadies a day and the yearly figure explains why makeready is the first place to look for savings.",
+    "image": "/images/blog/cost-of-one-makeready-team.jpg",
+    "publishedAt": "2026-12-03",
+    "category": "Production",
+    "paragraphs": [
+      "Printers know their hourly press rate and their paper price. Few put the two together for a single makeready, and fewer multiply it by the number of makereadies in a year. The formula is simple, and it is the basis of our [ROI calculator](/roi).",
+      "Take a B1 sheet of 1,000 × 707 mm, 280 g/m² board at €1.15/kg, and a press rate of €150 per hour. One sheet costs about €0.23. A typical packaging makeready runs 120 minutes and wastes 800 sheets.",
+      "ColorLoop targets up to 55% less makeready waste and up to 38% less makeready time in our ROI model. Applied to the example, one makeready drops to about €268, a saving of about €214. At three makereadies a day over 225 production days, that is about €145,000 a year. These are model figures with \"up to\" targets, not a guarantee: your own numbers decide."
+    ],
+    "body": [
+      {
+        "type": "p",
+        "text": "Printers know their hourly press rate and their paper price. Few put the two together for a single makeready, and fewer multiply it by the number of makereadies in a year. The formula is simple, and it is the basis of our [ROI calculator](/roi)."
+      },
+      {
+        "type": "h2",
+        "text": "The formula"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "Sheet cost = sheet width (m) × sheet length (m) × grammage (kg/m²) × paper price (€/kg).",
+          "Paper cost of one makeready = waste sheets × sheet cost.",
+          "Time cost of one makeready = makeready minutes ÷ 60 × press hourly rate.",
+          "Cost of one makeready = paper cost + time cost. Ink, plates and washup come on top."
+        ]
+      },
+      {
+        "type": "h2",
+        "text": "A worked example: folding carton on a B1 press"
+      },
+      {
+        "type": "p",
+        "text": "Take a B1 sheet of 1,000 × 707 mm, 280 g/m² board at €1.15/kg, and a press rate of €150 per hour. One sheet costs about €0.23. A typical packaging makeready runs 120 minutes and wastes 800 sheets."
+      },
+      {
+        "type": "ul",
+        "items": [
+          "Paper: 800 sheets × €0.23 = €182.",
+          "Time: 120 minutes at €150/h = €300.",
+          "One makeready: about €482."
+        ]
+      },
+      {
+        "type": "figure",
+        "src": "/images/blog/cost-of-one-makeready-console-32.jpg",
+        "alt": "Press operators discussing a job at the offset console",
+        "caption": "Most of the cost of a makeready is time at the console, not paper."
+      },
+      {
+        "type": "h2",
+        "text": "What a shorter makeready is worth"
+      },
+      {
+        "type": "p",
+        "text": "ColorLoop targets up to 55% less makeready waste and up to 38% less makeready time in our ROI model. Applied to the example, one makeready drops to about €268, a saving of about €214. At three makereadies a day over 225 production days, that is about €145,000 a year. These are model figures with \"up to\" targets, not a guarantee: your own numbers decide."
+      },
+      {
+        "type": "h2",
+        "text": "Where the time goes"
+      },
+      {
+        "type": "p",
+        "text": "Most makeready time is spent on color: pulling a sheet, measuring, moving the [ink keys](/glossary#ink-key), pulling again. [Ink presetting from CIP3/CIP4 data](/blog/cip3-cip4-ink-presetting-makeready) shortens the start, and [closed loop color control](/closed-loop-color-control) shortens the loop that follows. Our article on [reducing makeready waste](/blog/reduce-makeready-waste-offset-press) goes through the other levers."
+      },
+      {
+        "type": "h3",
+        "text": "What is a good makeready time on an offset press?"
+      },
+      {
+        "type": "p",
+        "text": "It depends on the press, the substrate and the job. Commercial jobs on B2 presses often take around 30 minutes, packaging jobs on board much longer. The useful number is your own average, measured over a month."
+      },
+      {
+        "type": "h3",
+        "text": "Should press time count at the full hourly rate?"
+      },
+      {
+        "type": "p",
+        "text": "Yes, when the press is your bottleneck: every minute of makeready is a minute the press does not sell. If the press is underloaded, count the operator and energy cost instead."
+      },
+      {
+        "type": "h3",
+        "text": "How do I get my own figure?"
+      },
+      {
+        "type": "p",
+        "text": "Enter your press format, paper, makereadies per day and current waste in the [ROI calculator](/roi). It applies the same formula."
+      }
+    ],
+    "i18n": {},
+    "originalUrl": "https://rutherford.fr/blog/cost-of-one-makeready",
+    "sources": [
+      {
+        "label": "Rutherford ROI calculator: model and assumptions",
+        "href": "https://rutherford.fr/roi"
+      },
+      {
+        "label": "ColorLoop: makeready time and waste targets",
+        "href": "https://colorloop.ai"
+      }
+    ],
+    "review": true
+  },
+  {
+    "slug": "g7-calibration-step-by-step",
+    "title": "G7 calibration, step by step",
+    "excerpt": "How a G7 calibration runs on a production offset press: press preparation, the P2P target, NPDC and gray balance curves, verification, and how to keep the result in production.",
+    "lead": "A G7 calibration aligns a press to a shared gray balance and tonal target, so neutral grays and tone reproduction look the same from one press to the next. It takes a prepared press, one or two test runs and new plate curves. Keeping it in production is the harder part.",
+    "image": "/images/blog/g7-calibration-console-32.jpg",
+    "publishedAt": "2026-11-26",
+    "category": "Standards",
+    "paragraphs": [
+      "[G7](/glossary#g7) is a calibration method from Idealliance, now under PRINTING United Alliance. It does not tell the press what dot gain to hit. It defines how neutral grays and overall tone should look, and lets each press reach that appearance with its own plate curves. That is why the same file can look alike on different presses, papers and processes.",
+      "A calibration only fixes what is stable. Before printing anything, the press has to be in normal production condition: rollers and blankets in good state, fountain solution under control, the production paper and inks loaded, and plates linear, without any old correction curves.",
+      "Solid ink densities or CIELAB values are then brought to the target of the chosen reference, typically GRACoL 2013 for coated stock in North America. Our article on [G7 for European exporters](/blog/g7-calibration-european-printers-north-america) explains how close, and how different, GRACoL 2013 and Fogra51 are."
+    ],
+    "body": [
+      {
+        "type": "p",
+        "text": "[G7](/glossary#g7) is a calibration method from Idealliance, now under PRINTING United Alliance. It does not tell the press what dot gain to hit. It defines how neutral grays and overall tone should look, and lets each press reach that appearance with its own plate curves. That is why the same file can look alike on different presses, papers and processes."
+      },
+      {
+        "type": "h2",
+        "text": "Step 1: get the press ready"
+      },
+      {
+        "type": "p",
+        "text": "A calibration only fixes what is stable. Before printing anything, the press has to be in normal production condition: rollers and blankets in good state, fountain solution under control, the production paper and inks loaded, and plates linear, without any old correction curves."
+      },
+      {
+        "type": "p",
+        "text": "Solid ink densities or CIELAB values are then brought to the target of the chosen reference, typically GRACoL 2013 for coated stock in North America. Our article on [G7 for European exporters](/blog/g7-calibration-european-printers-north-america) explains how close, and how different, GRACoL 2013 and Fogra51 are."
+      },
+      {
+        "type": "h2",
+        "text": "Step 2: print and measure the P2P target"
+      },
+      {
+        "type": "p",
+        "text": "The press prints a calibration form that carries the P2P target, a chart of gray and single-color tints designed for G7. Several sheets are pulled at stable color, and the target is measured with a spectrophotometer, usually under the [M1 measurement condition](/blog/m0-m1-m2-m3-measurement-conditions-print)."
+      },
+      {
+        "type": "figure",
+        "src": "/images/blog/g7-calibration-sheet-check-32.jpg",
+        "alt": "Printer checking a printed sheet on the press console",
+        "caption": "The calibration sheets are pulled only once color is stable across the sheet."
+      },
+      {
+        "type": "h2",
+        "text": "Step 3: compute the curves"
+      },
+      {
+        "type": "p",
+        "text": "G7 software compares the measured grays with the G7 targets. It looks at two things: the neutral print density curve (NPDC), which describes how dark the grays get from paper to solid, and [gray balance](/glossary#gray-balance), the a* and b* values that should stay neutral along the scale. From the gap, it computes one correction curve per ink."
+      },
+      {
+        "type": "h2",
+        "text": "Step 4: make new plates and verify"
+      },
+      {
+        "type": "p",
+        "text": "The curves go into the RIP, new plates are made, and the form is printed again. The verification run shows whether the grays now meet G7. Depending on the level aimed for, the check covers gray balance and tonality only (Grayscale), adds the solids and overprints of a reference (Targeted), or the full color space of the reference (Colorspace)."
+      },
+      {
+        "type": "figure",
+        "src": "/images/blog/g7-calibration-ink-zones-32.jpg",
+        "alt": "Printed sheet on the press console above the ink zone scale",
+        "caption": "Each ink zone on the console scale is a correction the press can make, if the color bar measures it."
+      },
+      {
+        "type": "h2",
+        "text": "Step 5: keep it in production"
+      },
+      {
+        "type": "p",
+        "text": "A calibration is a picture of one day. Paper batches change, rollers age, and the gray balance drifts. Facilities that hold G7 over time measure the [color bar](/glossary#color-bar) on every job and correct the ink keys against the same targets. MeasureColor, for example, is listed by Idealliance as a G7 press control system. With [closed loop color control](/closed-loop-color-control), those corrections go straight to the console instead of waiting for the operator."
+      },
+      {
+        "type": "h2",
+        "text": "From calibration to G7 Master qualification"
+      },
+      {
+        "type": "p",
+        "text": "A printer that wants the recognition goes through G7 Master Facility Qualification. The usual route is to work with a certified G7 Expert, calibrate, print verification sheets and submit the samples and measurements to an independent laboratory. The qualification covers the facility and the devices submitted, and has to be renewed every year."
+      },
+      {
+        "type": "h3",
+        "text": "How long does a G7 calibration take?"
+      },
+      {
+        "type": "p",
+        "text": "On a well prepared press, the test runs and the plate change usually fit in one day. Preparing the press, and fixing what the first run reveals, can take longer."
+      },
+      {
+        "type": "h3",
+        "text": "Do I need a G7 Expert to calibrate?"
+      },
+      {
+        "type": "p",
+        "text": "Not to calibrate, but G7 Master qualification and its yearly renewal go through a certified G7 Expert or G7+ Expert."
+      },
+      {
+        "type": "h3",
+        "text": "Does G7 replace ISO 12647-2?"
+      },
+      {
+        "type": "p",
+        "text": "No. The two approaches control different things and many printers combine them. We compared them in [G7 vs ISO 12647](/blog/g7-vs-iso-12647-offset-color)."
+      }
+    ],
+    "i18n": {},
+    "originalUrl": "https://rutherford.fr/blog/g7-calibration-step-by-step",
+    "sources": [
+      {
+        "label": "PRINTING United Alliance: G7 Master Facility Qualification",
+        "href": "https://www.printing.org/library/technical-excellence/certifications/g7-master-facility-qualification"
+      },
+      {
+        "label": "Idealliance: G7 Press Control System Application Data Sheet, MeasureColor",
+        "href": "https://idealliance.org/wp-content/uploads/2023/06/G7_PressControl_ADS_ColorwareMeasureColor-v1.04-04.2018.pdf"
+      },
+      {
+        "label": "ICC: Characterization data registry (GRACoL 2013 / CRPC6, FOGRA51)",
+        "href": "https://www.color.org/registry/index.xalter"
+      }
+    ],
+    "review": true
+  },
+  {
+    "slug": "expanded-gamut-flexo-fixed-palette",
+    "title": "Expanded gamut in flexo",
+    "excerpt": "Expanded gamut flexo (CMYKOGV) replaces most spot inks with a fixed seven-color palette. What it saves, what it demands from the press, and when it pays off.",
+    "lead": "Expanded gamut flexo prints most brand colors from one fixed set of seven inks: cyan, magenta, yellow, black, orange, green and violet. The ink stays in the press from job to job, so the savings come from changeovers, washups and ink stock, not from the colors themselves. It only works on a press that holds its color as tightly as an offset line.",
+    "image": "/images/blog/expanded-gamut-flexo-press-32.jpg",
+    "publishedAt": "2026-11-19",
+    "category": "Color management",
+    "paragraphs": [
+      "Flexo converters print a lot of spot colors. Every new brand color means a new ink to formulate, ship, store and load, a plate set to make, and a washup when the job ends. [Expanded gamut](/glossary#extended-gamut) printing, also called ECG or fixed palette printing, attacks that cost directly: the press keeps the same seven inks in its units and simulates most spot colors from them.",
+      "The palette is CMYK plus orange, green and violet, often written CMYKOGV. The three extra inks push the printable gamut toward the oranges, greens and blues that four-color process cannot reach. Separation software converts each spot color into a mix of the seven inks, and the press prints it as process.",
+      "In flexo the term is used for both narrow web labels and wide web packaging. The Flexographic Technical Association publishes ink and hue angle guidance for CMYKOGV sets in its FIRST specification, with variants for water-based, solvent and UV inks."
+    ],
+    "body": [
+      {
+        "type": "p",
+        "text": "Flexo converters print a lot of spot colors. Every new brand color means a new ink to formulate, ship, store and load, a plate set to make, and a washup when the job ends. [Expanded gamut](/glossary#extended-gamut) printing, also called ECG or fixed palette printing, attacks that cost directly: the press keeps the same seven inks in its units and simulates most spot colors from them."
+      },
+      {
+        "type": "h2",
+        "text": "What expanded gamut means in flexo"
+      },
+      {
+        "type": "p",
+        "text": "The palette is CMYK plus orange, green and violet, often written CMYKOGV. The three extra inks push the printable gamut toward the oranges, greens and blues that four-color process cannot reach. Separation software converts each spot color into a mix of the seven inks, and the press prints it as process."
+      },
+      {
+        "type": "p",
+        "text": "In flexo the term is used for both narrow web labels and wide web packaging. The Flexographic Technical Association publishes ink and hue angle guidance for CMYKOGV sets in its FIRST specification, with variants for water-based, solvent and UV inks."
+      },
+      {
+        "type": "figure",
+        "src": "/images/blog/expanded-gamut-flexo-units-32.jpg",
+        "alt": "Flexo printing units loaded with process inks on a narrow web press",
+        "caption": "With a fixed palette, the inks stay in the units from one job to the next."
+      },
+      {
+        "type": "h2",
+        "text": "Where the savings actually are"
+      },
+      {
+        "type": "p",
+        "text": "The gain is rarely the wider gamut on its own. Several practitioners argue that \"fixed ink set printing\" describes the economics better: the money comes from removing spot ink logistics."
+      },
+      {
+        "type": "ul",
+        "items": [
+          "No ink changes between jobs, so changeovers are shorter and washups disappear from most job transitions.",
+          "Jobs with different brand colors can be ganged on the same run, because they share the same seven inks.",
+          "Less ink to formulate, stock and eventually throw away.",
+          "Fewer leftover spot ink cans returned from the press at the end of the day."
+        ]
+      },
+      {
+        "type": "p",
+        "text": "Coverage of spot color libraries varies with substrate, inks and process control. Published studies report that a large share of Pantone colors can be reached within a DeltaE 2000 of 2.5, but not all of them. Metallics, fluorescents and some very saturated brand colors still need a dedicated ink."
+      },
+      {
+        "type": "h2",
+        "text": "What the press has to deliver"
+      },
+      {
+        "type": "p",
+        "text": "A simulated spot color is a mix of up to three or four process inks. If one of them drifts, the brand color drifts with it. Expanded gamut therefore asks more of process control than a spot ink job, where the color is mixed in the can."
+      },
+      {
+        "type": "ul",
+        "items": [
+          "A stable, fingerprinted press: anilox volumes, plates, mounting tape and impression settings documented and kept constant.",
+          "A characterization of the seven-color process on each substrate, built from measured test forms.",
+          "Tight registration, because a misregistered mix shows as a hue shift, not just a soft edge.",
+          "Measurement during the run, not only at the start, to catch density and dot gain drift before it changes the brand color."
+        ]
+      },
+      {
+        "type": "figure",
+        "src": "/images/blog/expanded-gamut-flexo-operator-32.jpg",
+        "alt": "Operator walking along a narrow web flexo press during production",
+        "caption": "Expanded gamut moves the color decision from the ink kitchen to process control on the press."
+      },
+      {
+        "type": "h2",
+        "text": "When it pays off"
+      },
+      {
+        "type": "p",
+        "text": "Expanded gamut suits converters with many short runs, many brand colors and frequent changeovers. It pays less on long runs of a few stable designs, where a spot ink is loaded once and stays. The same logic applies in offset: we went through it in [When extended gamut pays off](/blog/extended-gamut-ecg-when-7-color-pays-off)."
+      },
+      {
+        "type": "h3",
+        "text": "Does expanded gamut flexo replace every spot color?"
+      },
+      {
+        "type": "p",
+        "text": "No. Most brand colors can be simulated within a tight DeltaE tolerance, but metallic, fluorescent and some highly saturated colors stay outside the seven-color gamut and still need a spot ink."
+      },
+      {
+        "type": "h3",
+        "text": "Is expanded gamut the same as extended gamut?"
+      },
+      {
+        "type": "p",
+        "text": "Yes. Expanded gamut, extended gamut, ECG and fixed palette all describe printing with CMYK plus extra process inks, usually orange, green and violet."
+      },
+      {
+        "type": "h3",
+        "text": "What is the first step before converting?"
+      },
+      {
+        "type": "p",
+        "text": "Fingerprint the press and measure how stable it is over a run. Without a stable process, the simulated colors will move more than the spot inks they replace. For inline color control on label presses, our sister company [Veoria](https://veoria.com) works on exactly this problem."
+      }
+    ],
+    "i18n": {},
+    "originalUrl": "https://rutherford.fr/blog/expanded-gamut-flexo-fixed-palette",
+    "sources": [
+      {
+        "label": "Flexographic Technical Association: FIRST specification",
+        "href": "https://www.flexography.org/first/"
+      },
+      {
+        "label": "FTA: Benefits of expanded gamut printing: savings, stability, fast turnaround",
+        "href": "https://www.flexography.org/industry-news/benefits-expanded-gamut-eg-printing-savings-stability-fast-turnaround/"
+      },
+      {
+        "label": "Journal of Print and Media Technology Research: Accuracy of spot color reproduction in a 7-color expanded gamut flexographic system",
+        "href": "https://jpmtr.org/index.php/journal/article/view/46"
+      },
+      {
+        "label": "Esko: Equinox expanded gamut software",
+        "href": "https://www.esko.com/en/products/equinox"
+      }
+    ],
+    "review": true
+  },
+  {
     "slug": "smart-print-manufacturing-color-data",
     "title": "Smart print plants need color data",
     "excerpt": "Smart print manufacturing lets jobs move between plants. Koenig & Bauer and RRD show why color data must travel with them, on every press brand.",
