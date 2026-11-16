@@ -1,5 +1,241 @@
 [
   {
+    "slug": "smart-print-manufacturing-color-data",
+    "title": "Smart print plants need color data",
+    "excerpt": "Smart print manufacturing lets jobs move between plants. Koenig & Bauer and RRD show why color data must travel with them, on every press brand.",
+    "lead": "Koenig & Bauer is connecting Rapida presses at RRD plants to a unified digital platform so jobs can be routed between sites on three continents. Planning data moves easily. Color does not, unless every press measures and corrects to the same target. Here is what that takes.",
+    "image": "/images/colorloop/dsc7225.jpg",
+    "publishedAt": "2026-11-16",
+    "category": "News",
+    "paragraphs": [
+      "Koenig & Bauer has expanded its collaboration with RRD: Rapida sheetfed offset presses and automated die cutters at selected RRD plants now feed a unified digital platform that lets jobs be routed or split between plants in North America, Europe and Asia.",
+      "Smart print manufacturing makes planning data portable, but color does not travel on its own. A rerouted job needs a shared CIELAB target with DeltaE tolerances, measurements taken the same way in every plant, and a record of the run stored with the job.",
+      "Closed loop color control produces exactly that record. It measures the color bar, corrects ink keys zone by zone on the press console and logs every measurement. ColorLoop does this on mixed fleets from Heidelberg, Komori, Koenig & Bauer, Manroland, Mitsubishi, Ryobi and others, with compatible instruments such as IntelliTrax2 and software such as MeasureColor.",
+      "The approach is already deployed internationally, on more than 1,000 systems in 30+ countries. Every plant that measures and corrects color the same way adds capacity a group can actually reroute work to."
+    ],
+    "body": [
+      {
+        "type": "p",
+        "text": "Koenig & Bauer has widened its collaboration with RRD, one of the largest print groups in North America. Rapida sheetfed offset presses and automated die cutters at selected RRD plants now feed RRD's unified digital platform, the backbone of a strategy RRD calls SMART manufacturing. The promise is concrete: jobs routed or split between plants in North America, Europe and Asia according to capacity, freight and distance to the customer, with what RRD describes as identical quality controls wherever the job runs. For every printer watching this move, the question is the same. If a job can move from one press to another, can its color move with it?"
+      },
+      {
+        "type": "h2",
+        "text": "What smart print manufacturing changes for color"
+      },
+      {
+        "type": "p",
+        "text": "Smart print manufacturing links presses, finishing lines and planning systems on a shared data model. Schedules adapt to demand, maintenance becomes predictive, and a job is no longer tied to the press where it first ran. That flexibility is real for planning data: quantities, formats, due dates and machine availability travel well between plants because they mean the same thing everywhere."
+      },
+      {
+        "type": "p",
+        "text": "Color does not travel on its own. A solid density of 1.45 on one press and 1.45 on another can give two different greens, depending on ink, paper, plates, measurement conditions and the press itself. A job file says what to print, not what the result must look like when measured. Without a shared color reference, rerouting a job means a new approval, a longer makeready and a customer who notices that reprint number two does not match reprint number one."
+      },
+      {
+        "type": "h2",
+        "text": "Color is the data layer most connected plants are missing"
+      },
+      {
+        "type": "p",
+        "text": "Most connected factory projects start with machine data: speed, uptime, waste counters, job status. These figures are useful, but they describe the process, not the product. The product is the printed sheet, and for packaging and brand work, its most visible property is color. A plant network that wants to promise the same quality everywhere needs color data with three properties:"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "One target per job, expressed in CIELAB values and DeltaE tolerances, not in densities that only make sense on one press.",
+          "Measurements taken the same way in every plant: same measurement condition (M0, M1 or M2), same color bar logic, same instrument family or a documented correlation between instruments.",
+          "A record of every sheet measured during the run, stored with the job, so the next plant can start from proven ink settings instead of a blank console."
+        ]
+      },
+      {
+        "type": "p",
+        "text": "This is exactly what a [closed loop color control system](/closed-loop-color-control) produces as a by-product of its normal work. It measures the [color bar](/glossary#color-bar), compares each ink zone with the target and sends ink key corrections to the press console. Every correction and every measurement is logged against the job. That log is the portable color record a connected plant network needs."
+      },
+      {
+        "type": "h3",
+        "text": "Can a job move between two different press brands without a new color approval?"
+      },
+      {
+        "type": "p",
+        "text": "Yes, if both presses aim at the same measured target rather than at each other. When the reference is a set of CIELAB values with agreed tolerances, a Koenig & Bauer press in one plant and a Heidelberg or Komori press in another can each be steered to it by closed loop control. The approval is given once, on the target, and each press proves it reached that target with its own measurements."
+      },
+      {
+        "type": "h2",
+        "text": "Mixed fleets are the real test"
+      },
+      {
+        "type": "p",
+        "text": "A group that standardizes on one press manufacturer can rely on that manufacturer's own color control. Few printers have that luxury. Most plant networks have grown through acquisitions and carry a mix of brands and generations: a recent Rapida next to a ten year old Speedmaster, a Lithrone in another country, a Manroland in a third. In that situation, the color layer has to sit above the press brand."
+      },
+      {
+        "type": "p",
+        "text": "ColorLoop is built that way. It connects to the existing console through its ink key interface on presses from Heidelberg, Komori, Koenig & Bauer, Manroland, Mitsubishi, Ryobi and others, and it works with compatible measurement instruments such as IntelliTrax2 and software such as MeasureColor. The same targets, tolerances and reporting then apply across the whole fleet. A [free console validation](/console-validation) confirms within one business day whether a given console can run the loop."
+      },
+      {
+        "type": "h3",
+        "text": "What does a printer need before routing jobs between plants?"
+      },
+      {
+        "type": "p",
+        "text": "Three things. First, every press involved must be characterized against a shared standard such as ISO 12647-2 or G7, so their native behavior is known. Second, every press must be able to reach the target automatically, which is what closed loop control does at makeready and during the run. Third, the job must carry its color history: targets, measurements and final ink settings, so the receiving plant does not start from scratch."
+      },
+      {
+        "type": "h2",
+        "text": "A global pattern, not an American one"
+      },
+      {
+        "type": "p",
+        "text": "RRD's move is visible because of its size, but the pattern is international. Packaging groups with plants on several continents, label converters serving global brands and commercial printers that consolidated after paper price increases all face the same question when they balance capacity between sites. Closed loop color control is already deployed this way: Rutherford systems run on more than 1,000 presses in 30+ countries, from Europe to [North America](/usa), Latin America and Asia, and printers use the same reports to show a brand owner that a carton printed in Spain matches the one printed in Mexico."
+      },
+      {
+        "type": "p",
+        "text": "For a printer, the practical consequence is simple. Each plant that measures and corrects color the same way adds capacity to the network. Each plant that still matches color by eye is capacity that cannot take a rerouted job without a new approval. The difference shows up in makeready waste, in lead times and in the number of jobs that can actually move. Our article on [multi-site color standardization](/blog/multi-site-color-standardization-brands) looks at the same problem from the brand owner's side."
+      },
+      {
+        "type": "h3",
+        "text": "Is closed loop color control worth it for a single plant?"
+      },
+      {
+        "type": "p",
+        "text": "Yes. The data that makes jobs portable between plants also makes them repeatable within one plant: from one shift to the next, from one press to another, from one reprint to the next. A single site gains shorter makeready and less waste first, and keeps the option of joining a larger network later without changing its color workflow."
+      },
+      {
+        "type": "h2",
+        "text": "What to take from the Koenig & Bauer and RRD announcement"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "Connected plants are becoming the norm for large print groups, and buyers will expect the same quality wherever a job runs.",
+          "Machine data alone does not make jobs portable: color needs its own shared targets, measurements and records.",
+          "Closed loop color control provides that layer on mixed fleets, press brand by press brand, without replacing consoles.",
+          "Printers of every size can prepare now by measuring every job against a CIELAB target and keeping the history with the job."
+        ]
+      }
+    ],
+    "i18n": {
+      "fr": {
+        "title": "L'usine connectée, et la couleur ?",
+        "excerpt": "L'usine d'impression connectée déplace les travaux entre sites. Koenig & Bauer et RRD montrent pourquoi les données couleur doivent suivre, sur toutes les presses.",
+        "lead": "Koenig & Bauer relie des presses Rapida installées chez RRD à une plateforme numérique unifiée, pour router les travaux entre des usines sur trois continents. Les données de planification se déplacent facilement. La couleur, non, sauf si chaque presse mesure et corrige vers la même cible. Voici ce que cela suppose.",
+        "body": [
+          {
+            "type": "p",
+            "text": "Koenig & Bauer élargit sa collaboration avec RRD, l'un des plus grands groupes d'impression d'Amérique du Nord. Des presses offset feuille à feuille Rapida et des découpeuses automatiques installées dans plusieurs usines RRD alimentent désormais la plateforme numérique unifiée du groupe, colonne vertébrale d'une stratégie que RRD appelle SMART manufacturing. La promesse est concrète : des travaux routés ou répartis entre des usines d'Amérique du Nord, d'Europe et d'Asie selon la capacité, le transport et la distance au client, avec ce que RRD décrit comme des contrôles qualité identiques quel que soit le site. Pour tout imprimeur qui observe ce mouvement, la question est la même. Si un travail peut passer d'une presse à une autre, sa couleur peut-elle suivre ?"
+          },
+          {
+            "type": "h2",
+            "text": "Ce que l'usine d'impression connectée change pour la couleur"
+          },
+          {
+            "type": "p",
+            "text": "L'usine d'impression connectée relie presses, lignes de finition et systèmes de planification sur un modèle de données commun. Les plannings s'adaptent à la demande, la maintenance devient prédictive, et un travail n'est plus attaché à la presse sur laquelle il a d'abord tourné. Cette souplesse est réelle pour les données de planification : quantités, formats, délais et disponibilité des machines se transmettent bien d'une usine à l'autre, parce qu'elles signifient la même chose partout."
+          },
+          {
+            "type": "p",
+            "text": "La couleur, elle, ne voyage pas seule. Une densité d'aplat de 1,45 sur une presse et 1,45 sur une autre peuvent donner deux verts différents selon l'encre, le papier, les plaques, les conditions de mesure et la presse elle-même. Un fichier dit quoi imprimer, pas à quoi le résultat doit ressembler une fois mesuré. Sans référence couleur partagée, déplacer un travail signifie un nouveau BAT, un calage plus long et un client qui remarque que la deuxième relance ne correspond pas à la première."
+          },
+          {
+            "type": "h2",
+            "text": "La couleur, couche de données qui manque à la plupart des usines connectées"
+          },
+          {
+            "type": "p",
+            "text": "La plupart des projets d'usine connectée commencent par les données machine : vitesse, disponibilité, compteurs de gâche, état des travaux. Ces chiffres sont utiles, mais ils décrivent le procédé, pas le produit. Le produit, c'est la feuille imprimée, et pour l'emballage comme pour les travaux de marque, sa propriété la plus visible est la couleur. Un réseau d'usines qui veut promettre la même qualité partout a besoin de données couleur qui réunissent trois conditions :"
+          },
+          {
+            "type": "ul",
+            "items": [
+              "Une cible par travail, exprimée en valeurs CIELAB et en tolérances DeltaE, pas en densités qui n'ont de sens que sur une seule presse.",
+              "Des mesures prises de la même façon dans chaque usine : même condition de mesure (M0, M1 ou M2), même logique de barre de contrôle, même famille d'instruments ou une corrélation documentée entre instruments.",
+              "Un historique de chaque feuille mesurée pendant le tirage, conservé avec le travail, pour que l'usine suivante parte de réglages d'encrage éprouvés et non d'une console vierge."
+            ]
+          },
+          {
+            "type": "p",
+            "text": "C'est précisément ce que produit un [système de contrôle couleur closed loop](/closed-loop-color-control) dans son fonctionnement normal. Il mesure la [barre de contrôle](/glossary#color-bar), compare chaque zone d'encrage à la cible et envoie les corrections de vis d'encrier à la console de la presse. Chaque correction et chaque mesure sont enregistrées avec le travail. Cet historique est le dossier couleur portable dont un réseau d'usines connectées a besoin."
+          },
+          {
+            "type": "h3",
+            "text": "Un travail peut-il passer d'une marque de presse à une autre sans nouveau BAT couleur ?"
+          },
+          {
+            "type": "p",
+            "text": "Oui, si les deux presses visent la même cible mesurée plutôt que de se copier l'une l'autre. Quand la référence est un jeu de valeurs CIELAB avec des tolérances convenues, une presse Koenig & Bauer dans une usine et une Heidelberg ou une Komori dans une autre peuvent chacune y être amenées par le contrôle closed loop. Le BAT est donné une fois, sur la cible, et chaque presse prouve par ses propres mesures qu'elle l'a atteinte."
+          },
+          {
+            "type": "h2",
+            "text": "Les parcs mixtes, le vrai test"
+          },
+          {
+            "type": "p",
+            "text": "Un groupe qui s'équipe d'un seul constructeur peut s'appuyer sur le contrôle couleur de ce constructeur. Peu d'imprimeurs ont ce luxe. La plupart des réseaux d'usines se sont construits par acquisitions et mêlent marques et générations : une Rapida récente à côté d'une Speedmaster de dix ans, une Lithrone dans un autre pays, une Manroland dans un troisième. Dans ce cas, la couche couleur doit se situer au-dessus de la marque de la presse."
+          },
+          {
+            "type": "p",
+            "text": "ColorLoop est conçu ainsi. Il se connecte à la console existante par son interface de vis d'encrier, sur des presses Heidelberg, Komori, Koenig & Bauer, Manroland, Mitsubishi, Ryobi et d'autres, et fonctionne avec des instruments de mesure compatibles comme IntelliTrax2 et des logiciels comme MeasureColor. Les mêmes cibles, tolérances et rapports s'appliquent alors à tout le parc. Une [validation de console gratuite](/console-validation) confirme sous un jour ouvré si une console donnée peut recevoir le closed loop."
+          },
+          {
+            "type": "h3",
+            "text": "De quoi un imprimeur a-t-il besoin avant de répartir des travaux entre usines ?"
+          },
+          {
+            "type": "p",
+            "text": "De trois choses. D'abord, chaque presse concernée doit être caractérisée selon un standard commun comme l'ISO 12647-2 ou G7, pour que son comportement propre soit connu. Ensuite, chaque presse doit pouvoir atteindre la cible automatiquement, ce que fait le contrôle closed loop au calage et pendant le tirage. Enfin, le travail doit emporter son historique couleur : cibles, mesures et réglages d'encrage finaux, pour que l'usine qui le reçoit ne reparte pas de zéro."
+          },
+          {
+            "type": "h2",
+            "text": "Une tendance mondiale, pas seulement américaine"
+          },
+          {
+            "type": "p",
+            "text": "Le mouvement de RRD se voit à cause de sa taille, mais la tendance est internationale. Les groupes d'emballage présents sur plusieurs continents, les transformateurs d'étiquettes au service de marques mondiales et les imprimeurs de labeur qui se sont regroupés après les hausses du papier se posent tous la même question quand ils équilibrent la capacité entre leurs sites. Le contrôle couleur closed loop est déjà déployé de cette façon : les systèmes Rutherford équipent plus de 1 000 presses dans plus de 30 pays, de l'Europe à l'[Amérique du Nord](/usa), en passant par l'Amérique latine et l'Asie, et des imprimeurs utilisent les mêmes rapports pour montrer à une marque qu'un étui imprimé en Espagne correspond à celui imprimé au Mexique."
+          },
+          {
+            "type": "p",
+            "text": "Pour un imprimeur, la conséquence pratique est simple. Chaque usine qui mesure et corrige la couleur de la même manière ajoute de la capacité au réseau. Chaque usine qui cale encore la couleur à l'œil est une capacité qui ne peut pas accueillir un travail déplacé sans nouveau BAT. La différence se voit dans la gâche au calage, dans les délais et dans le nombre de travaux réellement déplaçables. Notre article sur la [standardisation couleur multi-sites](/blog/multi-site-color-standardization-brands) aborde le même sujet du point de vue de la marque."
+          },
+          {
+            "type": "h3",
+            "text": "Le contrôle couleur closed loop vaut-il la peine pour une seule usine ?"
+          },
+          {
+            "type": "p",
+            "text": "Oui. Les données qui rendent les travaux déplaçables entre usines les rendent aussi reproductibles dans une même usine : d'une équipe à l'autre, d'une presse à l'autre, d'une relance à la suivante. Un site unique gagne d'abord un calage plus court et moins de gâche, et garde la possibilité de rejoindre un réseau plus large sans changer sa méthode couleur."
+          },
+          {
+            "type": "h2",
+            "text": "Ce qu'il faut retenir de l'annonce Koenig & Bauer et RRD"
+          },
+          {
+            "type": "ul",
+            "items": [
+              "Les usines connectées deviennent la norme dans les grands groupes d'impression, et les acheteurs attendront la même qualité quel que soit le site.",
+              "Les données machine seules ne rendent pas un travail déplaçable : la couleur a besoin de ses propres cibles, mesures et historiques partagés.",
+              "Le contrôle couleur closed loop apporte cette couche sur des parcs mixtes, marque par marque, sans remplacer les consoles.",
+              "Les imprimeurs de toute taille peuvent s'y préparer dès maintenant en mesurant chaque travail par rapport à une cible CIELAB et en conservant l'historique avec le travail."
+            ]
+          }
+        ]
+      }
+    },
+    "originalUrl": "https://rutherford.fr/blog/smart-print-manufacturing-color-data",
+    "sources": [
+      {
+        "label": "Board Converting News, November 9, 2026: Koenig & Bauer expands collaboration with RRD",
+        "href": "https://online.flippingbook.com/view/556695798/20/"
+      },
+      {
+        "label": "RRD: RRD Implements Global SMART Manufacturing Architecture to Enhance Supply Chain Resilience (September 30, 2026)",
+        "href": "https://s1.q4cdn.com/664789261/files/doc_news/RRD-Implements-Global-SMART-Manufacturing-Architecture-to-Enhance-Supply-Chain-Resilience-2026.pdf"
+      },
+      {
+        "label": "ISO 12647-2:2013: Process control, offset lithographic processes",
+        "href": "https://www.iso.org/standard/57833.html"
+      }
+    ],
+    "review": true
+  },
+  {
     "slug": "color-bar-design-closed-loop",
     "title": "Designing the color bar",
     "excerpt": "How to design a color bar for closed loop control: which patches it needs, where it goes on the sheet, and the mistakes that leave ink zones unmeasured.",
