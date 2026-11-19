@@ -379,7 +379,7 @@ const COPY: Record<Locale, Copy> = { en: EN, fr: FR, de: DE, it: IT, es: ES, pt:
 
 function useCopy() {
   const { locale } = useLanguage();
-  return { locale, t: COPY[locale], upgradeUrl: colorloopUrl(locale, 'rutherford-customers') };
+  return { locale, t: COPY[locale], upgradeUrl: colorloopUrl(locale, 'rutherford-customers#subscribe') };
 }
 
 /* ---------- colorloop.ai's scripts: plain script tags, appended once the markup is on the page ---------- */
@@ -602,7 +602,7 @@ export function ColorLoopHome({ tone = 'light' }: { tone?: 'night' | 'light' }) 
             </h1>
             <p className="clh-lead">{t.lead} <span className="clh-promo clh-promo-hero">{t.promo3}</span></p>
             <div className="clh-actions">
-              <a className="clh-btn" href={upgradeUrl}>{t.primary}</a>
+              <a className="clh-btn" href="#prepare">{t.primary}</a>
               <a className="clh-textlink" href={discoverUrl}>{t.secondary}</a>
             </div>
           </div>
