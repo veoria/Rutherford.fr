@@ -1,0 +1,288 @@
+/* ---------------------------------------------------------------- the dots hero (16 Oct 2026), after playcolorguesser.com
+   A night ground that continues the black announce bar and the nav. The ColorLoop wordmark, drawn from the Illustrator master
+   (nine vector letters), lights up letter by letter like a sign: each letter has its ink (.dh-ink) and its light (.dh-glow, the same
+   shape in the letter's color, blurred by drop shadows); the light breathes slowly while the hero is on screen. Under the copy, the
+   five ink dots, in the order of the letters (red C, pink o, blue l, yellow o, green r), rise from behind the bottom edge, which cuts
+   them; dots-hero.js then makes them hop in a wave (joyful face, squash and stretch), on hover or tap, and now and then on their own;
+   when a dot hops, its letter hops with it. Below the night, on paper: the stories line, the quiz line and the press band.
+   Still with reduced motion, ?static or html[data-motion="paused"]: letters lit, dots in place (html.dh-live is set before the first
+   paint only when motion is allowed). Without JavaScript the light-up and the rise still play; the hops need the script. */
+.dots-hero{
+  --dh-night:#141416;--dh-fg:#f5f5f7;--dh-text:#a1a1a6;--dh-out:cubic-bezier(.22,1,.36,1);
+  --wm-w:min(42vw,470px,calc((100svh - 100px) * .61));    /* the wordmark's width (half size since 16 Oct 2026): the screen's width, or its height on short screens */
+  --u:calc(var(--wm-w) / 923);                            /* one unit of the logo's drawing, in px */
+  --s:clamp(118px,min(15.5vw,25svh),250px);               /* a dot's height (one scale for the five) */
+  --cut:.24;                                              /* the part of a dot under the bottom edge */
+  position:relative;padding:0;overflow-x:clip}
+.dh-night{position:relative;isolation:isolate;overflow:hidden;display:flex;flex-direction:column;align-items:center;text-align:center;
+  min-height:clamp(560px,calc(100svh - 100px),900px);padding:clamp(26px,5.4vh,64px) var(--gutter,4.5vw) 0;background:var(--dh-night);color:var(--dh-fg)}
+/* the bottom edge: a faint line, the dots stand behind it (the cut reads as meant) */
+.dh-night::after{content:"";position:absolute;left:0;right:0;bottom:0;z-index:5;height:1px;background:rgba(255,255,255,.13);pointer-events:none}
+
+/* ---------------------------------------------------------------- the wordmark */
+.dh-wm{width:var(--wm-w);max-width:100%;margin:0;flex:none}
+.dh-wm-art{position:relative;display:block;width:100%;-webkit-user-select:none;user-select:none}
+.dh-l{position:absolute;display:block;transform-origin:50% 100%}
+.dh-l svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;display:block}
+/* the light: the letter in its color, three shadows (the tube, the halo, the bloom); a layer of its own, so breathing costs nothing */
+/* 21 Oct 2026 (Valentina: the wide bloom read as a dirty lens): a tight glow only, no halo around the word */
+/* 22 Oct 2026 (Hugues): no halo around the word; the letters stay bright (the colored layer over the ink), no blur, no shadow */
+.dh-glow{--go:1;fill:var(--g);opacity:var(--go);will-change:opacity;filter:none}
+.dh-w .dh-glow{--go:.9;filter:none}
+.dh-ink{will-change:opacity}
+
+/* the light-up, once: the letters wait unlit (dark glass), then light one by one, left to right, with one neon flicker
+   (60 ms apart, .56 s each: the word is lit in about 1.2 s); then the light breathes (3.6 s), only while the hero is on screen */
+html.dh-live .dh-ink{animation:dh-fill .56s linear both;animation-delay:calc(140ms + var(--i,0) * 60ms)}
+html.dh-live .dh-glow{animation:dh-light .56s linear both,dh-breathe 3.6s ease-in-out infinite alternate;
+  animation-delay:calc(140ms + var(--i,0) * 60ms),calc(1.3s + var(--i,0) * 60ms)}   /* the breathing starts after each light-up, in the same ripple */
+.dots-hero.is-away .dh-glow{animation-play-state:paused}
+@keyframes dh-fill{0%{opacity:.1}12%{opacity:.92}22%{opacity:.36}34%{opacity:1}100%{opacity:1}}
+@keyframes dh-light{0%{opacity:0}12%{opacity:calc(var(--go) * .85)}22%{opacity:calc(var(--go) * .15)}34%{opacity:var(--go)}100%{opacity:var(--go)}}
+@keyframes dh-breathe{from{opacity:var(--go)}to{opacity:calc(var(--go) * .74)}}
+/* a dot hops: its letter hops with it, smaller */
+.dh-l.is-ping{animation:dh-ping .62s linear}
+@keyframes dh-ping{0%{transform:none;animation-timing-function:cubic-bezier(.33,0,.4,1)}12%{transform:scale(1.04,.95);animation-timing-function:cubic-bezier(.2,.8,.4,1)}
+  32%{transform:translateY(-7%) scale(.98,1.03);animation-timing-function:cubic-bezier(.55,0,.85,.45)}52%{transform:scale(1.03,.97);animation-timing-function:cubic-bezier(.28,1.5,.4,1)}100%{transform:none}}
+
+/* ---------------------------------------------------------------- the copy */
+.dots-hero .hero-copy{position:relative;z-index:6;max-width:780px;margin:clamp(14px,3vh,34px) auto 0;padding:0}
+.dots-hero .hero-copy h1{font-size:clamp(30px,3.25vw,50px);line-height:1.06;letter-spacing:-.032em;font-weight:600;color:var(--dh-fg);margin:0 0 14px;max-width:none;text-wrap:balance;animation:none}
+.dots-hero .dh-nw{white-space:nowrap}
+.dots-hero .hero-copy h1 .period{color:#ff3b30}
+.dots-hero .hero-copy>p{font-size:clamp(16px,1.22vw,18.5px);line-height:1.5;color:var(--dh-text);max-width:35em;margin:0 auto;text-wrap:pretty;animation:none}
+.dots-hero .hero-actions{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:12px 32px;margin-top:clamp(20px,3.2vh,30px);animation:none}
+.dots-hero .hero-actions .button{margin:0;min-height:54px;padding:0 30px;gap:0;justify-content:center;background:#fff;border-color:#fff;color:#141416;font-size:16px;font-weight:500;letter-spacing:-.005em;box-shadow:none;transform:none;transition:background-color .2s ease,transform .16s var(--dh-out)}
+.dots-hero .hero-actions .button:hover{background:#e8e8ed;transform:none;box-shadow:none}
+.dots-hero .hero-actions .button:active{transform:scale(.98)}
+.dots-hero .hero-demo{display:inline-flex;align-items:center;min-height:44px;padding:0;border:0;font-size:16px;font-weight:500;color:#fff;text-decoration:underline;text-underline-offset:6px;text-decoration-thickness:1px}
+.dots-hero .hero-demo:hover{color:#fff;text-decoration-thickness:2px}
+.dots-hero .hero-demo::after{display:none}
+.dots-hero .dh-night a:focus-visible{outline:2px solid #fff;outline-offset:4px}
+
+/* ---------------------------------------------------------------- the dots */
+.dh-dots{position:relative;z-index:2;display:flex;align-items:flex-end;justify-content:center;flex:none;width:100%;margin-top:auto;
+  padding-top:clamp(16px,3vh,40px);margin-bottom:calc(var(--s) * var(--cut) * -1);pointer-events:none}
+.dh-dot{position:relative;flex:none;display:block;width:calc(var(--s) * var(--dw));height:calc(var(--s) * var(--dh));transform-origin:50% 100%;
+  pointer-events:auto;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.dh-dot+.dh-dot{margin-left:calc(var(--s) * -.06)}
+.dh-dot:nth-child(2),.dh-dot:nth-child(4){z-index:1}
+.dh-dot:nth-child(3){z-index:2}
+.dh-fig{position:absolute;inset:0;transform-origin:50% 100%}
+.dh-face{position:absolute;inset:0;display:block;width:100%;height:100%;max-width:none;pointer-events:none;-webkit-user-drag:none;-webkit-user-select:none;user-select:none}
+.dh-joy{opacity:0}
+.dh-dot.is-happy .dh-joy{opacity:1;transition:opacity .12s linear}
+.dh-dot.is-happy .dh-face:not(.dh-joy){opacity:0;transition:opacity 0s linear .12s}
+.dh-dot:not(.is-happy) .dh-joy{transition:opacity .16s linear}
+/* the rise, from behind the bottom edge (opaque from the first frame: the edge hides them), 70 ms apart, after the first letters */
+html.dh-live .dh-dot{animation:dh-rise .72s var(--dh-out) both,dh-breathe-dot 3.2s ease-in-out infinite alternate;
+  animation-delay:calc(520ms + var(--i,0) * 70ms),calc(var(--i,0) * -.8s)}
+.dots-hero.is-away .dh-dot{animation-play-state:running,paused}
+@keyframes dh-rise{from{transform:translateY(88%)}to{transform:none}}
+@keyframes dh-breathe-dot{from{scale:1}to{scale:1.014}}
+/* the hop (dots-hero.js sets .dh-hop): crouch, stretch on the way up, squash on landing, a smaller second hop, then the spring settles it */
+.dh-fig.dh-hop{animation:dh-hop .7s linear}
+@keyframes dh-hop{
+  0%{transform:none;animation-timing-function:cubic-bezier(.33,0,.4,1)}
+  9%{transform:scale(1.06,.92);animation-timing-function:cubic-bezier(.2,.8,.4,1)}
+  20%{transform:translateY(-8%) scale(.94,1.08);animation-timing-function:cubic-bezier(.25,.6,.45,1)}
+  30%{transform:translateY(-12%) scale(.99,1.01);animation-timing-function:cubic-bezier(.55,0,.85,.45)}
+  43%{transform:scale(1.09,.89);animation-timing-function:cubic-bezier(.2,.8,.4,1)}
+  52%{transform:translateY(-3.6%) scale(.96,1.05);animation-timing-function:cubic-bezier(.25,.6,.45,1)}
+  60%{transform:translateY(-5.4%);animation-timing-function:cubic-bezier(.55,0,.85,.45)}
+  70%{transform:scale(1.05,.94);animation-timing-function:cubic-bezier(.28,1.5,.4,1)}
+  100%{transform:none}}
+
+/* ---------------------------------------------------------------- under the night, on paper: the stories, the quiz, the presses */
+.dh-after{display:flex;flex-direction:column;align-items:center;gap:clamp(22px,3.4vh,34px);padding:clamp(24px,3.6vh,40px) var(--gutter,4.5vw) clamp(34px,5.4vh,60px);text-align:center}
+.dots-hero .hero-trust{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:4px 44px;margin:0}
+.dots-hero .hero-trust .pf-chip{margin:0;min-height:44px;background:transparent;border:0;padding:0;gap:12px;-webkit-backdrop-filter:none;backdrop-filter:none;font-size:14px;color:var(--ph-quiet,#5b6064)}
+.dots-hero .hero-trust .pf-chip:hover{background:transparent}
+.dots-hero .hero-trust .pf-chip-t,.dots-hero .rh-quiz-t{color:#5b6064;text-wrap:balance;text-align:left}
+.dots-hero .hero-trust u{white-space:nowrap}
+.dots-hero .hero-trust .pf-chip u,.dots-hero .rh-quiz u{color:#141416;text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:1px}
+.dots-hero .hero-trust .pf-chip:hover u,.dots-hero .rh-quiz:hover u{text-decoration-thickness:2px}
+.dots-hero .hero-trust .pf-chip-faces{flex:none}
+.dots-hero .hero-trust .pf-chip-faces img{width:26px;height:26px;border-width:1.5px;border-color:#f4f3ec}
+.dots-hero .hero-trust .pf-chip-faces img+img{margin-left:-8px}
+.dots-hero .rh-quiz{display:inline-flex;align-items:center;max-width:none;gap:12px;min-height:44px;color:#5b6064;opacity:1;text-decoration:none;font-size:14px;line-height:1.3}
+.dots-hero .rh-quiz:hover{transform:none}
+.dots-hero .rh-quiz-eye{width:auto;height:24px;filter:none;display:flex;align-items:center}
+.dots-hero .rh-quiz-eye svg{display:block;width:38px;height:24px}
+.dots-hero .hero-trust a:focus-visible{outline:2px solid #141416;outline-offset:4px}
+.dots-hero .ph-band{width:min(100%,1040px);max-width:none}
+.dots-hero .ph-band-t{margin:0 0 10px;text-align:center}
+.dots-hero .ph-set{justify-content:center}
+html.ph-roll:not([data-motion="paused"]) .dots-hero .ph-marquee{margin-left:0;width:100%}
+
+/* ---------------------------------------------------------------- the nav over the night: dark, white logo, white buttons */
+.header.site-nav{transition:border-color .25s,background-color .25s}
+
+/* ---------------------------------------------------------------- phones and tablets */
+@media (max-width:900px){
+  .dots-hero{--wm-w:min(44vw,280px);--s:clamp(84px,25vw,190px);--cut:.22}
+  .dh-night{min-height:0;padding-top:clamp(24px,4.4vh,40px)}
+  .dots-hero .hero-copy{margin-top:20px}
+  .dots-hero .hero-copy h1{font-size:clamp(30px,8.6vw,44px);margin-bottom:12px}
+  .dots-hero .dh-nw{white-space:normal}
+  .dots-hero .hero-copy>p{font-size:16.5px}
+  .dots-hero .hero-actions{flex-direction:column;align-items:stretch;gap:2px;margin-top:22px}
+  .dots-hero .hero-actions .button{min-height:54px}
+  .dots-hero .hero-demo{justify-content:center;align-self:center}
+  .dh-dots{padding-top:30px}
+  .dh-dot+.dh-dot{margin-left:calc(var(--s) * -.1)}
+  .dh-after{gap:20px}
+  .dots-hero .hero-trust{flex-direction:column;align-items:flex-start;gap:0}
+  .dots-hero .ph-band-t{margin-bottom:6px}
+  .dots-hero .ph-set{column-gap:28px}
+  html.ph-roll:not([data-motion="paused"]) .dots-hero .ph-set{column-gap:30px;padding-right:30px}
+  .dots-hero .ph-marquee{--ph-fade:32px}
+  .dots-hero .ph-set li{height:28px}
+}
+@media (min-width:600px) and (max-width:900px){.dots-hero .hero-actions{flex-direction:row;justify-content:center;align-items:center;gap:28px}.dots-hero .hero-actions .button{min-width:260px}}
+@media (max-width:380px){.dots-hero .hero-trust .pf-chip,.dots-hero .rh-quiz{font-size:13px}}
+
+/* ---------------------------------------------------------------- still: reduced motion, paused */
+@media (prefers-reduced-motion:reduce){.dots-hero *{animation:none!important}.dots-hero .dh-dot.is-happy .dh-joy,.dots-hero .dh-dot:not(.is-happy) .dh-joy{transition:opacity .15s ease}}
+html[data-motion="paused"] .dots-hero *{animation:none!important}
+
+/* ---------------------------------------------------------------- 16 Oct 2026: the strip under the dots is part of the hero, on the night too
+   (stories, quiz, presses): light text, light press logos, the dots' edge line kept as the only separation */
+.dots-hero .dh-after{background:var(--dh-night);color:var(--dh-fg)}
+.dots-hero .hero-trust .pf-chip,.dots-hero .rh-quiz,.dots-hero .hero-trust .pf-chip-t,.dots-hero .rh-quiz-t{color:var(--dh-text)}
+.dots-hero .hero-trust .pf-chip u,.dots-hero .rh-quiz u{color:#fff}
+.dots-hero .hero-trust .pf-chip-faces img{border-color:var(--dh-night)}
+.dots-hero .hero-trust a:focus-visible,.dots-hero .ph-band a:focus-visible{outline-color:#fff}
+.dots-hero .ph-band-t{color:#86868b}
+.dots-hero .ph-logo{filter:brightness(0) invert(1);opacity:calc(var(--o,.45) + .12)}
+@media (hover:hover) and (pointer:fine){.dots-hero .ph-set li:hover .ph-logo{filter:brightness(0) invert(1);opacity:1}}
+
+/* ---------------------------------------------------------------- 19 Oct 2026: the strip under the dots in two columns.
+   Left, the stories: their line, then the ten stories as thumbnails rolling slowly (a click opens the story, where the video plays;
+   the roll stops under the pointer and with focus). Right, the tests: the quiz line, one sentence on the three games, a small demo
+   that plays itself (a pointer tries shades behind a logo until the real one, then "Exact"), and the three games. */
+.dots-hero .dh-duo{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(16px,2.4vw,28px);width:min(100%,1180px);text-align:left}
+.dots-hero .dh-col{display:grid;align-content:start;gap:14px;min-width:0;padding:20px 24px 22px;border-radius:20px;background:rgba(255,255,255,.04);box-shadow:inset 0 0 0 1px rgba(255,255,255,.07)}
+.dots-hero .dh-col .hero-trust{justify-content:flex-start}
+.dots-hero .dh-col .rh-quiz{justify-self:start}
+.dots-hero .dh-col-t{margin:0;font-size:14px;line-height:1.5;color:#86868b;text-wrap:pretty}
+.dots-hero .dh-col-links{display:flex;flex-wrap:wrap;gap:6px 18px;margin:0}
+.dots-hero .dh-col-links a{font-size:14px;font-weight:500;color:#fff;text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:1px}
+.dots-hero .dh-col-links a:hover{text-decoration-thickness:2px}
+/* the reel */
+.dots-hero .dh-reel{margin:0 -24px;padding:4px 0;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 24px,#000 calc(100% - 24px),transparent);mask-image:linear-gradient(90deg,transparent,#000 24px,#000 calc(100% - 24px),transparent)}
+.dots-hero .dh-reel-track{display:flex;width:max-content;animation:dh-reel 70s linear infinite}
+.dots-hero .dh-reel:hover .dh-reel-track,.dots-hero .dh-reel:focus-within .dh-reel-track,.dots-hero.is-away .dh-reel-track{animation-play-state:paused}
+@keyframes dh-reel{to{transform:translateX(-50%)}}
+.dots-hero .dh-reel-set{display:flex;gap:10px;margin:0;padding:0 10px 0 0;list-style:none}
+.dots-hero .dh-reel-set:first-child{padding-left:24px}
+.dots-hero .dh-thumb{position:relative;display:block;width:212px;aspect-ratio:16/9;border-radius:12px;overflow:hidden;background:#222326;color:#fff;text-decoration:none;transition:transform .2s cubic-bezier(.23,1,.32,1)}
+.dots-hero .dh-thumb img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .4s cubic-bezier(.23,1,.32,1)}
+.dots-hero .dh-thumb::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(10,10,12,.82) 0,rgba(10,10,12,0) 62%)}
+.dots-hero .dh-thumb-t{position:absolute;left:10px;right:10px;bottom:8px;z-index:1;display:grid;line-height:1.25}
+.dots-hero .dh-thumb-t b{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dots-hero .dh-thumb-t span{font-size:11.5px;color:#c7c7cc}
+.dots-hero .dh-thumb-play{position:absolute;top:8px;right:8px;z-index:1;width:24px;height:24px;border-radius:50%;background:rgba(255,255,255,.94)}
+.dots-hero .dh-thumb-play::before{content:"";position:absolute;left:9.5px;top:7px;border-style:solid;border-width:5px 0 5px 8px;border-color:transparent transparent transparent #141416}
+@media (hover:hover) and (pointer:fine){.dots-hero .dh-thumb:hover{transform:translateY(-2px)}.dots-hero .dh-thumb:hover img{transform:scale(1.05)}}
+.dots-hero .dh-thumb:focus-visible{outline:2px solid #fff;outline-offset:2px}
+/* the demo */
+.dots-hero .dh-demo{position:relative;display:grid;justify-items:center;gap:12px;padding:12px 0 2px}
+.dots-hero .dh-demo-card{position:relative;display:grid;place-items:center;width:min(100%,220px);aspect-ratio:16/9;border-radius:12px;background:var(--bg,#9b9ba1);transition:background-color .18s ease}
+.dots-hero .dh-demo-card img{width:70%;height:auto}
+.dots-hero .dh-demo-ok{position:absolute;top:-11px;left:50%;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:600;color:#fff;background:#2f8a1f;opacity:0;transform:translate(-50%,4px) scale(.94);transition:opacity .2s ease,transform .3s cubic-bezier(.34,1.56,.64,1)}
+.dots-hero .dh-demo.is-ok .dh-demo-ok{opacity:1;transform:translate(-50%,0)}
+.dots-hero .dh-demo-chips{display:flex;gap:14px}
+.dots-hero .dh-demo-chips i{display:block;width:30px;height:30px;border-radius:50%;background:var(--c);box-shadow:0 0 0 2px #1c1c1f,0 0 0 3px rgba(255,255,255,.14);transition:transform .16s cubic-bezier(.23,1,.32,1),box-shadow .16s ease}
+.dots-hero .dh-demo-chips i.is-on{transform:translateY(-3px);box-shadow:0 0 0 2px #1c1c1f,0 0 0 4px #fff}
+.dots-hero .dh-demo.is-ok .dh-demo-chips i.is-on{box-shadow:0 0 0 2px #1c1c1f,0 0 0 4px #5fd14a}
+.dots-hero .dh-demo-cursor{position:absolute;left:0;top:0;width:18px;height:22px;opacity:0;pointer-events:none;transition:transform .55s cubic-bezier(.65,0,.35,1),opacity .3s ease;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 22'%3E%3Cpath d='M2 1.5v16.2l4.3-4 2.9 6.6 2.6-1.1-2.9-6.5H15z' fill='%23fff' stroke='%23141416' stroke-width='1.3' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat}
+.dots-hero .dh-demo.is-live .dh-demo-cursor{opacity:1}
+@media (max-width:900px){
+  .dots-hero .dh-duo{grid-template-columns:1fr}
+  .dots-hero .dh-col{padding:18px 18px 20px}
+  .dots-hero .dh-reel{margin:0 -18px}
+  .dots-hero .dh-reel-set:first-child{padding-left:18px}
+  .dots-hero .dh-thumb{width:150px}
+}
+@media (prefers-reduced-motion:reduce){.dots-hero .dh-reel{overflow-x:auto}.dots-hero .dh-reel-track{animation:none}.dots-hero .dh-reel-set[aria-hidden]{display:none}}
+html[data-motion="paused"] .dots-hero .dh-reel-track{animation:none}
+
+/* the ColorLoop on press clips, portrait (19 Oct 2026); the press band now opens the section under the hero */
+.dots-hero .dh-thumb.dh-short{width:132px;aspect-ratio:9/16}
+.dots-hero .dh-thumb.dh-short .dh-thumb-t b{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+@media (max-width:900px){.dots-hero .dh-thumb.dh-short{width:112px}}
+.dots-hero .dh-after>.ph-band{margin:0 0 clamp(20px,3vw,36px);padding-top:clamp(20px,3vw,32px)}
+/* the press brands under the actions (20 Oct 2026, Hugues): at once, ColorLoop connects to these presses */
+.dots-hero .hero-copy .ph-band{margin:26px auto 0;max-width:min(760px,92vw);padding:0;border:0;background:none}
+.dots-hero .hero-copy .ph-band-t{display:block;margin:0 0 10px;text-align:center;font:600 12px/1.3 Inter,system-ui,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.62)}
+.dots-hero .hero-copy .ph-marquee{-webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent)}
+.dots-hero .hero-copy .ph-logo{height:calc(var(--h, 13) * 1px)!important;width:auto;filter:brightness(0) invert(1);opacity:.8}
+@media (max-width:760px){.dots-hero .hero-copy .ph-band{margin-top:20px}.dots-hero .hero-copy .ph-logo{height:calc(var(--h, 13) * .9px)!important}}
+
+/* under the hero (moved from hero-3d.css, 20 Oct 2026): ColorLoop in action (three clips) and the games band */
+/* under the hero (19 Oct 2026): the press band, then two stacked blocks. 1. ColorLoop in action: three clips playing on their own,
+   a click plays the film; the link leads to the customer stories. 2. The games band, which leads to Play. */
+.dots-hero .dh-stack{text-align:left;display:grid;gap:clamp(12px,1.6vw,18px);max-width:1180px;margin:0 auto;padding:0 clamp(16px,4vw,40px) clamp(40px,6vw,72px)}
+.dots-hero .dh-act{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.4fr);gap:clamp(24px,4vw,56px);align-items:center;padding:clamp(22px,3.4vw,44px);border-radius:24px;background:#17181b;box-shadow:inset 0 0 0 1px rgba(255,255,255,.06)}
+.dots-hero .dh-k{margin:0 0 12px;font-size:12.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#8e9198}
+.dots-hero .dh-h{margin:0;font-size:clamp(28px,3vw,44px);line-height:1.04;letter-spacing:-.032em;font-weight:600;color:#fff}
+.dots-hero .dh-h span{color:#ff3b30}
+.dots-hero .dh-p{margin:14px 0 0;max-width:28em;font-size:16px;line-height:1.5;color:#a9abb1;text-wrap:pretty}
+.dots-hero .dh-more{display:inline-block;margin-top:18px;font-size:15.5px;font-weight:500;color:#fff;text-decoration:underline;text-decoration-color:rgba(255,255,255,.35);text-underline-offset:6px;transition:text-decoration-color .2s ease}
+.dots-hero .dh-more:hover{text-decoration-color:#fff}
+.dots-hero .dh-clips{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:0;padding:0;list-style:none}
+.dots-hero .dh-clip{position:relative;display:block;aspect-ratio:9/16;border-radius:16px;overflow:hidden;background:#222326;color:#fff;text-decoration:none;transition:transform .2s cubic-bezier(.23,1,.32,1)}
+.dots-hero .dh-clip video{display:block;width:100%;height:100%;object-fit:cover;transition:transform .5s cubic-bezier(.23,1,.32,1)}
+.dots-hero .dh-clip::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(10,10,12,.85) 0,rgba(10,10,12,0) 48%);pointer-events:none}
+.dots-hero .dh-clip-t{position:absolute;z-index:1;left:12px;right:12px;bottom:12px;display:grid;gap:3px}
+.dots-hero .dh-clip-t b{font-size:14px;font-weight:600;line-height:1.25}
+.dots-hero .dh-clip-t span{font-size:12px;color:#c7c7cc}
+.dots-hero .dh-clip-play{position:relative;display:block;width:30px;height:30px;margin-bottom:8px;border-radius:50%;background:rgba(255,255,255,.94)}
+.dots-hero .dh-clip-play::before{content:"";position:absolute;left:12px;top:9px;border-style:solid;border-width:6px 0 6px 9px;border-color:transparent transparent transparent #141416}
+@media (hover:hover) and (pointer:fine){.dots-hero .dh-clip:hover video{transform:scale(1.04)}}
+.dots-hero .dh-clip:active{transform:scale(.98)}
+.dots-hero .dh-clip:focus-visible,.dots-hero .dh-eye:focus-visible{outline:2px solid #fff;outline-offset:3px}
+.dots-hero .dh-eye{display:grid;grid-template-columns:auto minmax(0,1fr) auto auto;align-items:center;gap:clamp(16px,3vw,36px);padding:clamp(18px,2.4vw,26px) clamp(20px,3vw,36px);border-radius:24px;background:#17181b;box-shadow:inset 0 0 0 1px rgba(255,255,255,.06);color:#fff;text-decoration:none;transition:background-color .2s ease}
+@media (hover:hover) and (pointer:fine){.dots-hero .dh-eye:hover{background:#1d1e22}}
+.dots-hero .dh-eye-copy{display:grid;gap:5px}
+.dots-hero .dh-eye-copy b{font-size:clamp(18px,1.6vw,22px);font-weight:600;letter-spacing:-.012em;line-height:1.25}
+.dots-hero .dh-eye-copy span{font-size:14.5px;line-height:1.5;color:#a9abb1}
+.dots-hero .dh-eye .dh-demo{padding:14px 0 0;gap:10px}
+.dots-hero .dh-eye .dh-demo-card{width:150px}
+.dots-hero .dh-eye .dh-demo-chips{gap:9px}.dots-hero .dh-eye .dh-demo-chips i{width:22px;height:22px}
+.dots-hero .dh-eye-go{display:inline-flex;align-items:center;min-height:46px;padding:0 22px;border-radius:999px;background:#fff;color:#141416;font-size:15px;font-weight:500}
+@media (max-width:900px){
+  .dots-hero .dh-act{grid-template-columns:1fr;padding:22px 0 24px;gap:20px}
+  .dots-hero .dh-act-copy{padding:0 22px}
+  .dots-hero .dh-clips{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:10px;padding:0 22px 2px;scrollbar-width:none}
+  .dots-hero .dh-clips::-webkit-scrollbar{display:none}
+  .dots-hero .dh-clips li{flex:0 0 44%;scroll-snap-align:start}
+  .dots-hero .dh-eye{grid-template-columns:auto minmax(0,1fr);gap:14px 16px}
+  .dots-hero .dh-eye .dh-demo{display:none}
+  .dots-hero .dh-eye-go{grid-column:1/-1;justify-content:center}
+}
+.dots-hero .dh-clip .dh-yt,.dots-hero .dh-clip .dh-yt-poster{position:absolute;inset:0;width:100%;height:100%;border:0;object-fit:cover;pointer-events:none}
+.dots-hero .dh-clip .dh-yt{transform:scale(1.32);opacity:0;transition:opacity .6s ease}
+.dots-hero .dh-clip .dh-yt.is-on{opacity:1}
+.dh-play .dh-after{padding-top:clamp(40px,6vw,72px)}
+.dots-hero .hero-copy .ph-band-t{max-width:none;margin:0 auto 10px}   /* 21 Oct 2026 (Valentina): centered over the logos */
+/* 21 Oct 2026 (Hugues): three customer faces before Watch the customer stories */
+.dots-hero .dh-more{display:inline-flex;align-items:center;gap:12px;text-decoration:none}
+.dots-hero .dh-more-t{text-decoration:underline;text-decoration-color:rgba(255,255,255,.35);text-underline-offset:6px;transition:text-decoration-color .2s ease}
+.dots-hero .dh-more:hover .dh-more-t{text-decoration-color:#fff}
+.dots-hero .dh-faces{display:flex;flex:none}
+.dots-hero .dh-faces img{display:block;width:34px;height:34px;border-radius:50%;border:2px solid #1a1b1e;object-fit:cover;background:#2a2b2f;transition:transform .2s cubic-bezier(.23,1,.32,1)}
+.dots-hero .dh-faces img+img{margin-left:-11px}
+@media (hover:hover) and (pointer:fine){.dots-hero .dh-more:hover .dh-faces img{transform:translateY(-2px)}.dots-hero .dh-more:hover .dh-faces img+img{transition-delay:.04s}.dots-hero .dh-more:hover .dh-faces img:last-child{transition-delay:.08s}}
+/* 21 Oct 2026 (Valentina: "un peu tassé"; Hugues: the dots sit too low on tall screens): the hero no longer stretches to the
+   screen height with the dots pushed to its bottom; the copy breathes and the dots follow the press band at a set distance */
+@media (min-width:761px){
+  .dh-night{min-height:0;padding-top:clamp(40px,7vh,88px)}
+  .dots-hero .hero-copy{margin-top:clamp(28px,4.4vh,48px)}
+  .dots-hero .hero-copy h1{margin-bottom:18px}
+  .dots-hero .hero-actions{margin-top:clamp(30px,4.4vh,42px)}
+  .dots-hero .hero-copy .ph-band{margin-top:clamp(44px,6.4vh,64px)}
+  .dh-dots{margin-top:0;padding-top:clamp(48px,7vh,88px)}
+}

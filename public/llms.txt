@@ -8,6 +8,10 @@ Rutherford connects offset press consoles to automated color control. Its softwa
 
 ColorLoop is press-agnostic. Compatible console families include Heidelberg (Prinect Press Center, CP2000, CP Tronic), Komori (KHS-AI, PQC-S), Koenig & Bauer (ErgoTronic, ColorTronic), Manroland (Pecom, ColorPilot), Mitsubishi, Ryobi, Goss and Presstek.
 
+## ColorLoop upgrade for Rutherford customers
+
+Printers running Rutherford EasySet-EasyLoop or IntelliSet-IntelliLoop keep their press, console and Rutherford hardware and move to ColorLoop without reinstalling: about 30-second job setup, corrections after each measured sheet, a Windows 10 or 11 interface. €590 a month or €5,300 a year per press, excl. VAT (the yearly plan gives 3 months free); optional ColorLoop PC (Lenovo ThinkCentre M90a, Windows 11) at €1,650. The Rutherford license stays with the customer. Order at https://colorloop.ai/rutherford-customers. Windows 10 support ended on October 14, 2025: press PCs still on Windows 10 no longer receive security updates.
+
 ## Offset360
 
 **Offset360** combines press-side scanning (IntelliTrax2), process control and reporting (MeasureColor) and Rutherford ColorLoop closed-loop ink-key correction into one sheetfed offset workflow, deployed by Rutherford.
@@ -18,7 +22,7 @@ The entry point for any printer is the free **console validation**: submit a few
 
 ## Key pages
 
-- [Home](https://rutherford.fr/): closed-loop color control for offset printing
+- [Home](https://rutherford.fr/): closed-loop color control for offset printing; Rutherford customers (EasySet-EasyLoop, IntelliSet-IntelliLoop) switch to ColorLoop on the same press and console, 3 months free on the yearly plan; ROI estimator; free console validation
 - [Console validation](https://rutherford.fr/console-validation): free press eligibility check
 - [Offset360](https://rutherford.fr/offset360): closed-loop workflow for sheetfed offset
 - [Closed-loop color control guide](https://rutherford.fr/closed-loop-color-control): the complete pillar guide (how the loop works, waste and makeready numbers, ISO 12647-2 / G7, retrofit)

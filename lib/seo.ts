@@ -106,12 +106,12 @@ export const SEO_COPY = {
       pt: 'Rutherford.fr | Controlo de cor closed-loop para impressão offset',
     },
     description: {
-      en: 'Rutherford.fr brings closed-loop color control to the offset press you already own. ColorLoop software, console validation and retrofit on Heidelberg, Komori, Koenig & Bauer, Manroland, Mitsubishi and Ryobi.',
-      fr: 'Rutherford.fr apporte le contrôle couleur closed-loop sur la presse offset que vous avez déjà. Logiciel ColorLoop, validation console et retrofit sur Heidelberg, Komori, Koenig & Bauer, Manroland, Mitsubishi et Ryobi.',
-      de: 'Rutherford.fr bringt Closed-Loop-Farbregelung auf die Offset-Druckmaschine, die Sie bereits besitzen. ColorLoop-Software, Konsolenvalidierung und Nachrüstung auf Heidelberg, Komori, Koenig & Bauer, Manroland, Mitsubishi und Ryobi.',
-      it: 'Rutherford.fr porta il controllo colore closed-loop sulla macchina offset che già possiede. Software ColorLoop, validazione console e retrofit su Heidelberg, Komori, Koenig & Bauer, Manroland, Mitsubishi e Ryobi.',
-      es: 'Rutherford.fr lleva el control del color closed-loop a la prensa offset que ya tiene. Software ColorLoop, validación de consola y retrofit en Heidelberg, Komori, Koenig & Bauer, Manroland, Mitsubishi y Ryobi.',
-      pt: 'A Rutherford.fr leva o controlo de cor closed-loop à máquina offset que já tem. Software ColorLoop, validação de consola e retrofit em Heidelberg, Komori, Koenig & Bauer, Manroland, Mitsubishi e Ryobi.',
+      en: 'Closed-loop color control on the offset press you already own. EasySet and IntelliSet users: switch to ColorLoop, same press and console, 3 months free. Free console check for Heidelberg, Komori, Koenig & Bauer, Manroland, Mitsubishi, Ryobi.',
+      fr: 'Contrôle couleur closed-loop sur la presse offset que vous avez déjà. Utilisateurs EasySet et IntelliSet : passez à ColorLoop, même presse et même pupitre, 3 mois offerts. Validation console gratuite pour Heidelberg, Komori, Koenig & Bauer, Manroland, Mitsubishi, Ryobi.',
+      de: 'Closed-Loop-Farbsteuerung auf der Offset-Druckmaschine, die Sie bereits besitzen. EasySet- und IntelliSet-Anwender: Wechseln Sie zu ColorLoop, gleiche Druckmaschine und gleiches Pult, 3 Monate gratis. Kostenlose Konsolenvalidierung für Heidelberg, Komori, Koenig & Bauer, Manroland, Mitsubishi, Ryobi.',
+      it: 'Controllo colore closed-loop sulla macchina offset che già possiede. Utenti EasySet e IntelliSet: passi a ColorLoop, stessa macchina e stesso pulpito, 3 mesi gratis. Validazione console gratuita per Heidelberg, Komori, Koenig & Bauer, Manroland, Mitsubishi, Ryobi.',
+      es: 'Control del color closed-loop en la prensa offset que ya tiene. Usuarios de EasySet e IntelliSet: pase a ColorLoop, misma prensa y misma consola, 3 meses gratis. Validación de consola gratuita para Heidelberg, Komori, Koenig & Bauer, Manroland, Mitsubishi, Ryobi.',
+      pt: 'Controlo de cor closed-loop na máquina offset que já tem. Utilizadores EasySet e IntelliSet: mude para o ColorLoop, a mesma máquina e a mesma consola, 3 meses grátis. Validação de consola gratuita para Heidelberg, Komori, Koenig & Bauer, Manroland, Mitsubishi, Ryobi.',
     },
   },
   closedLoop: {
