@@ -93,8 +93,8 @@ function stripBlock(cells: Cell[]): string {
   return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border:1px solid ${DATA_BORDER};border-radius:10px;border-collapse:separate;margin:20px 0 22px;"><tr>${tds}</tr></table>`;
 }
 
-function cta(label: string, href: string): string {
-  return `<table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr><td align="left" bgcolor="${BLUE}" style="border-radius:999px;">
+function cta(label: string, href: string, center = false): string {
+  return `<table role="presentation" cellpadding="0" cellspacing="0" border="0"${center ? ' align="center" style="margin:0 auto;"' : ''}><tr><td align="${center ? 'center' : 'left'}" bgcolor="${BLUE}" style="border-radius:999px;">
     <!--[if mso]>&nbsp;<![endif]-->
     <a href="${href}" style="display:inline-block;background:${BLUE};color:#ffffff;font-family:${F_BODY};font-weight:600;font-size:14.5px;line-height:1;padding:13px 24px;border-radius:999px;text-decoration:none;white-space:nowrap;">${esc(label)} &rarr;</a>
     <!--[if mso]>&nbsp;<![endif]-->
@@ -121,7 +121,7 @@ export type EmailSpec = {
   /** Optional full-width illustration above the button (absolute URL). */
   image?: { src: string; alt: string; width: number; height: number };
   secondary?: { label: string; href: string };
-  cta: { label: string; href: string };
+  cta: { label: string; href: string; center?: boolean };
 };
 
 export function render(spec: EmailSpec): string {
@@ -207,7 +207,7 @@ export function render(spec: EmailSpec): string {
               : ''
           }
           ${secondary}
-          ${cta(spec.cta.label, spec.cta.href)}
+          ${cta(spec.cta.label, spec.cta.href, spec.cta.center)}
         </td></tr>
         <tr><td class="rf-foot" style="padding:4px 34px 24px;">
           <div style="margin-bottom:14px;font-size:0;line-height:0;">${spectrumRail(3)}</div>
@@ -587,7 +587,7 @@ export function consoleResumeEmail(opts: { locale: string; company: string; url:
       headline: c.headline,
       body: [c.body(esc(opts.company)), c.closing],
       image: { src: PHOTOS_STRIP, alt: c.photosAlt, width: 1072, height: 777 },
-      cta: { label: c.cta, href: opts.url },
+      cta: { label: c.cta, href: opts.url, center: true },
     }),
   };
 }
