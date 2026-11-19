@@ -203,7 +203,7 @@ export function render(spec: EmailSpec): string {
           ${spec.dataBlock ?? ''}
           ${
             spec.image
-              ? `<img src="${spec.image.src}" alt="${esc(spec.image.alt)}" width="512" style="display:block;width:100%;max-width:512px;height:auto;margin:6px 0 22px;border:0;">`
+              ? `<img src="${spec.image.src}" alt="${esc(spec.image.alt)}" width="512" style="display:block;width:100%;max-width:512px;height:auto;margin:4px 0 20px;border:0;">`
               : ''
           }
           ${secondary}
@@ -507,12 +507,12 @@ export function moreInfoEmail(lead: ResultLead): { subject: string; html: string
   };
 }
 
-// The photos to take, as on the form: console, press, ink keys, plate.
+// The press console sketch from the form, large on white.
 const PHOTOS_STRIP = `${SITE}/images/email-console-photos.png`;
 
 const RESUME_COPY: Record<EmailLocale, { subject: string; photosAlt: string; preheader: string; eyebrow: string; headline: { pre: string; accent: string; post: string }; body: (c: string) => string; closing: string; cta: string }> = {
   en: {
-    photosAlt: 'The photos to take: the console, the press, the ink keys and the machine plate',
+    photosAlt: 'An offset press console',
     subject: 'Finish your console validation from the press',
     preheader: 'Your details are saved. Only the press and the photos are left.',
     eyebrow: 'CONSOLE VALIDATION',
@@ -522,7 +522,7 @@ const RESUME_COPY: Record<EmailLocale, { subject: string; photosAlt: string; pre
     cta: 'Finish my console validation',
   },
   fr: {
-    photosAlt: 'Les photos à prendre : la console, la presse, les clés d’encrage et la plaque constructeur',
+    photosAlt: 'Une console de presse offset',
     subject: 'Terminez votre validation console devant la presse',
     preheader: 'Vos coordonnées sont enregistrées. Il ne reste que la presse et les photos.',
     eyebrow: 'VALIDATION CONSOLE',
@@ -532,7 +532,7 @@ const RESUME_COPY: Record<EmailLocale, { subject: string; photosAlt: string; pre
     cta: 'Terminer ma validation console',
   },
   de: {
-    photosAlt: 'Die Fotos: das Pult, die Druckmaschine, die Farbzonenschrauben und das Typenschild',
+    photosAlt: 'Ein Bedienpult einer Offset-Druckmaschine',
     subject: 'Schließen Sie Ihre Konsolenvalidierung an der Druckmaschine ab',
     preheader: 'Ihre Angaben sind gespeichert. Es fehlen nur noch die Druckmaschine und die Fotos.',
     eyebrow: 'KONSOLENVALIDIERUNG',
@@ -542,7 +542,7 @@ const RESUME_COPY: Record<EmailLocale, { subject: string; photosAlt: string; pre
     cta: 'Konsolenvalidierung abschließen',
   },
   it: {
-    photosAlt: 'Le foto da scattare: la console, la macchina, le chiavi di inchiostro e la targhetta',
+    photosAlt: 'Una console di macchina offset',
     subject: 'Completi la validazione console davanti alla macchina',
     preheader: 'I Suoi dati sono salvati. Mancano solo la macchina e le foto.',
     eyebrow: 'VALIDAZIONE CONSOLE',
@@ -552,7 +552,7 @@ const RESUME_COPY: Record<EmailLocale, { subject: string; photosAlt: string; pre
     cta: 'Completa la validazione console',
   },
   es: {
-    photosAlt: 'Las fotos que hay que tomar: la consola, la prensa, las llaves de tinta y la placa de la máquina',
+    photosAlt: 'Una consola de prensa offset',
     subject: 'Termine su validación de consola junto a la prensa',
     preheader: 'Sus datos están guardados. Solo faltan la prensa y las fotos.',
     eyebrow: 'VALIDACIÓN DE CONSOLA',
@@ -562,7 +562,7 @@ const RESUME_COPY: Record<EmailLocale, { subject: string; photosAlt: string; pre
     cta: 'Terminar mi validación de consola',
   },
   pt: {
-    photosAlt: 'As fotografias a tirar: a consola, a máquina, as chaves de tinta e a placa da máquina',
+    photosAlt: 'Uma consola de máquina offset',
     subject: 'Termine a validação de consola junto à máquina',
     preheader: 'Os seus dados estão guardados. Só faltam a máquina e as fotografias.',
     eyebrow: 'VALIDAÇÃO DE CONSOLA',
@@ -586,7 +586,7 @@ export function consoleResumeEmail(opts: { locale: string; company: string; url:
       tone: 'info',
       headline: c.headline,
       body: [c.body(esc(opts.company)), c.closing],
-      image: { src: PHOTOS_STRIP, alt: c.photosAlt, width: 1024, height: 220 },
+      image: { src: PHOTOS_STRIP, alt: c.photosAlt, width: 1072, height: 777 },
       cta: { label: c.cta, href: opts.url },
     }),
   };
