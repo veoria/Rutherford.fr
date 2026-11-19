@@ -18,7 +18,16 @@ export type Attribution = {
   referrer?: string; // referring hostname when there is no UTM
   landing?: string; // first path seen this session
   at?: string; // ISO timestamp of first touch
+  // Upstream journey handed over by a partner site (colorloop.ai adds cl_*
+  // parameters to every link pointing at the console validation form).
+  ref?: string; // cl_ref, the site that sent the visitor (e.g. colorloop.ai)
+  channel?: string; // cl_channel, first-touch channel on that site
+  lastChannel?: string; // cl_last_channel
+  refLanding?: string; // cl_landing, first page seen on that site
+  firstAt?: string; // cl_first_at, first visit date on that site
 };
+
+const UPSTREAM_PARAMS = ['utm_source', 'utm_campaign', 'cl_ref', 'cl_channel'];
 
 const clean = (v: string | null): string | undefined => {
   const s = (v ?? '').trim().slice(0, 120);
@@ -33,9 +42,16 @@ const clean = (v: string | null): string | undefined => {
 export function captureAttribution(): void {
   if (typeof window === 'undefined') return;
   try {
-    if (sessionStorage.getItem(KEY)) return;
-
     const params = new URLSearchParams(window.location.search);
+    const existing = sessionStorage.getItem(KEY);
+    if (existing) {
+      // First touch wins, except when the session started without any source
+      // and this page arrives tagged (e.g. a colorloop.ai "Check your press"
+      // link after the visitor browsed rutherford.fr directly).
+      const prev = JSON.parse(existing) as Attribution;
+      const tagged = UPSTREAM_PARAMS.some((k) => params.get(k));
+      if (!tagged || prev.source || prev.ref) return;
+    }
     let referrer: string | undefined;
     try {
       // Internal navigations are not a source.
@@ -54,6 +70,11 @@ export function captureAttribution(): void {
       referrer,
       landing: window.location.pathname.slice(0, 200),
       at: new Date().toISOString(),
+      ref: clean(params.get('cl_ref')),
+      channel: clean(params.get('cl_channel')),
+      lastChannel: clean(params.get('cl_last_channel')),
+      refLanding: clean(params.get('cl_landing')),
+      firstAt: clean(params.get('cl_first_at')),
     };
 
     sessionStorage.setItem(KEY, JSON.stringify(data));
@@ -84,8 +105,63 @@ export function formatAttribution(a: Attribution | null | undefined): string {
   if (a.medium) parts.push(`(${a.medium})`);
   if (a.campaign) parts.push(`campaign: ${a.campaign}`);
   if (a.content) parts.push(`content: ${a.content}`);
+  if (!parts.length && a.ref) parts.push(`${a.ref}${a.channel ? ` (${a.channel})` : ''}`);
   if (!parts.length && a.referrer) parts.push(`referrer: ${a.referrer}`);
   if (!parts.length) parts.push('direct');
   if (a.landing && a.landing !== '/console-validation') parts.push(`landed on ${a.landing}`);
   return parts.join(' ');
+}
+
+/** Clamps one untrusted attribution field (server side). */
+const field = (v: unknown): string | undefined => {
+  const t = typeof v === 'string' ? v.trim().slice(0, 120) : '';
+  return t || undefined;
+};
+
+/** Reads an attribution object sent by the browser. Untrusted, so every field is clamped. */
+export function parseAttribution(raw: unknown): Attribution | null {
+  if (!raw || typeof raw !== 'object') return null;
+  const a = raw as Record<string, unknown>;
+  return {
+    source: field(a.source),
+    medium: field(a.medium),
+    campaign: field(a.campaign),
+    content: field(a.content),
+    referrer: field(a.referrer),
+    landing: field(a.landing),
+    ref: field(a.ref),
+    channel: field(a.channel),
+    lastChannel: field(a.lastChannel),
+    refLanding: field(a.refLanding),
+    firstAt: field(a.firstAt),
+  };
+}
+
+/**
+ * Business introducer: leads sent by colorloop.ai, or by a landing-page
+ * campaign (utm_campaign lp_*), are credited to Hugues.
+ */
+export function introducerOf(a: Attribution | null | undefined): string | null {
+  if (!a) return null;
+  if (a.ref?.toLowerCase() === 'colorloop.ai' || a.campaign?.toLowerCase().startsWith('lp_')) return 'Hugues';
+  return null;
+}
+
+/** Detailed "Key: value" lines for the CRM note, only the fields present. */
+export function attributionLines(a: Attribution | null | undefined): string[] {
+  if (!a) return [];
+  const rows: [string, string | undefined][] = [
+    ['Apporteur', introducerOf(a) ?? undefined],
+    ["Site d'origine", a.ref],
+    ['Canal', a.channel],
+    ['Dernier canal', a.lastChannel],
+    ['utm_source', a.source],
+    ['utm_medium', a.medium],
+    ['utm_campaign', a.campaign],
+    ['utm_content', a.content],
+    ["Page d'arrivée (origine)", a.refLanding],
+    ['Première visite', a.firstAt],
+    ["Page d'arrivée (rutherford.fr)", a.landing],
+  ];
+  return rows.filter(([, v]) => v).map(([k, v]) => `${k} : ${v}`);
 }

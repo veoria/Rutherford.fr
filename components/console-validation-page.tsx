@@ -121,6 +121,10 @@ type Copy = {
   companyClientPh: string;
   country: string;
   countryPh: string;
+  phoneLabel: string;
+  phonePh: string;
+  later: string;
+  laterSent: string;
   // Step 2
   step2Lead: string;
   pressBrand: string;
@@ -214,6 +218,10 @@ const COPY: Record<Locale, Copy> = {
     companyClientPh: 'Client company',
     country: 'Country',
     countryPh: 'Select a country',
+    phoneLabel: 'Phone (optional)',
+    phonePh: '+33 6 12 34 56 78',
+    later: 'Finish later from my phone',
+    laterSent: 'Link sent. Open the email on your phone next to the press.',
     step2Lead: "Pick your press brand — we'll only ask for the photos that apply to it.",
     pressBrand: 'Press brand',
     pressBrandPh: 'Select a brand',
@@ -315,6 +323,10 @@ const COPY: Record<Locale, Copy> = {
     companyClientPh: 'Imprimerie du client',
     country: 'Pays',
     countryPh: 'Sélectionnez un pays',
+    phoneLabel: 'Téléphone (facultatif)',
+    phonePh: '+33 6 12 34 56 78',
+    later: 'Terminer plus tard depuis mon téléphone',
+    laterSent: 'Lien envoyé. Ouvrez l’email sur votre téléphone, à côté de la presse.',
     step2Lead: 'Choisissez la marque de votre presse — nous ne demanderons que les photos utiles pour celle-ci.',
     pressBrand: 'Marque de la presse',
     pressBrandPh: 'Sélectionnez une marque',
@@ -416,6 +428,10 @@ const COPY: Record<Locale, Copy> = {
     companyClientPh: 'Druckerei des Kunden',
     country: 'Land',
     countryPh: 'Land auswählen',
+    phoneLabel: 'Telefon (optional)',
+    phonePh: '+49 151 23456789',
+    later: 'Später am Smartphone abschließen',
+    laterSent: 'Link gesendet. Öffnen Sie die E-Mail auf Ihrem Smartphone an der Druckmaschine.',
     step2Lead: 'Wählen Sie den Hersteller Ihrer Druckmaschine — wir fragen nur die Fotos ab, die dafür relevant sind.',
     pressBrand: 'Hersteller der Druckmaschine',
     pressBrandPh: 'Hersteller auswählen',
@@ -517,6 +533,10 @@ const COPY: Record<Locale, Copy> = {
     companyClientPh: 'Azienda del cliente',
     country: 'Paese',
     countryPh: 'Selezioni un paese',
+    phoneLabel: 'Telefono (facoltativo)',
+    phonePh: '+39 312 345 6789',
+    later: 'Completare più tardi dal telefono',
+    laterSent: 'Link inviato. Apra l’email sul telefono, accanto alla macchina.',
     step2Lead: 'Scelga la marca della sua macchina — le chiederemo solo le foto necessarie per quel modello.',
     pressBrand: 'Marca della macchina',
     pressBrandPh: 'Selezioni una marca',
@@ -618,6 +638,10 @@ const COPY: Record<Locale, Copy> = {
     companyClientPh: 'Empresa del cliente',
     country: 'País',
     countryPh: 'Seleccione un país',
+    phoneLabel: 'Teléfono (opcional)',
+    phonePh: '+34 612 34 56 78',
+    later: 'Terminar más tarde desde mi teléfono',
+    laterSent: 'Enlace enviado. Abra el email en su teléfono, junto a la prensa.',
     step2Lead: 'Elija la marca de su prensa — solo le pediremos las fotos que correspondan.',
     pressBrand: 'Marca de la prensa',
     pressBrandPh: 'Seleccione una marca',
@@ -719,6 +743,10 @@ const COPY: Record<Locale, Copy> = {
     companyClientPh: 'Empresa do cliente',
     country: 'País',
     countryPh: 'Selecione um país',
+    phoneLabel: 'Telefone (opcional)',
+    phonePh: '+351 912 345 678',
+    later: 'Terminar mais tarde no telemóvel',
+    laterSent: 'Ligação enviada. Abra o email no telemóvel, junto à máquina.',
     step2Lead: 'Escolha a marca da sua máquina — só pediremos as fotos relevantes para ela.',
     pressBrand: 'Marca da máquina',
     pressBrandPh: 'Selecione uma marca',
@@ -1006,6 +1034,11 @@ export function ConsoleValidationPage({
   const [pressBrand, setPressBrand] = useState(brand && BRANDS.includes(brand.name) ? brand.name : '');
   const [model, setModel] = useState('');
   const [notes, setNotes] = useState('');
+  const [phone, setPhone] = useState('');
+  // Signed token of the Pipedrive deal opened at step 1 (see /api/console-validation/start).
+  const [leadToken, setLeadToken] = useState<string | null>(null);
+  const [leadEmail, setLeadEmail] = useState('');
+  const [laterState, setLaterState] = useState<'idle' | 'sending' | 'sent'>('idle');
   const [signedInEmail, setSignedInEmail] = useState<string | null>(null);
   const [onBehalf, setOnBehalf] = useState(false);
 
@@ -1024,6 +1057,29 @@ export function ConsoleValidationPage({
     // "Check compatibility" from a press in Mon atelier: prefill the model.
     const machine = params.get('model');
     if (machine) setModel(machine.slice(0, 120));
+    // From the ColorLoop configurator on the home: the offer the printer picked
+    // lands in the notes, so it reaches Pipedrive with the request.
+    // "Finish later" link from the email: details back, straight to the press step.
+    const resume = params.get('resume');
+    if (resume) {
+      try {
+        const b64 = resume.replace(/-/g, '+').replace(/_/g, '/');
+        const r = JSON.parse(decodeURIComponent(escape(atob(b64))));
+        if (typeof r.email === 'string') { setEmail(r.email); setLeadEmail(r.email); }
+        if (typeof r.companyName === 'string') setCompanyName(r.companyName);
+        if (typeof r.country === 'string') setCountry(r.country);
+        if (typeof r.phone === 'string') setPhone(r.phone);
+        if (typeof r.notes === 'string') setNotes(r.notes);
+        if (typeof r.lead === 'string') setLeadToken(r.lead);
+        setStarted(true);
+        setStep(2);
+        setMaxStep(2);
+      } catch {
+        /* malformed link: the form simply starts empty */
+      }
+    }
+    const offer = params.get('offer');
+    if (offer) setNotes((v) => v || `ColorLoop: ${offer.slice(0, 160)}`);
     // Deep-link straight to the form (e.g. /console-validation#submit).
     if (window.location.hash === '#submit') setStarted(true);
   }, []);
@@ -1138,9 +1194,42 @@ export function ConsoleValidationPage({
       return;
     }
     setErrorMsg(null);
+    if (step === 1 && (!leadToken || leadEmail.toLowerCase() !== email.trim().toLowerCase())) startLead();
     const n = Math.min(3, step + 1);
     setStep(n);
     setMaxStep((m) => Math.max(m, n));
+  };
+
+  // Step 1 done: the lead reaches Pipedrive now, photos or not. Never blocks the form.
+  const startLead = () => {
+    const sentEmail = email.trim();
+    const attribution = readAttribution();
+    fetch('/api/console-validation/start', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: sentEmail, companyName, country, phone, notes, ref: refCode, attribution }),
+    })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((b) => {
+        if (b?.lead) {
+          setLeadToken(b.lead);
+          setLeadEmail(sentEmail);
+        }
+      })
+      .catch(() => {});
+    track('console_validation_start', { country, source: attribution?.source ?? attribution?.ref ?? attribution?.referrer ?? 'direct' });
+    (window as any).posthog?.capture?.('console_validation_start', { country, source: attribution?.source ?? attribution?.ref ?? attribution?.referrer ?? 'direct' });
+  };
+
+  const finishLater = async () => {
+    if (!leadToken || laterState !== 'idle') return;
+    setLaterState('sending');
+    const res = await fetch('/api/console-validation/later', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ lead: leadToken, email: leadEmail || email.trim(), companyName, country, phone, notes, locale }),
+    }).catch(() => null);
+    setLaterState(res?.ok ? 'sent' : 'idle');
   };
 
   const navTo = (n: number) => {
@@ -1185,7 +1274,7 @@ export function ConsoleValidationPage({
       const res = await fetch('/api/console-validation', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, companyName, country, machineName, notes, ref: refCode, invite: invite?.token, uploadId, photos, attribution }),
+        body: JSON.stringify({ email, companyName, country, machineName, notes, phone, lead: leadToken, ref: refCode, invite: invite?.token, uploadId, photos, attribution }),
       });
       if (!res.ok) {
         const body = await res.json().catch(() => null);
@@ -1492,6 +1581,19 @@ export function ConsoleValidationPage({
                               <Caret />
                             </span>
                           </label>
+                          <label className="cv-field cv-field-full">
+                            <span className="cv-label">{t.phoneLabel}</span>
+                            <input
+                              className="cv-input"
+                              type="tel"
+                              autoComplete="tel"
+                              inputMode="tel"
+                              maxLength={30}
+                              placeholder={t.phonePh}
+                              value={phone}
+                              onChange={(e) => setPhone(e.target.value)}
+                            />
+                          </label>
                         </div>
                       </>
                     ) : null}
@@ -1613,6 +1715,17 @@ export function ConsoleValidationPage({
                   {step === 3 && photosLeft > 0 ? (
                     <div className="cv-stepnote">
                       {t.photosLeft(photosLeft)}
+                    </div>
+                  ) : null}
+                  {step >= 2 && leadToken ? (
+                    <div className="cv-stepnote">
+                      {laterState === 'sent' ? (
+                        <span role="status">{t.laterSent}</span>
+                      ) : (
+                        <button type="button" className="cv-btn-ghost" onClick={finishLater} disabled={laterState === 'sending'}>
+                          {t.later}
+                        </button>
+                      )}
                     </div>
                   ) : null}
                   <Reassure items={t.reassure} />

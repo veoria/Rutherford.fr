@@ -1,7 +1,8 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { createSupabaseAdminClient, createSupabaseServerClient } from '@/lib/supabase/server';
-import { addDealNote, createConsoleValidationDeal, pipedriveDealUrl } from '@/lib/pipedrive';
-import { formatAttribution } from '@/lib/attribution';
+import { addDealNote, createConsoleValidationDeal, linkDealParties, pipedriveDealUrl, renameDeal } from '@/lib/pipedrive';
+import { attributionLines, formatAttribution, introducerOf, parseAttribution } from '@/lib/attribution';
+import { cleanPhone, dealFromLeadToken } from '@/lib/console-lead';
 import { addConsoleValidationPreviews, asanaTaskUrl, consoleValidationWatchers, createConsoleValidationTask } from '@/lib/asana';
 import {
   assigneeMentionsEnabled,
@@ -44,6 +45,8 @@ const validPhoto = (p: any): p is PhotoRef =>
   typeof p.path === 'string' &&
   /^tmp\/[a-z0-9-]+\/[a-z]+\.[a-z0-9]+$/i.test(p.path);
 
+const escapeNote = (v: string) => v.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
 /** Clamps an untrusted attribution field to a short, safe string. */
 const str = (v: unknown): string | undefined => {
   const s = typeof v === 'string' ? v.trim().slice(0, 120) : '';
@@ -67,18 +70,11 @@ export async function POST(request: NextRequest) {
   const inviteToken = String(body.invite ?? '').trim().slice(0, 200);
   // Where the lead came from (UTM / referrer), captured client-side on the first
   // page of the session. Untrusted input, so every field is clamped.
-  const attribution = formatAttribution(
-    body.attribution && typeof body.attribution === 'object'
-      ? {
-          source: str(body.attribution.source),
-          medium: str(body.attribution.medium),
-          campaign: str(body.attribution.campaign),
-          content: str(body.attribution.content),
-          referrer: str(body.attribution.referrer),
-          landing: str(body.attribution.landing),
-        }
-      : null,
-  );
+  const phone = cleanPhone(body.phone);
+  const parsedAttribution = parseAttribution(body.attribution);
+  const attribution = formatAttribution(parsedAttribution);
+  const introducer = introducerOf(parsedAttribution);
+  const sourceDetails = attributionLines(parsedAttribution);
 
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 200) {
     return NextResponse.json({ error: 'A valid email address is required' }, { status: 400 });
@@ -164,10 +160,22 @@ export async function POST(request: NextRequest) {
   const recordUserId = onBehalf ? null : userId;
 
   // 1) Pipedrive Deal first: its id stamps the title that everything else reuses.
-  const deal = await createConsoleValidationDeal({ company: companyName, country, machine: machineName });
+  // When the lead was opened at step 1 (signed token for this email), complete
+  // that deal with the press instead of opening a second one.
   const baseTitle = [country, companyName, machineName].map((s) => s.trim()).filter(Boolean).join(' - ');
-  const title = deal?.title ?? baseTitle;
-  const dealId = deal?.id ?? null;
+  const startedDealId = dealFromLeadToken(body.lead, email);
+  let dealId: number | null;
+  let title: string;
+  if (startedDealId) {
+    dealId = startedDealId;
+    title = `${baseTitle} - ID${startedDealId}`;
+    await renameDeal(dealId, title);
+  } else {
+    const deal = await createConsoleValidationDeal({ company: companyName, country, machine: machineName });
+    title = deal?.title ?? baseTitle;
+    dealId = deal?.id ?? null;
+  }
+  await linkDealParties(dealId, { email, company: companyName, phone });
 
   const submittedAt = new Date().toISOString();
   const infosTxt = [
@@ -177,8 +185,10 @@ export async function POST(request: NextRequest) {
     `Country  : ${country}`,
     `Machine  : ${machineName}`,
     `Email    : ${email}`,
+    phone ? `Phone    : ${phone}` : null,
     `Pipedrive: ${dealId ? `ID${dealId}` : 'n/a'}`,
     `Source   : ${attribution}`,
+    introducer ? `Apporteur: ${introducer}` : null,
     refCode ? `Referral : ${refCode}` : null,
     notes ? `Notes    : ${notes}` : null,
     '',
@@ -286,10 +296,18 @@ export async function POST(request: NextRequest) {
   await addDealNote(
     dealId,
     [
-      'Console validation request received via rutherford.fr/console-validation.',
+      startedDealId
+        ? '<b>Validation console terminée</b> : presse et photos reçues.'
+        : 'Console validation request received via rutherford.fr/console-validation.',
+      `Machine : ${escapeNote(machineName)}`,
+      phone ? `Téléphone : ${escapeNote(phone)}` : null,
+      `Source : ${escapeNote(attribution)}`,
+      ...sourceDetails.map(escapeNote),
       `Photos: ${photoCount}`,
       `Storage: ${storageRef}`,
-    ].join('<br>')
+    ]
+      .filter(Boolean)
+      .join('<br>')
   );
 
   const validationId = await insertConsoleValidation({

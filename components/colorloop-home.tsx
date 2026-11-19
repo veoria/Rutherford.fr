@@ -25,6 +25,7 @@ const SECTIONS = {
 const SiteFooter = dynamic(() => import('@/components/site-footer').then((m) => m.SiteFooter), { ssr: true });
 
 const IMG = '/images/colorloop-ai';
+const MEET_URL = 'https://rutherfordindustriesgraphiques-2bd706.pipedrive.com/scheduler/3KG0yJSy/meeting';
 const CRA_URL = 'https://eur-lex.europa.eu/eli/reg/2024/2847/oj';
 
 // colorloop.ai has en / fr / de / es / it / pt.
@@ -84,6 +85,8 @@ type Copy = {
   cfgLicense: string;
   orderCta: string;
   checkCta: string;
+  orderNote: string;
+  meetCta: string;
   regulationCta: string;
   articlesTitle: string;
   articlesAll: string;
@@ -116,7 +119,7 @@ const EN: Copy = {
   warnNote: 'Applicability depends on the product and each party’s role. This is not a statement of certification.',
   warnCta: 'Update',
   cfgTitle: 'Prepare your ColorLoop.',
-  cfgLead: 'Three choices. Then order online, Rutherford checks your system and activates it.',
+  cfgLead: 'Three choices, then your console validation: Rutherford checks your setup and calls you to prepare the switch.',
   cfgPlan: 'Plan',
   cfgYearly: ['Yearly', '€5,300 per press and year'],
   cfgMonthly: ['Monthly', '€590 per press and month, no commitment'],
@@ -129,8 +132,10 @@ const EN: Copy = {
   cfgThenYear: 'then {x} a year',
   cfgThenMonth: 'then {x} a month',
   cfgLicense: 'Your Rutherford license stays yours.',
-  orderCta: 'Order',
-  checkCta: 'Check your press',
+  orderCta: 'Order online',
+  checkCta: 'Request console validation',
+  orderNote: 'Ordering online reserves your offer. The installation is always prepared with us.',
+  meetCta: 'Book a phone or video call',
   regulationCta: 'Discover PPWR Connect',
   articlesTitle: 'From the blog',
   articlesAll: 'See all articles',
@@ -163,7 +168,7 @@ const FR: Copy = {
   warnNote: 'L’applicabilité dépend du produit et du rôle de chacun. Ceci n’est pas une déclaration de certification.',
   warnCta: 'Mettre à jour',
   cfgTitle: 'Préparez votre ColorLoop.',
-  cfgLead: 'Trois choix. Puis commandez en ligne, Rutherford vérifie votre système et l’active.',
+  cfgLead: 'Trois choix, puis la validation de votre console : Rutherford vérifie votre installation et vous rappelle pour préparer le passage à ColorLoop.',
   cfgPlan: 'Abonnement',
   cfgYearly: ['Annuel', '5 300 € HT par presse et par an'],
   cfgMonthly: ['Mensuel', '590 € HT par presse et par mois, sans engagement'],
@@ -176,8 +181,10 @@ const FR: Copy = {
   cfgThenYear: 'puis {x} par an',
   cfgThenMonth: 'puis {x} par mois',
   cfgLicense: 'Votre licence Rutherford reste la vôtre.',
-  orderCta: 'Commander',
-  checkCta: 'Valider ma console',
+  orderCta: 'Commander en ligne',
+  checkCta: 'Demander une validation console',
+  orderNote: 'La commande en ligne réserve votre offre. L’installation se prépare toujours avec nous.',
+  meetCta: 'Prendre rendez-vous, par téléphone ou en visio',
   regulationCta: 'Découvrir PPWR Connect',
   articlesTitle: 'Le blog',
   articlesAll: 'Voir tous les articles',
@@ -210,7 +217,7 @@ const DE: Copy = {
   warnNote: 'Die Anwendbarkeit hängt vom Produkt und von der Rolle der Beteiligten ab. Dies ist keine Aussage über eine Zertifizierung.',
   warnCta: 'Aktualisieren',
   cfgTitle: 'Stellen Sie Ihr ColorLoop zusammen.',
-  cfgLead: 'Drei Entscheidungen. Dann online bestellen, Rutherford prüft Ihr System und aktiviert es.',
+  cfgLead: 'Drei Entscheidungen, dann die Konsolenvalidierung: Rutherford prüft Ihre Installation und ruft Sie an, um den Wechsel zu ColorLoop vorzubereiten.',
   cfgPlan: 'Abonnement',
   cfgYearly: ['Jährlich', '5.300 € pro Druckmaschine und Jahr'],
   cfgMonthly: ['Monatlich', '590 € pro Druckmaschine und Monat, ohne Bindung'],
@@ -223,8 +230,10 @@ const DE: Copy = {
   cfgThenYear: 'danach {x} pro Jahr',
   cfgThenMonth: 'danach {x} pro Monat',
   cfgLicense: 'Ihre Rutherford-Lizenz bleibt Ihre.',
-  orderCta: 'Bestellen',
-  checkCta: 'Druckmaschine prüfen',
+  orderCta: 'Online bestellen',
+  checkCta: 'Konsolenvalidierung anfragen',
+  orderNote: 'Die Online-Bestellung sichert Ihr Angebot. Die Installation bereiten wir immer gemeinsam mit Ihnen vor.',
+  meetCta: 'Termin vereinbaren, per Telefon oder Video',
   regulationCta: 'PPWR Connect entdecken',
   articlesTitle: 'Aus dem Blog',
   articlesAll: 'Alle Artikel ansehen',
@@ -257,7 +266,7 @@ const IT: Copy = {
   warnNote: 'L’applicabilità dipende dal prodotto e dal ruolo di ciascuno. Non si tratta di una dichiarazione di certificazione.',
   warnCta: 'Aggiorna',
   cfgTitle: 'Prepari il Suo ColorLoop.',
-  cfgLead: 'Tre scelte. Poi ordini online: Rutherford verifica il Suo sistema e lo attiva.',
+  cfgLead: 'Tre scelte, poi la validazione della Sua console: Rutherford verifica l’installazione e La richiama per preparare il passaggio a ColorLoop.',
   cfgPlan: 'Abbonamento',
   cfgYearly: ['Annuale', '5.300 € per macchina all’anno'],
   cfgMonthly: ['Mensile', '590 € per macchina al mese, senza vincoli'],
@@ -270,8 +279,10 @@ const IT: Copy = {
   cfgThenYear: 'poi {x} all’anno',
   cfgThenMonth: 'poi {x} al mese',
   cfgLicense: 'La Sua licenza Rutherford resta Sua.',
-  orderCta: 'Ordina',
-  checkCta: 'Verifica la macchina',
+  orderCta: 'Ordina online',
+  checkCta: 'Richiedi validazione console',
+  orderNote: 'L’ordine online riserva la Sua offerta. L’installazione si prepara sempre insieme a noi.',
+  meetCta: 'Fissi un appuntamento, al telefono o in video',
   regulationCta: 'Scopri PPWR Connect',
   articlesTitle: 'Dal blog',
   articlesAll: 'Tutti gli articoli',
@@ -304,7 +315,7 @@ const ES: Copy = {
   warnNote: 'La aplicabilidad depende del producto y del papel de cada parte. Esto no es una declaración de certificación.',
   warnCta: 'Actualizar',
   cfgTitle: 'Prepare su ColorLoop.',
-  cfgLead: 'Tres elecciones. Después, haga su pedido en línea: Rutherford comprueba su sistema y lo activa.',
+  cfgLead: 'Tres elecciones y, después, la validación de su consola: Rutherford comprueba su instalación y le llama para preparar el paso a ColorLoop.',
   cfgPlan: 'Suscripción',
   cfgYearly: ['Anual', '5.300 € por prensa y año'],
   cfgMonthly: ['Mensual', '590 € por prensa y mes, sin permanencia'],
@@ -317,8 +328,10 @@ const ES: Copy = {
   cfgThenYear: 'después {x} al año',
   cfgThenMonth: 'después {x} al mes',
   cfgLicense: 'Su licencia Rutherford sigue siendo suya.',
-  orderCta: 'Hacer el pedido',
-  checkCta: 'Comprobar su prensa',
+  orderCta: 'Pedir en línea',
+  checkCta: 'Solicitar validación de consola',
+  orderNote: 'El pedido en línea reserva su oferta. La instalación se prepara siempre con nosotros.',
+  meetCta: 'Reservar una llamada o videollamada',
   regulationCta: 'Descubrir PPWR Connect',
   articlesTitle: 'Del blog',
   articlesAll: 'Ver todos los artículos',
@@ -351,7 +364,7 @@ const PT: Copy = {
   warnNote: 'A aplicabilidade depende do produto e do papel de cada parte. Isto não é uma declaração de certificação.',
   warnCta: 'Atualizar',
   cfgTitle: 'Prepare o seu ColorLoop.',
-  cfgLead: 'Três escolhas. Depois encomende online: a Rutherford verifica o seu sistema e ativa-o.',
+  cfgLead: 'Três escolhas e, depois, a validação da sua consola: a Rutherford verifica a sua instalação e liga-lhe para preparar a passagem para o ColorLoop.',
   cfgPlan: 'Subscrição',
   cfgYearly: ['Anual', '5.300 € por máquina e por ano'],
   cfgMonthly: ['Mensal', '590 € por máquina e por mês, sem fidelização'],
@@ -364,8 +377,10 @@ const PT: Copy = {
   cfgThenYear: 'depois {x} por ano',
   cfgThenMonth: 'depois {x} por mês',
   cfgLicense: 'A sua licença Rutherford continua a ser sua.',
-  orderCta: 'Encomendar',
-  checkCta: 'Verificar a máquina',
+  orderCta: 'Encomendar online',
+  checkCta: 'Pedir validação de consola',
+  orderNote: 'A encomenda online reserva a sua oferta. A instalação prepara-se sempre connosco.',
+  meetCta: 'Marcar uma chamada ou videochamada',
   regulationCta: 'Descobrir o PPWR Connect',
   articlesTitle: 'Do blog',
   articlesAll: 'Ver todos os artigos',
@@ -447,6 +462,9 @@ function Configurator({ locale, t, upgradeUrl, checkUrl }: { locale: Locale; t: 
   const recurring = (plan === 'yearly' ? PRICE.yearly : PRICE.monthly) * presses;
   const today = recurring + (pc === 'ours' ? PRICE.pc * presses : 0);
   const then = (plan === 'yearly' ? t.cfgThenYear : t.cfgThenMonth).replace('{x}', money(recurring));
+  // The console validation carries the offer chosen here, so the team sees it with the lead.
+  const offer = [plan === 'yearly' ? t.cfgYearly[0] : t.cfgMonthly[0], pc === 'ours' ? t.cfgPcOurs[0] : t.cfgPcMine[0], `${t.cfgPresses} ${presses}`].join(' · ');
+  const validationUrl = `${checkUrl}?offer=${encodeURIComponent(offer)}#submit`;
 
   const Option = ({ on, onClick, label, detail, promo }: { on: boolean; onClick: () => void; label: string; detail: string; promo?: string }) => (
     <button type="button" className="clh-opt" aria-pressed={on} onClick={onClick}>
@@ -487,9 +505,11 @@ function Configurator({ locale, t, upgradeUrl, checkUrl }: { locale: Locale; t: 
             <p><span>{t.cfgToday}</span><strong>{money(today)}</strong><span>{then}</span></p>
             <p className="clh-fine">{t.cfgLicense}</p>
             <div className="clh-actions clh-actions-left">
-              <a className="clh-btn clh-btn-ink" href={upgradeUrl}>{t.orderCta}</a>
-              <a className="clh-btn clh-btn-outline" href={checkUrl}>{t.checkCta}</a>
+              <a className="clh-btn clh-btn-ink" href={validationUrl}>{t.checkCta}</a>
+              <a className="clh-btn clh-btn-outline" href={upgradeUrl}>{t.orderCta}</a>
             </div>
+            <p className="clh-fine">{t.orderNote}</p>
+            <a className="clh-textlink" href={MEET_URL} target="_blank" rel="noopener">{t.meetCta}</a>
           </div>
         </div>
       </div>

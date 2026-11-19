@@ -499,3 +499,78 @@ export function moreInfoEmail(lead: ResultLead): { subject: string; html: string
     }),
   };
 }
+
+const RESUME_COPY: Record<EmailLocale, { subject: string; preheader: string; eyebrow: string; headline: { pre: string; accent: string; post: string }; body: (c: string) => string; closing: string; cta: string }> = {
+  en: {
+    subject: 'Finish your console validation from the press',
+    preheader: 'Your details are saved. Only the press and the photos are left.',
+    eyebrow: 'CONSOLE VALIDATION',
+    headline: { pre: 'Finish it ', accent: 'at the press', post: '.' },
+    body: (c) => `Your details for <strong>${c}</strong> are saved. Open this link on your phone next to the press: you only have the press model and four photos left.`,
+    closing: 'Our team may also call you to prepare the switch with you.',
+    cta: 'Finish my console validation',
+  },
+  fr: {
+    subject: 'Terminez votre validation console devant la presse',
+    preheader: 'Vos coordonnées sont enregistrées. Il ne reste que la presse et les photos.',
+    eyebrow: 'VALIDATION CONSOLE',
+    headline: { pre: 'À terminer ', accent: 'devant la presse', post: '.' },
+    body: (c) => `Les coordonnées de <strong>${c}</strong> sont enregistrées. Ouvrez ce lien sur votre téléphone, à côté de la presse : il ne reste que le modèle de la presse et quatre photos.`,
+    closing: 'Notre équipe peut aussi vous appeler pour préparer le passage avec vous.',
+    cta: 'Terminer ma validation console',
+  },
+  de: {
+    subject: 'Schließen Sie Ihre Konsolenvalidierung an der Druckmaschine ab',
+    preheader: 'Ihre Angaben sind gespeichert. Es fehlen nur noch die Druckmaschine und die Fotos.',
+    eyebrow: 'KONSOLENVALIDIERUNG',
+    headline: { pre: 'Abschließen ', accent: 'an der Druckmaschine', post: '.' },
+    body: (c) => `Die Angaben für <strong>${c}</strong> sind gespeichert. Öffnen Sie diesen Link auf Ihrem Smartphone an der Druckmaschine: Es fehlen nur noch das Modell und vier Fotos.`,
+    closing: 'Unser Team kann Sie auch anrufen, um den Wechsel gemeinsam vorzubereiten.',
+    cta: 'Konsolenvalidierung abschließen',
+  },
+  it: {
+    subject: 'Completi la validazione console davanti alla macchina',
+    preheader: 'I Suoi dati sono salvati. Mancano solo la macchina e le foto.',
+    eyebrow: 'VALIDAZIONE CONSOLE',
+    headline: { pre: 'Da completare ', accent: 'davanti alla macchina', post: '.' },
+    body: (c) => `I dati di <strong>${c}</strong> sono salvati. Apra questo link sul telefono, accanto alla macchina: mancano solo il modello e quattro foto.`,
+    closing: 'Il nostro team può anche chiamarLa per preparare il passaggio insieme.',
+    cta: 'Completa la validazione console',
+  },
+  es: {
+    subject: 'Termine su validación de consola junto a la prensa',
+    preheader: 'Sus datos están guardados. Solo faltan la prensa y las fotos.',
+    eyebrow: 'VALIDACIÓN DE CONSOLA',
+    headline: { pre: 'Termínela ', accent: 'junto a la prensa', post: '.' },
+    body: (c) => `Los datos de <strong>${c}</strong> están guardados. Abra este enlace en su teléfono, junto a la prensa: solo faltan el modelo de la prensa y cuatro fotos.`,
+    closing: 'Nuestro equipo también puede llamarle para preparar el cambio con usted.',
+    cta: 'Terminar mi validación de consola',
+  },
+  pt: {
+    subject: 'Termine a validação de consola junto à máquina',
+    preheader: 'Os seus dados estão guardados. Só faltam a máquina e as fotografias.',
+    eyebrow: 'VALIDAÇÃO DE CONSOLA',
+    headline: { pre: 'Termine-a ', accent: 'junto à máquina', post: '.' },
+    body: (c) => `Os dados de <strong>${c}</strong> estão guardados. Abra esta ligação no telemóvel, junto à máquina: só faltam o modelo da máquina e quatro fotografias.`,
+    closing: 'A nossa equipa também pode ligar-lhe para preparar a mudança consigo.',
+    cta: 'Terminar a validação de consola',
+  },
+};
+
+/** "Finish later from my phone": a link back to the form, details already filled in. */
+export function consoleResumeEmail(opts: { locale: string; company: string; url: string }): { subject: string; html: string } {
+  const loc = (['en', 'fr', 'de', 'it', 'es', 'pt'].includes(opts.locale) ? opts.locale : 'en') as EmailLocale;
+  const c = RESUME_COPY[loc];
+  return {
+    subject: c.subject,
+    html: render({
+      subject: c.subject,
+      preheader: c.preheader,
+      eyebrow: c.eyebrow,
+      tone: 'info',
+      headline: c.headline,
+      body: [c.body(esc(opts.company)), c.closing],
+      cta: { label: c.cta, href: opts.url },
+    }),
+  };
+}

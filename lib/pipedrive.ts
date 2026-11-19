@@ -120,6 +120,54 @@ export async function createConsoleValidationDeal(
   }
 }
 
+/**
+ * Link the deal to its Person (email, optional phone) and Organization, creating
+ * them when missing, so the lead can be called back from Pipedrive. Never throws.
+ */
+export async function linkDealParties(
+  dealId: number | null,
+  input: { email: string; company: string; phone?: string | null }
+): Promise<void> {
+  if (!TOKEN || !dealId) return;
+  try {
+    const orgId = input.company ? await findOrgId(input.company) : null;
+    let personId = await findPersonId(input.email);
+    if (!personId) {
+      const created = await pd('/persons', {
+        method: 'POST',
+        body: JSON.stringify({
+          name: input.email,
+          email: [input.email],
+          ...(input.phone ? { phone: [input.phone] } : {}),
+          ...(orgId ? { org_id: orgId } : {}),
+        }),
+      });
+      personId = (created?.data?.id as number) ?? null;
+    } else {
+      const update: Record<string, unknown> = {};
+      if (orgId) update.org_id = orgId;
+      if (input.phone) update.phone = [input.phone];
+      if (Object.keys(update).length) {
+        await pd(`/persons/${personId}`, { method: 'PUT', body: JSON.stringify(update) }).catch(() => {});
+      }
+    }
+    const link: Record<string, number> = {};
+    if (personId) link.person_id = personId;
+    if (orgId) link.org_id = orgId;
+    if (Object.keys(link).length) {
+      await pdv2(`/deals/${dealId}`, { method: 'PATCH', body: JSON.stringify(link) }).catch(() => {});
+    }
+  } catch (error) {
+    console.error('PipeDrive deal parties link failed:', error);
+  }
+}
+
+/** Rename an existing deal (e.g. once the press model is known). Never throws. */
+export async function renameDeal(dealId: number | null, title: string): Promise<void> {
+  if (!TOKEN || !dealId) return;
+  await pdv2(`/deals/${dealId}`, { method: 'PATCH', body: JSON.stringify({ title }) }).catch(() => {});
+}
+
 /** Attach a Note to a deal. No-op without a token or deal id; never throws. */
 export async function addDealNote(dealId: number | null, content: string): Promise<void> {
   if (!TOKEN || !dealId) return;
