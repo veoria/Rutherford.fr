@@ -53,6 +53,25 @@ export type AppStep = {
   capture?: string;
   /** Optional formative micro-quiz gating progression to the next step. */
   quiz?: StepQuiz;
+  /**
+   * Optional pressroom scene told by one of the Academy characters (the
+   * ColorLoop agents). Rendered above the headline as an avatar + speech
+   * bubble. Avatars live in public/academy/agents/<who>.webp.
+   */
+  scene?: { who: AcademyAgent; text: string };
+  /** Optional customer testimonial ("From the pressroom"), a YouTube video. */
+  video?: { youtubeId: string; title: string };
+};
+
+/** The five Academy characters (ColorLoop agents). Names are provisional. */
+export type AcademyAgent = 'blue' | 'red' | 'pink' | 'yellow' | 'green';
+
+export const ACADEMY_AGENT_NAMES: Record<AcademyAgent, string> = {
+  blue: 'Blue',
+  red: 'Red',
+  pink: 'Pink',
+  yellow: 'Yellow',
+  green: 'Green',
 };
 
 export type AppModule = {

@@ -65,10 +65,10 @@ export function BlogArticlePage({ article }: { article: BlogArticle }) {
     'closed-loop-color-control-offset-guide': { id: 'closed-loop-flagship', title: 'The Complete Closed-Loop Color Masterclass' },
     'reduce-makeready-waste-offset-press': { id: 'where-color-hurts', title: 'Where Color Hurts: From Makeready to Saleable Sheet' },
     'iso-12647-2-explained-press-operators': { id: 'fundamentals', title: 'Offset Color Management Fundamentals' },
-    'delta-e-tolerance-print-guide': { id: 'measurement-essentials', title: 'Press-Side Measurement Essentials' },
+    'delta-e-tolerance-print-guide': { id: 'measurement-essentials', title: 'Measuring color on press' },
     'cip3-cip4-ink-presetting-makeready': { id: 'colorloop-ai', title: 'ColorLoop AI: Predictive Setup for Modern Offset' },
     'g7-vs-iso-12647-offset-color': { id: 'fundamentals', title: 'Offset Color Management Fundamentals' },
-    'm0-m1-m2-m3-measurement-conditions-print': { id: 'measurement-essentials', title: 'Press-Side Measurement Essentials' },
+    'm0-m1-m2-m3-measurement-conditions-print': { id: 'measurement-essentials', title: 'Measuring color on press' },
     'ppwr-dpp-readiness-checklist-packaging-printers': { id: 'measurecolor-reports', title: 'MeasureColor Reports' },
   };
   const related = academyEnabled ? RELATED_COURSE[article.slug] : undefined;

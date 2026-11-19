@@ -273,7 +273,7 @@ const CHECKOUT_ERROR_COPY: Record<Locale, string> = {
 
 const FREE_COURSE_LIST: { id: string; title: string }[] = [
   { id: 'fundamentals', title: 'Offset Color Management Fundamentals' },
-  { id: 'measurement-essentials', title: 'Press-Side Measurement Essentials' },
+  { id: 'measurement-essentials', title: 'Measuring color on press' },
   { id: 'where-color-hurts', title: 'Where Color Hurts' },
 ];
 
