@@ -13,4 +13,8 @@
 export const ACCOUNT_ENABLED =
   process.env.NEXT_PUBLIC_ACCOUNT_ENABLED === 'true' || process.env.NEXT_PUBLIC_ACADEMY_ENABLED === 'true';
 
-export const ACADEMY_ENABLED = ACCOUNT_ENABLED && process.env.NEXT_PUBLIC_ACADEMY_VISIBLE === 'true';
+//   Vercel preview deployments always show it, so new courses can be reviewed
+//   on a branch before production turns the flag on.
+export const ACADEMY_ENABLED =
+  ACCOUNT_ENABLED &&
+  (process.env.NEXT_PUBLIC_ACADEMY_VISIBLE === 'true' || process.env.NEXT_PUBLIC_VERCEL_ENV === 'preview');
