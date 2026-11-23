@@ -38,7 +38,7 @@ async function getToken(): Promise<string> {
   return (await res.json()).access_token as string;
 }
 
-export type Mail = { to: string; subject: string; html: string; bcc?: string[] };
+export type Mail = { to: string; subject: string; html: string; bcc?: string[]; replyTo?: string };
 
 export async function sendMail(mail: Mail, opts?: { throwOnError?: boolean }): Promise<void> {
   if (!msgraphEnabled() || !mail.to) return;
@@ -55,6 +55,7 @@ export async function sendMail(mail: Mail, opts?: { throwOnError?: boolean }): P
             body: { contentType: 'HTML', content: mail.html },
             toRecipients: [{ emailAddress: { address: mail.to } }],
             bccRecipients: (mail.bcc ?? []).map((address) => ({ emailAddress: { address } })),
+            ...(mail.replyTo ? { replyTo: [{ emailAddress: { address: mail.replyTo } }] } : {}),
           },
           saveToSentItems: true,
         }),
