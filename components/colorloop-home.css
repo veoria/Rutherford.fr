@@ -260,31 +260,12 @@
 .clh-lock3d-shackle { transform: translateY(calc(var(--open) * -12%)); will-change: transform; }
 .clh-lock3d-body { filter: drop-shadow(0 40px 50px rgba(0, 0, 0, 0.18)); }
 
-/* Security: white, framed by the yellow hazard stripes so it reads as an important notice */
-.clh-warn.clh-warn-alert::before, .clh-warn.clh-warn-alert::after { content: ""; position: absolute; left: 0; right: 0; height: 12px; background: repeating-linear-gradient(135deg, var(--clh-yellow) 0 24px, #111 24px 48px); }
-.clh-warn.clh-warn-alert::before { top: 0; }
-.clh-warn.clh-warn-alert::after { bottom: 0; }
-.clh-warn-alert .clh-warn-grid { grid-template-columns: 1fr; gap: clamp(56px, 7vw, 96px); }
+/* Security: calm white screen, one ColorLoop padlock that clicks shut as you scroll */
 .clh-warn-cra { margin: 28px 0 0; font-size: clamp(17px, 1.35vw, 20px); font-weight: 600; letter-spacing: -0.01em; text-wrap: balance; }
-.clh-warn-cra a { color: #111; text-decoration: none; background: linear-gradient(transparent 58%, rgba(251, 203, 5, 0.55) 58%); padding: 0 2px; }
-.clh-warn-cra a:hover { background: linear-gradient(transparent 0, rgba(251, 203, 5, 0.55) 0); }
-/* Before / after */
-.clh-ba { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(24px, 5vw, 80px); }
-.clh-ba-item { margin: 0; text-align: center; }
-.clh-ba-stage { position: relative; aspect-ratio: 1; }
-.clh-ba-pc { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
-.clh-ba-before .clh-ba-pc { filter: grayscale(0.35) brightness(0.96); }
-.clh-ba-item .clh-lock3d { position: absolute; right: 2%; bottom: 4%; width: 36%; margin: 0; }
-.clh-lock3d.clh-lock3d-open .clh-lock3d-shackle { transform: translateY(-24%); }
-.clh-ba figcaption { margin-top: 18px; text-align: center; font-size: clamp(14px, 1.2vw, 17px); font-weight: 600; letter-spacing: -0.01em; color: #111; text-wrap: balance; }
-.clh-ba-before figcaption { color: #8a8a90; }
-@media (max-width: 640px) { .clh-ba { grid-template-columns: 1fr; } }
-/* The click: when the shackle seats, the padlock snaps once and a yellow ring pulses out */
+.clh-warn-cra a { color: #111; text-decoration: underline; text-decoration-color: rgba(0, 0, 0, 0.25); text-underline-offset: 5px; transition: text-decoration-color 0.2s ease; }
+.clh-warn-cra a:hover { text-decoration-color: currentColor; }
 .clh-lock3d.is-locked .clh-lock3d-shackle, .clh-lock3d.is-locked .clh-lock3d-body { animation: clh-lock-click 0.34s cubic-bezier(0.3, 0.7, 0.4, 1) both; }
-.clh-lock3d.is-locked::after { content: ""; position: absolute; left: 50%; top: 62%; width: 60%; aspect-ratio: 1; translate: -50% -50%; border-radius: 50%; border: 2px solid rgba(251, 203, 5, 0.8); animation: clh-lock-ring 0.8s cubic-bezier(0.22, 1, 0.36, 1) both; pointer-events: none; }
 @keyframes clh-lock-click { 0% { translate: 0 0; } 35% { translate: 0 1.6%; } 100% { translate: 0 0; } }
-@keyframes clh-lock-ring { 0% { opacity: 0.9; scale: 0.7; } 100% { opacity: 0; scale: 1.5; } }
 @media (prefers-reduced-motion: reduce) {
   .clh-lock3d.is-locked .clh-lock3d-shackle, .clh-lock3d.is-locked .clh-lock3d-body { animation: none; }
-  .clh-lock3d.is-locked::after { content: none; }
 }
