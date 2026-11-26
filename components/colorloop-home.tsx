@@ -65,6 +65,7 @@ type Copy = {
   playFilm: string;
   warnLabel: string;
   warnTitle: string;
+  warnMark: string;
   warnBody: string;
   warn: [string, string][];
   warnNote: string;
@@ -110,6 +111,7 @@ const EN: Copy = {
   playFilm: 'Play the film',
   warnLabel: 'Cyber Resilience Act',
   warnTitle: 'An old PC is an open door to cyberattacks.',
+  warnMark: 'An old PC',
   warnBody: 'EasySet, EasyLoop, IntelliSet, IntelliLoop: on a Windows that no longer gets updates, your press is exposed. ColorLoop closes the door.',
   warn: [
     ['Cyber Resilience Act', 'EU regulation 2024/2847 makes security a requirement for connected software: vulnerability reporting since September 11, 2026, main obligations from December 11, 2027.'],
@@ -159,6 +161,7 @@ const FR: Copy = {
   playFilm: 'Lancer le film',
   warnLabel: 'Cyber Resilience Act',
   warnTitle: 'Un vieux PC, c’est une porte ouverte aux cyberattaques.',
+  warnMark: 'Un vieux PC',
   warnBody: 'EasySet, EasyLoop, IntelliSet, IntelliLoop : sur un Windows qui n’est plus mis à jour, votre presse est exposée. ColorLoop referme la porte.',
   warn: [
     ['Cyber Resilience Act', 'Le règlement UE 2024/2847 fait de la sécurité une exigence pour les logiciels connectés : signalement des vulnérabilités depuis le 11 septembre 2026, obligations principales au 11 décembre 2027.'],
@@ -208,6 +211,7 @@ const DE: Copy = {
   playFilm: 'Film abspielen',
   warnLabel: 'Cyber Resilience Act',
   warnTitle: 'Ein alter PC ist ein offenes Tor für Cyberangriffe.',
+  warnMark: 'Ein alter PC',
   warnBody: 'EasySet, EasyLoop, IntelliSet, IntelliLoop: Auf einem Windows ohne Updates ist Ihre Druckmaschine angreifbar. ColorLoop schließt die Tür.',
   warn: [
     ['Cyber Resilience Act', 'Die EU-Verordnung 2024/2847 macht Sicherheit zur Pflicht für vernetzte Software: Meldung von Schwachstellen seit dem 11. September 2026, Hauptpflichten ab dem 11. Dezember 2027.'],
@@ -257,6 +261,7 @@ const IT: Copy = {
   playFilm: 'Avvia il video',
   warnLabel: 'Cyber Resilience Act',
   warnTitle: 'Un vecchio PC è una porta aperta agli attacchi informatici.',
+  warnMark: 'Un vecchio PC',
   warnBody: 'EasySet, EasyLoop, IntelliSet, IntelliLoop: su un Windows non più aggiornato, la Sua macchina è esposta. ColorLoop chiude la porta.',
   warn: [
     ['Cyber Resilience Act', 'Il regolamento UE 2024/2847 rende la sicurezza un requisito per il software connesso: segnalazione delle vulnerabilità dall’11 settembre 2026, obblighi principali dall’11 dicembre 2027.'],
@@ -306,6 +311,7 @@ const ES: Copy = {
   playFilm: 'Ver el vídeo',
   warnLabel: 'Cyber Resilience Act',
   warnTitle: 'Un PC antiguo es una puerta abierta a los ciberataques.',
+  warnMark: 'Un PC antiguo',
   warnBody: 'EasySet, EasyLoop, IntelliSet, IntelliLoop: con un Windows sin actualizaciones, su prensa está expuesta. ColorLoop cierra la puerta.',
   warn: [
     ['Cyber Resilience Act', 'El Reglamento UE 2024/2847 convierte la seguridad en un requisito para el software conectado: notificación de vulnerabilidades desde el 11 de septiembre de 2026, obligaciones principales a partir del 11 de diciembre de 2027.'],
@@ -355,6 +361,7 @@ const PT: Copy = {
   playFilm: 'Ver o vídeo',
   warnLabel: 'Cyber Resilience Act',
   warnTitle: 'Um PC antigo é uma porta aberta a ciberataques.',
+  warnMark: 'Um PC antigo',
   warnBody: 'EasySet, EasyLoop, IntelliSet, IntelliLoop: num Windows sem atualizações, a sua máquina fica exposta. O ColorLoop fecha a porta.',
   warn: [
     ['Cyber Resilience Act', 'O Regulamento UE 2024/2847 torna a segurança um requisito para o software ligado à rede: notificação de vulnerabilidades desde 11 de setembro de 2026, obrigações principais a partir de 11 de dezembro de 2027.'],
@@ -719,7 +726,16 @@ export function ColorLoopHome({ tone = 'light' }: { tone?: 'night' | 'light' }) 
         <div className="clh-wrap">
           <div className="clh-warn-grid">
             <div className="clh-warn-copy">
-              <h2 id="clh-warn-title">{t.warnTitle}</h2>
+              <h2 id="clh-warn-title">
+                {t.warnTitle.startsWith(t.warnMark) ? (
+                  <>
+                    <mark className="clh-mark">{t.warnMark}</mark>
+                    {t.warnTitle.slice(t.warnMark.length)}
+                  </>
+                ) : (
+                  t.warnTitle
+                )}
+              </h2>
               <p className="clh-warn-body">{t.warnBody}</p>
               <p className="clh-warn-cra">
                 <a href={CRA_URL} rel="noopener">{t.warnNote}</a>
