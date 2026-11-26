@@ -273,11 +273,10 @@
   gap: 24px;
 }
 
-@media (min-width: 1024px) {
-  .cc-tour {
-    grid-template-columns: minmax(0, 1fr) 300px;
-    align-items: start;
-  }
+/* Full tour: the film in the middle, the chapters underneath */
+.cc-tour {
+  max-width: 1040px;
+  margin: 0 auto;
 }
 
 .cc-chapters ol {
@@ -655,5 +654,29 @@
   .cc-lock.is-locked .cc-lock-shackle,
   .cc-lock.is-locked .cc-lock-body {
     animation: none;
+  }
+}
+
+/* Chapters under the full tour: four columns on desktop, chips on phones */
+@media (min-width: 1024px) {
+  .cc-chapters ol {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 12px;
+  }
+
+  .cc-chapters button {
+    grid-template-columns: 1fr;
+    gap: 6px;
+    height: 100%;
+    padding: 16px 18px;
+    border: 1px solid var(--o360-line);
+    border-radius: 14px;
+    background: #fff;
+    align-content: start;
+  }
+
+  .cc-chapters button:hover {
+    background: var(--o360-soft);
   }
 }

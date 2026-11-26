@@ -134,12 +134,6 @@ function Shot({ step, on }: { step: Step; on: boolean }) {
   );
 }
 
-// The hero loop (18.5 s) has three passages; each caption says what the screen shows.
-const DEMO_CAPTIONS = [
-  { from: 0, to: 5.25, text: 'Every job arrives from prepress, with its inks.' },
-  { from: 5.25, to: 11.75, text: 'Every ink key, live, sheet after sheet.' },
-  { from: 11.75, to: 99, text: 'Every ink and substrate, checked for PPWR.' },
-];
 
 function SecureLock() {
   // The brushed-metal padlock from the home page: the shackle closes as the section scrolls in.
@@ -186,8 +180,6 @@ export function ColorConnectPage() {
   const tutoRef = useRef<HTMLVideoElement>(null);
   const stepRefs = useRef<(HTMLLIElement | null)[]>([]);
   const [active, setActive] = useState(0);
-  const demoRef = useRef<HTMLVideoElement>(null);
-  const [caption, setCaption] = useState(0);
 
   useEffect(() => {
     const els = stepRefs.current.filter(Boolean) as HTMLLIElement[];
@@ -231,11 +223,10 @@ export function ColorConnectPage() {
             <a className="o360-btn o360-btn-ghost" href="#film">Watch the pitch</a>
           </div>
         </div>
-        <div className="cc-devices" aria-label="ColorConnect running on an iMac and an iPhone">
+        <div className="cc-devices" aria-label="ColorConnect running on an iMac">
           <div className="cc-imac">
             <div className="cc-imac-screen">
               <video
-                ref={demoRef}
                 autoPlay
                 muted
                 loop
@@ -243,29 +234,11 @@ export function ColorConnectPage() {
                 preload="auto"
                 poster={`${IMG}/demo-loop-poster-v2.webp`}
                 aria-label="ColorConnect in use: a job from prepress, the ink keys corrected live, the ink and substrate library"
-                onTimeUpdate={(e) => {
-                  const t = e.currentTarget.currentTime;
-                  const i = DEMO_CAPTIONS.findIndex((c) => t >= c.from && t < c.to);
-                  if (i !== -1 && i !== caption) setCaption(i);
-                }}
               >
                 <source src={`${MEDIA}/colorconnect-demo-loop-v2.mp4`} type="video/mp4" />
               </video>
-              <p className="cc-demo-caption" aria-live="off">
-                {DEMO_CAPTIONS.map((c, i) => (
-                  <span key={c.text} className={i === caption ? 'is-on' : undefined}>
-                    {c.text}
-                  </span>
-                ))}
-              </p>
             </div>
             <img className="cc-imac-bezel" src={`${IMG}/device-imac-blue-bezel.webp`} alt="" width={1800} height={1532} />
-          </div>
-          <div className="cc-phone">
-            <div className="cc-phone-screen">
-              <img src={`${IMG}/phone-scroll.webp`} alt="A flexo job, production jobs and PPWR compliance on an iPhone" width={860} height={2993} />
-            </div>
-            <img className="cc-phone-bezel" src={`${IMG}/device-iphone-bezel.webp`} alt="" width={560} height={1145} />
           </div>
         </div>
       </section>
@@ -280,7 +253,7 @@ export function ColorConnectPage() {
         </div>
         <div className="o360-container">
           <div className="o360-video-wrap cc-video">
-            <video controls playsInline preload="metadata" poster={`${MEDIA}/colorconnect-pitch-poster.webp`} aria-label="François-Xavier David presents ColorConnect, 49 seconds">
+            <video controls playsInline preload="metadata" poster={`${IMG}/poster-pitch-v2.webp`} aria-label="François-Xavier David presents ColorConnect, 49 seconds">
               <source src={`${MEDIA}/colorconnect-pitch-fx.mp4`} type="video/mp4" />
             </video>
           </div>
@@ -381,7 +354,7 @@ export function ColorConnectPage() {
         </div>
         <div className="o360-container cc-tour">
           <div className="o360-video-wrap cc-video">
-            <video ref={tutoRef} controls playsInline preload="none" poster={`${MEDIA}/colorconnect-tutorial-thumb.webp`} aria-label="ColorConnect tour by François-Xavier David, 8 minutes 35">
+            <video ref={tutoRef} controls playsInline preload="none" poster={`${IMG}/poster-tour-v2.webp`} aria-label="ColorConnect tour by François-Xavier David, 8 minutes 35">
               <source src={`${MEDIA}/colorconnect-tutorial-fx.mp4`} type="video/mp4" />
             </video>
           </div>
