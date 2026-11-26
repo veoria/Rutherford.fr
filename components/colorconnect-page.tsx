@@ -197,7 +197,7 @@ export function ColorConnectPage() {
         <div className="o360-container">
           <div className="o360-video-wrap cc-video">
             <video controls playsInline preload="metadata" poster={`${IMG}/poster-pitch-v4.webp`} aria-label="François-Xavier David presents ColorConnect, one minute">
-              <source src={`${MEDIA}/colorconnect-pitch-fx-en-2.mp4`} type="video/mp4" />
+              <source src={`${MEDIA}/colorconnect-pitch-fx-en-3.mp4`} type="video/mp4" />
             </video>
           </div>
         </div>
