@@ -905,3 +905,5 @@
 
 /* Essentials: one Phosphor light icon above each title */
 .cc-essentials .cc-ess-ico { display: block; width: 44px; height: 44px; margin: 0 0 18px; fill: #1d1d1f; stroke: none; }
+.ccd svg .pr-spin { fill: none; stroke: #1d1d1f; stroke-width: 1.25; stroke-linecap: round; }
+.ccd svg .pr-label { fill: #fff; stroke: #1d1d1f; stroke-width: 1; }

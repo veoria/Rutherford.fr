@@ -52,6 +52,9 @@ function OffsetUnit({ x, ink }: { x: number; ink: string }) {
       <circle cx={cx - 6} cy={163} r={16} className="pr-fill" style={line} />
       <circle cx={cx + 4} cy={203} r={20} className="pr-fill" style={line} />
       <circle cx={cx + 4} cy={203} r={3} className="pr-dot" />
+      <Spin cx={cx + 6} cy={131} r={16} dur={2} />
+      <Spin cx={cx - 6} cy={163} r={16} dur={2} reverse />
+      <Spin cx={cx + 4} cy={203} r={20} dur={2.4} />
     </g>
   );
 }
@@ -107,6 +110,16 @@ export function OffsetSchematic({ x, y, w, id }: P) {
   );
 }
 
+// A radius mark that turns with the cylinder or roll, so the press reads as running.
+function Spin({ cx, cy, r, dur, reverse }: { cx: number; cy: number; r: number; dur: number; reverse?: boolean }) {
+  return (
+    <g>
+      <path d={`M${cx} ${cy}V${cy - r + 2}`} className="pr-spin" style={line} />
+      <animateTransform attributeName="transform" type="rotate" from={`${reverse ? 360 : 0} ${cx} ${cy}`} to={`${reverse ? 0 : 360} ${cx} ${cy}`} dur={`${dur}s`} repeatCount="indefinite" />
+    </g>
+  );
+}
+
 function FlexoStation({ x, ink }: { x: number; ink: string }) {
   const cx = x + 30;
   return (
@@ -118,6 +131,9 @@ function FlexoStation({ x, ink }: { x: number; ink: string }) {
       <circle cx={cx} cy={162} r={13} fill={ink} fillOpacity={0.18} />
       <circle cx={cx} cy={190} r={12} className="pr-fill" style={line} />
       <circle cx={cx} cy={190} r={2.5} className="pr-dot" />
+      <Spin cx={cx} cy={162} r={13} dur={1.6} reverse />
+      <Spin cx={cx} cy={190} r={12} dur={1.5} />
+      <Spin cx={cx + 17} cy={138} r={9} dur={1.1} />
       {/* UV lamp after the station */}
       <path d={`M${x + 64} 112V100`} className="pr-thin" style={line} />
       <rect x={x + 50} y={84} width={34} height={16} rx={4} className="pr-fill" style={line} />
@@ -138,6 +154,7 @@ export function FlexoSchematic({ x, y, w, id }: P) {
       <circle cx={64} cy={140} r={46} className="pr-paper" style={line} />
       <circle cx={64} cy={140} r={30} className="pr-thin" style={line} />
       <circle cx={64} cy={140} r={10} className="pr-fill" style={line} />
+      <Spin cx={64} cy={140} r={44} dur={7} />
       <path d="M64 186 C84 186 96 176 120 176" className="pr-web" style={line} />
       <circle cx={132} cy={184} r={6} className="pr-fill" style={line} />
       {/* seven print stations */}
@@ -148,15 +165,30 @@ export function FlexoSchematic({ x, y, w, id }: P) {
       <path d="M800 248V164" className="pr-stroke" style={line} />
       <rect x={772} y={118} width={58} height={40} rx={6} className="pr-d1" style={line} />
       <circle cx={801} cy={138} r={7} className="pr-lens" style={line} />
-      <path d="M801 158V174" className="pr-scan" style={line} />
+      <path d="M801 158V174" className="pr-scan" style={line}>
+        <animate attributeName="opacity" values="0.15;1;0.15" dur="0.9s" repeatCount="indefinite" />
+      </path>
       {/* rewind */}
       <path d="M866 150L846 248M866 150L886 248" className="pr-stroke" style={line} />
       <circle cx={866} cy={140} r={30} className="pr-paper" style={line} />
       <circle cx={866} cy={140} r={9} className="pr-fill" style={line} />
+      <Spin cx={866} cy={140} r={28} dur={5} />
       {/* the web, moving left to right */}
       <path d={web} className="pr-web" style={line} />
       <path d="M846 176 C856 176 860 170 866 170" className="pr-web" style={line} />
-      <path id={id} d={web} className="pr-web-run" style={line} />
+      <path id={id} d={web} fill="none" />
+      {/* printed labels travelling with the web */}
+      {Array.from({ length: 9 }, (_, k) => (
+        <g key={k}>
+          <rect x={-8} y={-4} width={16} height={7} rx={1.5} className="pr-label" style={line} />
+          <rect x={-5} y={-2} width={3} height={3} fill={INK.M} />
+          <rect x={-1.5} y={-2} width={3} height={3} fill={INK.C} />
+          <rect x={2} y={-2} width={3} height={3} fill={INK.Y} />
+          <animateMotion dur="7.2s" begin={`-${k * 0.8}s`} repeatCount="indefinite">
+            <mpath href={`#${id}`} />
+          </animateMotion>
+        </g>
+      ))}
     </g>
   );
 }
