@@ -1,0 +1,137 @@
+/* ColorConnect page, built on the Offset360 / ColorLoop page system (o360). */
+
+.cc ::selection {
+  background: rgba(0, 113, 227, 0.18);
+}
+
+.cc-hero-logo img {
+  height: 26px;
+}
+
+@media (min-width: 768px) {
+  .cc-hero-logo img {
+    height: 32px;
+  }
+}
+
+.cc-h1 {
+  font-size: clamp(2.6rem, 6.4vw, 5.2rem);
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+  max-width: 14ch;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.cc .o360-h2,
+.cc .o360-lede,
+.cc-note {
+  text-wrap: balance;
+}
+
+.cc-video video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: #000;
+}
+
+.cc-video video:focus-visible {
+  outline: 3px solid var(--o360-accent);
+  outline-offset: 3px;
+}
+
+.cc-caption {
+  margin: 16px auto 0;
+  max-width: 62ch;
+  text-align: center;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--o360-mute);
+  text-wrap: balance;
+}
+
+.cc-caption strong {
+  color: var(--o360-fg);
+  font-weight: 600;
+}
+
+.cc-media-plain {
+  background: transparent;
+  box-shadow: none;
+}
+
+.cc-media-plain img {
+  object-fit: contain;
+}
+
+/* Full tour: film + chapter list */
+.cc-tour {
+  display: grid;
+  gap: 24px;
+}
+
+@media (min-width: 1024px) {
+  .cc-tour {
+    grid-template-columns: minmax(0, 1fr) 300px;
+    align-items: start;
+  }
+}
+
+.cc-chapters ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.cc-chapters button {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 3.2rem 1fr;
+  gap: 12px;
+  align-items: baseline;
+  padding: 12px 14px;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--o360-fg);
+  font: inherit;
+  font-size: 0.98rem;
+  line-height: 1.35;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.18s ease;
+}
+
+.cc-chapters button:hover {
+  background: #fff;
+}
+
+.cc-chapters button:focus-visible {
+  outline: 2px solid var(--o360-accent);
+  outline-offset: 2px;
+}
+
+.cc-time {
+  font-variant-numeric: tabular-nums;
+  color: var(--o360-accent);
+  font-weight: 600;
+}
+
+.cc-chips-center {
+  justify-content: center;
+  margin-top: 28px;
+}
+
+.cc-note {
+  margin: 24px auto 0;
+  max-width: 56ch;
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: var(--o360-mute);
+}
