@@ -638,24 +638,6 @@
   color: var(--o360-fg);
 }
 
-/* The click: when the shackle seats, the padlock snaps once */
-.cc-lock.is-locked .cc-lock-shackle,
-.cc-lock.is-locked .cc-lock-body {
-  animation: cc-lock-click 0.32s cubic-bezier(0.3, 0.7, 0.4, 1) both;
-}
-
-@keyframes cc-lock-click {
-  0% { translate: 0 0; }
-  35% { translate: 0 1.4%; }
-  100% { translate: 0 0; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .cc-lock.is-locked .cc-lock-shackle,
-  .cc-lock.is-locked .cc-lock-body {
-    animation: none;
-  }
-}
 
 /* Chapters under the full tour: four columns on desktop, chips on phones */
 @media (min-width: 1024px) {
@@ -679,4 +661,20 @@
   .cc-chapters button:hover {
     background: var(--o360-soft);
   }
+}
+
+/* Padlock + call to action: locks at the upper middle of the screen, then "Book a demo" appears */
+.cc-lockwrap { --open: 1; display: flex; flex-direction: column; align-items: center; gap: clamp(20px, 2.4vw, 32px); }
+.cc-lockwrap .cc-lock { --open: inherit; }
+.cc-lockwrap.is-locked .cc-lock-shackle, .cc-lockwrap.is-locked .cc-lock-body { animation: cc-lock-click 0.34s cubic-bezier(0.3, 0.7, 0.4, 1) both; }
+@keyframes cc-lock-click { 0% { translate: 0 0; } 35% { translate: 0 1.6%; } 100% { translate: 0 0; } }
+.cc-lock-sheen { position: absolute; inset: 0; pointer-events: none; opacity: 0; background: linear-gradient(105deg, transparent 35%, rgba(255, 255, 255, 0.75) 50%, transparent 65%) no-repeat; background-size: 250% 100%; background-position: 130% 0; -webkit-mask: url('/images/colorconnect/padlock-body-cc.webp') center / 100% 100% no-repeat; mask: url('/images/colorconnect/padlock-body-cc.webp') center / 100% 100% no-repeat; }
+.cc-lockwrap.is-locked .cc-lock-sheen { animation: cc-lock-sheen 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.18s both; }
+@keyframes cc-lock-sheen { 0% { opacity: 1; background-position: 130% 0; } 100% { opacity: 1; background-position: -30% 0; } }
+.cc-lock-cta { opacity: 0; transform: translateY(14px); pointer-events: none; transition: opacity 0.45s ease 0.35s, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.35s; }
+.cc-lockwrap.is-locked .cc-lock-cta { opacity: 1; transform: none; pointer-events: auto; animation: cc-cta-press 0.42s cubic-bezier(0.3, 0.7, 0.4, 1) 0.75s both; }
+@keyframes cc-cta-press { 0% { scale: 1; } 40% { scale: 0.95; } 100% { scale: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  .cc-lockwrap.is-locked .cc-lock-shackle, .cc-lockwrap.is-locked .cc-lock-body, .cc-lockwrap.is-locked .cc-lock-sheen, .cc-lockwrap.is-locked .cc-lock-cta { animation: none; }
+  .cc-lock-cta { opacity: 1; transform: none; pointer-events: auto; transition: none; }
 }

@@ -136,7 +136,8 @@ function Shot({ step, on }: { step: Step; on: boolean }) {
 
 
 function SecureLock() {
-  // The brushed-metal padlock from the home page: the shackle closes as the section scrolls in.
+  // The brushed-metal padlock: the shackle drops in while the padlock travels up to the middle of the
+  // screen, it locks with a short snap and a light sweep, then the call to action appears under it.
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const el = ref.current;
@@ -149,11 +150,11 @@ function SecureLock() {
     let raf = 0;
     const update = () => {
       raf = 0;
-      const r = el.getBoundingClientRect();
+      const r = (el.firstElementChild as HTMLElement).getBoundingClientRect();
       const vh = window.innerHeight;
-      const p = Math.min(1, Math.max(0, (vh * 0.9 - r.top) / (vh * 0.55)));
+      const center = r.top + r.height / 2;
+      const p = Math.min(1, Math.max(0, (vh * 0.82 - center) / (vh * 0.4)));
       el.style.setProperty('--open', String(Math.pow(1 - p, 3)));
-      // the "click": once the shackle is fully down, the body gives a short snap
       el.classList.toggle('is-locked', p >= 1);
     };
     const onScroll = () => {
@@ -169,9 +170,13 @@ function SecureLock() {
     };
   }, []);
   return (
-    <div className="cc-lock" ref={ref} aria-hidden="true">
-      <img className="cc-lock-shackle" src="/images/security/padlock-shackle.webp" alt="" width={1000} height={1000} loading="lazy" />
-      <img className="cc-lock-body" src="/images/colorconnect/padlock-body-cc.webp" alt="" width={1000} height={1000} loading="lazy" />
+    <div className="cc-lockwrap" ref={ref}>
+      <div className="cc-lock" aria-hidden="true">
+        <img className="cc-lock-shackle" src="/images/security/padlock-shackle.webp" alt="" width={1000} height={1000} loading="lazy" />
+        <img className="cc-lock-body" src="/images/colorconnect/padlock-body-cc.webp" alt="" width={1000} height={1000} loading="lazy" />
+        <span className="cc-lock-sheen" />
+      </div>
+      <a className="o360-btn o360-btn-primary cc-lock-cta" href={DEMO_URL} target="_blank" rel="noreferrer">Book a demo</a>
     </div>
   );
 }
