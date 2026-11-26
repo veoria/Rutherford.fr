@@ -134,10 +134,57 @@ function Shot({ step, on }: { step: Step; on: boolean }) {
   );
 }
 
+// The hero loop (18.5 s) has three passages; each caption says what the screen shows.
+const DEMO_CAPTIONS = [
+  { from: 0, to: 5.25, text: 'Every job arrives from prepress, with its inks.' },
+  { from: 5.25, to: 11.75, text: 'Every ink key, live, sheet after sheet.' },
+  { from: 11.75, to: 99, text: 'Every ink and substrate, checked for PPWR.' },
+];
+
+function SecureLock() {
+  // The brushed-metal padlock from the home page: the shackle closes as the section scrolls in.
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (prefersReducedMotion()) {
+      el.style.setProperty('--open', '0');
+      return;
+    }
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      const r = el.getBoundingClientRect();
+      const vh = window.innerHeight;
+      const p = Math.min(1, Math.max(0, (vh * 0.9 - r.top) / (vh * 0.55)));
+      el.style.setProperty('--open', String(Math.pow(1 - p, 3)));
+    };
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, []);
+  return (
+    <div className="cc-lock" ref={ref} aria-hidden="true">
+      <img className="cc-lock-shackle" src="/images/security/padlock-shackle.webp" alt="" width={1000} height={1000} loading="lazy" />
+      <img className="cc-lock-body" src="/images/security/padlock-body.webp" alt="" width={1000} height={1000} loading="lazy" />
+    </div>
+  );
+}
+
 export function ColorConnectPage() {
   const tutoRef = useRef<HTMLVideoElement>(null);
   const stepRefs = useRef<(HTMLLIElement | null)[]>([]);
   const [active, setActive] = useState(0);
+  const demoRef = useRef<HTMLVideoElement>(null);
+  const [caption, setCaption] = useState(0);
 
   useEffect(() => {
     const els = stepRefs.current.filter(Boolean) as HTMLLIElement[];
@@ -185,16 +232,29 @@ export function ColorConnectPage() {
           <div className="cc-imac">
             <div className="cc-imac-screen">
               <video
+                ref={demoRef}
                 autoPlay
                 muted
                 loop
                 playsInline
                 preload="auto"
-                poster={`${IMG}/demo-loop-poster.webp`}
-                aria-label="ColorConnect in use: opening a job, the offset color history, the ink zones, the ink library and PPWR compliance"
+                poster={`${IMG}/demo-loop-poster-v2.webp`}
+                aria-label="ColorConnect in use: a job from prepress, the ink keys corrected live, the ink and substrate library"
+                onTimeUpdate={(e) => {
+                  const t = e.currentTarget.currentTime;
+                  const i = DEMO_CAPTIONS.findIndex((c) => t >= c.from && t < c.to);
+                  if (i !== -1 && i !== caption) setCaption(i);
+                }}
               >
-                <source src={`${MEDIA}/colorconnect-demo-loop.mp4`} type="video/mp4" />
+                <source src={`${MEDIA}/colorconnect-demo-loop-v2.mp4`} type="video/mp4" />
               </video>
+              <p className="cc-demo-caption" aria-live="off">
+                {DEMO_CAPTIONS.map((c, i) => (
+                  <span key={c.text} className={i === caption ? 'is-on' : undefined}>
+                    {c.text}
+                  </span>
+                ))}
+              </p>
             </div>
             <img className="cc-imac-bezel" src={`${IMG}/device-imac-blue-bezel.webp`} alt="" width={1800} height={1532} />
           </div>
@@ -246,6 +306,19 @@ export function ColorConnectPage() {
             <p>Your team on any screen, your customers through a secure link, PPWR evidence per job.</p>
           </li>
         </ol>
+      </section>
+
+      {/* Security: the padlock closes on scroll */}
+      <section className="o360-section cc-secure">
+        <div className="cc-secure-grid">
+          <SecureLock />
+          <div>
+            <h2 className="o360-h2">All your data, secured.</h2>
+            <p className="o360-lede">
+              ColorConnect runs on your own server. Production files and customer data stay in your print shop.
+            </p>
+          </div>
+        </div>
       </section>
 
       {/* Screen tour */}

@@ -453,7 +453,6 @@
   display: block;
   width: 100%;
   height: auto;
-  animation: cc-phone-scroll 22s ease-in-out infinite;
 }
 
 .cc-phone-bezel {
@@ -464,11 +463,6 @@
   pointer-events: none;
 }
 
-@keyframes cc-phone-scroll {
-  0%, 8% { transform: translateY(0); }
-  45%, 55% { transform: translateY(-37.5%); }
-  92%, 100% { transform: translateY(0); }
-}
 
 /* One portal: three airy steps, one metal render each */
 .cc-portal {
@@ -515,12 +509,118 @@
   text-wrap: balance;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .cc-phone-screen img {
-    animation: none;
-  }
-}
 
 .cc-steps3 li:nth-child(2) img {
   transform: scale(1.22);
+}
+
+/* Hero loop caption: says what the screen shows, one passage at a time */
+.cc-demo-caption {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 5%;
+  margin: 0;
+  display: grid;
+  justify-items: center;
+  pointer-events: none;
+}
+
+.cc-demo-caption span {
+  grid-area: 1 / 1;
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: rgba(29, 29, 31, 0.9);
+  color: #fff;
+  font-size: clamp(0.62rem, 1.15vw, 1rem);
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  white-space: nowrap;
+  box-shadow: 0 12px 28px -12px rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.35s ease, transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.cc-demo-caption span.is-on {
+  opacity: 1;
+  transform: none;
+  transition-delay: 0.25s;
+}
+
+@media (max-width: 600px) {
+  .cc-demo-caption span {
+    padding: 6px 11px;
+  }
+}
+
+/* Security: a brushed-metal padlock that closes as the section scrolls in */
+.cc-secure {
+  padding-top: clamp(120px, 14vw, 200px);
+  padding-bottom: clamp(120px, 14vw, 200px);
+}
+
+.cc-secure-grid {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: grid;
+  gap: 48px;
+  align-items: center;
+  text-align: center;
+}
+
+.cc-secure-grid .o360-h2,
+.cc-secure-grid .o360-lede {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.cc-secure-grid .o360-lede {
+  max-width: 34ch;
+}
+
+@media (min-width: 900px) {
+  .cc-secure-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 72px;
+    text-align: left;
+  }
+
+  .cc-secure-grid .o360-h2,
+  .cc-secure-grid .o360-lede {
+    margin-left: 0;
+  }
+}
+
+.cc-lock {
+  --open: 1;
+  position: relative;
+  width: min(100%, 400px);
+  aspect-ratio: 1;
+  margin: 0 auto;
+}
+
+.cc-lock img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.cc-lock-shackle {
+  transform: translateY(calc(var(--open) * -12%));
+  will-change: transform;
+}
+
+.cc-lock-body {
+  filter: drop-shadow(0 40px 50px rgba(0, 0, 0, 0.18));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cc-demo-caption span {
+    transition: opacity 0.2s ease;
+    transform: none;
+  }
 }
