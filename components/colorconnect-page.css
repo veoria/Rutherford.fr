@@ -731,3 +731,15 @@
   object-fit: cover;
   transform: none;
 }
+
+/* Full tour: keep the grid to the screen width (the chip row scrolls inside it) */
+.cc-tour {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+/* Security on phones: the words first, then the padlock and its button */
+@media (max-width: 899px) {
+  .cc-secure-grid > div:last-child {
+    order: -1;
+  }
+}
