@@ -36,19 +36,21 @@
   margin-right: auto;
 }
 
-/* Devices: drawn in CSS so the real screenshots stay crisp -------------- */
+/* Devices: Apple's official product bezels (iMac M4, iPad Pro M5, iPhone 17 Pro) */
 .dev-imac {
   position: relative;
   width: 100%;
+  aspect-ratio: 1800 / 1532;
 }
 
+/* transparent display area of the bezel, measured on the source PNG */
 .dev-imac-screen {
-  position: relative;
-  aspect-ratio: 16 / 9;
+  position: absolute;
+  left: 2.941%;
+  top: 3.704%;
+  width: 94.118%;
+  height: 62.222%;
   background: #0a0a0c;
-  border: clamp(6px, 1.1vw, 14px) solid #0a0a0c;
-  border-bottom-width: 0;
-  border-radius: clamp(10px, 1.4vw, 18px) clamp(10px, 1.4vw, 18px) 0 0;
   overflow: hidden;
 }
 
@@ -62,104 +64,45 @@
   display: block;
 }
 
-.dev-imac-chin {
-  height: clamp(18px, 3.4vw, 46px);
-  background: linear-gradient(#e9e9ee, #dcdce2);
-  border-radius: 0 0 clamp(10px, 1.4vw, 18px) clamp(10px, 1.4vw, 18px);
-}
-
-.dev-imac-neck {
-  width: 16%;
-  height: clamp(28px, 5vw, 70px);
-  margin: 0 auto;
-  background: linear-gradient(90deg, #cfcfd6, #e4e4ea 50%, #cfcfd6);
-  clip-path: polygon(8% 0, 92% 0, 100% 100%, 0 100%);
-}
-
-.dev-imac-foot {
-  width: 24%;
-  height: clamp(4px, 0.6vw, 8px);
-  margin: 0 auto;
-  background: #d4d4da;
-  border-radius: 0 0 6px 6px;
-  box-shadow: 0 18px 30px -12px rgba(0, 0, 0, 0.35);
-}
-
-.dev-ipad {
-  background: #0a0a0c;
-  padding: 2.2%;
-  border-radius: 7%/10%;
-  box-shadow: 0 30px 60px -30px rgba(0, 0, 0, 0.55);
-}
-
-.dev-ipad-screen {
-  aspect-ratio: 16 / 10;
-  border-radius: 3%/4.5%;
-  overflow: hidden;
-  background: #fff;
-}
-
-.dev-ipad-screen img,
-.dev-phone-screen img {
+.dev-imac-bezel {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  object-position: top left;
-  display: block;
-}
-
-.dev-phone {
-  background: #0a0a0c;
-  padding: 4%;
-  border-radius: 16%/7.5%;
-  box-shadow: 0 30px 60px -30px rgba(0, 0, 0, 0.55);
-}
-
-.dev-phone-screen {
-  position: relative;
-  aspect-ratio: 9 / 19.5;
-  border-radius: 12%/5.6%;
-  overflow: hidden;
-  background: #0a0a0c;
-}
-
-.dev-phone-screen::before {
-  content: '';
-  position: absolute;
-  top: 2.2%;
-  left: 50%;
-  width: 34%;
-  height: 3.6%;
-  transform: translateX(-50%);
-  background: #0a0a0c;
-  border-radius: 999px;
-  z-index: 1;
+  pointer-events: none;
 }
 
 .cc-devices {
   position: relative;
-  width: min(1080px, 100%);
+  width: min(1100px, 100%);
   margin: 56px auto 0;
   padding: 0 16px;
 }
 
+.cc-devices img {
+  display: block;
+  height: auto;
+}
+
 .cc-devices-imac {
-  width: 82%;
+  width: 76%;
   margin: 0 auto;
 }
 
 .cc-devices-ipad {
   position: absolute;
-  right: 2%;
-  bottom: 4%;
+  right: 3%;
+  bottom: 3%;
   width: 34%;
+  filter: drop-shadow(0 28px 40px rgba(0, 0, 0, 0.22));
 }
 
 .cc-devices-phone {
   position: absolute;
-  left: 4%;
-  bottom: 2%;
-  width: 13%;
+  left: 8%;
+  bottom: 1%;
+  width: 12.5%;
+  filter: drop-shadow(0 24px 34px rgba(0, 0, 0, 0.25));
 }
 
 /* Films ------------------------------------------------------------------ */
@@ -411,4 +354,10 @@
   font-size: 1rem;
   line-height: 1.55;
   color: var(--o360-mute);
+}
+
+/* keep the whole iMac in view while it is sticky */
+.cc-story-stage .dev-imac {
+  width: min(100%, calc(70vh * 1800 / 1532));
+  margin: 0 auto;
 }

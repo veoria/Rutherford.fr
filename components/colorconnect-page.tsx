@@ -89,13 +89,13 @@ function fmt(t: number) {
   return `${Math.floor(t / 60)}:${String(t % 60).padStart(2, '0')}`;
 }
 
-function Imac({ children, className = '' }: { children: React.ReactNode; className?: string }) {
+// Apple's official iMac (M4, 24-inch, Silver) product bezel; the screens sit
+// behind its transparent display area.
+function Imac({ children }: { children: React.ReactNode }) {
   return (
-    <div className={`dev-imac ${className}`}>
+    <div className="dev-imac">
       <div className="dev-imac-screen">{children}</div>
-      <div className="dev-imac-chin" />
-      <div className="dev-imac-neck" />
-      <div className="dev-imac-foot" />
+      <img className="dev-imac-bezel" src={`${IMG}/device-imac-bezel.webp`} alt="" width={1800} height={1532} />
     </div>
   );
 }
@@ -148,19 +148,28 @@ export function ColorConnectPage() {
           </div>
         </div>
         <div className="cc-devices" aria-label="ColorConnect on a desktop screen, a tablet and a phone">
-          <Imac className="cc-devices-imac">
-            <img src={`${IMG}/screen-floor.webp`} alt="The press floor display on a desktop screen" width={1600} height={900} />
-          </Imac>
-          <div className="dev-ipad cc-devices-ipad">
-            <div className="dev-ipad-screen">
-              <img src={`${IMG}/screen-flexo.webp`} alt="A flexo job measured inline, on a tablet" width={1600} height={900} />
-            </div>
-          </div>
-          <div className="dev-phone cc-devices-phone">
-            <div className="dev-phone-screen">
-              <img src={`${IMG}/screen-floor-phone.webp`} alt="Live presses on a phone" width={480} height={1040} />
-            </div>
-          </div>
+          <img
+            className="cc-devices-imac"
+            src={`${IMG}/device-imac-floor.webp`}
+            alt="ColorConnect press floor display on an iMac"
+            width={1800}
+            height={1532}
+            fetchPriority="high"
+          />
+          <img
+            className="cc-devices-ipad"
+            src={`${IMG}/device-ipad-flexo.webp`}
+            alt="A flexo job measured inline, on an iPad Pro"
+            width={1100}
+            height={843}
+          />
+          <img
+            className="cc-devices-phone"
+            src={`${IMG}/device-iphone-floor.webp`}
+            alt="Live presses on an iPhone"
+            width={520}
+            height={1063}
+          />
         </div>
       </section>
 
