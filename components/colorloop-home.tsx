@@ -69,6 +69,8 @@ type Copy = {
   warn: [string, string][];
   warnNote: string;
   warnCta: string;
+  warnBefore: string;
+  warnAfter: string;
   cfgTitle: string;
   cfgLead: string;
   cfgPlan: string;
@@ -118,6 +120,8 @@ const EN: Copy = {
   ],
   warnNote: 'Cyber Resilience Act: obligations apply from December 11, 2027.',
   warnCta: 'Switch to ColorLoop',
+  warnBefore: 'Before: a Windows that no longer gets updates',
+  warnAfter: 'After: ColorLoop, up to date and protected',
   cfgTitle: 'Prepare your ColorLoop.',
   cfgLead: 'Three choices, then your console validation: Rutherford checks your setup and calls you to prepare the switch.',
   cfgPlan: 'Plan',
@@ -167,6 +171,8 @@ const FR: Copy = {
   ],
   warnNote: 'Cyber Resilience Act : obligations au 11 décembre 2027.',
   warnCta: 'Passer à ColorLoop',
+  warnBefore: 'Avant : un Windows qui n’est plus mis à jour',
+  warnAfter: 'Après : ColorLoop, à jour et protégé',
   cfgTitle: 'Préparez votre ColorLoop.',
   cfgLead: 'Trois choix, puis la validation de votre console : Rutherford vérifie votre installation et vous rappelle pour préparer le passage à ColorLoop.',
   cfgPlan: 'Abonnement',
@@ -216,6 +222,8 @@ const DE: Copy = {
   ],
   warnNote: 'Cyber Resilience Act: Pflichten ab dem 11. Dezember 2027.',
   warnCta: 'Zu ColorLoop wechseln',
+  warnBefore: 'Vorher: ein Windows ohne Updates',
+  warnAfter: 'Nachher: ColorLoop, aktuell und geschützt',
   cfgTitle: 'Stellen Sie Ihr ColorLoop zusammen.',
   cfgLead: 'Drei Entscheidungen, dann die Konsolenvalidierung: Rutherford prüft Ihre Installation und ruft Sie an, um den Wechsel zu ColorLoop vorzubereiten.',
   cfgPlan: 'Abonnement',
@@ -265,6 +273,8 @@ const IT: Copy = {
   ],
   warnNote: 'Cyber Resilience Act: obblighi dall’11 dicembre 2027.',
   warnCta: 'Passa a ColorLoop',
+  warnBefore: 'Prima: un Windows non più aggiornato',
+  warnAfter: 'Dopo: ColorLoop, aggiornato e protetto',
   cfgTitle: 'Prepari il Suo ColorLoop.',
   cfgLead: 'Tre scelte, poi la validazione della Sua console: Rutherford verifica l’installazione e La richiama per preparare il passaggio a ColorLoop.',
   cfgPlan: 'Abbonamento',
@@ -314,6 +324,8 @@ const ES: Copy = {
   ],
   warnNote: 'Cyber Resilience Act: obligaciones a partir del 11 de diciembre de 2027.',
   warnCta: 'Pasar a ColorLoop',
+  warnBefore: 'Antes: un Windows sin actualizaciones',
+  warnAfter: 'Después: ColorLoop, actualizado y protegido',
   cfgTitle: 'Prepare su ColorLoop.',
   cfgLead: 'Tres elecciones y, después, la validación de su consola: Rutherford comprueba su instalación y le llama para preparar el paso a ColorLoop.',
   cfgPlan: 'Suscripción',
@@ -363,6 +375,8 @@ const PT: Copy = {
   ],
   warnNote: 'Cyber Resilience Act: obrigações a partir de 11 de dezembro de 2027.',
   warnCta: 'Mudar para o ColorLoop',
+  warnBefore: 'Antes: um Windows sem atualizações',
+  warnAfter: 'Depois: ColorLoop, atualizado e protegido',
   cfgTitle: 'Prepare o seu ColorLoop.',
   cfgLead: 'Três escolhas e, depois, a validação da sua consola: a Rutherford verifica a sua instalação e liga-lhe para preparar a passagem para o ColorLoop.',
   cfgPlan: 'Subscrição',
@@ -595,8 +609,9 @@ const ORDER = [
   'articles',
 ];
 
-function WarnArt() {
-  // A brushed-metal padlock in two layers: the shackle drops into the body as the section scrolls into view.
+function WarnArt({ before, after }: { before: string; after: string }) {
+  // Before / after: the old press PC keeps an open padlock; on the new ColorLoop PC the shackle drops in
+  // as the section scrolls into view, then the padlock snaps shut once (the "click").
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const el = ref.current;
@@ -611,9 +626,8 @@ function WarnArt() {
       raf = 0;
       const r = el.getBoundingClientRect();
       const vh = window.innerHeight;
-      const p = Math.min(1, Math.max(0, (vh * 0.9 - r.top) / (vh * 0.55)));
-      const eased = 1 - Math.pow(1 - p, 3);
-      el.style.setProperty('--open', String(1 - eased));
+      const p = Math.min(1, Math.max(0, (vh * 0.85 - r.top) / (vh * 0.5)));
+      el.style.setProperty('--open', String(Math.pow(1 - p, 3)));
       el.classList.toggle('is-locked', p >= 1);
     };
     const onScroll = () => {
@@ -629,9 +643,27 @@ function WarnArt() {
     };
   }, []);
   return (
-    <div className="clh-lock3d" ref={ref} aria-hidden="true">
-      <img className="clh-lock3d-shackle" src="/images/security/padlock-shackle.webp" alt="" width={1000} height={1000} loading="lazy" />
-      <img className="clh-lock3d-body" src="/images/security/padlock-body.webp" alt="" width={1000} height={1000} loading="lazy" />
+    <div className="clh-ba">
+      <figure className="clh-ba-item clh-ba-before">
+        <div className="clh-ba-stage">
+          <img className="clh-ba-pc" src="/images/security/pc-before.webp" alt="" width={900} height={900} loading="lazy" />
+          <div className="clh-lock3d clh-lock3d-open" aria-hidden="true">
+            <img className="clh-lock3d-shackle" src="/images/security/padlock-plain-shackle.webp" alt="" width={1000} height={1000} loading="lazy" />
+            <img className="clh-lock3d-body" src="/images/security/padlock-plain-body.webp" alt="" width={1000} height={1000} loading="lazy" />
+          </div>
+        </div>
+        <figcaption>{before}</figcaption>
+      </figure>
+      <figure className="clh-ba-item clh-ba-after">
+        <div className="clh-ba-stage">
+          <img className="clh-ba-pc" src="/images/security/pc-after.webp" alt="" width={900} height={900} loading="lazy" />
+          <div className="clh-lock3d" ref={ref} aria-hidden="true">
+            <img className="clh-lock3d-shackle" src="/images/security/padlock-shackle.webp" alt="" width={1000} height={1000} loading="lazy" />
+            <img className="clh-lock3d-body" src="/images/security/padlock-body.webp" alt="" width={1000} height={1000} loading="lazy" />
+          </div>
+        </div>
+        <figcaption>{after}</figcaption>
+      </figure>
     </div>
   );
 }
@@ -707,7 +739,7 @@ export function ColorLoopHome({ tone = 'light' }: { tone?: 'night' | 'light' }) 
       </section>
 
 
-      <section className="clh-warn clh-warn-calm clh-warn-night" aria-labelledby="clh-warn-title" role="region">
+      <section className="clh-warn clh-warn-calm clh-warn-alert" aria-labelledby="clh-warn-title" role="region">
         <div className="clh-wrap">
           <div className="clh-warn-grid">
             <div className="clh-warn-copy">
@@ -717,10 +749,10 @@ export function ColorLoopHome({ tone = 'light' }: { tone?: 'night' | 'light' }) 
                 <a href={CRA_URL} rel="noopener">{t.warnNote}</a>
               </p>
               <div className="clh-actions clh-actions-left">
-                <a className="clh-btn clh-btn-light" href="#prepare">{t.warnCta}</a>
+                <a className="clh-btn clh-btn-dark" href="#prepare">{t.warnCta}</a>
               </div>
             </div>
-            <WarnArt />
+            <WarnArt before={t.warnBefore} after={t.warnAfter} />
           </div>
         </div>
       </section>
