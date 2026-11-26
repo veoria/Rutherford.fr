@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { useLanguage, type Locale } from '@/components/language-provider';
 import { SiteNav } from '@/components/site-nav';
@@ -110,13 +110,13 @@ const EN: Copy = {
   playFilm: 'Play the film',
   warnLabel: 'Cyber Resilience Act',
   warnTitle: 'An outdated press PC is an open door to cyberattacks.',
-  warnBody: 'Legacy EasySet, EasyLoop, IntelliSet and IntelliLoop systems often run on a Windows that is no longer protected. Through that PC, a cyberattack can get into the print shop and stop production.',
+  warnBody: 'Your legacy EasySet, EasyLoop, IntelliSet or IntelliLoop often runs on a Windows that is no longer protected. ColorLoop closes the door.',
   warn: [
     ['Cyber Resilience Act', 'EU regulation 2024/2847 makes security a requirement for connected software: vulnerability reporting since September 11, 2026, main obligations from December 11, 2027.'],
     ['Windows 11', 'ColorLoop runs on Windows 11, the version Microsoft still updates. The ColorLoop PC ships with it.'],
     ['Updates included', 'Software, updates and support come with the subscription.'],
   ],
-  warnNote: 'Applicability depends on the product and each party’s role. This is not a statement of certification.',
+  warnNote: 'Cyber Resilience Act, EU regulation 2024/2847: main obligations from December 11, 2027.',
   warnCta: 'Switch to ColorLoop',
   cfgTitle: 'Prepare your ColorLoop.',
   cfgLead: 'Three choices, then your console validation: Rutherford checks your setup and calls you to prepare the switch.',
@@ -159,13 +159,13 @@ const FR: Copy = {
   playFilm: 'Lancer le film',
   warnLabel: 'Cyber Resilience Act',
   warnTitle: 'Un vieux PC de presse, c’est une porte ouverte aux cyberattaques.',
-  warnBody: 'Les anciens EasySet, EasyLoop, IntelliSet et IntelliLoop tournent souvent sur un Windows qui n’est plus protégé. Par ce PC, une cyberattaque peut entrer dans l’imprimerie et arrêter la production.',
+  warnBody: 'Vos anciens EasySet, EasyLoop, IntelliSet ou IntelliLoop tournent souvent sur un Windows qui n’est plus protégé. ColorLoop referme la porte.',
   warn: [
     ['Cyber Resilience Act', 'Le règlement UE 2024/2847 fait de la sécurité une exigence pour les logiciels connectés : signalement des vulnérabilités depuis le 11 septembre 2026, obligations principales au 11 décembre 2027.'],
     ['Windows 11', 'ColorLoop tourne sous Windows 11, la version que Microsoft met encore à jour. Le PC ColorLoop est livré avec.'],
     ['Mises à jour incluses', 'Logiciel, mises à jour et support sont compris dans l’abonnement.'],
   ],
-  warnNote: 'L’applicabilité dépend du produit et du rôle de chacun. Ceci n’est pas une déclaration de certification.',
+  warnNote: 'Cyber Resilience Act, règlement UE 2024/2847 : obligations principales au 11 décembre 2027.',
   warnCta: 'Passer à ColorLoop',
   cfgTitle: 'Préparez votre ColorLoop.',
   cfgLead: 'Trois choix, puis la validation de votre console : Rutherford vérifie votre installation et vous rappelle pour préparer le passage à ColorLoop.',
@@ -208,13 +208,13 @@ const DE: Copy = {
   playFilm: 'Film abspielen',
   warnLabel: 'Cyber Resilience Act',
   warnTitle: 'Ein veralteter Druckmaschinen-PC ist ein offenes Tor für Cyberangriffe.',
-  warnBody: 'Ältere EasySet-, EasyLoop-, IntelliSet- und IntelliLoop-Systeme laufen oft auf einem Windows, das nicht mehr geschützt ist. Über diesen PC kann ein Cyberangriff in die Druckerei gelangen und die Produktion stoppen.',
+  warnBody: 'Ihr älteres EasySet, EasyLoop, IntelliSet oder IntelliLoop läuft oft auf einem Windows, das nicht mehr geschützt ist. ColorLoop schließt die Tür.',
   warn: [
     ['Cyber Resilience Act', 'Die EU-Verordnung 2024/2847 macht Sicherheit zur Pflicht für vernetzte Software: Meldung von Schwachstellen seit dem 11. September 2026, Hauptpflichten ab dem 11. Dezember 2027.'],
     ['Windows 11', 'ColorLoop läuft unter Windows 11, der Version, die Microsoft weiterhin aktualisiert. Der ColorLoop-PC wird damit geliefert.'],
     ['Updates inklusive', 'Software, Updates und Support sind im Abonnement enthalten.'],
   ],
-  warnNote: 'Die Anwendbarkeit hängt vom Produkt und von der Rolle der Beteiligten ab. Dies ist keine Aussage über eine Zertifizierung.',
+  warnNote: 'Cyber Resilience Act, EU-Verordnung 2024/2847: Hauptpflichten ab dem 11. Dezember 2027.',
   warnCta: 'Zu ColorLoop wechseln',
   cfgTitle: 'Stellen Sie Ihr ColorLoop zusammen.',
   cfgLead: 'Drei Entscheidungen, dann die Konsolenvalidierung: Rutherford prüft Ihre Installation und ruft Sie an, um den Wechsel zu ColorLoop vorzubereiten.',
@@ -257,13 +257,13 @@ const IT: Copy = {
   playFilm: 'Avvia il video',
   warnLabel: 'Cyber Resilience Act',
   warnTitle: 'Un vecchio PC di macchina è una porta aperta agli attacchi informatici.',
-  warnBody: 'I vecchi EasySet, EasyLoop, IntelliSet e IntelliLoop funzionano spesso con un Windows non più protetto. Attraverso quel PC, un attacco informatico può entrare nella stamperia e fermare la produzione.',
+  warnBody: 'I Suoi vecchi EasySet, EasyLoop, IntelliSet o IntelliLoop funzionano spesso con un Windows non più protetto. ColorLoop chiude la porta.',
   warn: [
     ['Cyber Resilience Act', 'Il regolamento UE 2024/2847 rende la sicurezza un requisito per il software connesso: segnalazione delle vulnerabilità dall’11 settembre 2026, obblighi principali dall’11 dicembre 2027.'],
     ['Windows 11', 'ColorLoop funziona con Windows 11, la versione che Microsoft aggiorna ancora. Il PC ColorLoop viene fornito con Windows 11.'],
     ['Aggiornamenti inclusi', 'Software, aggiornamenti e assistenza sono compresi nell’abbonamento.'],
   ],
-  warnNote: 'L’applicabilità dipende dal prodotto e dal ruolo di ciascuno. Non si tratta di una dichiarazione di certificazione.',
+  warnNote: 'Cyber Resilience Act, regolamento UE 2024/2847: obblighi principali dall’11 dicembre 2027.',
   warnCta: 'Passa a ColorLoop',
   cfgTitle: 'Prepari il Suo ColorLoop.',
   cfgLead: 'Tre scelte, poi la validazione della Sua console: Rutherford verifica l’installazione e La richiama per preparare il passaggio a ColorLoop.',
@@ -306,13 +306,13 @@ const ES: Copy = {
   playFilm: 'Ver el vídeo',
   warnLabel: 'Cyber Resilience Act',
   warnTitle: 'Un PC de prensa antiguo es una puerta abierta a los ciberataques.',
-  warnBody: 'Los antiguos EasySet, EasyLoop, IntelliSet e IntelliLoop funcionan a menudo con un Windows que ya no está protegido. A través de ese PC, un ciberataque puede entrar en la imprenta y detener la producción.',
+  warnBody: 'Sus antiguos EasySet, EasyLoop, IntelliSet o IntelliLoop funcionan a menudo con un Windows que ya no está protegido. ColorLoop cierra la puerta.',
   warn: [
     ['Cyber Resilience Act', 'El Reglamento UE 2024/2847 convierte la seguridad en un requisito para el software conectado: notificación de vulnerabilidades desde el 11 de septiembre de 2026, obligaciones principales a partir del 11 de diciembre de 2027.'],
     ['Windows 11', 'ColorLoop funciona con Windows 11, la versión que Microsoft sigue actualizando. El PC ColorLoop se entrega con él.'],
     ['Actualizaciones incluidas', 'Software, actualizaciones y soporte están incluidos en la suscripción.'],
   ],
-  warnNote: 'La aplicabilidad depende del producto y del papel de cada parte. Esto no es una declaración de certificación.',
+  warnNote: 'Cyber Resilience Act, Reglamento UE 2024/2847: obligaciones principales a partir del 11 de diciembre de 2027.',
   warnCta: 'Pasar a ColorLoop',
   cfgTitle: 'Prepare su ColorLoop.',
   cfgLead: 'Tres elecciones y, después, la validación de su consola: Rutherford comprueba su instalación y le llama para preparar el paso a ColorLoop.',
@@ -355,13 +355,13 @@ const PT: Copy = {
   playFilm: 'Ver o vídeo',
   warnLabel: 'Cyber Resilience Act',
   warnTitle: 'Um PC de máquina antigo é uma porta aberta a ciberataques.',
-  warnBody: 'Os antigos EasySet, EasyLoop, IntelliSet e IntelliLoop funcionam muitas vezes num Windows que já não está protegido. Através desse PC, um ciberataque pode entrar na gráfica e parar a produção.',
+  warnBody: 'Os seus antigos EasySet, EasyLoop, IntelliSet ou IntelliLoop funcionam muitas vezes num Windows que já não está protegido. O ColorLoop fecha a porta.',
   warn: [
     ['Cyber Resilience Act', 'O Regulamento UE 2024/2847 torna a segurança um requisito para o software ligado à rede: notificação de vulnerabilidades desde 11 de setembro de 2026, obrigações principais a partir de 11 de dezembro de 2027.'],
     ['Windows 11', 'O ColorLoop funciona em Windows 11, a versão que a Microsoft continua a atualizar. O PC ColorLoop é entregue com ele.'],
     ['Atualizações incluídas', 'Software, atualizações e suporte estão incluídos na subscrição.'],
   ],
-  warnNote: 'A aplicabilidade depende do produto e do papel de cada parte. Isto não é uma declaração de certificação.',
+  warnNote: 'Cyber Resilience Act, Regulamento UE 2024/2847: obrigações principais a partir de 11 de dezembro de 2027.',
   warnCta: 'Mudar para o ColorLoop',
   cfgTitle: 'Prepare o seu ColorLoop.',
   cfgLead: 'Três escolhas e, depois, a validação da sua consola: a Rutherford verifica a sua instalação e liga-lhe para preparar a passagem para o ColorLoop.',
@@ -596,40 +596,43 @@ const ORDER = [
 ];
 
 function WarnArt() {
-  // One open padlock, in the spirit of a security visual: the legacy press PC is unlocked.
+  // A brushed-metal padlock in two layers: the shackle drops into the body as the section scrolls into view.
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      el.style.setProperty('--open', '0');
+      el.classList.add('is-locked');
+      return;
+    }
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      const r = el.getBoundingClientRect();
+      const vh = window.innerHeight;
+      const p = Math.min(1, Math.max(0, (vh * 0.9 - r.top) / (vh * 0.55)));
+      const eased = 1 - Math.pow(1 - p, 3);
+      el.style.setProperty('--open', String(1 - eased));
+      el.classList.toggle('is-locked', p >= 1);
+    };
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, []);
   return (
-    <svg className="clh-warn-art" viewBox="0 0 360 420" aria-hidden="true" focusable="false">
-      <defs>
-        <radialGradient id="clh-lock-glow" cx="50%" cy="58%" r="50%">
-          <stop offset="0" stopColor="#ffd60a" stopOpacity=".28" />
-          <stop offset="1" stopColor="#ffd60a" stopOpacity="0" />
-        </radialGradient>
-        <linearGradient id="clh-lock-steel" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0" stopColor="#8e8e96" />
-          <stop offset=".45" stopColor="#f4f4f6" />
-          <stop offset=".7" stopColor="#c7c7cd" />
-          <stop offset="1" stopColor="#7c7c84" />
-        </linearGradient>
-        <linearGradient id="clh-lock-body" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#ffe45c" />
-          <stop offset=".55" stopColor="#ffd60a" />
-          <stop offset="1" stopColor="#e3a400" />
-        </linearGradient>
-        <linearGradient id="clh-lock-shine" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#fff" stopOpacity=".55" />
-          <stop offset="1" stopColor="#fff" stopOpacity="0" />
-        </linearGradient>
-      </defs>
-      <circle cx="180" cy="250" r="176" fill="url(#clh-lock-glow)" stroke="none" />
-      <g className="clh-lock">
-        <path className="clh-lock-shackle" d="M118 150 V118 a62 62 0 0 1 124 0 V214" />
-        <rect x="58" y="196" width="244" height="196" rx="44" fill="url(#clh-lock-body)" />
-        <rect x="70" y="206" width="220" height="84" rx="36" fill="url(#clh-lock-shine)" />
-        <circle cx="180" cy="282" r="20" fill="#16161a" />
-        <rect x="170" y="288" width="20" height="46" rx="10" fill="#16161a" />
-      </g>
-      <ellipse className="clh-lock-shadow" cx="180" cy="408" rx="108" ry="9" fill="#000" opacity=".35" />
-    </svg>
+    <div className="clh-lock3d" ref={ref} aria-hidden="true">
+      <img className="clh-lock3d-shackle" src="/images/security/padlock-shackle.webp" alt="" width={1000} height={1000} loading="lazy" />
+      <img className="clh-lock3d-body" src="/images/security/padlock-body.webp" alt="" width={1000} height={1000} loading="lazy" />
+    </div>
   );
 }
 
@@ -704,26 +707,19 @@ export function ColorLoopHome({ tone = 'light' }: { tone?: 'night' | 'light' }) 
       </section>
 
 
-      <section className="clh-warn" aria-labelledby="clh-warn-title" role="region">
+      <section className="clh-warn clh-warn-calm" aria-labelledby="clh-warn-title" role="region">
         <div className="clh-wrap">
           <div className="clh-warn-grid">
-          <div className="clh-warn-copy">
-          <p className="clh-warn-label">
-            <svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true"><path d="M12 3l10 18H2L12 3z" /><path d="M12 10v5M12 18v.5" /></svg>
-            {t.warnLabel}
-          </p>
-          <h2 id="clh-warn-title">{t.warnTitle}</h2>
-          <p className="clh-warn-body">{t.warnBody}</p>
-          <div className="clh-actions clh-actions-left">
-            <a className="clh-btn clh-btn-yellow" href="#prepare">{t.warnCta}</a>
+            <div className="clh-warn-copy">
+              <h2 id="clh-warn-title">{t.warnTitle}</h2>
+              <p className="clh-warn-body">{t.warnBody}</p>
+              <div className="clh-actions clh-actions-left">
+                <a className="clh-btn clh-btn-dark" href="#prepare">{t.warnCta}</a>
+              </div>
+              <p className="clh-warn-note">{t.warnNote} <a href={CRA_URL} rel="noopener">EUR-Lex</a></p>
+            </div>
+            <WarnArt />
           </div>
-          </div>
-          <WarnArt />
-          </div>
-          <dl>
-            {t.warn.map(([term, desc]) => <div key={term}><dt>{term}</dt><dd>{desc}</dd></div>)}
-          </dl>
-          <p className="clh-fine">{t.warnNote} <a href={CRA_URL} rel="noopener">EUR-Lex</a></p>
         </div>
       </section>
 
