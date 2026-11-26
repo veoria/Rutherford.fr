@@ -110,7 +110,7 @@ const EN: Copy = {
   playFilm: 'Play the film',
   warnLabel: 'Cyber Resilience Act',
   warnTitle: 'An outdated press PC is an open door to cyberattacks.',
-  warnBody: 'Most legacy EasySet, EasyLoop, IntelliSet and IntelliLoop systems run on a Windows that no longer gets security updates. Connected to the print shop network, such a PC lets a cyberattack in, and production stops.',
+  warnBody: 'Legacy EasySet, EasyLoop, IntelliSet and IntelliLoop systems often run on a Windows that is no longer protected. Through that PC, a cyberattack can get into the print shop and stop production.',
   warn: [
     ['Cyber Resilience Act', 'EU regulation 2024/2847 makes security a requirement for connected software: vulnerability reporting since September 11, 2026, main obligations from December 11, 2027.'],
     ['Windows 11', 'ColorLoop runs on Windows 11, the version Microsoft still updates. The ColorLoop PC ships with it.'],
@@ -159,7 +159,7 @@ const FR: Copy = {
   playFilm: 'Lancer le film',
   warnLabel: 'Cyber Resilience Act',
   warnTitle: 'Un vieux PC de presse, c’est une porte ouverte aux cyberattaques.',
-  warnBody: 'Les anciens EasySet, EasyLoop, IntelliSet et IntelliLoop tournent pour la plupart sur un Windows qui ne reçoit plus de mises à jour de sécurité. Relié au réseau de l’imprimerie, un tel PC laisse entrer une cyberattaque, et la production s’arrête.',
+  warnBody: 'Les anciens EasySet, EasyLoop, IntelliSet et IntelliLoop tournent souvent sur un Windows qui n’est plus protégé. Par ce PC, une cyberattaque peut entrer dans l’imprimerie et arrêter la production.',
   warn: [
     ['Cyber Resilience Act', 'Le règlement UE 2024/2847 fait de la sécurité une exigence pour les logiciels connectés : signalement des vulnérabilités depuis le 11 septembre 2026, obligations principales au 11 décembre 2027.'],
     ['Windows 11', 'ColorLoop tourne sous Windows 11, la version que Microsoft met encore à jour. Le PC ColorLoop est livré avec.'],
@@ -208,7 +208,7 @@ const DE: Copy = {
   playFilm: 'Film abspielen',
   warnLabel: 'Cyber Resilience Act',
   warnTitle: 'Ein veralteter Druckmaschinen-PC ist ein offenes Tor für Cyberangriffe.',
-  warnBody: 'Die meisten älteren EasySet-, EasyLoop-, IntelliSet- und IntelliLoop-Systeme laufen auf einem Windows ohne Sicherheitsupdates. Im Netzwerk der Druckerei lässt ein solcher PC einen Cyberangriff herein, und die Produktion steht still.',
+  warnBody: 'Ältere EasySet-, EasyLoop-, IntelliSet- und IntelliLoop-Systeme laufen oft auf einem Windows, das nicht mehr geschützt ist. Über diesen PC kann ein Cyberangriff in die Druckerei gelangen und die Produktion stoppen.',
   warn: [
     ['Cyber Resilience Act', 'Die EU-Verordnung 2024/2847 macht Sicherheit zur Pflicht für vernetzte Software: Meldung von Schwachstellen seit dem 11. September 2026, Hauptpflichten ab dem 11. Dezember 2027.'],
     ['Windows 11', 'ColorLoop läuft unter Windows 11, der Version, die Microsoft weiterhin aktualisiert. Der ColorLoop-PC wird damit geliefert.'],
@@ -257,7 +257,7 @@ const IT: Copy = {
   playFilm: 'Avvia il video',
   warnLabel: 'Cyber Resilience Act',
   warnTitle: 'Un vecchio PC di macchina è una porta aperta agli attacchi informatici.',
-  warnBody: 'La maggior parte dei vecchi sistemi EasySet, EasyLoop, IntelliSet e IntelliLoop funziona con un Windows che non riceve più aggiornamenti di sicurezza. Collegato alla rete della stamperia, un PC così lascia entrare un attacco informatico, e la produzione si ferma.',
+  warnBody: 'I vecchi EasySet, EasyLoop, IntelliSet e IntelliLoop funzionano spesso con un Windows non più protetto. Attraverso quel PC, un attacco informatico può entrare nella stamperia e fermare la produzione.',
   warn: [
     ['Cyber Resilience Act', 'Il regolamento UE 2024/2847 rende la sicurezza un requisito per il software connesso: segnalazione delle vulnerabilità dall’11 settembre 2026, obblighi principali dall’11 dicembre 2027.'],
     ['Windows 11', 'ColorLoop funziona con Windows 11, la versione che Microsoft aggiorna ancora. Il PC ColorLoop viene fornito con Windows 11.'],
@@ -306,7 +306,7 @@ const ES: Copy = {
   playFilm: 'Ver el vídeo',
   warnLabel: 'Cyber Resilience Act',
   warnTitle: 'Un PC de prensa antiguo es una puerta abierta a los ciberataques.',
-  warnBody: 'La mayoría de los antiguos sistemas EasySet, EasyLoop, IntelliSet e IntelliLoop funcionan con un Windows que ya no recibe actualizaciones de seguridad. Conectado a la red de la imprenta, un PC así deja entrar un ciberataque, y la producción se detiene.',
+  warnBody: 'Los antiguos EasySet, EasyLoop, IntelliSet e IntelliLoop funcionan a menudo con un Windows que ya no está protegido. A través de ese PC, un ciberataque puede entrar en la imprenta y detener la producción.',
   warn: [
     ['Cyber Resilience Act', 'El Reglamento UE 2024/2847 convierte la seguridad en un requisito para el software conectado: notificación de vulnerabilidades desde el 11 de septiembre de 2026, obligaciones principales a partir del 11 de diciembre de 2027.'],
     ['Windows 11', 'ColorLoop funciona con Windows 11, la versión que Microsoft sigue actualizando. El PC ColorLoop se entrega con él.'],
@@ -355,7 +355,7 @@ const PT: Copy = {
   playFilm: 'Ver o vídeo',
   warnLabel: 'Cyber Resilience Act',
   warnTitle: 'Um PC de máquina antigo é uma porta aberta a ciberataques.',
-  warnBody: 'A maioria dos antigos sistemas EasySet, EasyLoop, IntelliSet e IntelliLoop funciona num Windows que já não recebe atualizações de segurança. Ligado à rede da gráfica, um PC assim deixa entrar um ciberataque, e a produção para.',
+  warnBody: 'Os antigos EasySet, EasyLoop, IntelliSet e IntelliLoop funcionam muitas vezes num Windows que já não está protegido. Através desse PC, um ciberataque pode entrar na gráfica e parar a produção.',
   warn: [
     ['Cyber Resilience Act', 'O Regulamento UE 2024/2847 torna a segurança um requisito para o software ligado à rede: notificação de vulnerabilidades desde 11 de setembro de 2026, obrigações principais a partir de 11 de dezembro de 2027.'],
     ['Windows 11', 'O ColorLoop funciona em Windows 11, a versão que a Microsoft continua a atualizar. O PC ColorLoop é entregue com ele.'],
@@ -596,30 +596,39 @@ const ORDER = [
 ];
 
 function WarnArt() {
-  // An outdated press PC under attack: red arrows hit the screen, the padlock is open.
+  // One open padlock, in the spirit of a security visual: the legacy press PC is unlocked.
   return (
-    <svg className="clh-warn-art" viewBox="0 0 420 320" aria-hidden="true" focusable="false">
-      <g className="clh-warn-attack">
-        <path d="M18 70 L150 112" /><path d="M8 160 L148 150" /><path d="M22 250 L152 190" />
+    <svg className="clh-warn-art" viewBox="0 0 360 420" aria-hidden="true" focusable="false">
+      <defs>
+        <radialGradient id="clh-lock-glow" cx="50%" cy="58%" r="50%">
+          <stop offset="0" stopColor="#ffd60a" stopOpacity=".28" />
+          <stop offset="1" stopColor="#ffd60a" stopOpacity="0" />
+        </radialGradient>
+        <linearGradient id="clh-lock-steel" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stopColor="#8e8e96" />
+          <stop offset=".45" stopColor="#f4f4f6" />
+          <stop offset=".7" stopColor="#c7c7cd" />
+          <stop offset="1" stopColor="#7c7c84" />
+        </linearGradient>
+        <linearGradient id="clh-lock-body" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#ffe45c" />
+          <stop offset=".55" stopColor="#ffd60a" />
+          <stop offset="1" stopColor="#e3a400" />
+        </linearGradient>
+        <linearGradient id="clh-lock-shine" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#fff" stopOpacity=".55" />
+          <stop offset="1" stopColor="#fff" stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      <circle cx="180" cy="250" r="176" fill="url(#clh-lock-glow)" stroke="none" />
+      <g className="clh-lock">
+        <path className="clh-lock-shackle" d="M118 150 V118 a62 62 0 0 1 124 0 V214" />
+        <rect x="58" y="196" width="244" height="196" rx="44" fill="url(#clh-lock-body)" />
+        <rect x="70" y="206" width="220" height="84" rx="36" fill="url(#clh-lock-shine)" />
+        <circle cx="180" cy="282" r="20" fill="#16161a" />
+        <rect x="170" y="288" width="20" height="46" rx="10" fill="#16161a" />
       </g>
-      <g className="clh-warn-heads">
-        <path d="M136 98 L152 113 L131 116" /><path d="M134 140 L150 150 L135 160" /><path d="M134 185 L154 189 L144 207" />
-      </g>
-      <g className="clh-warn-pc">
-        <rect x="160" y="40" width="220" height="160" rx="16" />
-        <rect className="clh-warn-screen" x="180" y="60" width="180" height="120" rx="6" />
-        <path d="M252 200 v28 M308 200 v28 M228 232 h104" />
-      </g>
-      <g className="clh-warn-alert">
-        <path d="M270 82 L312 154 H228 Z" />
-        <path d="M270 108 v22 M270 142 v1" />
-      </g>
-      <g className="clh-warn-lock">
-        <circle className="clh-warn-pulse" cx="356" cy="236" r="48" />
-        <circle cx="356" cy="236" r="48" />
-        <rect x="337" y="236" width="38" height="30" rx="6" />
-        <path d="M343 236 V221 a13 13 0 0 1 25 -5" />
-      </g>
+      <ellipse className="clh-lock-shadow" cx="180" cy="408" rx="108" ry="9" fill="#000" opacity=".35" />
     </svg>
   );
 }
