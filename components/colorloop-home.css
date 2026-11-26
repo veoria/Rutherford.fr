@@ -242,3 +242,22 @@
 .clh-light .clh-clip { background: #e9e9ec; }
 .clh-light .clh-presses { border-top: 0; }
 .clh-light ::selection { background: var(--clh-yellow); }
+
+/* Security section: copy left, the attacked press PC right */
+.clh-warn-grid { display: grid; gap: 40px; align-items: center; }
+@media (min-width: 960px) { .clh-warn-grid { grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 56px; } }
+.clh-warn-art { display: block; width: min(100%, 460px); height: auto; margin: 0 auto; overflow: visible; }
+.clh-warn-art g { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.clh-warn-pc { stroke: var(--clh-yellow); stroke-width: 7; }
+.clh-warn-screen { fill: rgba(255, 59, 48, 0.12); stroke-width: 4; }
+.clh-warn-alert { stroke: #ff3b30; stroke-width: 7; }
+.clh-warn-attack { stroke: #ff3b30; stroke-width: 5; stroke-dasharray: 10 12; animation: clh-attack 1.4s linear infinite; }
+.clh-warn-heads { stroke: #ff3b30; stroke-width: 5; }
+.clh-warn-lock circle { fill: #ff3b30; }
+.clh-warn-lock rect { fill: #fff; }
+.clh-warn-lock path { stroke: #fff; stroke-width: 6; }
+.clh-warn-pulse { transform-box: fill-box; transform-origin: center; animation: clh-pulse 2.4s ease-out infinite; }
+@keyframes clh-attack { to { stroke-dashoffset: -44; } }
+@keyframes clh-pulse { 0% { transform: scale(1); opacity: 0.55; } 100% { transform: scale(1.6); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .clh-warn-attack, .clh-warn-pulse { animation: none; } .clh-warn-pulse { opacity: 0; } }
+@media (min-width: 960px) { .clh-warn-grid h2 { font-size: clamp(40px, 4.2vw, 64px); max-width: 12em; } }
