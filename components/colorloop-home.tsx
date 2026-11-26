@@ -109,14 +109,14 @@ const EN: Copy = {
   clipsLink: 'Watch the customer stories',
   playFilm: 'Play the film',
   warnLabel: 'Cyber Resilience Act',
-  warnTitle: 'An outdated press PC is an open door to cyberattacks.',
-  warnBody: 'Your legacy EasySet, EasyLoop, IntelliSet or IntelliLoop often runs on a Windows that is no longer protected. ColorLoop closes the door.',
+  warnTitle: 'An old PC is an open door to cyberattacks.',
+  warnBody: 'EasySet, EasyLoop, IntelliSet, IntelliLoop: on a Windows that no longer gets updates, your press is exposed. ColorLoop closes the door.',
   warn: [
     ['Cyber Resilience Act', 'EU regulation 2024/2847 makes security a requirement for connected software: vulnerability reporting since September 11, 2026, main obligations from December 11, 2027.'],
     ['Windows 11', 'ColorLoop runs on Windows 11, the version Microsoft still updates. The ColorLoop PC ships with it.'],
     ['Updates included', 'Software, updates and support come with the subscription.'],
   ],
-  warnNote: 'Cyber Resilience Act, EU regulation 2024/2847: main obligations from December 11, 2027.',
+  warnNote: 'Cyber Resilience Act: obligations apply from December 11, 2027.',
   warnCta: 'Switch to ColorLoop',
   cfgTitle: 'Prepare your ColorLoop.',
   cfgLead: 'Three choices, then your console validation: Rutherford checks your setup and calls you to prepare the switch.',
@@ -158,14 +158,14 @@ const FR: Copy = {
   clipsLink: 'Voir les témoignages clients',
   playFilm: 'Lancer le film',
   warnLabel: 'Cyber Resilience Act',
-  warnTitle: 'Un vieux PC de presse, c’est une porte ouverte aux cyberattaques.',
-  warnBody: 'Vos anciens EasySet, EasyLoop, IntelliSet ou IntelliLoop tournent souvent sur un Windows qui n’est plus protégé. ColorLoop referme la porte.',
+  warnTitle: 'Un vieux PC, c’est une porte ouverte aux cyberattaques.',
+  warnBody: 'EasySet, EasyLoop, IntelliSet, IntelliLoop : sur un Windows qui n’est plus mis à jour, votre presse est exposée. ColorLoop referme la porte.',
   warn: [
     ['Cyber Resilience Act', 'Le règlement UE 2024/2847 fait de la sécurité une exigence pour les logiciels connectés : signalement des vulnérabilités depuis le 11 septembre 2026, obligations principales au 11 décembre 2027.'],
     ['Windows 11', 'ColorLoop tourne sous Windows 11, la version que Microsoft met encore à jour. Le PC ColorLoop est livré avec.'],
     ['Mises à jour incluses', 'Logiciel, mises à jour et support sont compris dans l’abonnement.'],
   ],
-  warnNote: 'Cyber Resilience Act, règlement UE 2024/2847 : obligations principales au 11 décembre 2027.',
+  warnNote: 'Cyber Resilience Act : obligations au 11 décembre 2027.',
   warnCta: 'Passer à ColorLoop',
   cfgTitle: 'Préparez votre ColorLoop.',
   cfgLead: 'Trois choix, puis la validation de votre console : Rutherford vérifie votre installation et vous rappelle pour préparer le passage à ColorLoop.',
@@ -207,14 +207,14 @@ const DE: Copy = {
   clipsLink: 'Kundenreferenzen ansehen',
   playFilm: 'Film abspielen',
   warnLabel: 'Cyber Resilience Act',
-  warnTitle: 'Ein veralteter Druckmaschinen-PC ist ein offenes Tor für Cyberangriffe.',
-  warnBody: 'Ihr älteres EasySet, EasyLoop, IntelliSet oder IntelliLoop läuft oft auf einem Windows, das nicht mehr geschützt ist. ColorLoop schließt die Tür.',
+  warnTitle: 'Ein alter PC ist ein offenes Tor für Cyberangriffe.',
+  warnBody: 'EasySet, EasyLoop, IntelliSet, IntelliLoop: Auf einem Windows ohne Updates ist Ihre Druckmaschine angreifbar. ColorLoop schließt die Tür.',
   warn: [
     ['Cyber Resilience Act', 'Die EU-Verordnung 2024/2847 macht Sicherheit zur Pflicht für vernetzte Software: Meldung von Schwachstellen seit dem 11. September 2026, Hauptpflichten ab dem 11. Dezember 2027.'],
     ['Windows 11', 'ColorLoop läuft unter Windows 11, der Version, die Microsoft weiterhin aktualisiert. Der ColorLoop-PC wird damit geliefert.'],
     ['Updates inklusive', 'Software, Updates und Support sind im Abonnement enthalten.'],
   ],
-  warnNote: 'Cyber Resilience Act, EU-Verordnung 2024/2847: Hauptpflichten ab dem 11. Dezember 2027.',
+  warnNote: 'Cyber Resilience Act: Pflichten ab dem 11. Dezember 2027.',
   warnCta: 'Zu ColorLoop wechseln',
   cfgTitle: 'Stellen Sie Ihr ColorLoop zusammen.',
   cfgLead: 'Drei Entscheidungen, dann die Konsolenvalidierung: Rutherford prüft Ihre Installation und ruft Sie an, um den Wechsel zu ColorLoop vorzubereiten.',
@@ -256,14 +256,14 @@ const IT: Copy = {
   clipsLink: 'Guardi le testimonianze dei clienti',
   playFilm: 'Avvia il video',
   warnLabel: 'Cyber Resilience Act',
-  warnTitle: 'Un vecchio PC di macchina è una porta aperta agli attacchi informatici.',
-  warnBody: 'I Suoi vecchi EasySet, EasyLoop, IntelliSet o IntelliLoop funzionano spesso con un Windows non più protetto. ColorLoop chiude la porta.',
+  warnTitle: 'Un vecchio PC è una porta aperta agli attacchi informatici.',
+  warnBody: 'EasySet, EasyLoop, IntelliSet, IntelliLoop: su un Windows non più aggiornato, la Sua macchina è esposta. ColorLoop chiude la porta.',
   warn: [
     ['Cyber Resilience Act', 'Il regolamento UE 2024/2847 rende la sicurezza un requisito per il software connesso: segnalazione delle vulnerabilità dall’11 settembre 2026, obblighi principali dall’11 dicembre 2027.'],
     ['Windows 11', 'ColorLoop funziona con Windows 11, la versione che Microsoft aggiorna ancora. Il PC ColorLoop viene fornito con Windows 11.'],
     ['Aggiornamenti inclusi', 'Software, aggiornamenti e assistenza sono compresi nell’abbonamento.'],
   ],
-  warnNote: 'Cyber Resilience Act, regolamento UE 2024/2847: obblighi principali dall’11 dicembre 2027.',
+  warnNote: 'Cyber Resilience Act: obblighi dall’11 dicembre 2027.',
   warnCta: 'Passa a ColorLoop',
   cfgTitle: 'Prepari il Suo ColorLoop.',
   cfgLead: 'Tre scelte, poi la validazione della Sua console: Rutherford verifica l’installazione e La richiama per preparare il passaggio a ColorLoop.',
@@ -305,14 +305,14 @@ const ES: Copy = {
   clipsLink: 'Ver los testimonios de clientes',
   playFilm: 'Ver el vídeo',
   warnLabel: 'Cyber Resilience Act',
-  warnTitle: 'Un PC de prensa antiguo es una puerta abierta a los ciberataques.',
-  warnBody: 'Sus antiguos EasySet, EasyLoop, IntelliSet o IntelliLoop funcionan a menudo con un Windows que ya no está protegido. ColorLoop cierra la puerta.',
+  warnTitle: 'Un PC antiguo es una puerta abierta a los ciberataques.',
+  warnBody: 'EasySet, EasyLoop, IntelliSet, IntelliLoop: con un Windows sin actualizaciones, su prensa está expuesta. ColorLoop cierra la puerta.',
   warn: [
     ['Cyber Resilience Act', 'El Reglamento UE 2024/2847 convierte la seguridad en un requisito para el software conectado: notificación de vulnerabilidades desde el 11 de septiembre de 2026, obligaciones principales a partir del 11 de diciembre de 2027.'],
     ['Windows 11', 'ColorLoop funciona con Windows 11, la versión que Microsoft sigue actualizando. El PC ColorLoop se entrega con él.'],
     ['Actualizaciones incluidas', 'Software, actualizaciones y soporte están incluidos en la suscripción.'],
   ],
-  warnNote: 'Cyber Resilience Act, Reglamento UE 2024/2847: obligaciones principales a partir del 11 de diciembre de 2027.',
+  warnNote: 'Cyber Resilience Act: obligaciones a partir del 11 de diciembre de 2027.',
   warnCta: 'Pasar a ColorLoop',
   cfgTitle: 'Prepare su ColorLoop.',
   cfgLead: 'Tres elecciones y, después, la validación de su consola: Rutherford comprueba su instalación y le llama para preparar el paso a ColorLoop.',
@@ -354,14 +354,14 @@ const PT: Copy = {
   clipsLink: 'Ver os testemunhos de clientes',
   playFilm: 'Ver o vídeo',
   warnLabel: 'Cyber Resilience Act',
-  warnTitle: 'Um PC de máquina antigo é uma porta aberta a ciberataques.',
-  warnBody: 'Os seus antigos EasySet, EasyLoop, IntelliSet ou IntelliLoop funcionam muitas vezes num Windows que já não está protegido. O ColorLoop fecha a porta.',
+  warnTitle: 'Um PC antigo é uma porta aberta a ciberataques.',
+  warnBody: 'EasySet, EasyLoop, IntelliSet, IntelliLoop: num Windows sem atualizações, a sua máquina fica exposta. O ColorLoop fecha a porta.',
   warn: [
     ['Cyber Resilience Act', 'O Regulamento UE 2024/2847 torna a segurança um requisito para o software ligado à rede: notificação de vulnerabilidades desde 11 de setembro de 2026, obrigações principais a partir de 11 de dezembro de 2027.'],
     ['Windows 11', 'O ColorLoop funciona em Windows 11, a versão que a Microsoft continua a atualizar. O PC ColorLoop é entregue com ele.'],
     ['Atualizações incluídas', 'Software, atualizações e suporte estão incluídos na subscrição.'],
   ],
-  warnNote: 'Cyber Resilience Act, Regulamento UE 2024/2847: obrigações principais a partir de 11 de dezembro de 2027.',
+  warnNote: 'Cyber Resilience Act: obrigações a partir de 11 de dezembro de 2027.',
   warnCta: 'Mudar para o ColorLoop',
   cfgTitle: 'Prepare o seu ColorLoop.',
   cfgLead: 'Três escolhas e, depois, a validação da sua consola: a Rutherford verifica a sua instalação e liga-lhe para preparar a passagem para o ColorLoop.',
@@ -707,16 +707,18 @@ export function ColorLoopHome({ tone = 'light' }: { tone?: 'night' | 'light' }) 
       </section>
 
 
-      <section className="clh-warn clh-warn-calm" aria-labelledby="clh-warn-title" role="region">
+      <section className="clh-warn clh-warn-calm clh-warn-night" aria-labelledby="clh-warn-title" role="region">
         <div className="clh-wrap">
           <div className="clh-warn-grid">
             <div className="clh-warn-copy">
               <h2 id="clh-warn-title">{t.warnTitle}</h2>
               <p className="clh-warn-body">{t.warnBody}</p>
+              <p className="clh-warn-cra">
+                <a href={CRA_URL} rel="noopener">{t.warnNote}</a>
+              </p>
               <div className="clh-actions clh-actions-left">
-                <a className="clh-btn clh-btn-dark" href="#prepare">{t.warnCta}</a>
+                <a className="clh-btn clh-btn-light" href="#prepare">{t.warnCta}</a>
               </div>
-              <p className="clh-warn-note">{t.warnNote} <a href={CRA_URL} rel="noopener">EUR-Lex</a></p>
             </div>
             <WarnArt />
           </div>
