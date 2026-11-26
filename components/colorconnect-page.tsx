@@ -3,6 +3,8 @@
 import '@/app/offset360/offset360.css';
 import './colorconnect-page.css';
 import { ColorConnectDiagram } from './colorconnect-diagram';
+import { AppDemo } from './colorconnect-appdemo';
+import { PH } from './colorconnect-phosphor';
 import { useEffect, useRef, useState } from 'react';
 import { SiteFooter } from '@/components/site-footer';
 import { SiteNav } from '@/components/site-nav';
@@ -16,69 +18,6 @@ const DEMO_URL = 'https://form.typeform.com/to/LZtPUH';
 const prefersReducedMotion = () =>
   typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-type Focus = { x: number; y: number; w: number; h: number };
-type Step = {
-  screens: string[];
-  alt: string;
-  title: string;
-  body: string;
-  tag: string;
-  focus: Focus; // area of interest, in % of the screen image
-};
-
-// Real ColorConnect screens from the demo recording (demo data only), fitted to
-// the MacBook Pro display. Focus areas point at what the text talks about.
-const TOUR: Step[] = [
-  {
-    screens: ['tour16-jobs.webp'],
-    alt: 'ColorConnect production jobs: each job with its preview, press, plates and ink use',
-    title: 'Every job, prepared.',
-    body: 'Prepress drops the files in a folder, as today. ColorConnect builds each job with its preview, inks and ink coverage.',
-    tag: 'Job created from the prepress folder',
-    focus: { x: 14.9, y: 20.3, w: 27, h: 43.8 },
-  },
-  {
-    screens: ['tour16-offset.webp'],
-    alt: 'An offset job in ColorConnect: press, schedule, substrate and ink per color',
-    title: 'Ready for the offset press.',
-    body: 'Press, schedule, substrate and ink per color. At the console, ColorLoop finds the same job, with nothing to retype.',
-    tag: 'Ink per color, ready for the preset',
-    focus: { x: 14.6, y: 67.6, w: 83.8, h: 28.8 },
-  },
-  {
-    screens: ['tour16-zones-1.webp', 'tour16-zones-3.webp'],
-    alt: 'Ink zones of each measured sheet: mostly red and yellow on sheet 1, mostly green on sheet 3',
-    title: 'Sheet after sheet, into tolerance.',
-    body: 'Every ink zone of every measured sheet. ColorLoop corrects after each measurement, and the job keeps the whole history.',
-    tag: 'From sheet 1 to sheet 3',
-    focus: { x: 14.6, y: 5.5, w: 84, h: 90 },
-  },
-  {
-    screens: ['tour16-flexo.webp'],
-    alt: 'A flexo job measured inline by DeltaOne: ΔE per ink and the score along the run',
-    title: 'Flexo, measured inline.',
-    body: 'DeltaOne measures the running web. ΔE per ink, speed and every measurement stay with the job.',
-    tag: '0 of 6 inks out of tolerance',
-    focus: { x: 14.6, y: 51.9, w: 50, h: 9.2 },
-  },
-  {
-    screens: ['tour16-inks.webp'],
-    alt: 'The ink and substrate library with compliance columns for each ink',
-    title: 'Inks and substrates, documented.',
-    body: 'Each ink carries its composition and compliance data. When a color in a formulation is not compliant, you see it at once.',
-    tag: 'PFAS, heavy metals and food contact, per ink',
-    focus: { x: 64, y: 31.1, w: 8, h: 60.7 },
-  },
-  {
-    screens: ['tour16-ppwr.webp'],
-    alt: 'ColorConnect PPWR compliance: job compliance and ink records',
-    title: 'Evidence from your own jobs.',
-    body: 'A PPWR evaluation per job and the Digital Product Passport, from data your production already creates. ColorConnect helps you prepare evidence. It does not certify.',
-    tag: 'Compliance per job, from its inks',
-    focus: { x: 14.6, y: 35.2, w: 41.7, h: 26 },
-  },
-];
-
 const CHAPTERS = [
   { t: 2, label: 'Every press on one screen' },
   { t: 58, label: 'Live status, speed and consumption' },
@@ -91,9 +30,9 @@ const CHAPTERS = [
 ];
 
 const ESSENTIALS = [
-  { title: 'In your print shop', body: 'A Windows workstation or server. Production files and customer data stay with you.' },
-  { title: 'In any browser', body: 'Office, pressroom, tablet or phone. Accounts, roles and two-factor authentication.' },
-  { title: 'In 8 languages', body: 'English, French, German, Spanish, Portuguese, Italian, Chinese and Thai.' },
+  { icon: 'factory', title: 'In your print shop', body: 'A Windows workstation or server. Production files and customer data stay with you.' },
+  { icon: 'devices', title: 'In any browser', body: 'Office, pressroom, tablet or phone. Accounts, roles and two-factor authentication.' },
+  { icon: 'translate', title: 'In 8 languages', body: 'English, French, German, Spanish, Portuguese, Italian, Chinese and Thai.' },
 ];
 
 const FAQ = [
@@ -118,23 +57,6 @@ const FAQ = [
 function fmt(t: number) {
   return `${Math.floor(t / 60)}:${String(t % 60).padStart(2, '0')}`;
 }
-
-function Shot({ step, on }: { step: Step; on: boolean }) {
-  const f = step.focus;
-  return (
-    <div
-      className={`cc-shot${on ? ' is-on' : ''}${step.screens.length > 1 ? ' is-pair' : ''}`}
-    >
-      {step.screens.map((s, k) => (
-        <img key={s} src={`${IMG}/${s}`} alt="" width={1600} height={900} className={k === 1 ? 'cc-shot-next' : undefined} loading="lazy" />
-      ))}
-      {step.screens.length === 1 && (
-        <span className="cc-ring" style={{ left: `${f.x}%`, top: `${f.y}%`, width: `${f.w}%`, height: `${f.h}%` }} />
-      )}
-    </div>
-  );
-}
-
 
 function SecureLock() {
   // The brushed-metal padlock: the shackle drops in while the padlock travels up to the middle of the
@@ -210,28 +132,12 @@ type PortalVariant = 'diagram' | 'ui' | 'photos' | 'renders';
 
 export function ColorConnectPage() {
   const tutoRef = useRef<HTMLVideoElement>(null);
-  const stepRefs = useRef<(HTMLLIElement | null)[]>([]);
-  const [active, setActive] = useState(0);
   const [portal, setPortal] = useState<PortalVariant>('diagram');
   useEffect(() => {
     const v = new URLSearchParams(window.location.search).get('portal');
     if (v === 'ui' || v === 'photos' || v === 'renders') setPortal(v);
   }, []);
 
-  useEffect(() => {
-    const els = stepRefs.current.filter(Boolean) as HTMLLIElement[];
-    if (!els.length) return;
-    const obs = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((e) => {
-          if (e.isIntersecting) setActive(Number((e.target as HTMLElement).dataset.i));
-        });
-      },
-      { rootMargin: '-45% 0px -45% 0px' }
-    );
-    els.forEach((el) => obs.observe(el));
-    return () => obs.disconnect();
-  }, []);
 
   const seek = (t: number) => {
     const v = tutoRef.current;
@@ -272,7 +178,7 @@ export function ColorConnectPage() {
                 poster={`${IMG}/demo-loop-poster-v2.webp`}
                 aria-label="ColorConnect in use: a job from prepress, the ink keys corrected live, the ink and substrate library"
               >
-                <source src={`${MEDIA}/colorconnect-demo-loop-v2.mp4`} type="video/mp4" />
+                <source src={`${IMG}/demo-loop-v3.mp4`} type="video/mp4" />
               </video>
             </div>
             <img className="cc-imac-bezel" src={`${IMG}/device-imac-blue-bezel.webp`} alt="" width={1800} height={1532} />
@@ -291,7 +197,7 @@ export function ColorConnectPage() {
         <div className="o360-container">
           <div className="o360-video-wrap cc-video">
             <video controls playsInline preload="metadata" poster={`${IMG}/poster-pitch-v4.webp`} aria-label="François-Xavier David presents ColorConnect, one minute">
-              <source src={`${MEDIA}/colorconnect-pitch-fx-en.mp4`} type="video/mp4" />
+              <source src={`${MEDIA}/colorconnect-pitch-fx-en-2.mp4`} type="video/mp4" />
             </video>
           </div>
         </div>
@@ -340,55 +246,14 @@ export function ColorConnectPage() {
         </div>
       </section>
 
-      {/* Screen tour */}
+      {/* Click-through demo inside the iMac */}
       <section className="o360-section o360-quiet cc-tour-section">
-        <div className="o360-narrow" style={{ marginBottom: 24 }}>
-          <h2 className="o360-h2">The software, screen by screen.</h2>
+        <div className="o360-narrow" style={{ marginBottom: 32 }}>
+          <h2 className="o360-h2">Click around ColorConnect.</h2>
+          <p className="o360-lede">Real screens, demo data. Click a press, a job or the menu.</p>
         </div>
-        <div className="o360-container cc-story">
-          <div className="cc-story-stage" aria-hidden="true">
-            <div className="cc-imac cc-imac-tour">
-              <div className="cc-imac-screen">
-                {TOUR.map((s, i) => (
-                  <Shot key={s.title} step={s} on={i === active} />
-                ))}
-                {TOUR.map((s, i) => (
-                  <span key={s.tag} className={`cc-tag${i === active ? ' is-on' : ''}`}>
-                    <i />
-                    {s.tag}
-                  </span>
-                ))}
-              </div>
-              <img className="cc-imac-bezel" src={`${IMG}/device-imac-blue-bezel.webp`} alt="" width={1800} height={1532} />
-            </div>
-            <div className="cc-story-caption" aria-live="polite">
-              <h3 key={TOUR[active].title}>{TOUR[active].title}</h3>
-              <p key={TOUR[active].body}>{TOUR[active].body}</p>
-            </div>
-            <ol className="cc-story-dots">
-              {TOUR.map((s, i) => (
-                <li key={s.title} className={i === active ? 'is-on' : undefined} />
-              ))}
-            </ol>
-          </div>
-          <ol className="cc-story-steps">
-            {TOUR.map((s, i) => (
-              <li
-                key={s.title}
-                data-i={i}
-                ref={(el) => {
-                  stepRefs.current[i] = el;
-                }}
-                className={i === active ? 'is-on' : undefined}
-              >
-                <figure className="cc-story-inline">
-                  <img src={`${IMG}/${s.screens[s.screens.length - 1]}`} alt={s.alt} width={1600} height={900} loading="lazy" />
-                </figure>
-                <h3>{s.title}</h3>
-                <p>{s.body}</p>
-              </li>
-            ))}
-          </ol>
+        <div className="o360-container">
+          <AppDemo />
         </div>
       </section>
 
@@ -425,6 +290,7 @@ export function ColorConnectPage() {
           <ul className="cc-essentials">
             {ESSENTIALS.map((e) => (
               <li key={e.title}>
+                <svg className="cc-ess-ico" viewBox="0 0 256 256" aria-hidden="true" dangerouslySetInnerHTML={{ __html: PH[e.icon] }} />
                 <h3>{e.title}</h3>
                 <p>{e.body}</p>
               </li>

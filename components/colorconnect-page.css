@@ -846,3 +846,62 @@
   margin-right: auto !important;
 }
 .cc-secure-grid .o360-lede { max-width: 36ch; }
+
+/* Diagram v3: line drawings of the presses, Phosphor icons for files and people */
+.ccd svg .ccd-ico-bg { fill: #f5f5f7; stroke: #e3e3e8; stroke-width: 1; }
+.ccd svg .ccd-ico { fill: #1d1d1f; }
+.ccd svg .ccd-tag { font-size: 12px; font-weight: 500; letter-spacing: 0.02em; fill: #6e6e73; }
+.ccd svg .pr-stroke { fill: none; stroke: #1d1d1f; stroke-width: 1.25; stroke-linecap: round; stroke-linejoin: round; }
+.ccd svg .pr-thin { fill: none; stroke: #b8b8bf; stroke-width: 1; }
+.ccd svg .pr-ground { fill: none; stroke: #c7c7cc; stroke-width: 1.25; }
+.ccd svg .pr-body { fill: #f5f5f7; stroke: #1d1d1f; stroke-width: 1.25; }
+.ccd svg .pr-fill { fill: #fff; stroke: #1d1d1f; stroke-width: 1.25; }
+.ccd svg .pr-paper { fill: #fff; stroke: #1d1d1f; stroke-width: 1.25; }
+.ccd svg .pr-screen { fill: #1d1d1f; stroke: #1d1d1f; stroke-width: 1.25; }
+.ccd svg .pr-d1 { fill: #1d1d1f; stroke: #1d1d1f; stroke-width: 1.25; }
+.ccd svg .pr-lens { fill: #3a3a3c; stroke: #8e8e93; stroke-width: 1; }
+.ccd svg .pr-scan { fill: none; stroke: #0071e3; stroke-width: 1.25; stroke-dasharray: 2 3; }
+.ccd svg .pr-uv { fill: none; stroke: #7c5cff; stroke-width: 2; stroke-linecap: round; opacity: 0.7; }
+.ccd svg .pr-dot { fill: #1d1d1f; }
+.ccd svg .pr-sheet { fill: #fff; stroke: #0071e3; stroke-width: 1; vector-effect: non-scaling-stroke; }
+.ccd svg .pr-web { fill: none; stroke: #1d1d1f; stroke-width: 1.5; }
+.ccd svg .pr-web-run { fill: none; stroke: #0071e3; stroke-width: 1.5; stroke-dasharray: 3 14; animation: pr-run 1.2s linear infinite; }
+@keyframes pr-run { to { stroke-dashoffset: -17; } }
+@media (prefers-reduced-motion: reduce) {
+  .ccd svg .pr-web-run { animation: none; }
+  .ccd svg .pr-sheet { display: none; }
+}
+
+/* Click-through demo in the iMac: screens swap at once, no transition */
+.cc-demo { max-width: 1100px; margin: 0 auto; text-align: center; }
+.cc-demo .cc-imac.cc-imac-tour { width: min(100%, calc(64vh * 1800 / 1532)); }
+.cc-demo-screen img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; visibility: hidden; }
+.cc-demo-screen img.is-on { visibility: visible; }
+.cc-spot {
+  position: absolute; z-index: 2; padding: 0; margin: 0; border: 0; border-radius: 6px;
+  background: transparent; cursor: pointer; outline: none;
+  box-shadow: inset 0 0 0 0 rgba(0, 113, 227, 0);
+  transition: box-shadow 160ms ease-out, background-color 160ms ease-out;
+}
+.cc-spot:hover, .cc-spot:focus-visible { background: rgba(0, 113, 227, 0.08); box-shadow: inset 0 0 0 2px #0071e3; }
+.cc-spot.is-hint::after {
+  content: ''; position: absolute; right: -5px; top: -5px; width: 12px; height: 12px; border-radius: 50%;
+  background: #0071e3; box-shadow: 0 0 0 0 rgba(0, 113, 227, 0.5); animation: cc-hint 1.8s ease-out infinite;
+}
+@keyframes cc-hint { 0% { box-shadow: 0 0 0 0 rgba(0, 113, 227, 0.5); } 100% { box-shadow: 0 0 0 14px rgba(0, 113, 227, 0); } }
+.cc-app-caption { max-width: 46ch; min-height: 6.5em; margin: 22px auto 0; }
+.cc-app-caption h3 { margin: 0 0 8px; font-size: clamp(1.3rem, 2vw, 1.7rem); letter-spacing: -0.02em; text-wrap: balance; }
+.cc-app-caption p { margin: 0; font-size: 1.05rem; line-height: 1.55; color: var(--o360-mute, #6e6e73); text-wrap: balance; }
+.cc-demo-chips { display: none; }
+@media (max-width: 760px) {
+  .cc-demo .cc-imac.cc-imac-tour { width: 100%; }
+  .cc-demo-chips { display: flex; gap: 8px; overflow-x: auto; padding: 4px 2px 8px; margin-top: 8px; scrollbar-width: none; justify-content: flex-start; }
+  .cc-demo-chips::-webkit-scrollbar { display: none; }
+  .cc-demo-chips button { flex: none; border: 1px solid #d2d2d7; background: #fff; color: #1d1d1f; border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 0.9rem; white-space: nowrap; }
+  .cc-demo-chips button.is-on { background: #1d1d1f; border-color: #1d1d1f; color: #fff; }
+  .cc-app-caption { min-height: 0; }
+}
+@media (prefers-reduced-motion: reduce) { .cc-spot.is-hint::after { animation: none; } }
+
+/* Essentials: one Phosphor light icon above each title */
+.cc-essentials .cc-ess-ico { display: block; width: 44px; height: 44px; margin: 0 0 18px; fill: #1d1d1f; stroke: none; }
