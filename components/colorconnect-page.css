@@ -51,7 +51,7 @@
 }
 
 .cc-devices-mac {
-  width: 82%;
+  width: 70%;
   margin: 0 auto;
 }
 
@@ -412,7 +412,7 @@
   position: absolute;
   inset: 0;
   opacity: 0;
-  transition: opacity 0.5s ease, transform 1.4s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: opacity 0.5s ease;
 }
 
 .cc-shot img {
@@ -425,12 +425,6 @@
 
 .cc-shot.is-on {
   opacity: 1;
-  transform: scale(1.14);
-  transition-delay: 0s, 0.35s;
-}
-
-.cc-shot.is-pair.is-on {
-  transform: scale(1.04);
 }
 
 .cc-shot-next {
@@ -556,10 +550,7 @@
     animation: none;
   }
 
-  .cc-shot,
-  .cc-shot.is-on,
-  .cc-shot.is-pair.is-on {
-    transform: none;
+  .cc-shot {
     transition: opacity 0.2s ease;
   }
 

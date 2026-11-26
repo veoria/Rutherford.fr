@@ -35,7 +35,7 @@ const TOUR: Step[] = [
     title: 'Every job, prepared.',
     body: 'Prepress drops the files in a folder, as today. ColorConnect builds each job with its preview, inks and ink coverage.',
     tag: 'Job created from the prepress folder',
-    focus: { x: 14.6, y: 20.9, w: 27.1, h: 37.7 },
+    focus: { x: 14.9, y: 20.8, w: 27, h: 37.9 },
   },
   {
     screens: ['tour-offset.webp'],
@@ -67,7 +67,7 @@ const TOUR: Step[] = [
     title: 'Inks and substrates, documented.',
     body: 'Each ink carries its composition and compliance data. When a color in a formulation is not compliant, you see it at once.',
     tag: 'PFAS, heavy metals and food contact, per ink',
-    focus: { x: 64, y: 31.7, w: 8, h: 51 },
+    focus: { x: 64, y: 30.2, w: 8, h: 52.6 },
   },
   {
     screens: ['tour-ppwr.webp'],
@@ -128,7 +128,6 @@ function Shot({ step, on }: { step: Step; on: boolean }) {
   return (
     <div
       className={`cc-shot${on ? ' is-on' : ''}${step.screens.length > 1 ? ' is-pair' : ''}`}
-      style={{ transformOrigin: `${f.x + f.w / 2}% ${f.y + f.h / 2}%` }}
     >
       {step.screens.map((s, k) => (
         <img key={s} src={`${IMG}/${s}`} alt="" width={1600} height={1039} className={k === 1 ? 'cc-shot-next' : undefined} loading="lazy" />
@@ -187,8 +186,8 @@ export function ColorConnectPage() {
             <a className="o360-btn o360-btn-ghost" href="#film">Watch the pitch</a>
           </div>
         </div>
-        <div className="cc-devices" aria-label="ColorConnect on a MacBook Pro, an iPad Pro and an iPhone">
-          <img className="cc-devices-mac" src={`${IMG}/device-macbook-jobs.webp`} alt="ColorConnect production jobs on a MacBook Pro" width={1800} height={1184} fetchPriority="high" />
+        <div className="cc-devices" aria-label="ColorConnect on an iMac, an iPad Pro and an iPhone">
+          <img className="cc-devices-mac" src={`${IMG}/device-imac-jobs.webp`} alt="ColorConnect production jobs on an iMac" width={1800} height={1532} fetchPriority="high" />
           <img className="cc-devices-ipad" src={`${IMG}/device-ipad-flexo.webp`} alt="A flexo job measured inline, on an iPad Pro" width={1100} height={843} />
           <img className="cc-devices-phone" src={`${IMG}/device-iphone-flexo.webp`} alt="The same flexo job on an iPhone" width={560} height={1145} />
         </div>
