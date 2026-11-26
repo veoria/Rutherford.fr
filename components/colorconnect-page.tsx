@@ -2,6 +2,7 @@
 
 import '@/app/offset360/offset360.css';
 import './colorconnect-page.css';
+import { ColorConnectDiagram } from './colorconnect-diagram';
 import { useEffect, useRef, useState } from 'react';
 import { SiteFooter } from '@/components/site-footer';
 import { SiteNav } from '@/components/site-nav';
@@ -205,16 +206,16 @@ const PORTAL = [
   },
 ];
 
-type PortalVariant = 'ui' | 'photos' | 'renders';
+type PortalVariant = 'diagram' | 'ui' | 'photos' | 'renders';
 
 export function ColorConnectPage() {
   const tutoRef = useRef<HTMLVideoElement>(null);
   const stepRefs = useRef<(HTMLLIElement | null)[]>([]);
   const [active, setActive] = useState(0);
-  const [portal, setPortal] = useState<PortalVariant>('ui');
+  const [portal, setPortal] = useState<PortalVariant>('diagram');
   useEffect(() => {
     const v = new URLSearchParams(window.location.search).get('portal');
-    if (v === 'photos' || v === 'renders') setPortal(v);
+    if (v === 'ui' || v === 'photos' || v === 'renders') setPortal(v);
   }, []);
 
   useEffect(() => {
@@ -289,18 +290,20 @@ export function ColorConnectPage() {
         </div>
         <div className="o360-container">
           <div className="o360-video-wrap cc-video">
-            <video controls playsInline preload="metadata" poster={`${IMG}/poster-pitch-v3.webp`} aria-label="François-Xavier David presents ColorConnect, one minute">
+            <video controls playsInline preload="metadata" poster={`${IMG}/poster-pitch-v4.webp`} aria-label="François-Xavier David presents ColorConnect, one minute">
               <source src={`${MEDIA}/colorconnect-pitch-fx-en.mp4`} type="video/mp4" />
             </video>
           </div>
         </div>
       </section>
 
-      {/* One portal, three steps. Proposals: ?portal=ui (default, real screens), photos, renders */}
+      {/* One portal, three steps. Proposals: diagram (default), ?portal=ui, ?portal=photos, ?portal=renders */}
       <section className="o360-section cc-portal">
         <div className="o360-narrow">
           <h2 className="o360-h2">One portal between prepress, presses and people.</h2>
         </div>
+        {portal === 'diagram' && <ColorConnectDiagram />}
+        {portal !== 'diagram' && (
         <ol className={`cc-steps3 cc-steps3-${portal}`}>
           {PORTAL.map((step) => (
             <li key={step.title}>
@@ -320,6 +323,7 @@ export function ColorConnectPage() {
             </li>
           ))}
         </ol>
+        )}
       </section>
 
       {/* Security: the padlock closes on scroll */}
@@ -356,6 +360,10 @@ export function ColorConnectPage() {
                 ))}
               </div>
               <img className="cc-imac-bezel" src={`${IMG}/device-imac-blue-bezel.webp`} alt="" width={1800} height={1532} />
+            </div>
+            <div className="cc-story-caption" aria-live="polite">
+              <h3 key={TOUR[active].title}>{TOUR[active].title}</h3>
+              <p key={TOUR[active].body}>{TOUR[active].body}</p>
             </div>
             <ol className="cc-story-dots">
               {TOUR.map((s, i) => (

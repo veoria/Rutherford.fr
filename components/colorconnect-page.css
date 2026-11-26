@@ -743,3 +743,106 @@
     order: -1;
   }
 }
+
+/* How ColorConnect works: one diagram with real screens and moving data */
+.ccd {
+  max-width: 1160px;
+  margin: clamp(48px, 6vw, 80px) auto 0;
+  padding: 0 24px;
+}
+.ccd svg { display: block; width: 100%; height: auto; font-family: inherit; overflow: visible; }
+.ccd-tall { display: none !important; }
+@media (max-width: 899px) {
+  .ccd-wide { display: none !important; }
+  .ccd-tall { display: block !important; max-width: 420px; margin: 0 auto; }
+}
+.ccd-card-bg { fill: #fff; stroke: #e3e3e8; stroke-width: 1; filter: drop-shadow(0 18px 30px rgba(15, 23, 42, 0.07)); }
+.ccd-shot-edge { fill: none; stroke: rgba(15, 23, 42, 0.08); }
+.ccd-title { font-size: 19px; font-weight: 600; letter-spacing: -0.01em; fill: #1d1d1f; }
+.ccd-line { font-size: 14.5px; fill: #6e6e73; }
+.ccd-hub-bg { fill: #fff; stroke: #1d1d1f; stroke-width: 1.5; filter: drop-shadow(0 24px 40px rgba(15, 23, 42, 0.12)); }
+.ccd-hub-line { font-size: 15px; fill: #6e6e73; }
+.ccd-line-path { fill: none; stroke: #c7c7cc; stroke-width: 1.5; }
+.ccd-dot { fill: var(--o360-accent, #0071e3); }
+.ccd-dot-back { fill: #34c759; }
+.ccd-flow-label { font-size: 13px; font-weight: 500; fill: var(--o360-accent, #0071e3); }
+.ccd-flow-back { fill: #248a3d; }
+@media (prefers-reduced-motion: reduce) {
+  .ccd-dot { display: none; }
+}
+.ccd svg text { font-weight: 400; }
+.ccd svg .ccd-title { font-weight: 600; fill: #1d1d1f; }
+.ccd svg .ccd-line, .ccd svg .ccd-hub-line { fill: #6e6e73; }
+.ccd svg .ccd-flow-label { font-weight: 500; fill: #0071e3; }
+.ccd svg .ccd-flow-back { fill: #248a3d; }
+.ccd svg .ccd-dot { fill: #0071e3; }
+.ccd svg .ccd-dot-back { fill: #34c759; }
+.ccd svg text { stroke: none !important; paint-order: normal; }
+.ccd svg { stroke: none; stroke-width: 1; fill: none; }
+
+/* Screen tour, desktop: the iMac in the middle of the screen, the active step written under it.
+   The step list below only drives the scroll and stays invisible. */
+.cc-story-caption { display: none; }
+@media (min-width: 960px) {
+  .cc-story {
+    display: block;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .cc-story-stage {
+    position: sticky;
+    top: 72px;
+    z-index: 1;
+    text-align: center;
+  }
+  .cc-imac.cc-imac-tour {
+    width: min(100%, calc(56vh * 1800 / 1532));
+    margin: 0 auto;
+  }
+  .cc-story-caption {
+    display: block;
+    max-width: 46ch;
+    min-height: 7.5em;
+    margin: 18px auto 0;
+  }
+  .cc-story-caption h3 {
+    margin: 0 0 8px;
+    font-size: clamp(1.4rem, 2vw, 1.75rem);
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+    animation: cc-cap-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  .cc-story-caption p {
+    margin: 0;
+    font-size: 1.05rem;
+    line-height: 1.55;
+    color: var(--o360-mute);
+    text-wrap: balance;
+    animation: cc-cap-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.06s both;
+  }
+  .cc-story-dots { justify-content: center; margin-top: 10px; }
+  .cc-story-steps { margin-top: -40vh; }
+  .cc-story-steps li {
+    min-height: 62vh;
+    visibility: hidden;
+  }
+}
+@keyframes cc-cap-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .cc-story-caption h3, .cc-story-caption p { animation: none; }
+}
+
+/* Security: centred, Revolut-like: words, then the padlock and its button */
+.cc-secure-grid {
+  grid-template-columns: 1fr !important;
+  text-align: center !important;
+  max-width: 720px;
+  gap: clamp(40px, 5vw, 64px);
+}
+.cc-secure-grid > div:last-child { order: -1; }
+.cc-secure-grid .o360-h2,
+.cc-secure-grid .o360-lede {
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+.cc-secure-grid .o360-lede { max-width: 36ch; }
