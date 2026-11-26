@@ -38,39 +38,6 @@
   margin-right: auto;
 }
 
-.cc-devices {
-  position: relative;
-  width: min(1120px, 100%);
-  margin: 56px auto 0;
-  padding: 0 16px 2%;
-}
-
-.cc-devices img {
-  display: block;
-  height: auto;
-}
-
-.cc-devices-mac {
-  width: 70%;
-  margin: 0 auto;
-}
-
-.cc-devices-ipad {
-  position: absolute;
-  right: 2%;
-  bottom: 0;
-  width: 31%;
-  filter: drop-shadow(0 30px 40px rgba(0, 0, 0, 0.18));
-}
-
-.cc-devices-phone {
-  position: absolute;
-  left: 5%;
-  bottom: 0;
-  width: 12.5%;
-  filter: drop-shadow(0 26px 34px rgba(0, 0, 0, 0.2));
-}
-
 /* Films ------------------------------------------------------------------ */
 .cc-video video {
   position: absolute;
@@ -98,244 +65,6 @@
 .cc-caption strong {
   color: var(--o360-fg);
   font-weight: 600;
-}
-
-/* Diagram: prepress -> ColorConnect <-> presses, then team / customers / evidence */
-.cc-icon {
-  display: inline-flex;
-  color: var(--o360-fg);
-}
-
-.cc-icon svg {
-  width: 100%;
-  height: 100%;
-}
-
-.cc-map {
-  --flow: #9aa0a8;
-  display: grid;
-  gap: 28px;
-  max-width: 1160px;
-  margin: 0 auto;
-}
-
-.cc-node {
-  position: relative;
-  background: #fff;
-  border: 1px solid var(--o360-line);
-  border-radius: 16px;
-  padding: 20px 22px;
-}
-
-.cc-node h3 {
-  margin: 0 0 4px;
-  font-size: 1.08rem;
-  letter-spacing: -0.01em;
-}
-
-.cc-node p {
-  margin: 0;
-  font-size: 0.94rem;
-  line-height: 1.45;
-  color: var(--o360-mute);
-  text-wrap: pretty;
-}
-
-.cc-node-icon {
-  width: 36px;
-  height: 36px;
-  margin-bottom: 12px;
-  color: var(--o360-accent);
-}
-
-/* duotone icons: solid line layer, 20% tint layer */
-.cc-node-icon svg path {
-  fill: currentColor;
-}
-
-.cc-press-art {
-  width: 100%;
-  height: auto;
-  aspect-ratio: 1280 / 512;
-  margin: 0 0 12px;
-}
-
-.cc-map-hub {
-  text-align: center;
-}
-
-.cc-map-hub > img {
-  display: block;
-  width: 100%;
-  height: auto;
-  filter: drop-shadow(0 26px 30px rgba(0, 0, 0, 0.14));
-}
-
-.cc-map-hub-label {
-  margin: 12px 0 0;
-  display: grid;
-  justify-items: center;
-  gap: 6px;
-}
-
-.cc-map-hub-label img {
-  height: 22px;
-  width: auto;
-}
-
-.cc-map-hub-label span {
-  font-size: 0.92rem;
-  color: var(--o360-mute);
-}
-
-.cc-map-presses {
-  display: grid;
-  gap: 20px;
-}
-
-.cc-map-out {
-  position: relative;
-  display: grid;
-  gap: 16px;
-}
-
-/* flowing connectors: dashes that move in the direction of the data */
-.cc-flow {
-  display: none;
-}
-
-.cc-flow i {
-  position: absolute;
-  font-style: normal;
-  font-size: 0.78rem;
-  color: var(--o360-mute);
-  white-space: nowrap;
-}
-
-.cc-bus {
-  display: none;
-}
-
-@keyframes cc-dash {
-  to {
-    background-position: 24px 0;
-  }
-}
-
-@keyframes cc-dash-v {
-  to {
-    background-position: 0 24px;
-  }
-}
-
-@media (min-width: 1000px) {
-  .cc-map {
-    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.7fr) minmax(0, 1fr);
-    grid-template-areas:
-      'src hub presses'
-      'out out out';
-    column-gap: 56px;
-    row-gap: 64px;
-    align-items: center;
-  }
-
-  .cc-map-src {
-    grid-area: src;
-    position: relative;
-  }
-
-  .cc-map-hub {
-    grid-area: hub;
-    position: relative;
-  }
-
-  .cc-map-presses {
-    grid-area: presses;
-  }
-
-  .cc-map-out {
-    grid-area: out;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 24px;
-    padding-top: 40px;
-  }
-
-  .cc-flow {
-    display: block;
-    position: absolute;
-    top: 50%;
-    height: 2px;
-    background-image: linear-gradient(90deg, var(--flow) 50%, transparent 50%);
-    background-size: 12px 2px;
-    animation: cc-dash 1.6s linear infinite;
-  }
-
-  .cc-flow i {
-    left: 50%;
-    bottom: 8px;
-    transform: translateX(-50%);
-  }
-
-  .cc-flow-right {
-    left: 100%;
-    width: 56px;
-  }
-
-  .cc-flow-both {
-    right: 100%;
-    width: 56px;
-    animation-direction: reverse;
-  }
-
-  /* vertical stem from the laptop to the bus, then one tick per output */
-  .cc-map-hub::after {
-    content: '';
-    position: absolute;
-    left: 50%;
-    top: 100%;
-    width: 2px;
-    height: 64px;
-    background-image: linear-gradient(180deg, var(--flow) 50%, transparent 50%);
-    background-size: 2px 12px;
-    animation: cc-dash-v 1.6s linear infinite;
-  }
-
-  .cc-bus {
-    display: block;
-    position: absolute;
-    top: 0;
-    left: calc(100% / 6);
-    right: calc(100% / 6);
-    height: 2px;
-    background: var(--flow);
-    opacity: 0.6;
-  }
-
-  .cc-map-out .cc-node::before {
-    content: '';
-    position: absolute;
-    left: 50%;
-    bottom: 100%;
-    width: 2px;
-    height: 40px;
-    background-image: linear-gradient(180deg, var(--flow) 50%, transparent 50%);
-    background-size: 2px 12px;
-    animation: cc-dash-v 1.6s linear infinite;
-  }
-}
-
-@media (max-width: 999px) {
-  .cc-map {
-    max-width: 520px;
-  }
-
-  .cc-map-hub {
-    order: -1;
-  }
-
-  .cc-map-out {
-    grid-template-columns: 1fr;
-  }
 }
 
 /* Screen tour: sticky MacBook, screens animate with the steps ------------ */
@@ -382,31 +111,6 @@
   text-wrap: pretty;
 }
 
-.cc-mac {
-  position: relative;
-  aspect-ratio: 1800 / 1184;
-  width: min(100%, calc(66vh * 1800 / 1184));
-  margin: 0 auto;
-}
-
-/* display area of the MacBook Pro 14" bezel, measured on Apple's PNG */
-.cc-mac-screen {
-  position: absolute;
-  left: 10.829%;
-  top: 11.339%;
-  width: 78.342%;
-  height: 77.323%;
-  overflow: hidden;
-  background: #fff;
-}
-
-.cc-mac-bezel {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-}
 
 .cc-shot {
   position: absolute;
@@ -673,4 +377,150 @@
   font-size: 1rem;
   line-height: 1.55;
   color: var(--o360-mute);
+}
+
+/* Apple iMac (M4, blue) and iPhone 17 Pro bezels; each screen is clipped to
+   the real display shape with a mask measured on Apple's PNGs. */
+.cc-devices {
+  position: relative;
+  width: min(1040px, 100%);
+  margin: 72px auto 0;
+  padding: 0 16px;
+}
+
+.cc-imac {
+  position: relative;
+  aspect-ratio: 1800 / 1532;
+  width: 86%;
+  margin: 0 auto;
+}
+
+.cc-imac-screen {
+  position: absolute;
+  left: 2.941%;
+  top: 3.704%;
+  width: 94.118%;
+  height: 62.222%;
+  overflow: hidden;
+  background: #fff;
+  -webkit-mask: url('/images/colorconnect/imac-screen-mask.png') center / 100% 100% no-repeat;
+  mask: url('/images/colorconnect/imac-screen-mask.png') center / 100% 100% no-repeat;
+}
+
+.cc-imac-screen > video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.cc-imac-bezel {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.cc-imac-tour {
+  width: min(100%, calc(64vh * 1800 / 1532));
+}
+
+.cc-phone {
+  position: absolute;
+  left: 2%;
+  bottom: 0;
+  width: 15%;
+  aspect-ratio: 560 / 1145;
+  filter: drop-shadow(0 28px 36px rgba(0, 0, 0, 0.22));
+}
+
+.cc-phone-screen {
+  position: absolute;
+  left: 5.333%;
+  top: 2.5%;
+  width: 89.333%;
+  height: 95%;
+  overflow: hidden;
+  background: #fff;
+  -webkit-mask: url('/images/colorconnect/iphone-screen-mask.png') center / 100% 100% no-repeat;
+  mask: url('/images/colorconnect/iphone-screen-mask.png') center / 100% 100% no-repeat;
+}
+
+.cc-phone-screen img {
+  display: block;
+  width: 100%;
+  height: auto;
+  animation: cc-phone-scroll 22s ease-in-out infinite;
+}
+
+.cc-phone-bezel {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+@keyframes cc-phone-scroll {
+  0%, 8% { transform: translateY(0); }
+  45%, 55% { transform: translateY(-37.5%); }
+  92%, 100% { transform: translateY(0); }
+}
+
+/* One portal: three airy steps, one metal render each */
+.cc-portal {
+  padding-top: clamp(120px, 14vw, 200px);
+  padding-bottom: clamp(120px, 14vw, 200px);
+}
+
+.cc-steps3 {
+  list-style: none;
+  margin: clamp(56px, 7vw, 96px) auto 0;
+  padding: 0 24px;
+  max-width: 1160px;
+  display: grid;
+  gap: 72px;
+  text-align: center;
+}
+
+@media (min-width: 900px) {
+  .cc-steps3 {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 56px;
+  }
+}
+
+.cc-steps3 img {
+  display: block;
+  width: min(100%, 300px);
+  height: auto;
+  margin: 0 auto 28px;
+}
+
+.cc-steps3 h3 {
+  margin: 0 0 10px;
+  font-size: 1.5rem;
+  letter-spacing: -0.02em;
+}
+
+.cc-steps3 p {
+  margin: 0 auto;
+  max-width: 28ch;
+  font-size: 1.05rem;
+  line-height: 1.55;
+  color: var(--o360-mute);
+  text-wrap: balance;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cc-phone-screen img {
+    animation: none;
+  }
+}
+
+.cc-steps3 li:nth-child(2) img {
+  transform: scale(1.22);
 }

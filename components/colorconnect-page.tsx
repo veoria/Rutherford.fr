@@ -5,7 +5,6 @@ import './colorconnect-page.css';
 import { useEffect, useRef, useState } from 'react';
 import { SiteFooter } from '@/components/site-footer';
 import { SiteNav } from '@/components/site-nav';
-import { CC_ICONS } from '@/components/colorconnect-icons';
 
 // Preview build: the two FX films are served from a temporary bucket. Once the
 // films are on the Rutherford YouTube channel, swap these for embeds.
@@ -30,52 +29,52 @@ type Step = {
 // the MacBook Pro display. Focus areas point at what the text talks about.
 const TOUR: Step[] = [
   {
-    screens: ['tour-jobs.webp'],
+    screens: ['tour16-jobs.webp'],
     alt: 'ColorConnect production jobs: each job with its preview, press, plates and ink use',
     title: 'Every job, prepared.',
     body: 'Prepress drops the files in a folder, as today. ColorConnect builds each job with its preview, inks and ink coverage.',
     tag: 'Job created from the prepress folder',
-    focus: { x: 14.9, y: 20.8, w: 27, h: 37.9 },
+    focus: { x: 14.9, y: 20.3, w: 27, h: 43.8 },
   },
   {
-    screens: ['tour-offset.webp'],
+    screens: ['tour16-offset.webp'],
     alt: 'An offset job in ColorConnect: press, schedule, substrate and ink per color',
     title: 'Ready for the offset press.',
     body: 'Press, schedule, substrate and ink per color. At the console, ColorLoop finds the same job, with nothing to retype.',
     tag: 'Ink per color, ready for the preset',
-    focus: { x: 14.6, y: 61.8, w: 83.8, h: 24.9 },
+    focus: { x: 14.6, y: 67.6, w: 83.8, h: 28.8 },
   },
   {
-    screens: ['tour-zones-1.webp', 'tour-zones-3.webp'],
+    screens: ['tour16-zones-1.webp', 'tour16-zones-3.webp'],
     alt: 'Ink zones of each measured sheet: mostly red and yellow on sheet 1, mostly green on sheet 3',
     title: 'Sheet after sheet, into tolerance.',
     body: 'Every ink zone of every measured sheet. ColorLoop corrects after each measurement, and the job keeps the whole history.',
     tag: 'From sheet 1 to sheet 3',
-    focus: { x: 14.6, y: 8, w: 84, h: 78 },
+    focus: { x: 14.6, y: 5.5, w: 84, h: 90 },
   },
   {
-    screens: ['tour-flexo.webp'],
+    screens: ['tour16-flexo.webp'],
     alt: 'A flexo job measured inline by DeltaOne: ΔE per ink and the score along the run',
     title: 'Flexo, measured inline.',
     body: 'DeltaOne measures the running web. ΔE per ink, speed and every measurement stay with the job.',
     tag: '0 of 6 inks out of tolerance',
-    focus: { x: 14.6, y: 48.2, w: 50, h: 8 },
+    focus: { x: 14.6, y: 51.9, w: 50, h: 9.2 },
   },
   {
-    screens: ['tour-inks.webp'],
+    screens: ['tour16-inks.webp'],
     alt: 'The ink and substrate library with compliance columns for each ink',
     title: 'Inks and substrates, documented.',
     body: 'Each ink carries its composition and compliance data. When a color in a formulation is not compliant, you see it at once.',
     tag: 'PFAS, heavy metals and food contact, per ink',
-    focus: { x: 64, y: 30.2, w: 8, h: 52.6 },
+    focus: { x: 64, y: 31.1, w: 8, h: 60.7 },
   },
   {
-    screens: ['tour-ppwr.webp'],
+    screens: ['tour16-ppwr.webp'],
     alt: 'ColorConnect PPWR compliance: job compliance and ink records',
     title: 'Evidence from your own jobs.',
     body: 'A PPWR evaluation per job and the Digital Product Passport, from data your production already creates. ColorConnect helps you prepare evidence. It does not certify.',
     tag: 'Compliance per job, from its inks',
-    focus: { x: 14.6, y: 33.7, w: 41.7, h: 22.5 },
+    focus: { x: 14.6, y: 35.2, w: 41.7, h: 26 },
   },
 ];
 
@@ -119,10 +118,6 @@ function fmt(t: number) {
   return `${Math.floor(t / 60)}:${String(t % 60).padStart(2, '0')}`;
 }
 
-function Icon({ name, className = '' }: { name: string; className?: string }) {
-  return <span className={`cc-icon ${className}`} dangerouslySetInnerHTML={{ __html: CC_ICONS[name] }} />;
-}
-
 function Shot({ step, on }: { step: Step; on: boolean }) {
   const f = step.focus;
   return (
@@ -130,7 +125,7 @@ function Shot({ step, on }: { step: Step; on: boolean }) {
       className={`cc-shot${on ? ' is-on' : ''}${step.screens.length > 1 ? ' is-pair' : ''}`}
     >
       {step.screens.map((s, k) => (
-        <img key={s} src={`${IMG}/${s}`} alt="" width={1600} height={1039} className={k === 1 ? 'cc-shot-next' : undefined} loading="lazy" />
+        <img key={s} src={`${IMG}/${s}`} alt="" width={1600} height={900} className={k === 1 ? 'cc-shot-next' : undefined} loading="lazy" />
       ))}
       {step.screens.length === 1 && (
         <span className="cc-ring" style={{ left: `${f.x}%`, top: `${f.y}%`, width: `${f.w}%`, height: `${f.h}%` }} />
@@ -186,10 +181,29 @@ export function ColorConnectPage() {
             <a className="o360-btn o360-btn-ghost" href="#film">Watch the pitch</a>
           </div>
         </div>
-        <div className="cc-devices" aria-label="ColorConnect on an iMac, an iPad Pro and an iPhone">
-          <img className="cc-devices-mac" src={`${IMG}/device-imac-jobs.webp`} alt="ColorConnect production jobs on an iMac" width={1800} height={1532} fetchPriority="high" />
-          <img className="cc-devices-ipad" src={`${IMG}/device-ipad-flexo.webp`} alt="A flexo job measured inline, on an iPad Pro" width={1100} height={843} />
-          <img className="cc-devices-phone" src={`${IMG}/device-iphone-flexo.webp`} alt="The same flexo job on an iPhone" width={560} height={1145} />
+        <div className="cc-devices" aria-label="ColorConnect running on an iMac and an iPhone">
+          <div className="cc-imac">
+            <div className="cc-imac-screen">
+              <video
+                autoPlay
+                muted
+                loop
+                playsInline
+                preload="auto"
+                poster={`${IMG}/demo-loop-poster.webp`}
+                aria-label="ColorConnect in use: opening a job, the offset color history, the ink zones, the ink library and PPWR compliance"
+              >
+                <source src={`${MEDIA}/colorconnect-demo-loop.mp4`} type="video/mp4" />
+              </video>
+            </div>
+            <img className="cc-imac-bezel" src={`${IMG}/device-imac-blue-bezel.webp`} alt="" width={1800} height={1532} />
+          </div>
+          <div className="cc-phone">
+            <div className="cc-phone-screen">
+              <img src={`${IMG}/phone-scroll.webp`} alt="A flexo job, production jobs and PPWR compliance on an iPhone" width={860} height={2993} />
+            </div>
+            <img className="cc-phone-bezel" src={`${IMG}/device-iphone-bezel.webp`} alt="" width={560} height={1145} />
+          </div>
         </div>
       </section>
 
@@ -207,74 +221,31 @@ export function ColorConnectPage() {
               <source src={`${MEDIA}/colorconnect-pitch-fx.mp4`} type="video/mp4" />
             </video>
           </div>
-          <p className="cc-caption">
-            <strong>François-Xavier David</strong>, Veoria. 49 s, English subtitles.
-          </p>
         </div>
       </section>
 
-      {/* One diagram */}
-      <section className="o360-section">
-        <div className="o360-narrow" style={{ marginBottom: 48 }}>
+      {/* One portal, three steps */}
+      <section className="o360-section cc-portal">
+        <div className="o360-narrow">
           <h2 className="o360-h2">One portal between prepress, presses and people.</h2>
-          <p className="o360-lede">
-            Jobs go out to the presses. Live data comes back. Your team, your customers and your compliance files read from the same place.
-          </p>
         </div>
-        <div className="o360-container">
-          <div className="cc-map">
-            <div className="cc-map-src">
-              <div className="cc-node">
-                <Icon name="prepress" className="cc-node-icon" />
-                <h3>Prepress</h3>
-                <p>PDF files dropped in a folder, as today</p>
-              </div>
-              <span className="cc-flow cc-flow-right" aria-hidden="true"><i>jobs</i></span>
-            </div>
-
-            <div className="cc-map-hub">
-              <img src={`${IMG}/device-macbook-jobs.webp`} alt="ColorConnect on a laptop" width={1800} height={1184} loading="lazy" />
-              <p className="cc-map-hub-label">
-                <img src={`${IMG}/colorconnect.png`} alt="ColorConnect" width={1394} height={163} />
-                <span>Installed in your print shop, open in any browser</span>
-              </p>
-            </div>
-
-            <div className="cc-map-presses">
-              <div className="cc-node cc-node-press">
-                <span className="cc-flow cc-flow-both" aria-hidden="true"><i>presets</i></span>
-                <Icon name="offset" className="cc-press-art" />
-                <h3>Sheetfed offset</h3>
-                <p>ColorLoop presets and corrects the ink keys</p>
-              </div>
-              <div className="cc-node cc-node-press">
-                <span className="cc-flow cc-flow-both" aria-hidden="true"><i>live data</i></span>
-                <Icon name="flexo" className="cc-press-art" />
-                <h3>Flexo and label</h3>
-                <p>DeltaOne measures the running web inline</p>
-              </div>
-            </div>
-
-            <div className="cc-map-out">
-              <span className="cc-bus" aria-hidden="true" />
-              <div className="cc-node">
-                <Icon name="team" className="cc-node-icon" />
-                <h3>Your team</h3>
-                <p>Office, pressroom, tablet or phone</p>
-              </div>
-              <div className="cc-node">
-                <Icon name="customer" className="cc-node-icon" />
-                <h3>Your customers</h3>
-                <p>They follow their jobs through a secure link</p>
-              </div>
-              <div className="cc-node">
-                <Icon name="dpp" className="cc-node-icon" />
-                <h3>Evidence</h3>
-                <p>PPWR per job, Digital Product Passport, EPR</p>
-              </div>
-            </div>
-          </div>
-        </div>
+        <ol className="cc-steps3">
+          <li>
+            <img src={`${IMG}/render-prepress.webp`} alt="" width={900} height={900} loading="lazy" />
+            <h3>From prepress</h3>
+            <p>Files dropped in a folder become jobs, with their inks and coverage.</p>
+          </li>
+          <li>
+            <img src={`${IMG}/render-press.webp`} alt="" width={900} height={900} loading="lazy" />
+            <h3>To every press</h3>
+            <p>Offset with ColorLoop, flexo with DeltaOne. Presets go out, live data comes back.</p>
+          </li>
+          <li>
+            <img src={`${IMG}/render-team.webp`} alt="" width={900} height={900} loading="lazy" />
+            <h3>Back to your people</h3>
+            <p>Your team on any screen, your customers through a secure link, PPWR evidence per job.</p>
+          </li>
+        </ol>
       </section>
 
       {/* Screen tour */}
@@ -284,8 +255,8 @@ export function ColorConnectPage() {
         </div>
         <div className="o360-container cc-story">
           <div className="cc-story-stage" aria-hidden="true">
-            <div className="cc-mac">
-              <div className="cc-mac-screen">
+            <div className="cc-imac cc-imac-tour">
+              <div className="cc-imac-screen">
                 {TOUR.map((s, i) => (
                   <Shot key={s.title} step={s} on={i === active} />
                 ))}
@@ -296,7 +267,7 @@ export function ColorConnectPage() {
                   </span>
                 ))}
               </div>
-              <img className="cc-mac-bezel" src={`${IMG}/device-macbook-bezel.webp`} alt="" width={1800} height={1184} />
+              <img className="cc-imac-bezel" src={`${IMG}/device-imac-blue-bezel.webp`} alt="" width={1800} height={1532} />
             </div>
             <ol className="cc-story-dots">
               {TOUR.map((s, i) => (
@@ -315,7 +286,7 @@ export function ColorConnectPage() {
                 className={i === active ? 'is-on' : undefined}
               >
                 <figure className="cc-story-inline">
-                  <img src={`${IMG}/${s.screens[s.screens.length - 1]}`} alt={s.alt} width={1600} height={1039} loading="lazy" />
+                  <img src={`${IMG}/${s.screens[s.screens.length - 1]}`} alt={s.alt} width={1600} height={900} loading="lazy" />
                 </figure>
                 <h3>{s.title}</h3>
                 <p>{s.body}</p>
@@ -333,7 +304,7 @@ export function ColorConnectPage() {
         </div>
         <div className="o360-container cc-tour">
           <div className="o360-video-wrap cc-video">
-            <video ref={tutoRef} controls playsInline preload="none" poster={`${MEDIA}/colorconnect-tutorial-poster.webp`} aria-label="ColorConnect tour by François-Xavier David, 8 minutes 35">
+            <video ref={tutoRef} controls playsInline preload="none" poster={`${MEDIA}/colorconnect-tutorial-thumb.webp`} aria-label="ColorConnect tour by François-Xavier David, 8 minutes 35">
               <source src={`${MEDIA}/colorconnect-tutorial-fx.mp4`} type="video/mp4" />
             </video>
           </div>
