@@ -624,3 +624,36 @@
     transform: none;
   }
 }
+
+.cc-secure-kicker {
+  margin: 0 0 14px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  color: var(--o360-accent);
+}
+
+.cc-secure-note {
+  margin: 20px 0 0;
+  font-size: 1.05rem;
+  color: var(--o360-fg);
+}
+
+/* The click: when the shackle seats, the padlock snaps once */
+.cc-lock.is-locked .cc-lock-shackle,
+.cc-lock.is-locked .cc-lock-body {
+  animation: cc-lock-click 0.32s cubic-bezier(0.3, 0.7, 0.4, 1) both;
+}
+
+@keyframes cc-lock-click {
+  0% { translate: 0 0; }
+  35% { translate: 0 1.4%; }
+  100% { translate: 0 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cc-lock.is-locked .cc-lock-shackle,
+  .cc-lock.is-locked .cc-lock-body {
+    animation: none;
+  }
+}

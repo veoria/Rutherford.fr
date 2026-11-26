@@ -149,6 +149,7 @@ function SecureLock() {
     if (!el) return;
     if (prefersReducedMotion()) {
       el.style.setProperty('--open', '0');
+      el.classList.add('is-locked');
       return;
     }
     let raf = 0;
@@ -158,6 +159,8 @@ function SecureLock() {
       const vh = window.innerHeight;
       const p = Math.min(1, Math.max(0, (vh * 0.9 - r.top) / (vh * 0.55)));
       el.style.setProperty('--open', String(Math.pow(1 - p, 3)));
+      // the "click": once the shackle is fully down, the body gives a short snap
+      el.classList.toggle('is-locked', p >= 1);
     };
     const onScroll = () => {
       if (!raf) raf = requestAnimationFrame(update);
@@ -317,6 +320,7 @@ export function ColorConnectPage() {
             <p className="o360-lede">
               ColorConnect runs on your own server. Production files and customer data stay in your print shop.
             </p>
+            <p className="cc-secure-note"><strong>Built for the EU Cyber Resilience Act (CRA).</strong></p>
           </div>
         </div>
       </section>
