@@ -181,10 +181,41 @@ function SecureLock() {
   );
 }
 
+const PORTAL = [
+  {
+    title: 'From prepress',
+    text: 'Files dropped in a folder become jobs, with their inks and coverage.',
+    ui: { src: 'portal-ui-jobs.webp', w: 1070, h: 474, kind: 'screen', alt: 'Production jobs created from prepress files, with artwork, plates and ink per 1,000 sheets' },
+    photo: 'portal-photo-prepress.webp',
+    render: 'render-prepress-v2.webp',
+  },
+  {
+    title: 'To every press',
+    text: 'Offset with ColorLoop, flexo with DeltaOne. Presets go out, live data comes back.',
+    ui: { src: 'portal-ui-keys.webp', w: 1200, h: 460, kind: 'screen', alt: 'Ink key corrections measured sheet after sheet on an offset press' },
+    photo: 'portal-photo-press.webp',
+    render: 'render-presses.webp',
+  },
+  {
+    title: 'Back to your people',
+    text: 'Your team on any screen, your customers through a secure link, PPWR evidence per job.',
+    ui: { src: 'portal-ui-phone.webp', w: 560, h: 1145, kind: 'phone', alt: 'ColorConnect on an iPhone' },
+    photo: 'portal-photo-people.webp',
+    render: 'render-team-v2.webp',
+  },
+];
+
+type PortalVariant = 'ui' | 'photos' | 'renders';
+
 export function ColorConnectPage() {
   const tutoRef = useRef<HTMLVideoElement>(null);
   const stepRefs = useRef<(HTMLLIElement | null)[]>([]);
   const [active, setActive] = useState(0);
+  const [portal, setPortal] = useState<PortalVariant>('ui');
+  useEffect(() => {
+    const v = new URLSearchParams(window.location.search).get('portal');
+    if (v === 'photos' || v === 'renders') setPortal(v);
+  }, []);
 
   useEffect(() => {
     const els = stepRefs.current.filter(Boolean) as HTMLLIElement[];
@@ -258,34 +289,36 @@ export function ColorConnectPage() {
         </div>
         <div className="o360-container">
           <div className="o360-video-wrap cc-video">
-            <video controls playsInline preload="metadata" poster={`${IMG}/poster-pitch-v2.webp`} aria-label="François-Xavier David presents ColorConnect, 49 seconds">
+            <video controls playsInline preload="metadata" poster={`${IMG}/poster-pitch-v3.webp`} aria-label="François-Xavier David presents ColorConnect, 49 seconds">
               <source src={`${MEDIA}/colorconnect-pitch-fx.mp4`} type="video/mp4" />
             </video>
           </div>
         </div>
       </section>
 
-      {/* One portal, three steps */}
+      {/* One portal, three steps. Proposals: ?portal=ui (default, real screens), photos, renders */}
       <section className="o360-section cc-portal">
         <div className="o360-narrow">
           <h2 className="o360-h2">One portal between prepress, presses and people.</h2>
         </div>
-        <ol className="cc-steps3">
-          <li>
-            <img src={`${IMG}/render-prepress-v2.webp`} alt="" width={900} height={900} loading="lazy" />
-            <h3>From prepress</h3>
-            <p>Files dropped in a folder become jobs, with their inks and coverage.</p>
-          </li>
-          <li>
-            <img src={`${IMG}/render-presses.webp`} alt="" width={900} height={900} loading="lazy" />
-            <h3>To every press</h3>
-            <p>Offset with ColorLoop, flexo with DeltaOne. Presets go out, live data comes back.</p>
-          </li>
-          <li>
-            <img src={`${IMG}/render-team-v2.webp`} alt="" width={900} height={900} loading="lazy" />
-            <h3>Back to your people</h3>
-            <p>Your team on any screen, your customers through a secure link, PPWR evidence per job.</p>
-          </li>
+        <ol className={`cc-steps3 cc-steps3-${portal}`}>
+          {PORTAL.map((step) => (
+            <li key={step.title}>
+              {portal === 'ui' && (
+                <div className={`cc-tile cc-tile-${step.ui.kind}`}>
+                  <img src={`${IMG}/${step.ui.src}`} alt={step.ui.alt} width={step.ui.w} height={step.ui.h} loading="lazy" />
+                </div>
+              )}
+              {portal === 'photos' && (
+                <div className="cc-photo">
+                  <img src={`${IMG}/${step.photo}`} alt="" width={800} height={1000} loading="lazy" />
+                </div>
+              )}
+              {portal === 'renders' && <img src={`${IMG}/${step.render}`} alt="" width={900} height={900} loading="lazy" />}
+              <h3>{step.title}</h3>
+              <p>{step.text}</p>
+            </li>
+          ))}
         </ol>
       </section>
 

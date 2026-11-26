@@ -678,3 +678,56 @@
   .cc-lockwrap.is-locked .cc-lock-shackle, .cc-lockwrap.is-locked .cc-lock-body, .cc-lockwrap.is-locked .cc-lock-sheen, .cc-lockwrap.is-locked .cc-lock-cta { animation: none; }
   .cc-lock-cta { opacity: 1; transform: none; pointer-events: auto; transition: none; }
 }
+
+/* One portal, proposal A: real ColorConnect screens on soft tiles */
+.cc-tile {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  margin: 0 auto 28px;
+  width: min(100%, 360px);
+  border-radius: 28px;
+  background: #f5f5f7;
+  overflow: hidden;
+}
+.cc-steps3-ui .cc-tile img {
+  position: absolute;
+  display: block;
+  margin: 0;
+  transform: none;
+}
+.cc-tile-screen img {
+  left: 10%;
+  top: 18%;
+  width: auto;
+  height: 64%;
+  max-width: none;
+  border-radius: 12px;
+  box-shadow: 0 24px 48px -18px rgba(15, 23, 42, 0.28), 0 0 0 1px rgba(15, 23, 42, 0.06);
+}
+.cc-tile-phone img {
+  left: 50%;
+  top: 10%;
+  width: 52%;
+  height: auto;
+  translate: -50% 0;
+  filter: drop-shadow(0 24px 30px rgba(0, 0, 0, 0.2));
+}
+.cc-steps3-ui li:nth-child(2) img { transform: none; }
+
+/* One portal, proposal B: real photographs */
+.cc-photo {
+  aspect-ratio: 4 / 5;
+  width: min(100%, 360px);
+  margin: 0 auto 28px;
+  border-radius: 28px;
+  overflow: hidden;
+  background: #e8e8ed;
+}
+.cc-steps3-photos .cc-photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  object-fit: cover;
+  transform: none;
+}
