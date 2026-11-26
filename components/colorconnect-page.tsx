@@ -174,7 +174,7 @@ function SecureLock() {
   return (
     <div className="cc-lock" ref={ref} aria-hidden="true">
       <img className="cc-lock-shackle" src="/images/security/padlock-shackle.webp" alt="" width={1000} height={1000} loading="lazy" />
-      <img className="cc-lock-body" src="/images/security/padlock-body.webp" alt="" width={1000} height={1000} loading="lazy" />
+      <img className="cc-lock-body" src="/images/colorconnect/padlock-body-cc.webp" alt="" width={1000} height={1000} loading="lazy" />
     </div>
   );
 }
@@ -291,17 +291,17 @@ export function ColorConnectPage() {
         </div>
         <ol className="cc-steps3">
           <li>
-            <img src={`${IMG}/render-prepress.webp`} alt="" width={900} height={900} loading="lazy" />
+            <img src={`${IMG}/render-prepress-v2.webp`} alt="" width={900} height={900} loading="lazy" />
             <h3>From prepress</h3>
             <p>Files dropped in a folder become jobs, with their inks and coverage.</p>
           </li>
           <li>
-            <img src={`${IMG}/render-press.webp`} alt="" width={900} height={900} loading="lazy" />
+            <img src={`${IMG}/render-presses.webp`} alt="" width={900} height={900} loading="lazy" />
             <h3>To every press</h3>
             <p>Offset with ColorLoop, flexo with DeltaOne. Presets go out, live data comes back.</p>
           </li>
           <li>
-            <img src={`${IMG}/render-team.webp`} alt="" width={900} height={900} loading="lazy" />
+            <img src={`${IMG}/render-team-v2.webp`} alt="" width={900} height={900} loading="lazy" />
             <h3>Back to your people</h3>
             <p>Your team on any screen, your customers through a secure link, PPWR evidence per job.</p>
           </li>
