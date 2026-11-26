@@ -595,8 +595,9 @@ const ORDER = [
   'articles',
 ];
 
-function WarnArt() {
-  // A brushed-metal padlock in two layers: the shackle drops into the body as the section scrolls into view.
+function WarnArt({ cta, href }: { cta: string; href: string }) {
+  // A brushed-metal padlock in two layers. The shackle drops in while the padlock travels up to the
+  // middle of the screen; it locks with a short snap and a light sweep, then the call to action appears.
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const el = ref.current;
@@ -609,9 +610,12 @@ function WarnArt() {
     let raf = 0;
     const update = () => {
       raf = 0;
-      const r = el.getBoundingClientRect();
+      const lock = el.firstElementChild as HTMLElement;
+      const r = lock.getBoundingClientRect();
       const vh = window.innerHeight;
-      const p = Math.min(1, Math.max(0, (vh * 0.9 - r.top) / (vh * 0.55)));
+      const center = r.top + r.height / 2;
+      // starts once the padlock is fully in view, locks when its centre reaches 42 % of the screen height
+      const p = Math.min(1, Math.max(0, (vh * 0.82 - center) / (vh * 0.4)));
       const eased = 1 - Math.pow(1 - p, 3);
       el.style.setProperty('--open', String(1 - eased));
       el.classList.toggle('is-locked', p >= 1);
@@ -629,9 +633,13 @@ function WarnArt() {
     };
   }, []);
   return (
-    <div className="clh-lock3d" ref={ref} aria-hidden="true">
-      <img className="clh-lock3d-shackle" src="/images/security/padlock-shackle.webp" alt="" width={1000} height={1000} loading="lazy" />
-      <img className="clh-lock3d-body" src="/images/security/padlock-body.webp" alt="" width={1000} height={1000} loading="lazy" />
+    <div className="clh-lockwrap" ref={ref}>
+      <div className="clh-lock3d" aria-hidden="true">
+        <img className="clh-lock3d-shackle" src="/images/security/padlock-shackle.webp" alt="" width={1000} height={1000} loading="lazy" />
+        <img className="clh-lock3d-body" src="/images/security/padlock-body.webp" alt="" width={1000} height={1000} loading="lazy" />
+        <span className="clh-lock3d-sheen" />
+      </div>
+      <a className="clh-btn clh-btn-dark clh-lock-cta" href={href}>{cta}</a>
     </div>
   );
 }
@@ -716,11 +724,8 @@ export function ColorLoopHome({ tone = 'light' }: { tone?: 'night' | 'light' }) 
               <p className="clh-warn-cra">
                 <a href={CRA_URL} rel="noopener">{t.warnNote}</a>
               </p>
-              <div className="clh-actions clh-actions-left">
-                <a className="clh-btn clh-btn-dark" href="#prepare">{t.warnCta}</a>
-              </div>
             </div>
-            <WarnArt />
+            <WarnArt cta={t.warnCta} href="#prepare" />
           </div>
         </div>
       </section>
